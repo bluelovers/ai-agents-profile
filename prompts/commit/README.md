@@ -29,6 +29,14 @@ feat(prompts): 添加 conventional commit 消息生成器提示模板
 - Conventional_Commits-kilo-with-zh.md：支持中文输出版本
 ```
 
+```text
+docs(skills): 添加技能庫 README 與 skill-creator 中文文檔
+
+新增 skills/README.md 作為 AI Agent 技能庫的主要說明文件，包含技能列表、詳情介紹及使用指南。
+
+新增 skills/skill-creator/SKILL.zh.md 為 skill-creator 技能的中文版本，提供建立有效 Skill 的完整指導方針，涵蓋核心原則、結構規範與開發流程。
+```
+
 ## 使用指南
 
 1. 將選定的模板內容複製並貼入 AI 助手的 **System Prompt**。
