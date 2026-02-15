@@ -1,11 +1,11 @@
 ---
 name: analyze-code-commenter
-description: 分析代碼並添加雙語註解（繁體中文與英文），針對核心邏輯、內部方法與 protected/private 成員，且不改變原始代碼格式。
+description: 分析代碼並添加雙語註解（繁體中文與英文），針對核心邏輯、複雜邏輯區塊、函數、類別成員/方法、陣列/物件元素、保留原始風格添加詳細的雙語註解。
 ---
 
 # Analyze Code Commenter Skill
 
-此技能用於分析程式碼，並在不改變原始代碼格式的前提下，為核心邏輯、內部方法及 `protected`/`private` 成員添加詳細的雙語註解（繁體中文與英文）。
+此技能用於分析程式碼，並在不改變原始代碼格式的前提下，為核心邏輯、複雜邏輯區塊、函數、類別成員/方法、陣列/物件元素、保留原始風格添加詳細的雙語註解（繁體中文與英文）。
 
 ## 使用指南
 
@@ -20,7 +20,7 @@ description: 分析代碼並添加雙語註解（繁體中文與英文），針�
     *   為識別出的部分生成註解。
     *   **格式要求**：
         *   若為方法/類別/屬性，優先使用 JSDoc 格式 `/** ... */`。
-        *   若為行內邏輯，使用單行註解 `// ...`。
+        *   若為行內邏輯，優先使用單行註解 `// ...`。
         *   **保留原始風格**：若原始註解已為區塊風格 `/** ... */`，則保留該格式並添加英文翻譯，不轉換為單行註解。
     *   **語言要求**：
         *   同時包含 **繁體中文 (Traditional Chinese, zh-TW)** 與 **英文 (English)**。
@@ -41,47 +41,12 @@ description: 分析代碼並添加雙語註解（繁體中文與英文），針�
     *   使用 `multi_replace_file_content` 或 `replace_file_content` 工具將註解插入代碼中。
     *   **絕對禁止** 更改任何現有的程式碼 formatting（縮排、換行、空格等），僅在空白處或行間插入註解。
     *   **絕對禁止** 刪除舊有已被註解不使用的代碼（如 `// old code...` 或 `/* ... */` 包裹的廢棄代碼）。
+    *   **絕對禁止** 將原始代碼中已經存在的 CJK 漢字轉換為繁體漢字（如簡體字「代码」不轉為「代碼」）。僅在新增註解時使用繁體中文，原始代碼內容應保持原樣。
     *   對於重點名詞、特殊名詞或可能產生歧義的用語，應在繁體中文後標註英文對照，例如：「快取 (Cache)」、「佇列 (Queue)」、「遞迴 (Recursion)」。
 
 ## 範例
 
-### 範例一：方法註解
-
-#### Before
-
-```typescript
-    protected _calculateWeight(value: number): number
-    {
-        if (value < 0) return 0;
-        return value * 1.5;
-    }
-```
-
-#### After
-
-```typescript
-    /**
-     * 計算權重
-     * Calculate the weight
-     *
-     * 如果輸入值小於 0，則返回 0；否則返回值的 1.5 倍。
-     * 用於標準化數據範圍，確保權重值不為負數。
-     *
-     * If the input value is less than 0, return 0; otherwise, return 1.5 times the value.
-     * Used to normalize data range and ensure weight values are non-negative.
-     *
-     * @protected
-     * @param {number} value - 輸入數值 / Input value
-     * @returns {number} 計算後的權重 / Calculated weight
-     */
-    protected _calculateWeight(value: number): number
-    {
-        if (value < 0) return 0;
-        return value * 1.5;
-    }
-```
-
-### 範例二：類別註解
+### 範例一：類別與成員註解
 
 #### Before
 
@@ -160,54 +125,7 @@ class DataProcessor {
 }
 ```
 
-### 範例三：行內註解
-
-#### Before
-
-```typescript
-private _transformData(raw: unknown): Result {
-    const parsed = JSON.parse(JSON.stringify(raw));
-    const filtered = parsed.filter(item => item.active);
-    return filtered.map(item => ({
-        id: item.id,
-        value: this._normalize(item.value)
-    }));
-}
-```
-
-#### After
-
-```typescript
-    /**
-     * 轉換數據
-     * Transform Data
-     *
-     * 將原始數據轉換為標準化格式。
-     * 包含深拷貝、過濾無效項目與正規化處理。
-     *
-     * Transforms raw data into a standardized format.
-     * Includes deep copy, filtering invalid items, and normalization.
-     *
-     * @private
-     * @param {unknown} raw - 原始數據 / Raw data
-     * @returns {Result} 轉換後的結果 / Transformed result
-     */
-    private _transformData(raw: unknown): Result {
-        // 深拷貝以避免修改原始資料 / Deep copy to avoid modifying the original data
-        const parsed = JSON.parse(JSON.stringify(raw));
-
-        // 過濾掉未啟用的項目 / Filter out inactive items
-        const filtered = parsed.filter(item => item.active);
-
-        // 轉換為標準格式並正規化數值 / Convert to standard format and normalize values
-        return filtered.map(item => ({
-            id: item.id,
-            value: this._normalize(item.value)
-        }));
-    }
-```
-
-### 範例四：複雜邏輯區塊
+### 範例二：複雜邏輯區塊
 
 #### Before
 
@@ -270,7 +188,7 @@ async function processBatch(items: Item[]): Promise<ProcessedItem[]> {
 }
 ```
 
-### 範例五：陣列元素註解
+### 範例三：陣列元素註解
 
 #### Before
 
@@ -304,7 +222,7 @@ let arr = [
 ];
 ```
 
-### 範例六：保留原始區塊註解風格
+### 範例四：保留原始區塊註解風格
 
 #### Before
 
@@ -337,7 +255,7 @@ else if (m = (w1.p & w2.p))
 }
 ```
 
-### 範例七：長行內註解分行顯示
+### 範例五：長行內註解分行顯示
 
 #### Before
 

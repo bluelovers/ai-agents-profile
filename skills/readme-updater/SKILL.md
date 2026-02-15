@@ -31,12 +31,7 @@ description: 分析 monorepo 或一般專案，檢查並更新 README 說明文�
 
 #### 根目錄資訊
 - `package.json` / `pyproject.toml` 等配置檔案 (configuration files)
-  - 專案名稱、版本、描述
-  - 依賴項目 (dependencies)
-  - 腳本命令 (scripts)
-  - 授權資訊 (license)
-- `CHANGELOG.md` / `HISTORY.md`
-- `LICENSE`
+  - 專案名稱、描述
 - `docs/` 目錄下的文件
   - 架構說明 (architecture)
   - API 文件
