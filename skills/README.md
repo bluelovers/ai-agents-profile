@@ -34,3 +34,12 @@
 1. **觸發技能**：在與 AI 溝通時，直接提及技能名稱或描述相關任務（如：「幫我分析這段代碼並添加註解」），AI 將根據其 `SKILL.md` 中的描述自動載入對應技能。
 2. **遵守規範**：每個技能都有詳細的 `SKILL.md` 作為 System Instruction，指導 AI 執行的具體步驟與格式要求。
 3. **擴大應用**：您可以將這些技能手動複製到其他 AI Agent 的配置中，或參考 `skill-creator` 建立您自訂的專屬技能。
+
+## references
+
+- [anthropics/skills](https://github.com/anthropics/skills)
+- [OpenAI Skills](https://github.com/openai/skills)
+- [Google AI Skills](https://github.com/google-gemini/gemini-skills)
+- [Microsoft AI Skills](https://github.com/microsoft/skills)
+- [awesome-copilot](https://github.com/github/awesome-copilot)
+
