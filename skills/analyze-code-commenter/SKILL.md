@@ -1,6 +1,6 @@
 ---
 name: analyze-code-commenter
-description: Analyze code and add bilingual comments (Traditional Chinese and English). Use when users request: (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) "為代碼添加註解", (5) "分析並註解程式碼". Preserves original formatting while adding detailed comments to core logic, complex blocks, functions, class members/methods, and array/object elements.
+description: Analyze code and add bilingual comments (Traditional Chinese and English). Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) "為代碼添加註解", (5) "分析並註解程式碼", (6) "為代碼更新註解", (6) "為代碼修正註解". Preserves original formatting while adding detailed comments to core logic, complex blocks, functions, class members/methods, and array/object elements.
 ---
 
 # Analyze Code Commenter
@@ -14,10 +14,10 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
    - Core business logic and algorithms
    - Class members/methods/properties
    - Complex internal logic blocks, functions, and array/object elements
-3. **Generate comments** - Apply format rules below
+3. **Generate bilingual comments** (Traditional Chinese zh-TW + English) - Apply format rules below
 4. **Apply changes** - Insert comments using `edit_file` tool
 
-## Comment Format Rules
+## Bilingual Comment Format Rules
 
 ### JSDoc (methods/classes/properties)
 
@@ -40,7 +40,7 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
 |------|--------|
 | Short | `// 中文說明 / English description` |
 | Long | Two lines: `// 中文說明` then `// English description` |
-| Array elements | Comment above element: `// 中文 / English` |
+| Array/Object elements | Comment above element: `// 中文 / English` |
 | Multiple (≥3 lines) | Use block format `/** ... */` instead of multiple `//` |
 
 #### Multiple Comments Rule
@@ -78,7 +78,62 @@ If original comments use block style `/** ... */`, preserve format and add Engli
 - **NEVER** modify existing code formatting (indentation, line breaks, spaces)
 - **NEVER** delete old commented-out code (e.g., `// old code...` or `/* ... */`)
 - **NEVER** convert existing CJK characters to Traditional Chinese - only use Traditional Chinese in NEW comments
+- **NEVER** write "English + English" as fake bilingual comments - each comment pair MUST contain Traditional Chinese followed by English, not two English lines
 - For key terms, add English in parentheses: `快取 (Cache)`, `佇列 (Queue)`, `遞迴 (Recursion)`
+
+### Bilingual Comment Validation
+
+Every bilingual comment MUST follow this pattern:
+```
+// 繁體中文說明 / English description
+
+/**
+ * 繁體中文說明
+ * English description
+ */
+
+/**
+ * 繁體中文說明 / English description
+ */
+```
+
+**Incorrect patterns to avoid:**
+```typescript
+// ❌ English only / English only (fake bilingual)
+// Process data / Process data
+
+// ❌ Two English lines (no Chinese)
+// Process the data
+// Process the data
+
+// ❌ English first, Chinese second (wrong order)
+// English description / 繁體中文說明
+
+// ❌ Two English lines (no Chinese)
+/**
+ * English description
+ * English description
+ */
+```
+
+**Correct patterns:**
+```typescript
+// ✅ Traditional Chinese + English
+// 處理資料 / Process data
+
+// ✅ Two-line format for longer comments
+// 處理使用者輸入資料並進行驗證
+// Process and validate user input data
+
+/**
+ * 處理使用者輸入資料並進行驗證
+ * Process and validate user input data
+ */
+
+/**
+ * 處理使用者輸入資料並進行驗證 / Process and validate user input data
+ */
+```
 
 ## Examples
 
