@@ -37,6 +37,38 @@ docs(skills): 添加技能庫 README 與 skill-creator 中文文檔
 新增 skills/skill-creator/SKILL.zh.md 為 skill-creator 技能的中文版本，提供建立有效 Skill 的完整指導方針，涵蓋核心原則、結構規範與開發流程。
 ```
 
+## 其他模型
+
+### Arcee AI: Trinity Large Preview
+
+```
+docs(skills): 擴充代碼註解技能文檔的說明內容
+
+詳細說明代碼註解的實用價值，強調未來修改或除錯時可快速理解代碼意圖，提升文檔的實用性與指導效果。
+```
+
+### Giga Potato
+
+```
+docs(skills): 优化代码注释技能文档的指导建议
+
+在代码注释技能文档中补充了对注释长期价值的说明，明确指出优质注释在后续代码迭代或问题排查过程中能够显著降低理解成本，进一步完善了文档的指导属性和实用价值。
+```
+
+### MiniMax: MiniMax M2.5
+
+```
+docs(skills): improve code comment skill documentation with debugging context
+
+Added practical benefits to the "explain why not what" section in the code commenting skill document, helping developers understand how clarifying code intent accelerates future maintenance and troubleshooting efforts
+```
+
+```
+docs(skills): 增强代码注释技能文档中"解释原因"部分
+
+在代码注释技能文档中明确说明解释"为什么"的注释能够帮助未来开发者或自己在代码维护和调试时快速理解代码意图，提升文档对实际开发的指导作用
+```
+
 ## 使用指南
 
 1. 將選定的模板內容複製並貼入 AI 助手的 **System Prompt**。
