@@ -66,3 +66,26 @@
 4. **補充 Rules**：在測試過程中，發現它容易犯錯的地方，用 Rules 加以限制。
 
 > **小撇步：** 如果你的 Agent 表現不穩定，通常是因為 **Workflows 不夠明確**；如果它的回答跑題，通常是 **Rules 寫得太寬鬆**。
+
+## references
+
+### mixin
+
+- https://github.com/cline/prompts (rules, workflows)
+- https://cursor.directory/rules (rules, mcps)
+
+### rule
+
+- https://cursor.directory/rules
+- [module-execution-rules.md](./rules/module-execution-rules.md) - 模組執行規則
+
+### skill
+
+
+- [anthropics/skills](https://github.com/anthropics/skills)
+- [OpenAI Skills](https://github.com/openai/skills)
+- [Google AI Skills](https://github.com/google-gemini/gemini-skills)
+- [Microsoft AI Skills](https://github.com/microsoft/skills)
+- [awesome-copilot](https://github.com/github/awesome-copilot)
+- https://skillmd.ai/
+
