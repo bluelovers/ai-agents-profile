@@ -123,7 +123,9 @@ async function processBatch(items: Item[]): Promise<ProcessedItem[]> {
 async function processBatch(items: Item[]): Promise<ProcessedItem[]> {
     const results: ProcessedItem[] = [];
 
-    // 每批處理的項目數量 / Number of items to process per batch
+    /**
+     * 每批處理的項目數量 / Number of items to process per batch
+     */
     const batchSize = 10;
 
     /**
@@ -169,7 +171,9 @@ let arr = [
 #### After
 
 ```typescript
-// 定義各種外文字元的匹配模式 / Define matching patterns for various foreign characters
+/**
+ * 定義各種外文字元的匹配模式 / Define matching patterns for various foreign characters
+ */
 let arr = [
     // 數字 / Numbers
     /[\d０-９]+(?:,[\d０-９]+)?(?:\.[\d０-９]+)?/,
