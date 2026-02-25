@@ -26,8 +26,8 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
  * 繁體中文說明
  * English Description
  *
- * 詳細解釋「為什麼」而非「做什麼」。
- * Explain "why" not just "what".
+ * 詳細解釋「為什麼」而非「做什麼」。未來修改或除錯時可快速理解代碼意圖。
+ * Explain "why" not just "what". Helps future self or others quickly understand the code's intent during maintenance or debugging.
  *
  * @param {type} name - 參數說明 / Parameter description
  * @returns {type} 返回值說明 / Return description
