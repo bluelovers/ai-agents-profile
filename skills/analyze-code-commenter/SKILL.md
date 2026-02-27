@@ -135,6 +135,12 @@ Every bilingual comment MUST follow this pattern:
  */
 ```
 
+## Code Formatting Rules
+
+The project-wide comment and formatting rules live in the repository rules. For guidance on comment placement, block vs inline preferences, and other project conventions, please refer to:
+
+- [rules/comment-format-rules.md](../../rules/comment-format-rules.md)
+
 ## Examples
 
 See [references/examples.md](references/examples.md) for detailed before/after examples covering:

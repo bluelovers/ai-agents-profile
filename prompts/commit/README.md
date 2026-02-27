@@ -57,6 +57,8 @@ docs(skills): 优化代码注释技能文档的指导建议
 
 ### MiniMax: MiniMax M2.5
 
+> 即使指定了中文，但還是經常性回應英文
+
 ```
 docs(skills): improve code comment skill documentation with debugging context
 
