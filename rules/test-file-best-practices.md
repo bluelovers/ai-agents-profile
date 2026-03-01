@@ -32,10 +32,10 @@ test/
 ```typescript
 // ❌ 單一檔案包含過多測試
 describe('UserService', () => {
-  describe('create', () => { /* 50+ 測試案例 */ });
-  describe('update', () => { /* 50+ 測試案例 */ });
-  describe('delete', () => { /* 50+ 測試案例 */ });
-  describe('query', () => { /* 50+ 測試案例 */ });
+	describe('create', () => { /* 50+ 測試案例 */ });
+	describe('update', () => { /* 50+ 測試案例 */ });
+	describe('delete', () => { /* 50+ 測試案例 */ });
+	describe('query', () => { /* 50+ 測試案例 */ });
 });
 ```
 
@@ -71,13 +71,13 @@ describe('UserService.update', () => { /* 相關測試 */ });
 ```typescript
 // ✅ 使用 toMatchSnapshot 驗證複雜輸出
 it('should parse configuration correctly', () => {
-  const result = parseConfig(rawConfig);
-  expect(result).toMatchSnapshot();
+	const result = parseConfig(rawConfig);
+	expect(result).toMatchSnapshot();
 });
 
 // ✅ 使用 toThrowErrorMatchingSnapshot 驗證錯誤
 it('should throw error for invalid input', () => {
-  expect(() => validateInput(invalidInput)).toThrowErrorMatchingSnapshot();
+	expect(() => validateInput(invalidInput)).toThrowErrorMatchingSnapshot();
 });
 ```
 
@@ -102,12 +102,59 @@ expect(result).toMatchSnapshot({
 
 這樣 snapshot 會比對完整物件結構，同時確保 `name` 和 `subSpec.name`、`subSpec.rawSpec` 的值正確。
 
+對於動態資料（如時間戳、隨機 ID），可使用 Asymmetric matchers 例如:
+- `expect.any(constructor)`
+- `expect.arrayContaining(array)`
+
+參閱:
+- [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
+
+#### 其他比對已知屬性的範例
+
+```typescript
+// ❌ 不良範例 發生錯誤時不易閱讀
+it('should throw error for invalid input', () => {
+	expect(result.versionOld).toBe('1.2.3');
+	expect(result.versionNew).toBe('2.0.0');
+});
+```
+
+```typescript
+// ✅ 良好範例 包含 snapshot 和 指定值
+it('should throw error for invalid input', () => {
+  // actual = ...
+	expect(actual).toMatchSnapshot({
+    versionOld: '1.2.3',
+    versionNew: '2.0.0',
+  });
+});
+
+// ✅ 在不需要 snapshot 時，只要 actual 包含這些 Key 且 Value 相等即通過。
+test('檢查版本號並允許其他屬性', () => {
+  expect(actual).toMatchObject({
+    versionOld: '1.2.3',
+    versionNew: '2.0.0',
+  });
+});
+
+// ✅ 在不需要 snapshot 時，使用 objectContaining 進行非嚴格匹配，可以巢狀嵌套在 toEqual 或 toHaveBeenCalledWith 中。
+test('使用 objectContaining 進行非嚴格匹配', () => {
+  expect(actual).toEqual(
+    expect.objectContaining({
+      versionOld: '1.2.3',
+      versionNew: '2.0.0',
+    })
+  );
+});
+```
+
 #### 注意事項
 
 - Snapshot 應定期審查，避免過時或錯誤的 snapshot 被接受
 - 對於動態資料（如時間戳、隨機 ID），應先處理再比對
 - 避免過度使用 snapshot，簡單的值比對仍使用傳統 matcher
 - 重要欄位應使用 property matchers 明確驗證，而非完全依賴 snapshot
+- 發生錯誤時應能輕鬆比對錯誤的值與鍵值，了解是哪一個鍵值不正確。
 
 ### 3. 測試組織結構
 
@@ -174,5 +221,6 @@ describe('functionToTest', () => {
 
 ## 相關資源
 
-- Jest Snapshot Testing: https://jestjs.io/docs/snapshot-testing
-- 測試檔案組織最佳實踐
+- [Jest Snapshot Testing](https://jestjs.io/docs/snapshot-testing)
+- [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
+

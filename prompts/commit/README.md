@@ -37,6 +37,23 @@ docs(skills): 添加技能庫 README 與 skill-creator 中文文檔
 新增 skills/skill-creator/SKILL.zh.md 為 skill-creator 技能的中文版本，提供建立有效 Skill 的完整指導方針，涵蓋核心原則、結構規範與開發流程。
 ```
 
+### MoonshotAI: Kimi K2.5
+
+- https://github.com/MoonshotAI/Kimi-K2.5
+- https://platform.moonshot.ai/docs/guide/kimi-k2-5-quickstart
+- https://ollama.com/library/kimi-k2.5
+- https://huggingface.co/moonshotai/Kimi-K2.5
+
+```
+feat(pkg-entry-util): 將預設腳本執行從 yarn run 遷移至 node --run 並新增 pnpm 支援
+
+- 更新 pkg-scripts、root-scripts、shared-root-scripts 與 ws-root-scripts 中的腳本執行方式
+- 統一使用 node --run 替代 yarn run 以減少對 Yarn 的依賴
+- 在 shared-root-scripts 中將 pnpm 加入預設安裝清單
+- 在 root-scripts 中新增 pnpm:dedupe 與 ncu:pnpm 腳本
+- 同步更新 sort-package-json-scripts 以支援 pnpm 腳本分類
+```
+
 ## 其他模型
 
 ### Arcee AI: Trinity Large Preview
