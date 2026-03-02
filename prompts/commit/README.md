@@ -39,10 +39,14 @@ docs(skills): 添加技能庫 README 與 skill-creator 中文文檔
 
 ### MoonshotAI: Kimi K2.5
 
+> 試用連結: [kilo.ai](https://kilo.ai/)
+
 - https://github.com/MoonshotAI/Kimi-K2.5
 - https://platform.moonshot.ai/docs/guide/kimi-k2-5-quickstart
 - https://ollama.com/library/kimi-k2.5
 - https://huggingface.co/moonshotai/Kimi-K2.5
+
+**Kimi K2.5** 模型在理解程式碼邏輯與變更意圖方面表現優異，非常適合搭配此類提示詞使用，能生成精確且具描述性的提交訊息。
 
 ```
 feat(pkg-entry-util): 將預設腳本執行從 yarn run 遷移至 node --run 並新增 pnpm 支援
@@ -52,6 +56,18 @@ feat(pkg-entry-util): 將預設腳本執行從 yarn run 遷移至 node --run 並
 - 在 shared-root-scripts 中將 pnpm 加入預設安裝清單
 - 在 root-scripts 中新增 pnpm:dedupe 與 ncu:pnpm 腳本
 - 同步更新 sort-package-json-scripts 以支援 pnpm 腳本分類
+```
+
+```
+docs(ncu-ws,ncu): 新增完整雙語文件與 JSDoc 註解
+
+為 yarn-tool ncu 相關套件新增完整的雙語技術文件：
+
+- 擴充 README.md 內容，新增雙語功能描述、安裝方式與 API 參考表格
+- 為 index.ts、cli.ts、update.ts、ncu-main.ts 等核心模組新增詳細 JSDoc 註解
+- 改善函數文件，說明參數、回傳值與執行流程
+- 更新 package.json 描述以反映完整功能
+- 升級 ncu-ws 的 upath2 依賴至 ^3.1.23
 ```
 
 ## 其他模型
