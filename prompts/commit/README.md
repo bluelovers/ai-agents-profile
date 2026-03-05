@@ -70,6 +70,14 @@ docs(ncu-ws,ncu): 新增完整雙語文件與 JSDoc 註解
 - 升級 ncu-ws 的 upath2 依賴至 ^3.1.23
 ```
 
+```
+chore(deps): 更新依賴項目並升級版本至 2.2.0
+
+升級所有 @yarn-tool/* 相關套件至最新版本，新增
+@yarn-tool/yargs-util、@yarn-tool/yarnlock-fs、@yarn-tool/yarnlock-parse
+等工具套件，移除 v8-compile-cache 依賴，並將版本號從 2.1.6 提升至 2.2.0。
+```
+
 ## 其他模型
 
 ### Arcee AI: Trinity Large Preview
