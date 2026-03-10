@@ -238,6 +238,30 @@ Final keywords array:
 - **Package name accuracy** - Use exact name from package.json
 - **No duplicate commands** - Check before adding
 
+## Generic Sections Constraint
+
+### 不主動添加的章節
+
+當 README 中**不存在**以下概念時，**除非使用者明確要求**，否則不應寫入：
+
+- `## author` - 作者資訊
+- `## 相容性` - Compatibility（如 Node.js 版本要求）
+- `## 貢獻` - Contributing（如 "歡迎提交 Issue 和 Pull Request!"）
+- `## 授權` - License（如 "ISC License"）
+
+### 判斷邏輯
+
+```
+檢查現有 README
+    │
+    ▼
+該章節是否存在？
+    │
+    ├─ 是 → 保留原有內容，可選擇性更新
+    │
+    └─ 否 → 不主動添加，除非使用者明確要求
+```
+
 ## Example Workflow
 
 ```

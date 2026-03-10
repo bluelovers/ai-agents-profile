@@ -88,4 +88,5 @@
 - [Microsoft AI Skills](https://github.com/microsoft/skills)
 - [awesome-copilot](https://github.com/github/awesome-copilot)
 - https://skillmd.ai/
+- https://www.reddit.com/r/n8n/comments/1qetbtq/newbies_reminder_3_skills_are_the_same_files/?tl=zh-hant
 

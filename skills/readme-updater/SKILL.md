@@ -140,6 +140,57 @@ Recommend adding documentation index to README.
 - **Version info** - Match version numbers with package.json
 - **Avoid duplication** - Link to docs instead of repeating content
 
+## Generic Sections Constraint
+
+### 不主動添加的章節
+
+當 README 中**不存在**以下概念時，**除非使用者明確要求**，否則不應寫入：
+
+- `## author` - 作者資訊
+- `## 相容性` - Compatibility（如 Node.js 版本要求）
+- `## 貢獻` - Contributing（如 "歡迎提交 Issue 和 Pull Request!"）
+- `## 授權` - License（如 "ISC License"）
+
+### 判斷邏輯
+
+```
+檢查現有 README
+    │
+    ▼
+該章節是否存在？
+    │
+    ├─ 是 → 保留原有內容，可選擇性更新
+    │
+    └─ 否 → 不主動添加，除非使用者明確要求
+```
+
+### 範例
+
+```markdown
+# 錯誤示範（不應主動添加）
+
+## author
+John Doe
+
+## 相容性
+- Node.js >= 12
+
+## 貢獻
+歡迎提交 Issue 和 Pull Request！
+
+## 授權
+ISC License
+```
+
+```markdown
+# 正確做法
+
+若使用者要求更新 README：
+- 先分析現有內容
+- 僅補充缺少的核心章節（如 Installation、Usage）
+- 不添加上述通用章節，除非明確要求
+```
+
 ## Example Workflow
 
 ```

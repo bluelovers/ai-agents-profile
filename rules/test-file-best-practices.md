@@ -209,6 +209,15 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 
 ### 4. 測試組織結構
 
+#### Jest 測試檔案 Header
+
+**若為 Jest 測試檔案，應在檔案開頭加入 TypeScript 三斜線參考指令，以確保正確引入 Jest 與 Node.js 的類型定義。**
+
+```typescript
+/// <reference types="jest" />
+/// <reference types="node" />
+```
+
 #### 建議的測試檔案結構
 
 ```typescript
