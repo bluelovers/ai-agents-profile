@@ -209,14 +209,31 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 
 ### 4. 測試組織結構
 
+#### 通用測試檔案 Header
+
+**應在檔案開頭加入 TypeScript 三斜線參考指令，以確保正確引入類型定義。**
+
+```typescript
+//@noUnusedParameters:false
+/// <reference types="node" />
+```
+
 #### Jest 測試檔案 Header
 
 **若為 Jest 測試檔案，應在檔案開頭加入 TypeScript 三斜線參考指令，以確保正確引入 Jest 與 Node.js 的類型定義。**
 
 ```typescript
-/// <reference types="jest" />
+//@noUnusedParameters:false
 /// <reference types="node" />
+/// <reference types="jest" />
 ```
+
+#### Jest v30+ 注意事項
+
+> 自 Jest v30 起，`toThrowError` 已被移除，請改用 `toThrow`。
+
+- 錯誤拋出測試請使用 `toThrow()` 而非 `toThrowError()`
+- Snapshot 錯誤比對請使用 `toThrowErrorMatchingSnapshot()`（仍支援）
 
 #### 建議的測試檔案結構
 
@@ -329,6 +346,105 @@ describe('UserService', () => {
 - 函數名稱應清楚表達其用途（如 `_createTestUser`、`_mockApiResponse`）
 - 使用參數允許測試案例覆寫特定欄位
 - 當邏輯變更時，只需修改一處即可影響所有相關測試
+
+### 6. Fixtures 與測試資料管理
+
+**建議將測試用的靜態資料（fixtures）統一放置於 `test/fixtures` 資料夾下，以便集中管理與重用。**
+
+#### 適用場景
+
+- 多個測試檔案共用的測試資料
+- 大型資料結構（如 JSON、CSV）
+- 靜態配置檔案
+- 模擬檔案或圖片等資源
+
+#### 目錄結構建議
+
+```
+test/
+├── fixtures/                    # 測試靜態資料集中管理
+│   ├── users/                   # 按功能模組分類
+│   │   ├── valid-user.json      # 有效的使用者資料
+│   │   └── invalid-users.json   # 多種無效使用者資料
+│   ├── configs/                 # 配置文件
+│   │   └── app-config.json
+│   └── api-responses/           # API 回應模擬
+│       └── mock-api-response.json
+├── module/
+│   ├── feature-a.spec.ts
+│   └── feature-b.spec.ts
+└── scripts/                     # 測試輔助腳本（可選）
+```
+
+#### 使用範例
+
+```typescript
+// ✅ 從 fixtures 目錄載入測試資料
+import validUser from '../fixtures/users/valid-user.json';
+import mockApiResponse from '../fixtures/api-responses/mock-api-response.json';
+
+describe('UserService', () => {
+  it('should create user with valid data', () => {
+    const result = createUser(validUser);
+    expect(result).toBeDefined();
+  });
+
+  it('should handle API response correctly', () => {
+    const result = processResponse(mockApiResponse);
+    expect(result).toMatchSnapshot();
+  });
+});
+```
+
+#### 注意事項
+
+- Fixtures 應按功能模組分類，避免全部放在同一層目錄
+- 大型 fixture 檔案建議使用 `.json`、`.csv` 等標準格式
+- 若 fixture 需要動態生成或更新，可考慮使用測試腳本（見下方說明）
+- 避免在 fixtures 中放置敏感資訊，如需使用敏感資料應建立 mock 資料
+
+### 7. 測試輔助腳本
+
+**若有需要額外建立腳本用於抓取更新資料、整理歸納等，可放置於 `test/scripts` 資料夾。**
+
+#### 適用場景
+
+- 從遠端 API 抓取測試資料並儲存為 fixtures
+- 自動化更新測試用的模擬資料
+- 整理與歸納測試資料格式
+- 生成測試用的隨機資料
+- 清理或重置測試資料庫
+
+#### 目錄結構建議
+
+```
+test/
+├── fixtures/                    # 靜態測試資料
+├── scripts/                     # 測試輔助腳本
+│   ├── fetch-test-data.ts       # 從遠端抓取測試資料
+│   ├── update-mock-data.ts      # 更新模擬資料
+│   └── generate-fixtures.ts     # 生成測試 fixtures
+└── module/
+    └── feature-a.spec.ts
+```
+
+#### 執行方式
+
+```bash
+# 直接使用 tsx 執行測試腳本
+tsx test/scripts/fetch-test-data.ts
+tsx test/scripts/update-mock-data.ts
+
+# 或使用 ts-node（若 tsx 無法正常運作）
+ts-node test/scripts/generate-fixtures.ts
+```
+
+#### 注意事項
+
+- 測試腳本通常只需要執行一次，用於準備測試環境
+- 建議在腳本開頭加入說明文件註解，說明腳本用途與執行方式
+- 抓取的遠端資料應驗證格式後再儲存為 fixtures
+- 腳本產生的資料應加入 `.gitignore`（如大型資料庫或臨時檔案）
 
 ## 決策流程
 
