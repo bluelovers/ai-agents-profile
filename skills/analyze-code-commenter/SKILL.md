@@ -19,7 +19,71 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
 
 ## Bilingual Comment Format Rules
 
-### JSDoc (methods/classes/properties)
+## Member Comment Format Rules (enum/interface/type/class/function return members)
+
+### Core Principles
+| Item | Rule |
+|------|------|
+| Position | Each member gets its own JSDoc block, placed **above** the member |
+| Message Length | Short messages use single-line `/** */`, complex or multi-line use multi-line `/** */` |
+| Bilingual Format | Two formats allowed:<br>1. Chinese first, English translation after (separated by `/`)<br>2. Chinese above, English translation below |
+
+---
+
+### Wrong Format vs Correct Format
+
+#### Wrong Format
+```typescript
+/**
+ * 將陣列元素分組為 Map 的選項
+ * Options for grouping array elements into Map
+ *
+ * @property getKey - 取得分組鍵的函式 / Function to get grouping key
+ * @property init - 初始化 Map 的函式 / Function to initialize Map
+ */
+export interface IOptionsForMap<T>
+{
+	getKey?(item: T, index: number, arr: T[]): any
+
+	init?(): Map<any, T[]>,
+}
+```
+
+#### Correct Format
+```typescript
+/**
+ * 將陣列元素分組為 Map 的選項
+ * Options for grouping array elements into Map
+ */
+export interface IOptionsForMap<T>
+{
+	/**
+	 * 取得分組鍵的函式
+	 * Function to get grouping key
+	 *
+	 * @param item - 要分組的元素
+	 * @param index - 元素在陣列中的索引
+	 * @param arr - 陣列本身
+	 */
+	getKey?(item: T, index: number, arr: T[]): any
+
+	/** 初始化 Map 的函式 / Function to initialize Map */
+	init?(): Map<any, T[]>,
+}
+```
+
+---
+
+### Applicable Scope
+- `enum` members
+- `interface` members
+- `type` members
+- `class` properties and methods
+- Function parameters and return values
+
+---
+
+## JSDoc (methods/classes/properties)
 
 ```typescript
 /**
@@ -42,6 +106,49 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
 | Long | Two lines: `// 中文說明` then `// English description` |
 | Array/Object elements | Comment above element: `// 中文 / English` |
 | Multiple (≥3 lines) | Use block format `/** ... */` instead of multiple `//` |
+| Object shorthand properties | Block comment above property: `/** 中文說明 */ propertyName` |
+
+#### Object Shorthand Property Comments
+
+When adding comments to object shorthand properties (ES6 shorthand: `{ propertyName }` instead of `{ propertyName: propertyName }`), place the comment **above** the property using block comment format:
+
+```typescript
+// ❌ Avoid: Inline comment after property (wrong position)
+return {
+    cwd,      // 當前工作目錄
+    modules,  // 找到的模組陣列
+}
+
+// ✅ Prefer: Block comment above property
+return {
+    /** 當前工作目錄 / Current working directory */
+    cwd,
+    /** 找到的模組陣列 / Array of found modules */
+    modules,
+}
+```
+
+This follows the project convention of placing comments above code, not after.
+
+#### Return Statement Members
+
+**All members in return statements must have comments.** This ensures the caller understands what each returned value represents.
+
+```typescript
+// ❌ Avoid: Return members without comments
+return {
+    cwd,
+    modules,
+}
+
+// ✅ Prefer: All return members have comments
+return {
+    /** 當前工作目錄 / Current working directory */
+    cwd,
+    /** 找到的模組陣列 / Array of found modules */
+    modules,
+}
+```
 
 #### Multiple Comments Rule
 
