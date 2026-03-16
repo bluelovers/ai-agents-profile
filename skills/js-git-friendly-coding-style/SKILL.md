@@ -9,8 +9,36 @@ description: 基於 JavaScript 的代碼風格，優化 Git diff 可讀性與可
 
 ## 核心原則
 
-1. **清晰的邊界識別**：大括號換行使程式碼區塊邊界更直觀
-2. **一致的縮排**：預設使用 Tab（除非原始縮排是空格，則保留原樣）
+1. **最小化無關變更**：不增加原本沒有的元素
+2. **清晰的邊界識別**：大括號換行使程式碼區塊邊界更直觀
+3. **一致的縮排**：預設使用 Tab（除非原始縮排是空格，則保留原樣）
+
+### 不增加原本沒有的 `{` 或 `;`
+
+如果原始代碼沒有大括號或分號，保持原樣：
+
+```javascript
+// ✅ 保持不變
+if (maxSize) this.maxCacheSize = maxSize
+
+// ✅ 保持不變
+if (condition)
+    doSomething()
+else
+    doOther()
+```
+
+不要強行轉換為：
+
+```javascript
+// ❌ 不要這樣做
+if (maxSize)
+{
+    this.maxCacheSize = maxSize;
+}
+```
+
+除非**使用者明確要求**添加分號。
 
 ## 格式規則
 

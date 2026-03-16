@@ -49,8 +49,9 @@ Logic blocks are code sections that implement specific functionality, including 
 ```typescript
 // ❌ Avoid: Complex logic without comments
 if (user.isActive && subscription.status === 'active' &&
-    (payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew)) {
-    // grant access
+	(payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew))
+{
+	// grant access
 }
 
 // ✅ Prefer: Complex conditions with explanation (using block comment)
@@ -60,54 +61,63 @@ if (user.isActive && subscription.status === 'active' &&
  * Check if user has active subscription with recent payment OR auto-renew enabled
  */
 if (user.isActive && subscription.status === 'active' &&
-    (payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew)) {
-    // grant access
+	(payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew))
+{
+	// grant access
 }
 ```
 
 ```typescript
 // ❌ Avoid: Nested logic blocks without comments
-async function processOrder(order) {
-    const validated = validateOrder(order);
-    if (validated) {
-        const inventory = await checkInventory(order.items);
-        if (inventory.available) {
-            await reserveInventory(order.items);
-            if (order.payment.method === 'card') {
-                // process payment
-            }
-        }
-    }
+async function processOrder(order)
+{
+	const validated = validateOrder(order);
+	if (validated)
+	{
+		const inventory = await checkInventory(order.items);
+		if (inventory.available)
+		{
+			await reserveInventory(order.items);
+			if (order.payment.method === 'card')
+			{
+				// process payment
+			}
+		}
+	}
 }
 
 // ✅ Prefer: Each logic block explained with block comments
-async function processOrder(order) {
-    /**
-     * 驗證訂單資料格式與必填欄位
-     * Validate order data format and required fields
-     */
-    const validated = validateOrder(order);
-    if (validated) {
-        /**
-         * 檢查庫存是否足夠
-         * Check if inventory is sufficient
-         */
-        const inventory = await checkInventory(order.items);
-        if (inventory.available) {
-            /**
-             * 預留庫存以防止超賣
-             * Reserve inventory to prevent overselling
-             */
-            await reserveInventory(order.items);
-            /**
-             * 信用卡支付需要額外驗證
-             * Card payments require additional verification
-             */
-            if (order.payment.method === 'card') {
-                // process payment
-            }
-        }
-    }
+async function processOrder(order)
+{
+	/**
+	 * 驗證訂單資料格式與必填欄位
+	 * Validate order data format and required fields
+	 */
+	const validated = validateOrder(order);
+	if (validated)
+	{
+		/**
+		 * 檢查庫存是否足夠
+		 * Check if inventory is sufficient
+		 */
+		const inventory = await checkInventory(order.items);
+		if (inventory.available)
+		{
+			/**
+			 * 預留庫存以防止超賣
+			 * Reserve inventory to prevent overselling
+			 */
+			await reserveInventory(order.items);
+			/**
+			 * 信用卡支付需要額外驗證
+			 * Card payments require additional verification
+			 */
+			if (order.payment.method === 'card')
+			{
+				// process payment
+			}
+		}
+	}
 }
 ```
 
@@ -167,14 +177,14 @@ The format depends on how much explanation is needed:
 // ❌ Using inline comments for members (WRONG)
 export interface IOptionsForMap<T>
 {
-    getKey?,    // 取得分組鍵的函式
-    init?,      // 初始化 Map 的函式
+	getKey?,    // 取得分組鍵的函式
+	init?,      // 初始化 Map 的函式
 }
 
 const config = loadConfig();    // 載入配置
 return {
-    cwd,        // 當前工作目錄
-    modules,    // 找到的模組
+	cwd,        // 當前工作目錄
+	modules,    // 找到的模組
 }
 ```
 
@@ -183,27 +193,27 @@ return {
 // ✅ Using block comments for members (CORRECT)
 export interface IOptionsForMap<T>
 {
-    /**
-     * 取得分組鍵的函式 / Function to get grouping key
-     *
-     * @param item - 要分組的元素 / Element to group
-     * @param index - 元素在陣列中的索引 / Index of element in array
-     * @param arr - 陣列本身 / Array itself
-     */
-    getKey?(item: T, index: number, arr: T[]): any
+	/**
+	 * 取得分組鍵的函式 / Function to get grouping key
+	 *
+	 * @param item - 要分組的元素 / Element to group
+	 * @param index - 元素在陣列中的索引 / Index of element in array
+	 * @param arr - 陣列本身 / Array itself
+	 */
+	getKey?(item: T, index: number, arr: T[]): any
 
-    /** 初始化 Map 的函式 / Function to initialize Map */
-    init?(): Map<any, T[]>,
+	/** 初始化 Map 的函式 / Function to initialize Map */
+	init?(): Map<any, T[]>,
 }
 
 /** 載入應用程式配置 / Load application configuration */
 const config = loadConfig();
 
 return {
-    /** 當前工作目錄 / Current working directory */
-    cwd,
-    /** 找到的模組陣列 / Array of found modules */
-    modules,
+	/** 當前工作目錄 / Current working directory */
+	cwd,
+	/** 找到的模組陣列 / Array of found modules */
+	modules,
 }
 ```
 
@@ -212,6 +222,13 @@ return {
 ### Single-line vs Multi-line Block Comments
 
 The choice depends on **how much explanation is needed** (not code complexity).
+
+> **Preserve Existing Style**: 
+> - If existing comment is already using single-line or multi-line format correctly, do NOT change it
+> - Both formats are valid bilingual styles:
+>   - Single-line: `/** 说明 / Description */`
+>   - Multi-line: `/** 说明 * Description */`
+> - Only adjust when the format violates the rules (e.g., using inline comments instead of block comments, or single-line comment is too long for readability)
 
 #### Single-line Block Comment
 Use when the explanation is brief:
@@ -276,20 +293,25 @@ For logic blocks (if/else, loops, try/catch, etc.), use block comments above the
 
 ```typescript
 /** 檢查使用者權限 / Check user permissions */
-if (user.hasAccess) {
-    // logic
+if (user.hasAccess)
+{
+	// logic
 }
 
 /** 遍历所有项目并处理 / Iterate through all items and process */
-for (const item of items) {
-    // logic
+for (const item of items)
+{
+	// logic
 }
 
 /** 尝试保存数据，失败时回滚 / Attempt to save data, rollback on failure */
-try {
-    // logic
-} catch (error) {
-    // error handling
+try
+{
+	// logic
+}
+catch (error)
+{
+	// error handling
 }
 ```
 
@@ -328,6 +350,12 @@ When adding comments to **3 or more consecutive logic blocks**, use multi-line b
 ### Preserve Original Style
 
 If original comments use block style `/** ... */`, preserve format and add English translation. Do not convert to inline comments.
+
+**Do NOT change between single-line and multi-line formats** - both are valid bilingual styles:
+- Single-line: `/** 说明 / Description */`
+- Multi-line: `/** 说明 * Description */`
+
+Only convert when the format violates the rules (e.g., using inline comments instead of block comments, or single-line comment is too long for readability)
 
 ## Critical Constraints
 

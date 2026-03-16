@@ -33,51 +33,53 @@ class DataProcessor {
  * Supports customizable cache size limit, defaulting to 100 entries.
  * Uses LRU (Least Recently Used) strategy to automatically clean up expired cache.
  */
-class DataProcessor {
-    /**
-     * 快取儲存空間
-     * Cache Storage
-     *
-     * 使用 Map 結構儲存已處理的數據，以鍵值對形式管理。
-     * 避免重複處理相同數據，提升效能。
-     *
-     * Uses Map structure to store processed data, managed as key-value pairs.
-     * Avoids reprocessing the same data to improve performance.
-     *
-     * @private
-     */
-    private cache: Map<string, any>;
+class DataProcessor
+{
+	/**
+	 * 快取儲存空間
+	 * Cache Storage
+	 *
+	 * 使用 Map 結構儲存已處理的數據，以鍵值對形式管理。
+	 * 避免重複處理相同數據，提升效能。
+	 *
+	 * Uses Map structure to store processed data, managed as key-value pairs.
+	 * Avoids reprocessing the same data to improve performance.
+	 *
+	 * @private
+	 */
+	private cache: Map<string, any>;
 
-    /**
-     * 快取大小上限
-     * Maximum Cache Size
-     *
-     * 控制快取可儲存的最大資料筆數。
-     * 當超過此上限時，會自動移除最久未使用的項目。
-     *
-     * Controls the maximum number of entries the cache can store.
-     * When exceeding this limit, the least recently used item is automatically removed.
-     *
-     * @private
-     */
-    private maxCacheSize: number = 100;
+	/**
+	 * 快取大小上限
+	 * Maximum Cache Size
+	 *
+	 * 控制快取可儲存的最大資料筆數。
+	 * 當超過此上限時，會自動移除最久未使用的項目。
+	 *
+	 * Controls the maximum number of entries the cache can store.
+	 * When exceeding this limit, the least recently used item is automatically removed.
+	 *
+	 * @private
+	 */
+	private maxCacheSize: number = 100;
 
-    /**
-     * 建構函式
-     * Constructor
-     *
-     * 初始化數據處理器實例，設定快取大小上限。
-     * 若未指定大小，則使用預設值 100。
-     *
-     * Initializes a data processor instance and sets the cache size limit.
-     * If no size is specified, the default value of 100 is used.
-     *
-     * @param {number} [maxSize] - 選填，快取大小上限 / Optional, maximum cache size
-     */
-    constructor(maxSize?: number) {
-        this.cache = new Map();
-        if (maxSize) this.maxCacheSize = maxSize;
-    }
+	/**
+	 * 建構函式
+	 * Constructor
+	 *
+	 * 初始化數據處理器實例，設定快取大小上限。
+	 * 若未指定大小，則使用預設值 100。
+	 *
+	 * Initializes a data processor instance and sets the cache size limit.
+	 * If no size is specified, the default value of 100 is used.
+	 *
+	 * @param {number} [maxSize] - 選填，快取大小上限 / Optional, maximum cache size
+	 */
+	constructor(maxSize?: number)
+	{
+		this.cache = new Map();
+		if (maxSize) this.maxCacheSize = maxSize;
+	}
 }
 ```
 
@@ -120,36 +122,39 @@ async function processBatch(items: Item[]): Promise<ProcessedItem[]> {
  * @param {Item[]} items - 待處理的項目陣列 / Array of items to process
  * @returns {Promise<ProcessedItem[]>} 處理完成的項目陣列 / Array of processed items
  */
-async function processBatch(items: Item[]): Promise<ProcessedItem[]> {
-    const results: ProcessedItem[] = [];
+async function processBatch(items: Item[]): Promise<ProcessedItem[]>
+{
+	/** 存放處理結果的陣列 / Array to store processing results */
+	const results: ProcessedItem[] = [];
 
-    /**
-     * 每批處理的項目數量 / Number of items to process per batch
-     */
-    const batchSize = 10;
+	/**
+	 * 每批處理的項目數量 / Number of items to process per batch
+	 */
+	const batchSize = 10;
 
-    /**
-     * 以批次方式迭代處理所有項目
-     * Iterate through all items in batches
-     *
-     * 取得當前批次的項目子集
-     * Get the subset of items for the current batch
-     *
-     * 並行處理當前批次，等待所有項目完成
-     * Process current batch in parallel, waiting for all items to complete
-     *
-     * 將有效結果加入結果陣列，過濾掉失敗項目
-     * Add valid results to the result array, filtering out failed items
-     */
-    for (let i = 0; i < items.length; i += batchSize) {
-        const batch = items.slice(i, i + batchSize);
-        const processed = await Promise.all(
-            batch.map(item => transformItem(item))
-        );
-        results.push(...processed.filter(Boolean));
-    }
+	/**
+	 * 以批次方式迭代處理所有項目
+	 * Iterate through all items in batches
+	 *
+	 * 取得當前批次的項目子集
+	 * Get the subset of items for the current batch
+	 *
+	 * 並行處理當前批次，等待所有項目完成
+	 * Process current batch in parallel, waiting for all items to complete
+	 *
+	 * 將有效結果加入結果陣列，過濾掉失敗項目
+	 * Add valid results to the result array, filtering out failed items
+	 */
+	for (let i = 0; i < items.length; i += batchSize)
+	{
+		const batch = items.slice(i, i + batchSize);
+		const processed = await Promise.all(
+			batch.map(item => transformItem(item))
+		);
+		results.push(...processed.filter(Boolean));
+	}
 
-    return results;
+	return results;
 }
 ```
 
@@ -172,20 +177,23 @@ let arr = [
 
 ```typescript
 /**
- * 定義各種外文字元的匹配模式 / Define matching patterns for various foreign characters
+ * 定義各種外文字元的匹配模式
+ * Define matching patterns for various foreign characters
  */
 let arr = [
-    // 數字 / Numbers
-    /[\d０-９]+(?:,[\d０-９]+)?(?:\.[\d０-９]+)?/,
-    // 英文及擴展拉丁字母 / English and extended Latin
-    /[\w０-９Ａ-Ｚａ-ｚ\u0100-\u017F\u00A1-\u00FF]+/,
-    // 阿拉伯文 / Arabic
-    /[\u0600-\u06FF\u0750-\u077F]+/,
-    // 俄文（西里爾字母）/ Russian (Cyrillic)
-    /[\u0400-\u04FF]+/,
-    // 希臘文 / Greek
-    // https://unicode-table.com/cn/blocks/greek-coptic/
-    /[\u0370-\u03FF]+/,
+	/** 數字 / Numbers */
+	/[\d０-９]+(?:,[\d０-９]+)?(?:\.[\d０-９]+)?/,
+	/** 英文及擴展拉丁字母 / English and extended Latin */
+	/[\w０-９Ａ-Ｚａ-ｚ\u0100-\u017F\u00A1-\u00FF]+/,
+	/** 阿拉伯文 / Arabic */
+	/[\u0600-\u06FF\u0750-\u077F]+/,
+	/** 俄文（西里爾字母）/ Russian (Cyrillic) */
+	/[\u0400-\u04FF]+/,
+	/**
+	 * 希臘文 / Greek
+	 * https://unicode-table.com/cn/blocks/greek-coptic/
+	 */
+	/[\u0370-\u03FF]+/,
 ];
 ```
 
@@ -215,14 +223,14 @@ else if (m = (w1.p & w2.p))
  */
 else if (m = (w1.p & w2.p))
 {
-    if (1 || m & POSTAG.D_N)
-    {
-        bool = true;
-    }
+	if (1 || m & POSTAG.D_N)
+	{
+		bool = true;
+	}
 }
 ```
 
-### 範例五：長行內註解分行顯示
+### 範例五：長註解分行顯示
 
 #### Before
 
@@ -236,11 +244,13 @@ if ((
 #### After
 
 ```typescript
-// 百分比數字 如 10%，或者下一個詞也是數詞，則合併
-// Percentage numbers like 10%, or merge if next word is also numeral
+/**
+ * 百分比數字如 10%，或者下一個詞也是數詞，則合併
+ * Percentage numbers like 10%, or merge if next word is also numeral
+ */
 if ((
-    w2.p & POSTAG.A_M
-    && !/^第/.test(w2.w)
+	w2.p & POSTAG.A_M
+	&& !/^第/.test(w2.w)
 ```
 
 ## 注意事項
