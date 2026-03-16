@@ -14,72 +14,227 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
    - Core business logic and algorithms
    - Class members/methods/properties
    - Complex internal logic blocks, functions, and array/object elements
-3. **Generate bilingual comments** (Traditional Chinese zh-TW + English) - Apply format rules below
-4. **Apply changes** - Insert comments using `edit_file` tool
+3. **Identify logic blocks** - Find all logic blocks requiring comments (see Logic Block Requirements below)
+4. **Generate bilingual comments** (Traditional Chinese zh-TW + English) - Apply format rules below
+5. **Apply changes** - Insert comments using `edit_file` tool
+
+## Logic Block Requirements (Required for ALL logic blocks)
+
+**All logic blocks MUST be commented, including private/non-public internal logic.** Comments help future developers understand complex control flow, business rules, and edge case handling.
+
+### What are Logic Blocks?
+
+Logic blocks are code sections that implement specific functionality, including but not limited to:
+
+| Type | Examples |
+|------|----------|
+| Control flow | `if/else`, `switch/case`, `try/catch/finally`, loop blocks |
+| Business logic | Data transformation, validation, calculation algorithms |
+| Conditional branches | Complex conditions with multiple operators |
+| Nested logic | Nested loops, nested conditionals, callback functions |
+| Error handling | Exception catching, fallback logic, retry mechanisms |
+| State management | State transitions, state machine logic |
+| Data processing | Array operations, filtering, mapping, reducing |
+
+### Comment Requirements for Logic Blocks
+
+- **ALL logic blocks require comments** - No exception for private/internal logic
+- **Explain WHY, not just WHAT** - Focus on business purpose and intent
+- **Complex conditions need explanation** - Document the reasoning behind complex boolean expressions
+- **Edge cases must be documented** - Explain why certain conditions are handled
+
+### Examples of Logic Blocks Requiring Comments
+
+```typescript
+// ❌ Avoid: Complex logic without comments
+if (user.isActive && subscription.status === 'active' && 
+    (payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew)) {
+    // grant access
+}
+
+// ✅ Prefer: Complex conditions with explanation
+// 檢查使用者是否有有效訂閱且最近有付款記錄
+// 或啟用自動續訂功能的使用者
+// Check if user has active subscription with recent payment OR auto-renew enabled
+if (user.isActive && subscription.status === 'active' && 
+    (payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew)) {
+    // grant access
+}
+```
+
+```typescript
+// ❌ Avoid: Nested logic blocks without comments
+async function processOrder(order) {
+    const validated = validateOrder(order);
+    if (validated) {
+        const inventory = await checkInventory(order.items);
+        if (inventory.available) {
+            await reserveInventory(order.items);
+            if (order.payment.method === 'card') {
+                // process payment
+            }
+        }
+    }
+}
+
+// ✅ Prefer: Each logic block explained
+async function processOrder(order) {
+    // 驗證訂單資料格式與必填欄位
+    // Validate order data format and required fields
+    const validated = validateOrder(order);
+    if (validated) {
+        // 檢查庫存是否足夠
+        // Check if inventory is sufficient
+        const inventory = await checkInventory(order.items);
+        if (inventory.available) {
+            // 預留庫存以防止超賣
+            // Reserve inventory to prevent overselling
+            await reserveInventory(order.items);
+            // 信用卡支付需要額外驗證
+            // Card payments require additional verification
+            if (order.payment.method === 'card') {
+                // process payment
+            }
+        }
+    }
+}
+```
+
+### Priority for Logic Block Comments
+
+1. **High Priority** - Complex nested logic (3+ levels), business rules, critical paths
+2. **Medium Priority** - Conditional branches, loop logic, error handling
+3. **Low Priority** - Simple one-line conditions, straightforward logic
 
 ## Bilingual Comment Format Rules
 
-## Member Comment Format Rules (enum/interface/type/class/function return members)
+## All Members Use Block Comments (Required)
+
+**All members must use block comments (`/** ... */`), NOT inline comments (`// ...`).**
+
+The complexity of the **comment** (not the code) determines which format to use:
+- **Simple comment** (brief explanation): Use single-line block comment `/** 說明 / Description */`
+- **Complex comment** (detailed explanation needed): Use multi-line block comment `/** ... */`
+
+### Member Types Requiring Block Comments
+
+| Category | Examples |
+|----------|----------|
+| Type definitions | `enum` members, `interface` members, `type` members |
+| Class members | Properties, methods, constructors |
+| Function members | Parameters, return values |
+| Variable declarations | `const`, `let`, `var` with assignment |
+| Object members | Object properties, return statement members |
 
 ### Core Principles
+
 | Item | Rule |
 |------|------|
-| Position | Each member gets its own JSDoc block, placed **above** the member |
-| Message Length | Short messages use single-line `/** */`, complex or multi-line use multi-line `/** */` |
+| **Comment Type** | **MUST use block comments (`/** ... */`), NEVER inline comments (`//`)** |
+| Position | Each member gets its own block comment, placed **above** the member |
+| Complexity | Simple comment: single-line block `/`** 說明 / Description */`<br>Complex comment: multi-line block `/** ... */` |
 | Bilingual Format | Two formats allowed:<br>1. Chinese first, English translation after (separated by `/`)<br>2. Chinese above, English translation below |
+
+---
+
+#### Applicable Scope (Full List)
+- `enum` members
+- `interface` members  
+- `type` members
+- `class` properties and methods
+- Function parameters and return values
+- Variable declarations (`const`/`let`/`var`)
+- Object properties (including return statement members)
+- Object shorthand properties
 
 ---
 
 ### Wrong Format vs Correct Format
 
-#### Wrong Format
+#### Wrong Format (Using Inline Comments)
 ```typescript
-/**
- * 將陣列元素分組為 Map 的選項
- * Options for grouping array elements into Map
- *
- * @property getKey - 取得分組鍵的函式 / Function to get grouping key
- * @property init - 初始化 Map 的函式 / Function to initialize Map
- */
+// ❌ Using inline comments for members (WRONG)
 export interface IOptionsForMap<T>
 {
-	getKey?(item: T, index: number, arr: T[]): any
+    getKey?,    // 取得分組鍵的函式
+    init?,      // 初始化 Map 的函式
+}
 
-	init?(): Map<any, T[]>,
+const config = loadConfig();    // 載入配置
+return {
+    cwd,        // 當前工作目錄
+    modules,    // 找到的模組
 }
 ```
 
-#### Correct Format
+#### Correct Format (Using Block Comments)
 ```typescript
-/**
- * 將陣列元素分組為 Map 的選項
- * Options for grouping array elements into Map
- */
+// ✅ Using block comments for members (CORRECT)
 export interface IOptionsForMap<T>
 {
-	/**
-	 * 取得分組鍵的函式
-	 * Function to get grouping key
-	 *
-	 * @param item - 要分組的元素
-	 * @param index - 元素在陣列中的索引
-	 * @param arr - 陣列本身
-	 */
-	getKey?(item: T, index: number, arr: T[]): any
+    /** 取得分組鍵的函式 / Function to get grouping key */
+    getKey?(item: T, index: number, arr: T[]): any
 
-	/** 初始化 Map 的函式 / Function to initialize Map */
-	init?(): Map<any, T[]>,
+    /** 初始化 Map 的函式 / Function to initialize Map */
+    init?(): Map<any, T[]>,
+}
+
+/** 載入應用程式配置 / Load application configuration */
+const config = loadConfig();
+
+return {
+    /** 當前工作目錄 / Current working directory */
+    cwd,
+    /** 找到的模組陣列 / Array of found modules */
+    modules,
 }
 ```
 
 ---
 
-### Applicable Scope
-- `enum` members
-- `interface` members
-- `type` members
-- `class` properties and methods
-- Function parameters and return values
+### Single-line vs Multi-line Block Comments
+
+The choice depends on **comment complexity** (how much explanation is needed), not code complexity.
+
+#### Single-line Block Comment (Simple Comment)
+Use when the explanation is brief:
+
+```typescript
+/** 是否成功 / Whether successful */
+const isActive = true;
+
+/** 使用者名稱 / User name */
+userName: string;
+
+/** 取得列表 / Get list */
+getItems(): Item[];
+```
+
+#### Multi-line Block Comment (Complex Comment)
+Use when detailed explanation is needed:
+
+```typescript
+/**
+ * 取得分組鍵的函式
+ * Function to get grouping key
+ *
+ * @param item - 要分組的元素 / Item to be grouped
+ * @param index - 元素在陣列中的索引 / Index in array
+ * @param arr - 陣列本身 / The array itself
+ */
+getKey?(item: T, index: number, arr: T[]): any
+
+/**
+ * 解析 URL 查詢參數為鍵值對象
+ * Parse URL query string into key-value object
+ *
+ * 處理步驟：
+ * 1. 取得目前的搜尋參數
+ * 2. 轉換為鍵值對象
+ * 3. 返回結果
+ */
+const queryParams = new URLSearchParams(window.location.search);
+```
 
 ---
 
@@ -98,7 +253,9 @@ export interface IOptionsForMap<T>
  */
 ```
 
-### Inline Comments
+### Inline Comments (Non-Member Code)
+
+For non-member code (logic blocks, statements), use inline comments:
 
 | Type | Format |
 |------|--------|
@@ -106,49 +263,8 @@ export interface IOptionsForMap<T>
 | Long | Two lines: `// 中文說明` then `// English description` |
 | Array/Object elements | Comment above element: `// 中文 / English` |
 | Multiple (≥3 lines) | Use block format `/** ... */` instead of multiple `//` |
-| Object shorthand properties | Block comment above property: `/** 中文說明 */ propertyName` |
 
-#### Object Shorthand Property Comments
-
-When adding comments to object shorthand properties (ES6 shorthand: `{ propertyName }` instead of `{ propertyName: propertyName }`), place the comment **above** the property using block comment format:
-
-```typescript
-// ❌ Avoid: Inline comment after property (wrong position)
-return {
-    cwd,      // 當前工作目錄
-    modules,  // 找到的模組陣列
-}
-
-// ✅ Prefer: Block comment above property
-return {
-    /** 當前工作目錄 / Current working directory */
-    cwd,
-    /** 找到的模組陣列 / Array of found modules */
-    modules,
-}
-```
-
-This follows the project convention of placing comments above code, not after.
-
-#### Return Statement Members
-
-**All members in return statements must have comments.** This ensures the caller understands what each returned value represents.
-
-```typescript
-// ❌ Avoid: Return members without comments
-return {
-    cwd,
-    modules,
-}
-
-// ✅ Prefer: All return members have comments
-return {
-    /** 當前工作目錄 / Current working directory */
-    cwd,
-    /** 找到的模組陣列 / Array of found modules */
-    modules,
-}
-```
+> **Note**: For member code (variables, properties, return values), use block comments as specified in "All Members Use Block Comments" section above.
 
 #### Multiple Comments Rule
 
