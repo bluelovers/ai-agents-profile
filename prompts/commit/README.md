@@ -78,6 +78,23 @@ chore(deps): 更新依賴項目並升級版本至 2.2.0
 等工具套件，移除 v8-compile-cache 依賴，並將版本號從 2.1.6 提升至 2.2.0。
 ```
 
+### OpenCode: Big Pickle
+
+> 試用連結: [OpenCode](https://opencode.ai/)
+
+**Big Pickle** 是 OpenCode 最新的旗艦模型，以 **GLM 4.6** 為基底，專為複雜程式碼分析與生成任務優化。在 Git Commit Message 生成任務中表現優異，能精準理解程式碼變更意圖，生成符合 Conventional Commits 規範且具描述性的提交訊息。
+
+#### 輸出範例
+
+```
+feat(core): 新增 AI Agent 設定檔解析模組
+
+- 新增 config/agent-config.ts 作為 AI Agent 設定檔解析器
+- 支援 JSON 與 YAML 格式的設定檔讀取
+- 新增 validateAgentConfig() 函數進行設定驗證
+- 整合现有錯誤處理機制，回傳詳細驗證錯誤資訊
+```
+
 ## 其他模型
 
 ### Arcee AI: Trinity Large Preview
