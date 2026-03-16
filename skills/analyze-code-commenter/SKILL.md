@@ -1,11 +1,12 @@
 ---
 name: analyze-code-commenter
-description: Analyze code and add bilingual comments (Traditional Chinese and English). Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) "為代碼添加註解", (5) "分析並註解程式碼", (6) "為代碼更新註解", (6) "為代碼修正註解". Preserves original formatting while adding detailed comments to core logic, complex blocks, functions, class members/methods, and array/object elements.
+description: Analyze code and add bilingual comments (Traditional Chinese zh-TW + English). Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) "為代碼添加註解", (5) "分析並註解程式碼", (6) "為代碼更新註解", (6) "為代碼修正註解". Uses ONLY block comments (single-line or multi-line). Never uses inline comments.
 ---
 
 # Analyze Code Commenter
 
 Add bilingual comments (Traditional Chinese zh-TW + English) to code without modifying original formatting.
+**Uses only block comments (`/** ... */`) - never inline comments (`//`).**
 
 ## Workflow
 
@@ -47,16 +48,18 @@ Logic blocks are code sections that implement specific functionality, including 
 
 ```typescript
 // ❌ Avoid: Complex logic without comments
-if (user.isActive && subscription.status === 'active' && 
+if (user.isActive && subscription.status === 'active' &&
     (payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew)) {
     // grant access
 }
 
-// ✅ Prefer: Complex conditions with explanation
-// 檢查使用者是否有有效訂閱且最近有付款記錄
-// 或啟用自動續訂功能的使用者
-// Check if user has active subscription with recent payment OR auto-renew enabled
-if (user.isActive && subscription.status === 'active' && 
+// ✅ Prefer: Complex conditions with explanation (using block comment)
+/**
+ * 檢查使用者是否有有效訂閱且最近有付款記錄
+ * 或啟用自動續訂功能的使用者
+ * Check if user has active subscription with recent payment OR auto-renew enabled
+ */
+if (user.isActive && subscription.status === 'active' &&
     (payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew)) {
     // grant access
 }
@@ -77,21 +80,29 @@ async function processOrder(order) {
     }
 }
 
-// ✅ Prefer: Each logic block explained
+// ✅ Prefer: Each logic block explained with block comments
 async function processOrder(order) {
-    // 驗證訂單資料格式與必填欄位
-    // Validate order data format and required fields
+    /**
+     * 驗證訂單資料格式與必填欄位
+     * Validate order data format and required fields
+     */
     const validated = validateOrder(order);
     if (validated) {
-        // 檢查庫存是否足夠
-        // Check if inventory is sufficient
+        /**
+         * 檢查庫存是否足夠
+         * Check if inventory is sufficient
+         */
         const inventory = await checkInventory(order.items);
         if (inventory.available) {
-            // 預留庫存以防止超賣
-            // Reserve inventory to prevent overselling
+            /**
+             * 預留庫存以防止超賣
+             * Reserve inventory to prevent overselling
+             */
             await reserveInventory(order.items);
-            // 信用卡支付需要額外驗證
-            // Card payments require additional verification
+            /**
+             * 信用卡支付需要額外驗證
+             * Card payments require additional verification
+             */
             if (order.payment.method === 'card') {
                 // process payment
             }
@@ -112,9 +123,9 @@ async function processOrder(order) {
 
 **All members must use block comments (`/** ... */`), NOT inline comments (`// ...`).**
 
-The complexity of the **comment** (not the code) determines which format to use:
-- **Simple comment** (brief explanation): Use single-line block comment `/** 說明 / Description */`
-- **Complex comment** (detailed explanation needed): Use multi-line block comment `/** ... */`
+The format depends on how much explanation is needed:
+- **Simple/brief explanation**: Use single-line block comment `/** 說明 / Description */`
+- **Detailed explanation or long comment** (e.g., bilingual translation makes comment longer): Use multi-line block comment `/** ... */`
 
 ### Member Types Requiring Block Comments
 
@@ -132,14 +143,14 @@ The complexity of the **comment** (not the code) determines which format to use:
 |------|------|
 | **Comment Type** | **MUST use block comments (`/** ... */`), NEVER inline comments (`//`)** |
 | Position | Each member gets its own block comment, placed **above** the member |
-| Complexity | Simple comment: single-line block `/`** 說明 / Description */`<br>Complex comment: multi-line block `/** ... */` |
+| Comment Length | Brief explanation: single-line block `/`** 說明 / Description */`<br>Detailed or long explanation: multi-line block `/** ... */` |
 | Bilingual Format | Two formats allowed:<br>1. Chinese first, English translation after (separated by `/`)<br>2. Chinese above, English translation below |
 
 ---
 
 #### Applicable Scope (Full List)
 - `enum` members
-- `interface` members  
+- `interface` members
 - `type` members
 - `class` properties and methods
 - Function parameters and return values
@@ -172,7 +183,13 @@ return {
 // ✅ Using block comments for members (CORRECT)
 export interface IOptionsForMap<T>
 {
-    /** 取得分組鍵的函式 / Function to get grouping key */
+    /**
+     * 取得分組鍵的函式 / Function to get grouping key
+     *
+     * @param item - 要分組的元素 / Element to group
+     * @param index - 元素在陣列中的索引 / Index of element in array
+     * @param arr - 陣列本身 / Array itself
+     */
     getKey?(item: T, index: number, arr: T[]): any
 
     /** 初始化 Map 的函式 / Function to initialize Map */
@@ -194,9 +211,9 @@ return {
 
 ### Single-line vs Multi-line Block Comments
 
-The choice depends on **comment complexity** (how much explanation is needed), not code complexity.
+The choice depends on **how much explanation is needed** (not code complexity).
 
-#### Single-line Block Comment (Simple Comment)
+#### Single-line Block Comment
 Use when the explanation is brief:
 
 ```typescript
@@ -210,8 +227,8 @@ userName: string;
 getItems(): Item[];
 ```
 
-#### Multi-line Block Comment (Complex Comment)
-Use when detailed explanation is needed:
+#### Multi-line Block Comment
+Use when detailed explanation is needed OR the comment is long (e.g., bilingual translation makes it longer):
 
 ```typescript
 /**
@@ -253,42 +270,58 @@ const queryParams = new URLSearchParams(window.location.search);
  */
 ```
 
-### Inline Comments (Non-Member Code)
+### Logic Block Comments
 
-For non-member code (logic blocks, statements), use inline comments:
-
-| Type | Format |
-|------|--------|
-| Short | `// 中文說明 / English description` |
-| Long | Two lines: `// 中文說明` then `// English description` |
-| Array/Object elements | Comment above element: `// 中文 / English` |
-| Multiple (≥3 lines) | Use block format `/** ... */` instead of multiple `//` |
-
-> **Note**: For member code (variables, properties, return values), use block comments as specified in "All Members Use Block Comments" section above.
-
-#### Multiple Comments Rule
-
-When adding **3 or more consecutive inline comments**, use block comment format:
+For logic blocks (if/else, loops, try/catch, etc.), use block comments above the block:
 
 ```typescript
-// ❌ Avoid: Multiple single-line comments
-// 中文說明一
-// English description one
-// 中文說明二
-// English description two
-// 中文說明三
-// English description three
+/** 檢查使用者權限 / Check user permissions */
+if (user.hasAccess) {
+    // logic
+}
 
-// ✅ Prefer: Block comment format
+/** 遍历所有项目并处理 / Iterate through all items and process */
+for (const item of items) {
+    // logic
+}
+
+/** 尝试保存数据，失败时回滚 / Attempt to save data, rollback on failure */
+try {
+    // logic
+} catch (error) {
+    // error handling
+}
+```
+
+#### Multiple Single-line Block Comments Rule
+
+**NEVER use multiple single-line block comments for the same code element.** Merge them into one multi-line block comment.
+
+```typescript
+// ❌ Avoid: Multiple single-line block comments (WRONG)
+/** 驗證訂單資料格式與必填欄位 */
+/** Validate order data format and required fields */
+const validated = validateOrder(order);
+
+// ✅ Correct: Merge into single multi-line block comment
 /**
- * 中文說明一
- * English description one
+ * 驗證訂單資料格式與必填欄位
+ * Validate order data format and required fields
+ */
+const validated = validateOrder(order);
+```
+
+#### Multiple Logic Blocks Rule
+
+When adding comments to **3 or more consecutive logic blocks**, use multi-line block comment:
+
+```typescript
+/**
+ * 逻辑说明一 / Logic description one
  *
- * 中文說明二
- * English description two
+ * 逻辑说明二 / Logic description two
  *
- * 中文說明三
- * English description three
+ * 逻辑说明三 / Logic description three
  */
 ```
 
@@ -298,18 +331,18 @@ If original comments use block style `/** ... */`, preserve format and add Engli
 
 ## Critical Constraints
 
+- **ALWAYS use block comments (`/** ... */`)** - Never use inline comments (`//`) for any code
 - **NEVER** modify existing code formatting (indentation, line breaks, spaces)
-- **NEVER** delete old commented-out code (e.g., `// old code...` or `/* ... */`)
+- **NEVER** delete old commented-out code (e.g., `// old code...`, `/* old code... */`, or `/** @deprecated */`)
 - **NEVER** convert existing CJK characters to Traditional Chinese - only use Traditional Chinese in NEW comments
 - **NEVER** write "English + English" as fake bilingual comments - each comment pair MUST contain Traditional Chinese followed by English, not two English lines
 - For key terms, add English in parentheses: `快取 (Cache)`, `佇列 (Queue)`, `遞迴 (Recursion)`
 
 ### Bilingual Comment Validation
 
-Every bilingual comment MUST follow this pattern:
-```
-// 繁體中文說明 / English description
+Every bilingual comment MUST use block comment format:
 
+```typescript
 /**
  * 繁體中文說明
  * English description
@@ -322,40 +355,60 @@ Every bilingual comment MUST follow this pattern:
 
 **Incorrect patterns to avoid:**
 ```typescript
-// ❌ English only / English only (fake bilingual)
-// Process data / Process data
+// ❌ Using inline comments (NOT allowed - must use block comments)
+const value = 1; // 這是錯的
 
-// ❌ Two English lines (no Chinese)
-// Process the data
-// Process the data
-
-// ❌ English first, Chinese second (wrong order)
-// English description / 繁體中文說明
+// ❌ English only (fake bilingual)
+/**
+ * Process data
+ * Process data
+ */
 
 // ❌ Two English lines (no Chinese)
 /**
  * English description
  * English description
  */
+
+// ❌ English first, Chinese second (wrong order)
+/**
+ * English description / 繁體中文說明
+ */
+
+// ❌ English only (fake bilingual)
+// Process data
+// Process data
 ```
 
 **Correct patterns:**
 ```typescript
-// ✅ Traditional Chinese + English
-// 處理資料 / Process data
+// ✅ Single-line block comment
+/** 繁體中文說明 / English description */
 
-// ✅ Two-line format for longer comments
-// 處理使用者輸入資料並進行驗證
-// Process and validate user input data
+// ✅ Multi-line block comment
+/**
+ * 繁體中文說明
+ * English description
+ */
 
+// ✅ All member comments use block comments
+/** 當前工作目錄 / Current working directory */
+const cwd = process.cwd();
+```
+
+**Correct patterns:**
+```typescript
+// ✅ Single-line block comment
+/** 處理資料 / Process data */
+
+// ✅ Multi-line block comment
 /**
  * 處理使用者輸入資料並進行驗證
  * Process and validate user input data
  */
 
-/**
- * 處理使用者輸入資料並進行驗證 / Process and validate user input data
- */
+// ✅ Single-line with detail
+/** 處理使用者輸入資料並進行驗證 / Process and validate user input data */
 ```
 
 ## Code Formatting Rules
@@ -367,8 +420,8 @@ The project-wide comment and formatting rules live in the repository rules. For 
 ## Examples
 
 See [references/examples.md](references/examples.md) for detailed before/after examples covering:
-- Class and member comments
-- Complex logic blocks
-- Array element comments
+- Class and member comments (using block comments)
+- Complex logic blocks (using block comments)
+- Array element comments (using block comments)
 - Preserving original block comment style
-- Long inline comments split across lines
+- Single-line vs multi-line block comments
