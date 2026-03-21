@@ -444,6 +444,74 @@ function canAccess(user, resource) {
 
 **Note 說明**: 當邏輯**影響 API 合約**（如權限判斷條件、驗證規則）時，應同時在 JSDoc 中說明，讓呼叫者了解行為。若邏輯僅是內部實現細節（如效能優化、内部演算法），則只需在程式碼區塊內說明。
 
+---
+
+#### JSDoc vs Logic Block Responsibility Separation (Preventing Information Redundancy)
+
+**Core Principle / 核心原則：** JSDoc describes "contract/intent", logic blocks describe "implementation details".
+
+| 位置 / Location | 應包含 / Should Include | 不應包含 / Should NOT Include |
+|----------------|------------------------|------------------------------|
+| **JSDoc** | 函式用途、設計邏輯、為什麼這樣設計 / Function purpose, design logic, why this design | 具體如何實現、程式碼語法細節 / How to implement, code syntax details |
+| **邏輯區塊 / Logic Block** | 具體實作邏輯、技術細節（as any、運算子等）/ Specific implementation logic, technical details (as any, operators, etc.) | 為什麼要這樣設計 / Why this design |
+
+**Error Example / 錯誤示範（資訊冗餘）：**
+
+```typescript
+/**
+ * 處理資料（錯誤：將實作細節放在 JSDoc）
+ * Process data (wrong: implementation details in JSDoc)
+ *
+ * 使用短路運算實現：(condition && value) || default  ← ❌ 冗餘
+ */
+function process(result) {
+  /** 短路運算：(condition && value) || default */  ← ✅ 正確位置
+  return condition && value || [];
+}
+```
+
+**Correct Example / 正確範例：**
+
+```typescript
+/**
+ * 從結果中取得舊版插件名稱
+ * Get legacy plugin names from result
+ *
+ * 邏輯說明 / Logic description:
+ * 1. 首先檢查 LEGACY_PLUGIN_NAME 是否與 PLUGIN_NAME 不同
+ *    First check if LEGACY_PLUGIN_NAME is different from PLUGIN_NAME
+ * 2. 只有當兩者不同時，才有意義區分「舊版插件」
+ *    Only when the two are different does it make sense to distinguish "legacy plugin"
+ */
+function getLegacyPluginNamesFromResult(result) {
+    /**
+     * 條件判斷：確保新舊插件名稱確實不同
+     * Condition check: ensure legacy and current plugin names are actually different
+     *
+     * 使用 `as any` 繞過 TypeScript 推導
+     * 因為 TS 知道這兩個 const 永遠不同，但 runtime 可能會變化
+     *
+     * Uses `as any` to bypass TypeScript inference
+     * Because TS knows these two consts are always different, but runtime may change
+     *
+     * 短路運算實現 / Short-circuit evaluation implementation:
+     * (condition && value) || default
+     * - 當 condition 為 true，回傳 value / When condition is true, return value
+     * - 當 condition 為 false，回傳 [] / When condition is false, return []
+     */
+    return (LEGACY_PLUGIN_NAME !== PLUGIN_NAME as any) && result[LEGACY_PLUGIN_NAME] || [];
+}
+```
+
+**Checklist / 檢查清單：**
+
+- [ ] JSDoc 中是否包含「如何實現」的語法細節？（如短路運算、as any）
+      Does JSDoc contain "how to implement" syntax details? (e.g., short-circuit evaluation, as any)
+- [ ] 邏輯區塊內的註解是否僅描述「實作」，而非包含「設計意圖」？
+      Do logic block comments only describe "implementation", not include "design intent"?
+
+---
+
 ### Preserve Original Style
 
 If original comments use block style `/** ... */`, preserve format and add English translation. Do not convert to inline comments.
