@@ -463,6 +463,69 @@ Only convert when the format violates the rules (e.g., using inline comments ins
 - **NEVER** write "English + English" as fake bilingual comments - each comment pair MUST contain Traditional Chinese followed by English, not two English lines
 - For key terms, add English in parentheses: `快取 (Cache)`, `佇列 (Queue)`, `遞迴 (Recursion)`
 
+## Comment Update Rules (Preventing Comment Update Errors)
+
+When updating existing comments, follow these additional rules to preserve valuable technical information.
+
+### Rule 1: Preserve Original Error Information
+
+When code contains error codes, error messages, or other original technical information, **only add translation, do NOT delete**.
+
+```typescript
+// ✅ Correct - Preserve original error code and message
+/**
+ * 工具建立函式（避免 TypeScript 推導錯誤）
+ * Tool creation function (avoids TypeScript inference errors)
+ *
+ * > error TS2742: 原始錯誤訊息 (保留不刪)
+ */
+
+// ❌ Wrong - Delete original error information
+/**
+ * 工具建立函式
+ * Tool creation function
+ */
+```
+
+### Rule 2: Issue Links Must Verify Relevance
+
+Before adding Issue/document links, must confirm the content is actually related.
+
+```
+新增條件：
+1. 已閱讀 Issue 內容
+2. 確認與代碼/問題/邏輯/意圖有直接關聯
+3. 無法確認時 → 不新增，或標註「可能相關，未驗證」
+
+Add conditions:
+1. Have read the Issue content
+2. Confirm direct relevance to code/problem/logic/intent
+3. If unable to verify → Do not add, or mark as "possibly related, unverified"
+```
+
+### Rule 3: Value of Error Messages
+
+| 資訊類型 / Information Type | 價值 / Value |
+|---------------------------|-------------|
+| 錯誤碼 (`TS2742`) | 可搜尋、可引用 / Searchable, can be referenced |
+| 完整路徑 (`.pnpm/zod@4.1.8/...`) | 有助於定位問題 / Helps locate the problem |
+| 錯誤描述 | 社群已知問題的驗證 / Verification of known community issues |
+
+**這些都不應被視為「冗餘」而刪除。**
+**These should NOT be deleted as "redundant".**
+
+### Rule 4: Comment Update Checklist
+
+每次更新他人註解前，確認：
+Before updating others' comments, verify:
+
+- [ ] 原始註解的技術資訊是否保留？（錯誤碼、版本號、檔案路徑等）
+      Is original technical information preserved? (error codes, version numbers, file paths, etc.)
+- [ ] 新增的連結是否已驗證相關性？
+      Have added links been verified for relevance?
+- [ ] 是否與 代碼/問題/邏輯/意圖 相關？
+      Is it related to code/problem/logic/intent?
+
 ### Bilingual Comment Validation
 
 Every bilingual comment MUST use block comment format:
