@@ -300,6 +300,13 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 /// <reference types="jest" />
 ```
 
+##### Jest v30+ 注意事項
+
+> 自 Jest v30 起，`toThrowError` 已被移除，請改用 `toThrow`。
+
+- 錯誤拋出測試請使用 `toThrow()` 而非 `toThrowError()`
+- Snapshot 錯誤比對請使用 `toThrowErrorMatchingSnapshot()`（仍支援）
+
 #### Bun 測試檔案 Header
 
 **若為 Bun 測試檔案，應在檔案開頭加入 TypeScript 三斜線參考指令，並從 `bun:test` 匯入所需的測試函數，以確保正確引入 Bun 的類型定義。**
@@ -309,13 +316,6 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 /// <reference types="bun-types" />
 import { describe, expect, it, test, beforeEach, afterEach, mock } from "bun:test";
 ```
-
-#### Jest v30+ 注意事項
-
-> 自 Jest v30 起，`toThrowError` 已被移除，請改用 `toThrow`。
-
-- 錯誤拋出測試請使用 `toThrow()` 而非 `toThrowError()`
-- Snapshot 錯誤比對請使用 `toThrowErrorMatchingSnapshot()`（仍支援）
 
 #### 建議的測試檔案結構
 
