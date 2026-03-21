@@ -512,6 +512,58 @@ function getLegacyPluginNamesFromResult(result) {
 
 ---
 
+#### JSDoc Avoid Redundant Descriptions
+
+不需要「標題 + 與標題相同意思的描述」，兩段意思相同的註解只保留一組完整的描述即可。
+No need for "title + description with the same meaning" - keep only one complete set of descriptions if they mean the same thing.
+
+**❌ Wrong / 錯誤（意思重複）：**
+
+```typescript
+/**
+ * 處理資料
+ * Process data
+ *
+ * 此函數用於處理資料
+ * This function is used to process data
+ */
+```
+> 標題「處理資料」與描述「此函數用於處理資料」意思完全相同，屬於冗餘。
+> Title "處理資料" and description "此函數用於處理資料" mean exactly the same thing - redundant.
+
+**✅ Correct / 正確（選擇一組完整的描述）：**
+
+```typescript
+/**
+ * 此函數用於處理資料
+ * This function is used to process data
+ *
+ * 設計邏輯 / Design logic: ...
+ */
+```
+
+**Exception / 例外情況：**
+
+當 JSDoc 需要包含多個獨立說明區塊時，可以使用簡短標題：
+When JSDoc needs to contain multiple independent description blocks, you can use brief titles:
+
+```typescript
+/**
+ * 工具函式集合
+ * Utility functions collection
+ *
+ * 錯誤處理工具：
+ * Error handling utilities:
+ * ...
+ *
+ * 資料轉換工具：
+ * Data transformation utilities:
+ * ...
+ */
+```
+
+---
+
 ### Preserve Original Style
 
 If original comments use block style `/** ... */`, preserve format and add English translation. Do not convert to inline comments.
