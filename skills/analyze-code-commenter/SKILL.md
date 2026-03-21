@@ -1,6 +1,6 @@
 ---
 name: analyze-code-commenter
-description: Analyze code and add bilingual comments (Traditional Chinese zh-TW + English). Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) "為代碼添加註解", (5) "分析並註解程式碼", (6) "為代碼更新註解", (6) "為代碼修正註解". Uses ONLY block comments (single-line or multi-line). Never uses inline comments.
+description: Analyze code and add bilingual comments (Traditional Chinese zh-TW + English). Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) "為代碼添加註解", (5) "分析並註解程式碼", (6) "為代碼更新註解", (6) "為代碼修正註解", (7) "重構代碼更新註解", (8) "雙語註釋/雙語註解". Uses ONLY block comments (single-line or multi-line). Never uses inline comments.
 ---
 
 # Analyze Code Commenter
@@ -223,7 +223,7 @@ return {
 
 The choice depends on **how much explanation is needed** (not code complexity).
 
-> **Preserve Existing Style**: 
+> **Preserve Existing Style**:
 > - If existing comment is already using single-line or multi-line format correctly, do NOT change it
 > - Both formats are valid bilingual styles:
 >   - Single-line: `/** 说明 / Description */`
@@ -346,6 +346,103 @@ When adding comments to **3 or more consecutive logic blocks**, use multi-line b
  * 逻辑说明三 / Logic description three
  */
 ```
+
+#### Logic Comments Placement (Internal Implementation Details)
+
+**Core Principle**: Comments about implementation logic should be placed **near the code logic**, not in JSDoc documentation. Only document what is helpful for **callers** in JSDoc.
+
+| Location | What to Document |
+|----------|------------------|
+| **JSDoc (function/class level)** | API usage, parameters, return values, public contracts, side effects visible to callers |
+| **Logic block (inside function)** | Internal implementation reasoning, specific business rules, why this approach was chosen, edge case handling |
+
+**Rationale**:
+- JSDoc is for external consumers/callers - it describes the "contract"
+- Internal logic comments are for maintainers - they explain "why" the code does what it does internally
+- Placing logic comments near the code helps future developers understand the implementation without jumping between documentation and code
+
+**Examples**:
+
+```typescript
+// ❌ Avoid: Putting internal logic explanations in JSDoc
+/**
+ * Process user data
+ *
+ * 1. Validates input
+ * 2. Checks cache
+ * 3. Fetches from database if not cached
+ *
+ * @param userId - User identifier
+ * @returns Processed user data
+ */
+function getUserData(userId: string): UserData {
+    // ... implementation
+}
+
+// ✅ Prefer: JSDoc for callers, logic comments near code
+/**
+ * 取得使用者資料
+ * Get user data
+ *
+ * @param userId - 使用者識別碼 / User identifier
+ * @returns 使用者資料 / User data
+ */
+function getUserData(userId: string): UserData {
+    /** 檢查快取是否已有資料 / Check if data exists in cache */
+    const cached = cache.get(userId);
+    if (cached) {
+        return cached;
+    }
+
+    /**
+     * 資料不在快取中，需從資料庫取得
+     * Data not in cache, need to fetch from database
+     *
+     * 特定業務規則：因為使用者可能被停用，所以需要檢查狀態
+     * Specific business rule: need to check status because user may be disabled
+     */
+    const user = database.find(userId);
+    if (user && user.status === 'active') {
+        cache.set(userId, user);
+    }
+
+    return user;
+}
+```
+
+```typescript
+// ✅ Good: Important business logic in BOTH JSDoc AND near code
+// When logic affects the API contract, document it in JSDoc for callers
+// 同時在 JSDoc 和程式碼區塊中說明重要的業務邏輯
+
+/**
+ * 檢查使用者是否有權存取資源
+ * Check if user has permission to access resource
+ *
+ * 權限判斷條件 / Permission check conditions:
+ * 1. 使用者必須處於啟用狀態 / User must be active
+ * 2. 必須有專業版訂閱 / Must have Pro subscription
+ * 3. 資源為本人建立 或 資源為公開 / Resource created by user OR resource is public
+ *
+ * @param user - 使用者物件 / User object
+ * @param resource - 資源物件 / Resource object
+ * @returns 是否允許存取 / Whether access is allowed
+ */
+function canAccess(user, resource) {
+    /**
+     * 執行權限檢查 / Perform permission check
+     *
+     * 判斷邏輯：/ Logic:
+     * - 使用者狀態是否啟用 / Check if user is active
+     * - 訂閱類型是否為 Pro / Check if subscription is Pro
+     * - 資源是否為本人建立或是公開資源 / Check if resource is created by user or public
+     */
+    return user.isActive && user.subscription === 'pro' &&
+        (resource.createdBy === user.id || resource.isPublic);
+}
+```
+
+**Note 說明**: 當邏輯**影響 API 合約**（如權限判斷條件、驗證規則）時，應同時在 JSDoc 中說明，讓呼叫者了解行為。若邏輯僅是內部實現細節（如效能優化、内部演算法），則只需在程式碼區塊內說明。
 
 ### Preserve Original Style
 
