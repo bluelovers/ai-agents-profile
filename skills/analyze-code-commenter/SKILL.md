@@ -583,6 +583,142 @@ Only convert when the format violates the rules (e.g., using inline comments ins
 - **NEVER** write "English + English" as fake bilingual comments - each comment pair MUST contain Traditional Chinese followed by English, not two English lines
 - For key terms, add English in parentheses: `快取 (Cache)`, `佇列 (Queue)`, `遞迴 (Recursion)`
 
+### Preserve Technical Terms (DO NOT Delete)
+
+**核心原則：技術術語不得刪除。**
+
+當更新註解時，必須保留以下類型（但不限於）的原始術語。可新增翻譯或解釋，但「不得」以「更好描述」為由刪除原始術語。
+
+| 術語類型 / Term Type | 範例 / Examples |
+|---------------------|----------------|
+| TypeScript/JavaScript 官方術語 | Non-Null Assertion Operator (`!`)、Union Type、Type Guard、Generics、Decorator |
+| 演算法名稱 | Dijkstra、Binary Search、Quick Sort、Dynamic Programming、Backtracking |
+| 設計模式名稱 | Singleton、Factory、Observer、Strategy、Adapter、Decorator |
+| 資料結構名稱 | Linked List、Hash Map、Binary Tree、Stack、Queue、Heap |
+| 程式設計概念 | Recursion、Memoization、Currying、Polymorphism、Encapsulation |
+
+```typescript
+// ✅ 正確：保留原始術語並添加翻譯
+/**
+ * 使用 Non-Null Assertion Operator (!) 確保值不為 null
+ * Uses Non-Null Assertion Operator (!) to ensure value is not null
+ */
+const value = nullableValue!;
+
+/**
+ * 實作 Factory Pattern 建立不同類型的產品
+ * Implements Factory Pattern to create different types of products
+ */
+function createProduct(type: string) { ... }
+
+/**
+ * 使用 Dijkstra's Algorithm 找最短路徑
+ * Uses Dijkstra's Algorithm to find shortest path
+ */
+function findShortestPath(graph) { ... }
+
+// ❌ 錯誤：刪除原始術語
+/**
+ * 使用驚嘆號確保值不為空
+ * Uses exclamation mark to ensure value is not empty
+ */
+const value = nullableValue!;
+
+/**
+ * 建立產品
+ * Create products
+ */
+function createProduct(type: string) { ... }
+
+/**
+ * 找最短路徑
+ * Find shortest path
+ */
+function findShortestPath(graph) { ... }
+```
+
+**新增翻譯時的正確做法：**
+- ✅ 保留原始術語：`Union Type（聯合類型）`
+- ✅ 添加說明：`TypeScript 的 Union Type（聯合類型）允許...`
+- ❌ 刪除原始術語：`此函式接受多種可能的類型`（不應刪除 Union Type）
+
+**This is a hard constraint - technical terms provide searchable, referenceable information and represent established vocabulary in the field.**
+
+---
+
+### Identify Non-semantic Naming Conventions
+
+**核心原則：當程式碼中存在無特殊含義的命名慣例時，註解應謹慎處理。**
+
+某些命名慣例（如 `Lazy`、`Helper`、`Util`）可能被用作組織程式碼的慣用方式，而非表達特定的技術意涵。註解時應：
+
+- **不**為其添加原本沒有的意義
+- 如果有必要則明確標記為「命名慣例」或「無特殊含義」
+- 或者直接忽略，視為不存在（避免多餘無意義註解）
+
+#### 如何判斷無特殊含義
+
+| 命名 / Naming | 判斷方式 / How to Check |
+|---------------|------------------------|
+| `Lazy` | 檢查是否有延遲執行邏輯（Promise、callback、getter、計算屬性）。若無，則為命名慣例 |
+| `Helper` / `Util` | 檢查是否僅是工具函式集合。若無特定領域抽象，則為命名慣例 |
+| `Base` / `Core` | 檢查是否有繼承或組合關係。若僅是組織結構，則為命名慣例 |
+| `Impl` | 檢查是否有介面/抽象類。若無，則為命名慣例 |
+
+若無對應的設計模式或技術含義，則視為命名慣例。
+
+#### 正確範例
+
+```typescript
+/**
+ * 配置獲取值型別
+ * Config getter value type
+ *
+ * @note Lazy 為命名慣例，無「延遲/惰性」意涵
+ * @note Lazy is a naming convention, no "lazy/惰性" meaning
+ */
+export type ILazyConfigGetterValue = ...
+
+/**
+ * 工具函式集合
+ * Utility functions collection
+ *
+ * @note Helper 為命名慣例，僅表示此模組為工具函式集
+ * @note Helper is a naming convention, only indicates this module is a utility collection
+ */
+export class StringHelper { ... }
+```
+
+#### 錯誤範例
+
+```typescript
+// ❌ 錯誤：為命名慣例添加原本不存在的意義
+/**
+ * 懶惰載入配置
+ * Lazy load configuration
+ *
+ * 此類採用延遲初始化模式...
+ * This class uses lazy initialization pattern...
+ */
+// 實際程式碼並無延遲執行邏輯
+
+export type ILazyConfigGetterValue = ...
+
+// ✅ 正確：若無法判斷，可標註為「可能相關，未驗證」
+/**
+ * 配置獲取值型別
+ * Config getter value type
+ *
+ * @note 命名可能與 Lazy Loading 相關，未驗證
+ * @note Naming may be related to Lazy Loading, unverified
+ */
+export type ILazyConfigGetterValue = ...
+```
+
+---
+
+###
+
 ## Comment Update Rules (Preventing Comment Update Errors)
 
 When updating existing comments, follow these additional rules to preserve valuable technical information.
