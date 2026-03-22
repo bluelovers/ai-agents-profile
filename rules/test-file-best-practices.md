@@ -528,6 +528,339 @@ ts-node test/scripts/generate-fixtures.ts
 - 抓取的遠端資料應驗證格式後再儲存為 fixtures
 - 腳本產生的資料應加入 `.gitignore`（如大型資料庫或臨時檔案）
 
+---
+
+### 8. 臨時檔案管理原則
+
+**當測試需要創建臨時檔案或臨時目錄時，應在專案內建立專用的臨時目錄來操作，而非直接在根目錄或 src 目錄下創建。**
+
+#### 安全原則
+
+**禁止對臨時目錄以外的路徑進行讀取以外的行為（包含但不限於 刪除/新增/編輯）。**
+
+如果需要測試，則必須建立安全的 mock/sandbox 環境以模擬的方式執行，確保測試隔離性，避免意外修改或刪除重要的專案檔案。
+
+```typescript
+// ✅ 正確：在臨時目錄下進行操作
+const tempDir = path.join(process.cwd(), 'test', 'temp', 'test-output');
+const tempFile = path.join(tempDir, 'output.json');
+fs.writeFileSync(tempFile, data);    // ✅ 允許
+fs.readFileSync(tempFile);           // ✅ 允許
+fs.unlinkSync(tempFile);              // ✅ 允許（在臨時目錄內）
+
+// ❌ 錯誤：對臨時目錄外的路徑進行寫入/刪除
+const srcFile = path.join(process.cwd(), 'src', 'config.json');
+fs.writeFileSync(srcFile, data);      // ❌ 禁止：寫入
+fs.unlinkSync(srcFile);               // ❌ 禁止：刪除
+fs.mkdirSync(path.join(process.cwd(), 'new-dir'));  // ❌ 禁止：新增
+
+// ✅ 正確：對臨時目錄外的路徑僅進行讀取
+const configData = fs.readFileSync(
+    path.join(process.cwd(), 'src', 'config.json'),
+    'utf-8'
+);  // ✅ 允許：僅讀取
+```
+
+#### 為什麼需要專用臨時目錄
+
+- 保持專案結構整潔，避免臨時檔案與正式代碼混淆
+- 便於集中管理與清理臨時資料
+- 避免意外提交臨時檔案至版本控制系統
+- 降低誤刪重要檔案的風險
+
+#### 目錄結構建議
+
+```
+project/
+├── src/                         # 原始碼
+├── test/                        # 測試目錄
+│   ├── fixtures/                # 靜態測試資料
+│   └── temp/                   # 臨時檔案專用目錄 ⭐
+│       ├── test-output-1708152000000/  # 測試輸出檔案（具有唯一性 ID）
+│       ├── mock-cache/         # 模擬快取資料（可覆寫）
+│       └── uploads/            # 上傳測試檔案
+└── temp/                        # 專案層級臨時目錄 ⭐
+    ├── test-output-1708152000000/  # 測試輸出檔案
+    ├── build-cache/            # 建置快取（可覆寫）
+    └── uploads/                # 上傳測試檔案
+```
+
+#### 重要原則
+
+**原則一：禁止直接建立在臨時主目錄下，必須建立在子目錄中。**
+
+```typescript
+// ✅ 正確：建立於 temp 子目錄下
+const tempDir = path.join(process.cwd(), 'temp', 'test-output');
+
+// ❌ 錯誤：直接建立在 temp 主目錄
+const tempDir = path.join(process.cwd(), 'temp');
+```
+
+**原則二：臨時子目錄名稱應具有唯一性的 ID（例如 timestamp），除非是多個測試共用的臨時子目錄或者可以被多次覆寫的臨時子目錄。**
+
+```typescript
+// ✅ 正確：具有唯一性 ID 的臨時目錄
+const timestamp = Date.now();
+const tempDir = path.join(process.cwd(), 'temp', `test-output-${timestamp}`);
+
+// ✅ 正確：可覆寫的共用臨時目錄（不需要唯一性 ID）
+const tempDir = path.join(process.cwd(), 'temp', 'mock-cache');
+```
+
+```typescript
+// ✅ 正確：具有唯一性 ID 的臨時目錄
+const timestamp = Date.now();
+const tempDir = path.join(process.cwd(), 'temp', `test-output-${timestamp}`);
+
+// ✅ 正確：可覆寫的共用臨時目錄（不需要唯一性 ID）
+const tempDir = path.join(process.cwd(), 'temp', 'mock-cache');
+
+// ❌ 錯誤：直接建立在 temp 主目錄
+const tempDir = path.join(process.cwd(), 'temp');
+```
+
+#### 使用範例
+
+```typescript
+// ✅ 正確：在專用臨時目錄下操作
+import * as path from 'path';
+import * as fs from 'fs';
+
+// 取得臨時目錄路徑（具有唯一性 ID）
+const getTempDir = (subDir: string) => {
+    const timestamp = Date.now();
+    const tempDir = path.join(process.cwd(), 'test', 'temp', `${subDir}-${timestamp}`);
+
+    // 確保目錄存在
+    if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+    }
+
+    return tempDir;
+};
+
+// 取得共用臨時目錄路徑（可覆寫，無需唯一性 ID）
+const getSharedTempDir = (subDir: string) => {
+    const tempDir = path.join(process.cwd(), 'test', 'temp', subDir);
+
+    // 確保目錄存在
+    if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
+    }
+
+    return tempDir;
+};
+
+// 在具有唯一性 ID 的臨時目錄下創建檔案
+it('should generate output file', async () => {
+    const outputDir = getTempDir('test-output');  // ✅ 使用具有唯一性 ID 的子目錄
+    const outputFile = path.join(outputDir, 'result.json');
+
+    const result = await processData(inputData);
+    fs.writeFileSync(outputFile, JSON.stringify(result));  // ✅ 在臨時目錄內操作
+
+    expect(fs.existsSync(outputFile)).toBe(true);
+});
+
+// 使用共用臨時目錄（可覆寫）
+it('should use shared temp cache', async () => {
+    const cacheDir = getSharedTempDir('mock-cache');  // ✅ 共用目錄，無需唯一性 ID
+    // ... 測試邏輯
+});
+
+// ❌ 錯誤：直接在根目錄或 src 目錄下創建臨時檔案
+it('should NOT create temp file in root', async () => {
+    const tempFile = path.join(process.cwd(), 'temp-result.json');  // ❌ 禁止
+    fs.writeFileSync(tempFile, 'data');
+});
+
+// ❌ 錯誤：禁止直接建立在臨時主目錄下
+it('should NOT create in temp root', async () => {
+    const tempDir = path.join(process.cwd(), 'temp');  // ❌ 禁止：應使用 temp/xxx/
+});
+
+// ❌ 錯誤：未使用唯一性 ID 的臨時目錄可能導致並行測試衝突
+it('should NOT use non-unique temp dir', async () => {
+    // 當多個測試並行執行時，這種方式可能導致衝突
+    const tempDir = path.join(process.cwd(), 'test', 'temp', 'test-output');
+});
+
+// ❌ 錯誤：禁止對臨時目錄外的路徑進行寫入/刪除
+it('should NOT modify files outside temp', async () => {
+    const configPath = path.join(process.cwd(), 'config', 'settings.json');
+    fs.writeFileSync(configPath, '{}');  // ❌ 禁止：寫入
+    fs.unlinkSync(configPath);            // ❌ 禁止：刪除
+    fs.mkdirSync(path.join(process.cwd(), 'some-new-dir'));  // ❌ 禁止：新增
+});
+
+// ✅ 正確：需要測試時使用 mock/sandbox 環境
+it('should handle file operations safely', async () => {
+    // 使用 mock 模擬檔案系統操作
+    const mockFs = {
+        readFileSync: jest.fn(),
+        writeFileSync: jest.fn(),
+    };
+
+    // 測試邏輯使用 mock 的檔案系統
+    const result = await processWithMockFs(inputData, mockFs);
+    expect(result).toBeDefined();
+});
+```
+
+#### 清理策略
+
+##### 自動清理（推薦）
+
+```typescript
+import * as fs from 'fs';
+import * as path from 'path';
+
+// 使用 afterEach 自動清理
+// ⚠️ 重要：除非必要否則不應主動廣域性清除
+// 而是只限定於本次操作的臨時子目錄，防止同時有其他測試正在操作臨時目錄
+describe('File Processing', () => {
+    const tempDirs: string[] = [];
+
+    // 取得具有唯一性 ID 的臨時目錄
+    const getTempDir = (subDir: string) => {
+        const timestamp = Date.now();
+        const tempDir = path.join(process.cwd(), 'test', 'temp', `${subDir}-${timestamp}`);
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+        }
+        tempDirs.push(tempDir);
+        return tempDir;
+    };
+
+    afterEach(() => {
+        // ✅ 正確：只清理本次測試创建的臨時目錄
+        // 防止同時有其他測試正在操作臨時目錄
+        tempDirs.forEach(dir => {
+            if (fs.existsSync(dir)) {
+                fs.rmSync(dir, { recursive: true });
+            }
+        });
+        tempDirs.length = 0;
+    });
+
+    it('should process files', () => {
+        const tempDir = getTempDir('test-output');
+        // ... 測試邏輯
+    });
+});
+```
+
+```typescript
+// ❌ 錯誤：廣域性清除會影響其他正在運行的測試
+afterEach(() => {
+    // 這種方式會刪除整個臨時目錄，可能影響並行測試
+    fs.rmSync(path.join(process.cwd(), 'test', 'temp'), { recursive: true });
+});
+```
+
+##### 需要審閱時的保留策略
+
+**如果臨時檔案有需要被審閱，可以暫時不刪除。** 這種情況適用於：
+
+- 需要檢查測試輸出的格式是否正確
+- 需要分析錯誤發生時的資料狀態
+- 需要人工確認測試結果
+- **實作失敗但有參考價值的邏輯意圖** - 例如演算法嘗試、參數組合探索等過程記錄
+- **錯誤訊息與堆疊追蹤** - 有助於後續開發者理解問題根源
+- **效能分析或診斷報告** - 可幫助優化方向的判斷
+- **模擬資料的多種變體** - 記錄不同輸入條件下的輸出結果
+
+```typescript
+// ✅ 需要審閱時：不執行自動清理
+describe('File Processing (Manual Review)', () => {
+    // 取得具有唯一性 ID 的臨時目錄，方便追蹤
+    const getTempDir = (subDir: string) => {
+        const timestamp = Date.now();
+        const tempDir = path.join(process.cwd(), 'test', 'temp', `${subDir}-${timestamp}`);
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+        }
+        return tempDir;
+    };
+
+    // 不使用 afterEach 清理，讓臨時檔案保留供人工審閱
+    it('should generate output file for review', async () => {
+        const outputDir = getTempDir('test-output');
+        const outputFile = path.join(outputDir, 'result.json');
+
+        const result = await processData(inputData);
+        fs.writeFileSync(outputFile, JSON.stringify(result));
+
+        // 測試通過，但保留檔案供人工審閱
+        expect(result).toBeDefined();
+    });
+});
+```
+
+##### 審閱時保留的輔助資訊類型
+
+當決定保留臨時檔案供審閱時，建議一併保留以下輔助資訊：
+
+```typescript
+// ✅ 建議的審閱檔案結構
+test/temp/review/
+├── review-session-2024-01-15-10-30-00/     # 以日期時間命名審閱回合
+│   ├── algorithm-attempts.md               # 演算法嘗試記錄
+│   └── notes.md                            # 開發者備註（記錄問題與解決思路）
+```
+
+**備註檔案範例（`notes.md`）：**
+
+```markdown
+# 審閱筆記
+
+## 問題描述
+- 處理大型檔案時效能低落
+- 記憶體使用量異常飆升
+
+## 觀察分析
+- 演算法嘗試 A：耗時 3.2s，記憶體峰值 512MB
+- 演算法嘗試 B：耗時 1.8s，記憶體峰值 380MB
+- 建議採用嘗試 B 的分頁策略
+
+## 參考價值
+- 為未來優化提供方向
+- 記錄了參數調校的過程
+```
+
+#### 版本控制配置
+
+確保臨時目錄不會被提交至版本控制系統：
+
+```gitignore
+# .gitignore
+
+# 測試臨時檔案
+test/temp/
+
+# 專案層級臨時目錄
+temp/
+tmp/
+
+# 特定臨時檔案
+*.tmp
+*.temp
+```
+
+#### 注意事項
+
+- **禁止直接建立在臨時主目錄下** - 必須使用子目錄（如 `temp/test-output/` 而非 `temp/`）
+- **臨時子目錄名稱應具有唯一性 ID** - 例如使用 timestamp，避免並行測試衝突
+- **清理臨時目錄時不得直接清理 temp 目錄** - 應清理 `temp/xxxx/` 底下的檔案或目錄，而非刪除 temp 目錄本身
+- 除非必要否則不應主動廣域性清除 - 應只清理本次測試創建的臨時目錄，防止影響其他並行測試
+- 臨時目錄應具有明確的命名（如 `test/temp/`、`temp/`），讓團隊成員一目了然
+- 臨時檔案應在測試完成後清理，避免殘留資料影響後續測試
+- 若需要審閱臨時檔案，可暫時不刪除，測試完成後應手動清理
+- 對於需要持久化的測試資料（如 fixtures），應放在 `test/fixtures/` 而非臨時目錄
+- 若臨時檔案體積較大，應考慮使用 `.gitignore` 排除或使用虛擬檔案系統
+- 避免在臨時目錄中存放敏感資訊，如需使用敏感資料應建立 mock 資料
+
 ## 決策流程
 
 ```
