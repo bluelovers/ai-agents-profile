@@ -1,3 +1,8 @@
+---
+name: test-file-best-practices
+description: 測試檔案最佳實踐規範。Use when users request (1) Testing best practices, (2) Test file organization, (3) "測試檔案規範", (4) "測試最佳實踐", (5) "測試檔案組織", (6) "測試資料管理", (7) "臨時檔案管理", (8) "重構測試", (9) "優化測試", (10) "整合測試". Defines guidelines for writing and organizing test files, including test location patterns, naming conventions, snapshot testing, fixtures management, and temporary file handling.
+---
+
 # 測試檔案最佳實踐規範
 # Test File Best Practices
 
@@ -165,6 +170,20 @@ test/
 
 **在結果可控的情況下，優先使用 snapshot 測試。**
 
+#### API 可讀性原則
+
+**編寫測試時，應盡量使用具有可讀性/識別性的 API，使錯誤訊息更容易理解。**
+
+```typescript
+// ❌ 不良範例：使用不易識別的 API，錯誤訊息模糊
+expect(result.enableGlobalCache).toBe(false);
+expect(items.length).toBe(0);
+
+// ✅ 良好範例：使用具有可讀性的 API，錯誤訊息清晰
+expect(result).toHaveProperty('enableGlobalCache', false);
+expect(items).toHaveLength(0);
+```
+
 #### 適用場景
 
 - 輸出結構複雜但穩定的測試
@@ -231,6 +250,20 @@ expect(result.enableGlobalCache).toBe(false);
 // ✅ 良好範例：使用 toHaveProperty，錯誤訊息更清晰
 expect(result).toHaveProperty('enableGlobalCache', false);
 ```
+
+#### 陣列長度驗證
+
+**測試陣列長度時，應使用 `toHaveLength()` 而非 `expect(array.length).toBe()`。**
+
+```typescript
+// ❌ 不良範例：使用 .length.toBe()
+expect(ALL_ARISE_TOOLS.length).toBe(enumValues.length);
+
+// ✅ 良好範例：使用 toHaveLength
+expect(ALL_ARISE_TOOLS).toHaveLength(enumValues.length);
+```
+
+`toHaveLength()` 提供更清晰的錯誤訊息，當測試失敗時可以更容易識別問題。
 
 #### 其他比對已知屬性的範例
 
@@ -598,15 +631,6 @@ const tempDir = path.join(process.cwd(), 'temp');
 ```
 
 **原則二：臨時子目錄名稱應具有唯一性的 ID（例如 timestamp），除非是多個測試共用的臨時子目錄或者可以被多次覆寫的臨時子目錄。**
-
-```typescript
-// ✅ 正確：具有唯一性 ID 的臨時目錄
-const timestamp = Date.now();
-const tempDir = path.join(process.cwd(), 'temp', `test-output-${timestamp}`);
-
-// ✅ 正確：可覆寫的共用臨時目錄（不需要唯一性 ID）
-const tempDir = path.join(process.cwd(), 'temp', 'mock-cache');
-```
 
 ```typescript
 // ✅ 正確：具有唯一性 ID 的臨時目錄
