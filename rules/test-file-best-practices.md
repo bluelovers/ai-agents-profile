@@ -311,6 +311,7 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 - 避免過度使用 snapshot，簡單的值比對仍使用傳統 matcher
 - 重要欄位應使用 property matchers 明確驗證，而非完全依賴 snapshot
 - 發生錯誤時應能輕鬆比對錯誤的值與鍵值，了解是哪一個鍵值不正確。
+- 更多 API 重構範例請參閱 [測試框架 API 重構範例](./test-file-best-practices/examples.md)
 
 ### 4. 測試組織結構
 
@@ -916,4 +917,5 @@ tmp/
 
 - [Jest Snapshot Testing](https://jestjs.io/docs/snapshot-testing)
 - [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
+- [測試框架 API 重構範例](./test-file-best-practices/examples.md) - 補充 Jest 與 Bun 測試相容的 API 重構範例
 
