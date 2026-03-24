@@ -37,8 +37,9 @@ expect({
 expect({
     explain: '說明 / Description',     // 必填
     tags?: 'tag1, tag2, tag3',         // 可選
+    '#id'?: '自定義索引ID',             // 可選：用於來回檢查 snap 與 test 檔案
     result: { /* ... */ },             // 必填
-    input?: { target, source },       // 可選
+    input?: { target, source },        // 可選
 }).toMatchSnapshot()
 ```
 
@@ -119,7 +120,37 @@ input: { target: { a: 1 }, source: { b: 2 } }
 - **必填**：始終保留
 - **用途**：斷言驗證 + 行為展示
 
-### 2.5 多結果命名規範（解決快照排序問題）
+### 2.5 `#id` - 自訂索引 ID（來回檢查用）
+
+- **可選**：當需要來回檢查 snap 結果與 test 檔案時使用
+- **用途**：
+  - 在 snap 檔案與 test 檔案之間建立連結
+  - 方便快速定位對應的測試案例
+  - 尤其適合需要根據 snap 結果更新測試的狀況
+- **格式**：字串形式，推薦使用有意義的 ID
+
+```typescript
+// ✅ 使用 #id 方便來回檢查
+it('should merge objects correctly', () => {
+    const result = merge(target, source);
+
+    expect({
+        explain: '✅ 基本合併 / Basic merge',
+        '#id': 'merge-basic-001',  // 自定義索引 ID
+        tags: 'basic, merge',
+        input: { ... },
+        result: { ... },
+    }).toMatchSnapshot();
+});
+```
+
+**使用場景**：
+
+1. **跨檔案追蹤**：當 snap 檔案龐大時，可透過 `#id` 快速找到對應的測試
+2. **測試維護**：當 snap 結果需要更新時，可透過 `#id` 找到原始測試
+3. **文件關聯**：將 snap 結果與測試邏輯關聯，方便團隊理解
+
+### 2.6 多結果命名規範（解決快照排序問題）
 
 當需要在同一個快照檔案中展示多個結果時（例如比較不同函式的輸出），建議使用 `result{FeatureName}` 的命名模式，而非 `{FeatureName}Result`。
 
