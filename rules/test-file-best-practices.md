@@ -320,9 +320,15 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 **應在檔案開頭加入 TypeScript 三斜線參考指令，以確保正確引入類型定義。**
 
 ```typescript
+// @allowUnusedLabels:true
+// @noImplicitAny:false
+// @noPropertyAccessFromIndexSignature:false
+// @noUnusedLocals:false
 //@noUnusedParameters:false
 /// <reference types="node" />
 ```
+
+- https://github.com/microsoft/TypeScript-Website/tree/v2/packages/tsconfig-reference/copy/en/options
 
 #### Jest 測試檔案 Header
 
