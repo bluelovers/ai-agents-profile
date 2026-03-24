@@ -80,7 +80,7 @@ project/
 - [測試檔案分割原則](#1-測試檔案分割原則) - 避免單一檔案過大
 - [通用測試檔案 Header](#4-測試組織結構) - 正確引入類型定義
 - [Fixtures 與測試資料管理](#6-fixtures-與測試資料管理) - 集中管理測試資料
-- [共用邏輯提取原則](#5-共用邏輯提取原則) - 提取共用測試邏輯
+- [共用邏輯提取原則](#5-共用邏輯提取原則) - 提取共用測試邏輯（包括函式參數設計）
 
 ---
 
@@ -523,9 +523,120 @@ describe('UserService', () => {
 - 使用參數允許測試案例覆寫特定欄位
 - 當邏輯變更時，只需修改一處即可影響所有相關測試
 
-### 6. Fixtures 與測試資料管理
+---
 
-**建議將測試用的靜態資料（fixtures）統一放置於 `test/fixtures` 資料夾下，以便集中管理與重用。**
+#### 函式參數設計原則
+
+**對於可能會後續擴充的參數，應使用物件參數（Object Parameters）而非多個獨立參數。**
+
+##### 設計理念
+
+當函式接收多個參數時，若這些參數未來可能有增減的需求，使用物件參數可以：
+
+1. **擴充彈性** - 新增參數時無需修改函式簽章，避免破壞相容性
+2. **命名清晰** - 物件屬性自帶語義，呼叫時可清楚看出每個參數的用途
+3. **可選性** - 可輕鬆地將部分參數標記為可選（`?`）
+4. **TypeScript 支援** - 物件參數可定義完整型別，增強類型安全
+
+##### 不良範例
+
+```typescript
+// ❌ 使用多個獨立參數，未來擴充困難
+function _createAndValidateSnapshot(
+  capturedData: any,
+  validData: any,
+  result: any
+): void {
+  // ...實作
+}
+
+// 呼叫時語意不清，且未來新增參數需修改函式簽章
+_createAndValidateSnapshot(data, expected, actual);
+```
+
+##### 良好範例
+
+```typescript
+// ✅ 使用物件參數，弹性擴充
+/**
+ * 建立並驗證 Snapshot
+ * Create and validate snapshot
+ *
+ * @param data - 測試資料物件 / Test data object
+ * @param data.capturedData - 擷取的資料 / Captured data
+ * @param data.validData - 驗證用的資料 / Data for validation
+ * @param data.result - 測試結果 / Test result
+ */
+export function _createAndValidateSnapshot(
+  data: {
+    capturedData: any;
+    validData: any;
+    result: any;
+  }
+): void {
+  const { capturedData, validData, result } = data;
+  // ...實作
+}
+
+// 呼叫時語意清晰
+_createAndValidateSnapshot({
+  capturedData: data,
+  validData: expected,
+  result: actual
+});
+```
+
+##### 未來擴充範例
+
+```typescript
+// 未來需要新增參數時，只需擴充物件型別
+interface ICreateAndValidateSnapshotData {
+  /** 擷取的資料 / Captured data */
+  capturedData: any;
+  /** 驗證用的資料 / Data for validation */
+  validData: any;
+  /** 測試結果 / Test result */
+  result: any;
+  /** 是否需要更新 snapshot / Whether to update snapshot */
+  updateSnapshot?: boolean;
+  /** 自定義驗證選項 / Custom validation options */
+  validationOptions?: {
+    strict?: boolean;
+    ignoreKeys?: string[];
+  };
+}
+
+export function _createAndValidateSnapshot(
+  data: ICreateAndValidateSnapshotData
+): void {
+  // ...實作
+}
+```
+
+##### 決策流程
+
+```
+函式參數數量是否 >= 3？
+    │
+    ├─ 是 → 參數是否可能未來擴充？
+    │         │
+    │         ├─ 是 → 使用物件參數
+    │         │
+    │         └─ 否 → 可考慮使用物件參數或獨立參數
+    │
+    └─ 否 → 使用獨立參數
+```
+
+##### 注意事項
+
+- 此原則特別適用於測試輔助函數（helper functions）和工具函數
+- 物件參數應包含清晰的 JSDoc 註解，說明每個屬性的用途
+- 對於確定不會擴充且參數數量少的函式，可保持獨立參數風格
+- 物件參數的屬性應有明確的型別定義，避免使用 `any`（除非必要）
+
+---
+
+### 6. Fixtures 與測試資料管理
 
 #### 適用場景
 
