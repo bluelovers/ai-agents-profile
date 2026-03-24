@@ -1,6 +1,6 @@
 ---
 name: test-snapshot-documentation
-description: 利用測試快照來達到文件化的非常規使用方式。當用戶請求 (1) 使用快照進行文件化，(2) 將快照作為範例展示，(3) "snapshot 文件化"，(4) "快照測試文件"，(5) "測試快照作為文件"，(6) "為測試保留結果"，(7) "為測試增加說明" 時使用此技能。This skill guides the unconventional use of test snapshots for documentation purposes, transforming test snapshots into living documentation that showcases behavior, examples, and API usage.
+description: 利用測試快照來達到文件化的非常規使用方式。當用戶請求 (1) 使用快照進行文件化，(2) 將快照作為範例展示，(3) "snapshot 文件化"，(4) "快照測試文件"，(5) "測試快照作為文件"，(6) "為測試保留結果快照"，(7) "為測試增加說明快照" 時使用此技能。This skill guides the unconventional use of test snapshots for documentation purposes, transforming test snapshots into living documentation that showcases behavior, examples, and API usage.
 ---
 
 # Snapshot Documentation

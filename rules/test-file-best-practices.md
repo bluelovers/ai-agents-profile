@@ -391,6 +391,60 @@ describe('functionToTest', () => {
 });
 ```
 
+#### 測試標題與註解避免使用計數
+
+**測試檔案的註解或測試標題不應出現非必要的計數/序列。**
+
+測試隨時都有可能會增減或移動位置，這些計數會增加額外的非必要修改工作。
+
+```typescript
+// ❌ 不良範例：包含計數的測試標題
+/**
+ * 測試 12：deep 巢狀物件
+ * Test 12: Deep nested object
+ */
+it('should correctly validate deeply nested structures', () => {
+    // ...
+});
+
+// ✅ 良好範例：移除計數的測試標題
+/**
+ * 測試：deep 巢狀物件
+ * Test: Deep nested object
+ */
+it('should correctly validate deeply nested structures', () => {
+    // ...
+});
+```
+
+**原則：**
+
+- 測試標題應描述測試內容的用途或行為，而非依賴計數來識別
+- 當測試需要分組時，使用 `describe` 區塊進行邏輯組織
+- 如有需要區分多個相似測試，可使用描述性標題而非數字序列
+
+```typescript
+// ✅ 良好範例：使用描述性標題區分測試
+describe('validation', () => {
+    it('should handle valid input', () => { /* ... */ });
+    it('should handle invalid input', () => { /* ... */ });
+    it('should handle empty input', () => { /* ... */ });
+});
+
+// ✅ 良好範例：使用 describe 區塊分組
+describe('UserService', () => {
+    describe('create', () => {
+        it('should create user with valid data', () => { /* ... */ });
+        it('should reject duplicate email', () => { /* ... */ });
+    });
+
+    describe('update', () => {
+        it('should update user info', () => { /* ... */ });
+        it('should handle not found error', () => { /* ... */ });
+    });
+});
+```
+
 ### 5. 共用邏輯提取原則
 
 **當多個測試有共通邏輯時，應建立共用的工具函數，方便日後更新擴充時能夠輕鬆維護。**
