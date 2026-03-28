@@ -132,7 +132,7 @@ interface IOptions<T>
 ### 7. 其餘遵循 Standard Style
 
 - 結尾不加分號（除非必要）
-- 使用單引號字串
+- **使用單引號字串** ( `'` 而非 `"` )
 - 使用 trailing comma
 
 ## 使用時機
