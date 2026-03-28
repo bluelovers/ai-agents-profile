@@ -25,26 +25,11 @@ This skill is used to start and call WebStorm MCP (Model Context Protocol) servi
 | IDE 開啟中 | ❌ 視專案狀態而定 |
 | IDE 開啟 + 開啟專案 | ✅ 正常運作 |
 
+> 詳細啟動流程與驗證方式，請參閱 [WebStorm MCP 配置說明 - 啟動 WebStorm MCP 伺服器](./references/webstorm-mcp-config.md#啟動-webstorm-mcp-伺服器)
+
 ### 2. MCP 配置
 
-確保 `~/.config/opencode/opencode.jsonc` 中已配置 WebStorm MCP：
-
-```jsonc
-{
-  "mcp": {
-    "webstorm": {
-      "enabled": true,
-      "type": "remote",
-      "url": "http://127.0.0.1:64342/sse"
-    },
-    "webstorm-stream": {
-      "enabled": true,
-      "type": "remote",
-      "url": "http://127.0.0.1:64342/stream"
-    }
-  }
-}
-```
+確保已正確配置 WebStorm MCP。各工具（Claude App、Windsurf、Codex、OpenCode）的詳細配置範例，請參閱 [WebStorm MCP 配置說明 - 各工具配置範例](./references/webstorm-mcp-config.md#各工具配置範例)
 
 ---
 
@@ -69,6 +54,8 @@ webstorm <file>
 webstorm --line <N> --column <M> <file>  # 開啟並跳至指定行/欄
 ```
 
+> CLI 與 MCP 指令的詳細對應關係，請參閱 [WebStorm CLI 與 MCP 指令比較 - 檔案操作對應](./references/webstorm-cli-mcp-compare.md#21-檔案操作對應)
+
 ---
 
 ### 場景 2：開啟專案
@@ -83,6 +70,8 @@ webstorm <directory>
 ```bash
 webstorm "D:\Users\WebstormProjects\nodejs-yarn\ws-ts-type"
 ```
+
+> 更多 CLI 指令與參數說明，請參閱 [WebStorm CLI 指令文檔 - 檔案開啟與導航](./references/webstorm-cli.md#11-檔案開啟與導航)
 
 ---
 
@@ -104,6 +93,8 @@ webstorm "D:\Users\WebstormProjects\nodejs-yarn\ws-ts-type"
 webstorm format <file>
 ```
 
+> CLI 與 MCP 格式化功能的比較，請參閱 [WebStorm CLI 與 MCP 指令比較 - 格式化檔案](./references/webstorm-cli-mcp-compare.md#44-格式化檔案)
+
 ---
 
 ### 場景 4：差異查看（CLI 專有）
@@ -118,6 +109,8 @@ webstorm diff <file1> <file2>
 ```bash
 webstorm diff "D:\old\file.ts" "D:\new\file.ts"
 ```
+
+> 更多差異查看器說明，請參閱 [WebStorm CLI 指令文檔 - 差異查看器](./references/webstorm-cli.md#12-差異查看器-diff)
 
 ---
 
@@ -142,6 +135,8 @@ webstorm merge <local> <remote> <base> <output>
 webstorm merge "helper.ts" "helper.d.ts" "helper.ts"
 ```
 
+> 更多合併工具說明，請參閱 [WebStorm CLI 指令文檔 - 合併工具](./references/webstorm-cli.md#13-合併工具-merge)
+
 ---
 
 ### 場景 6：檔案搜尋（MCP 專有）
@@ -157,6 +152,8 @@ webstorm_search_in_files_by_regex    # 正規表達式搜尋
 webstorm_search_text          # 搜尋並返回片段
 webstorm_search_symbol        # 符號搜尋
 ```
+
+> 完整 MCP 指令列表與參數說明，請參閱 [WebStorm MCP 文檔 - 檔案搜尋](./references/webstorm-mcp.md#檔案搜尋-7-個)
 
 ---
 
@@ -178,6 +175,8 @@ webstorm_search_symbol        # 符號搜尋
 webstorm inspect <project> <profile>
 ```
 
+> CLI 與 MCP 程式碼檢查的比較，請參閱 [WebStorm CLI 與 MCP 指令比較 - 專案程式碼檢查](./references/webstorm-cli-mcp-compare.md#45-專案程式碼檢查)
+
 ---
 
 ### 場景 8：執行配置（MCP 專有）
@@ -188,6 +187,8 @@ webstorm inspect <project> <profile>
 webstorm_execute_run_configuration   # 執行運行配置
 webstorm_get_run_configurations      # 取得運行配置清單
 ```
+
+> 完整 MCP 指令列表，請參閱 [WebStorm MCP 文檔 - 執行與終端](./references/webstorm-mcp.md#執行與終端-3-個)
 
 ---
 
@@ -208,6 +209,8 @@ webstorm_get_run_configurations      # 取得運行配置清單
 | 重新命名重構 | MCP | 可整合至自動化 |
 | 安裝插件 | CLI | MCP 無對應 |
 
+> 完整對應表與差異分析，請參閱 [WebStorm CLI 與 MCP 指令比較 - 決策矩陣](./references/webstorm-cli-mcp-compare.md#5-決策矩陣)
+
 ---
 
 ## 故障排除
@@ -218,6 +221,9 @@ webstorm_get_run_configurations      # 取得運行配置清單
 |----------|----------|
 | `Unable to connect` | 確認 WebStorm IDE 正在執行 |
 | `Streamable HTTP session not found` | 使用 CLI 重新開啟專案 |
+| `session-id` 失效 | 手動關閉並重新開啟 MCP 連線 |
+
+> 完整故障排除指南，請參閱 [WebStorm MCP 配置說明 - 故障排除](./references/webstorm-mcp-config.md#故障排除)
 
 ### 啟動 WebStorm 的正確方式
 
@@ -235,6 +241,8 @@ webstorm "D:\Users\WebstormProjects\nodejs-yarn\ws-ts-type"
 # 或開啟特定檔案
 webstorm "D:\Users\WebstormProjects\nodejs-yarn\ws-ts-type\packages\ts-type\package.json"
 ```
+
+> 更多 CLI 指令說明，請參閱 [WebStorm CLI 指令文檔 - 使用範例](./references/webstorm-cli.md#3-使用範例)
 
 ---
 

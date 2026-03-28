@@ -12,6 +12,12 @@
 
 **WebStorm MCP 伺服器需要 IDE 處於啟動狀態且開啟專案才能正常運作。**
 
+| 狀態 | MCP 指令結果 |
+|------|-------------|
+| IDE 關閉 | ❌ Unable to connect |
+| IDE 開啟中 | ❌ 視專案狀態而定 |
+| IDE 開啟 + 開啟專案 | ✅ 正常運作 |
+
 無論使用哪種 AI 工具（Claude App、Windsurf、Codex、OpenCode），都必須先啟動 WebStorm IDE 並開啟專案，MCP 伺服器才會可用。
 
 ### 啟動流程
@@ -24,23 +30,32 @@
 ### 使用 CLI 啟動專案
 
 ```bash
-# 使用 CLI 開啟專案目錄
+# 使用 CLI 開啟專案目錄（推薦）
 webstorm "D:\Users\WebstormProjects\nodejs-yarn\ws-ts-type"
-
-# 或開啟特定檔案
-webstorm "D:\Users\WebstormProjects\nodejs-yarn\ws-ts-type\packages\ts-type\package.json"
 ```
+
+> ⚠️ **重要**：除非無法知道專案目錄，否則盡量不要使用直接開啟特定檔案的方法。有需要開啟檔案，請等專案目錄開啟後再執行。
+>
+> 原因：直接開啟特定檔案可能導致 WebStorm 無法正確載入專案結構，影響 MCP 伺服器的正常運作。
+>
+> ```bash
+> # ❌ 不建議：直接開啟特定檔案
+> webstorm "D:\Users\WebstormProjects\nodejs-yarn\ws-ts-type\packages\ts-type\package.json"
+>
+> # ✅ 建議：先開啟專案目錄，再開啟檔案
+> webstorm "D:\Users\WebstormProjects\nodejs-yarn\ws-ts-type"
+> # 然後在 WebStorm 中開啟需要的檔案
+> webstorm "D:\Users\WebstormProjects\nodejs-yarn\ws-ts-type\packages\ts-type\package.json"
+> ```
 
 ### 驗證 MCP 伺服器狀態
 
 可以使用以下命令驗證 MCP 伺服器是否正常運行：
 
 ```bash
-# 測試 SSE 端點
-curl http://127.0.0.1:64342/sse
-
-# 測試 Streamable HTTP 端點
-curl http://127.0.0.1:64342/stream
+opencode mcp debug <mcp-name>
+# opencode mcp debug webstorm
+# opencode mcp debug webstorm-stream
 ```
 
 ---
@@ -222,6 +237,21 @@ OpenCode 支援兩種協議類型，建議使用 Streamable HTTP。
 - `headers`: 自定義 HTTP 標頭（可選）
 - 使用 Streamable HTTP 協議（推薦）
 
+### SSE vs Streamable HTTP 比較
+
+| 特性                | SSE (Server-Sent Events)    | Streamable HTTP          |
+| ------------------- | --------------------------- | ------------------------ |
+| **完整名稱**        | Server-Sent Events          | Streamable HTTP          |
+| **MCP 版本**        | 2024-11-05 (已廢棄)         | 2025-03-26 (現為標準)    |
+| **客戶端 → 伺服器** | HTTP POST                   | HTTP POST                |
+| **伺服器 → 客戶端** | SSE 單向串流                | SSE 雙向串流 / 單次回應  |
+| **會話管理**        | 需額外處理                  | 內建會話 ID              |
+| **連線穩定性**      | 連線中斷需重新開始          | 支援斷線恢復 (Resumable) |
+| **多路復用**        | 不支援                      | 支援多客戶端連線         |
+| **單一端點**        | 需要分開的 POST 和 GET 端點 | 單一 MCP 端點            |
+
+> **注意**：MCP (Model Context Protocol) 是一個用於 AI 助手與 其他 AI 助手或 IDE 之間溝通的標準協議。根據 [MCP 官方規範](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports)，SSE 傳輸已於 2025-03-26 被 Streamable HTTP 取代。
+
 ---
 
 ## 故障排除
@@ -248,13 +278,7 @@ lsof -i :64342
 
 ### 確認 WebStorm MCP 伺服器狀態
 
-1. 開啟 WebStorm IDE
-2. 開啟任意專案
-3. 檢查狀態列是否顯示 MCP 伺服器圖示
-4. 或使用 CLI 開啟專案：
-   ```bash
-   webstorm "D:\Users\WebstormProjects\nodejs-yarn\ws-ts-type"
-   ```
+請參閱上方的 [驗證 MCP 伺服器狀態](#驗證-mcp-伺服器狀態) 章節。
 
 ### 處理 session-id 失效
 

@@ -12,60 +12,7 @@
 
 ## 協議配置與 MCP 設定
 
-### 設定檔位置
-
-| 檔案類型 | 優先順序 | 檔案路徑 |
-|----------|----------|----------|
-| **jsonc** | ⭐ 最高（推薦）| `~\.config\opencode\opencode.jsonc` |
-| json | 第二 | `~\.config\opencode\opencode.json` |
-
-> **⚠️ 警告**：如果 `opencode.jsonc` 和 `opencode.json` 同時存在，OpenCode 將只讀取 `opencode.jsonc`，並**忽略** `opencode.json`。這可能導致預期外的行為，請確保只保留一個設定檔。
-
-### 協議類型與網址
-
-| 協議名稱 | 完整名稱 | URL | 狀態 |
-|----------|----------|-----|------|
-| `webstorm` | **SSE** (Server-Sent Events) | `http://127.0.0.1:64342/sse` | ⚠️ 已廢棄 |
-| `webstorm-stream` | **Streamable HTTP** | `http://127.0.0.1:64342/stream` | ✅ 推薦 |
-
-#### 狀態說明
-
-- **`webstorm` (SSE)**: 正常運作，但已廢棄
-- **`webstorm-stream` (Stream)**: 存在 session 問題，有時無法正常使用
-
-#### SSE vs Streamable HTTP 比較
-
-| 特性 | SSE (Server-Sent Events) | Streamable HTTP |
-|------|--------------------------|-----------------|
-| **完整名稱** | Server-Sent Events | Streamable HTTP |
-| **MCP 版本** | 2024-11-05 (已廢棄) | 2025-03-26 (現為標準) |
-| **客戶端 → 伺服器** | HTTP POST | HTTP POST |
-| **伺服器 → 客戶端** | SSE 單向串流 | SSE 雙向串流 / 單次回應 |
-| **會話管理** | 需額外處理 | 內建會話 ID |
-| **連線穩定性** | 連線中斷需重新開始 | 支援斷線恢復 (Resumable) |
-| **多路復用** | 不支援 | 支援多客戶端連線 |
-| **單一端點** | 需要分開的 POST 和 GET 端點 | 單一 MCP 端點 |
-
-> **注意**：MCP (Model Context Protocol) 是一個用於 AI 助手與 IDE 之間溝通的標準協議。根據 [MCP 官方規範](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports)，SSE 傳輸已於 2025-03-26 被 Streamable HTTP 取代。
-
-### 完整 MCP 配置內容
-
-```jsonc
-{
-  "mcp": {
-    "webstorm": {
-      "enabled": true,
-      "type": "remote",
-      "url": "http://127.0.0.1:64342/sse"
-    },
-    "webstorm-stream": {
-      "enabled": true,
-      "type": "remote",
-      "url": "http://127.0.0.1:64342/stream"
-    }
-  }
-}
-```
+MCP 協議配置的詳細說明，包括設定檔位置、協議類型與網址、SSE vs Streamable HTTP 比較等，請參閱 [WebStorm MCP 配置說明](./webstorm-mcp-config.md)。
 
 ---
 
