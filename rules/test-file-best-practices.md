@@ -80,6 +80,7 @@ project/
 - [測試檔案分割原則](#1-測試檔案分割原則) - 避免單一檔案過大
 - [通用測試檔案 Header](#4-測試組織結構) - 正確引入類型定義
 - [Fixtures 與測試資料管理](#6-fixtures-與測試資料管理) - 集中管理測試資料
+- [測試資料集規範](#9-測試資料集規範) - 測試資料應包含輸入與預期輸出
 - [共用邏輯提取原則](#5-共用邏輯提取原則) - 提取共用測試邏輯（包括函式參數設計）
 
 ---
@@ -1056,6 +1057,184 @@ tmp/
 - 對於需要持久化的測試資料（如 fixtures），應放在 `test/fixtures/` 而非臨時目錄
 - 若臨時檔案體積較大，應考慮使用 `.gitignore` 排除或使用虛擬檔案系統
 - 避免在臨時目錄中存放敏感資訊，如需使用敏感資料應建立 mock 資料
+
+---
+
+### 9. 測試資料集規範
+
+**測試資料應獨立於測試邏輯，使用專門的 fixture 文件定義，每個測試用例應包含完整的測試資料，包括輸入、預期輸出和描述。**
+
+#### 核心原則
+
+##### 分離測試資料與測試邏輯
+
+**規則：** 測試資料應獨立於測試邏輯，使用專門的 fixture 文件定義。
+
+```
+test/
+├── fixtures/                    # 測試資料集中管理
+│   └── <module>-test-cases.ts   # 各模組測試資料集
+└── <module>/
+    └── <feature>.test.ts        # 測試邏輯（引用 fixture）
+```
+
+#### 測試資料集結構
+
+**規則：** 每個測試用例應包含完整的測試資料，包括輸入、預期輸出和描述。
+
+```typescript
+/**
+ * 測試用例結構
+ * Test case structure
+ */
+export interface ITestCase
+{
+	/** 測試用例名稱 / Test case name */
+	name: string;
+	/** 輸入資料（測試目標）/ Input data (test target) */
+	input: any;
+	/** 預期結果 / Expected result */
+	expected: any;
+	/** 備註（可選）/ Note (optional) */
+	note?: string;
+}
+
+/**
+ * 測試群組結構
+ * Test group structure
+ */
+export interface ITestGroup
+{
+	/** 測試群組名稱 / Test group name */
+	name: string;
+	/** 測試用例陣列 / Test cases array */
+	testCases: ITestCase[];
+}
+```
+
+#### 測試資料集格式
+
+**規則：** 使用單一陣列導出所有測試群組，便於自動產生測試。
+
+```typescript
+/**
+ * 完整測試資料集
+ * Complete test dataset
+ *
+ * 所有測試群組的集合
+ */
+export const testGroups: ITestGroup[] = [
+	{
+		name: "基本類型",
+		testCases: [
+			{
+				name: "stringWithDefault",
+				input: z.string().default("hello"),
+				expected: "hello",
+			},
+			// ... 更多測試用例
+		],
+	},
+	// ... 更多測試群組
+];
+```
+
+#### 測試腳本自動產生
+
+**規則：** 測試腳本應自動遍歷測試資料集，無需手動定義每個測試。
+
+```typescript
+import { testGroups } from "../fixtures/zod-defaults-test-cases";
+
+/**
+ * 自動產生所有測試群組
+ * Automatically generate all test groups
+ */
+for (const group of testGroups)
+{
+	describe(group.name, () =>
+	{
+		for (const testCase of group.testCases)
+		{
+			it(testCase.name, () =>
+			{
+				// 執行測試邏輯
+				runTestCase(testCase);
+			});
+		}
+	});
+}
+```
+
+#### 測試資料集命名規範
+
+**規則：** 測試資料集文件應與被測模組對應。
+
+| 模組 | 測試資料集 | 測試文件 |
+|------|-----------|---------|
+| `src/config/schema.ts` | `test/fixtures/config-test-cases.ts` | `test/issues/config-all.test.ts` |
+| `src/utils/helper.ts` | `test/fixtures/helper-test-cases.ts` | `test/issues/helper-all.test.ts` |
+
+#### 測試資料集組織
+
+##### 按功能分組
+
+```typescript
+export const testGroups: ITestGroup[] = [
+	{
+		name: "基本類型",
+		testCases: [
+			// 基本類型測試用例
+		],
+	},
+	{
+		name: "巢狀結構",
+		testCases: [
+			// 巢狀結構測試用例
+		],
+	},
+	{
+		name: "邊界情況",
+		testCases: [
+			// 邊界情況測試用例
+		],
+	},
+];
+```
+
+##### 按輸入類型分組
+
+```typescript
+export const testGroups: ITestGroup[] = [
+	{
+		name: "字串輸入",
+		testCases: [
+			// 字串輸入測試用例
+		],
+	},
+	{
+		name: "數字輸入",
+		testCases: [
+			// 數字輸入測試用例
+		],
+	},
+	{
+		name: "物件輸入",
+		testCases: [
+			// 物件輸入測試用例
+		],
+	},
+];
+```
+
+#### 注意事項
+
+1. **避免硬編碼** - 測試資料不應直接寫在測試邏輯中
+2. **資料集獨立** - 測試資料集文件應可獨立維護
+3. **自動產生** - 測試腳本應自動遍歷資料集，無需手動定義
+4. **類型安全** - 使用 `ITestCase` 和 `ITestGroup` 接口確保類型安全
+5. **雙語註解** - 測試資料集的註解應包含中英文
+6. **完整資料** - 每個測試用例應同時包含輸入（測試目標）與預期輸出（expected）
 
 ## 決策流程
 
