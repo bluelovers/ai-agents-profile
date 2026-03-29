@@ -1,6 +1,6 @@
 ---
 name: analyze-code-commenter
-description: Analyze code and add bilingual comments (Traditional Chinese zh-TW + English). Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) "為代碼添加註解", (5) "分析並註解程式碼", (6) "為代碼更新註解", (6) "為代碼修正註解", (7) "重構代碼更新註解", (8) "雙語註釋/雙語註解". Uses ONLY block comments (single-line or multi-line). Never uses inline comments.
+description: Analyze code and add bilingual comments (Traditional Chinese zh-TW + English). Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) "為代碼添加註解", (5) "分析並註解程式碼", (6) "為代碼更新註解", (7) "為代碼修正註解", (8) "重構代碼更新註解", (9) "雙語註釋/雙語註解", (10) "添加註釋", (11) "程式碼註解", (12) "文件註解", (13) "JSDoc", (14) "區塊註解", (15) "註解格式", (16) "程式碼說明", (17) "註釋翻譯", (18) "code comments", (19) "bilingual comments", (20) "block comments". Uses ONLY block comments (single-line or multi-line). Never uses inline comments.
 ---
 
 # Analyze Code Commenter
@@ -153,7 +153,7 @@ The format depends on how much explanation is needed:
 |------|------|
 | **Comment Type** | **MUST use block comments (`/** ... */`), NEVER inline comments (`//`)** |
 | Position | Each member gets its own block comment, placed **above** the member |
-| Comment Length | Brief explanation: single-line block `/`** 說明 / Description */`<br>Detailed or long explanation: multi-line block `/** ... */` |
+| Comment Length | Brief explanation: single-line block `/** 說明 / Description */`<br>Detailed or long explanation: multi-line block `/** ... */` |
 | Bilingual Format | Two formats allowed:<br>1. Chinese first, English translation after (separated by `/`)<br>2. Chinese above, English translation below |
 
 ---
@@ -226,8 +226,8 @@ The choice depends on **how much explanation is needed** (not code complexity).
 > **Preserve Existing Style**:
 > - If existing comment is already using single-line or multi-line format correctly, do NOT change it
 > - Both formats are valid bilingual styles:
->   - Single-line: `/** 说明 / Description */`
->   - Multi-line: `/** 说明 * Description */`
+>   - Single-line: `/** 說明 / Description */`
+>   - Multi-line: `/** 說明 * Description */`
 > - Only adjust when the format violates the rules (e.g., using inline comments instead of block comments, or single-line comment is too long for readability)
 
 #### Single-line Block Comment
@@ -569,8 +569,8 @@ When JSDoc needs to contain multiple independent description blocks, you can use
 If original comments use block style `/** ... */`, preserve format and add English translation. Do not convert to inline comments.
 
 **Do NOT change between single-line and multi-line formats** - both are valid bilingual styles:
-- Single-line: `/** 说明 / Description */`
-- Multi-line: `/** 说明 * Description */`
+- Single-line: `/** 說明 / Description */`
+- Multi-line: `/** 說明 * Description */`
 
 Only convert when the format violates the rules (e.g., using inline comments instead of block comments, or single-line comment is too long for readability)
 
