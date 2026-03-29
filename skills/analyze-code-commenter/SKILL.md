@@ -217,6 +217,48 @@ return {
 }
 ```
 
+#### Common Error: Incorrect Block Comment Formatting
+
+**常見錯誤：將單行註解轉換為區塊註解時的排版錯誤**
+
+當將單行註解轉換為區塊註解，或修正多個單行區塊註解時，容易發生以下排版錯誤：
+
+```typescript
+// ❌ 錯誤：開頭 `/**` 與第一行文字同行，導致縮排混亂
+/** 如果是 optional 類型，遞迴處理其內部類型
+	 * If it's an optional type, recursively process its inner type
+	 */
+
+// ❌ 錯誤：多個單行區塊註解合併時縮排錯誤
+/** 驗證訂單資料格式與必填欄位
+	 * Validate order data format and required fields
+	 */
+```
+
+```typescript
+// ✅ 正確：開頭 `/**` 獨立一行，後續行正確對齊
+/**
+ * 如果是 optional 類型，遞迴處理其內部類型
+ * If it's an optional type, recursively process its inner type
+ */
+
+// ✅ 正確：多個單行區塊註解合併後格式正確
+/**
+ * 驗證訂單資料格式與必填欄位
+ * Validate order data format and required fields
+ */
+```
+
+**錯誤原因 / Error Cause:**
+- 將單行註解 `/** 文字 */` 直接轉換為多行時，未將開頭 `/**` 獨立一行
+- 使用 Tab 縮排時，後續行的 `*` 號未正確對齊
+- 合併多個單行區塊註解時，未重新調整縮排格式
+
+**解決方法 / Solution:**
+- 開頭 `/**` 必須獨立一行
+- 每行內容前需加 `* ` 並正確對齊
+- 結尾 `*/` 與開頭 `/**` 對齊
+
 ---
 
 ### Single-line vs Multi-line Block Comments
