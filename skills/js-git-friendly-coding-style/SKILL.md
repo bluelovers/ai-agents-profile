@@ -129,7 +129,45 @@ interface IOptions<T>
 當需要為代碼添加註解時，推薦參考 [analyze-code-commenter skill](../analyze-code-commenter/) 的風格：
 - **只使用區塊註解** (`/** ... */`)，**不使用行內註解** (`//`)
 
-### 7. 其餘遵循 Standard Style
+### 7. Import 語句
+
+當從同一模組引入三個或更多項目時，應使用多行格式，每個項目獨佔一行。若原始碼已使用多行格式，即使少於三個項目，也應保持原樣，且每個項目仍應獨佔一行：
+
+```typescript
+// ✅ 三個及以上引用：使用多行格式
+import {
+	applyEdits,
+	format,
+	parse,
+	createScanner,
+	SyntaxKind,
+	FormattingOptions as IJsonHandlerFormattingOptions,
+	modify,
+	ParseError as IParseError,
+	printParseErrorCode,
+	JSONPath as IJSONPath,
+	ModificationOptions as IModificationOptions,
+} from 'jsonc-parser';
+
+// ✅ 兩個引用：可使用單行格式
+import { foo, bar } from 'module';
+
+// ✅ 單一引用：使用單行格式
+import { something } from 'module';
+
+// ✅ 原始碼已使用多行格式：保持原樣（即使少於三個項目）
+import {
+	foo,
+	bar,
+} from 'module';
+
+// ❌ 錯誤：多行格式中不應將多個項目放在同一行
+import {
+	foo, bar,
+} from 'module';
+```
+
+### 8. 其餘遵循 Standard Style
 
 - 結尾不加分號（除非必要）
 - **使用單引號字串** ( `'` 而非 `"` )
