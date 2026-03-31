@@ -167,7 +167,35 @@ import {
 } from 'module';
 ```
 
-### 8. 其餘遵循 Standard Style
+### 8. 多行成員格式（Trailing Commas）
+
+當 import、陣列或物件使用多行格式時，每個成員獨佔一行，且**每行結尾必須加上逗號**（包括最後一行）：
+
+```typescript
+// ✅ Import 多行格式
+import {
+	join,
+	resolve,
+} from 'path';
+
+// ✅ 陣列多行格式
+let arr = [
+	join,
+	resolve,
+];
+
+// ✅ 物件多行格式
+let map = {
+	join: '',
+	resolve: '',
+};
+```
+
+這樣做的好處：
+- Git diff 只顯示實際變更的行，不會因為添加/刪除成員而顯示無關的逗號變動
+- 減少合併衝突的機會
+
+### 9. 其餘遵循 Standard Style
 
 - 結尾不加分號（除非必要）
 - **使用單引號字串** ( `'` 而非 `"` )
@@ -194,3 +222,4 @@ import {
 | if/else 大括號 | 同一行 | 換行 |
 | 縮排 | 2 空格 | Tab（除非原為空格）|
 | 行尾 | 環境預設 | LF（統一）|
+| 多行尾逗號 | 可選 | 必須 |
