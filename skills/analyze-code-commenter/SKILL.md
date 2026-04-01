@@ -654,7 +654,53 @@ Only convert when the format violates the rules (e.g., using inline comments ins
 - **NEVER** write "English + English" as fake bilingual comments - each comment pair MUST contain Traditional Chinese followed by English, not two English lines
 - For key terms, add English in parentheses: `快取 (Cache)`, `佇列 (Queue)`, `遞迴 (Recursion)`
 
-### Preserve Technical Terms (DO NOT Delete)
+### Special Directives Placement (e.g., `// @ts-ignore`)
+
+**核心原則：特殊指令註解必須緊鄰目標代碼，區塊註解應放在特殊指令之前。**
+
+當代碼中包含特殊指令註解（如 `// @ts-ignore`、`// @ts-expect-error`、`// eslint-disable` 等）時，區塊註解必須放在特殊指令之前，而非之後。
+
+#### 錯誤範例 / Wrong Example
+
+```typescript
+// ❌ 錯誤：特殊指令放在區塊註解之前
+// @ts-ignore
+/**
+ * 將 Console2 類別指派給原型屬性以便於型別檢查
+ * Assign Console2 class to prototype property for type checking convenience
+ */
+Console2.prototype.Console = Console2
+```
+
+#### 正確範例 / Correct Example
+
+```typescript
+// ✅ 正確：區塊註解放在特殊指令之前
+/**
+ * 將 Console2 類別指派給原型屬性以便於型別檢查
+ * Assign Console2 class to prototype property for type checking convenience
+ */
+// @ts-ignore
+Console2.prototype.Console = Console2
+```
+
+#### 原因說明 / Reason
+
+- 特殊指令（如 `// @ts-ignore`）需要緊鄰目標代碼才能生效
+- 區塊註解是說明性質，應放在特殊指令之前
+- 這樣可以確保特殊指令正確作用於目標代碼，同時保持註解的可讀性
+
+#### 常見特殊指令 / Common Special Directives
+
+| 指令 / Directive | 用途 / Purpose |
+|-----------------|----------------|
+| `// @ts-ignore` | 忽略 TypeScript 型別檢查錯誤 / Ignore TypeScript type checking errors |
+| `// @ts-expect-error` | 預期會有型別錯誤（用於測試）/ Expect type errors (for testing) |
+| `// eslint-disable` | 停用 ESLint 規則 / Disable ESLint rules |
+| `// eslint-disable-next-line` | 停用下一行的 ESLint 規則 / Disable ESLint rules for next line |
+| `// @ts-nocheck` | 停用整個檔案的 TypeScript 檢查 / Disable TypeScript checking for entire file |
+
+### Preserve Technical Terms (DO Not Delete)
 
 **核心原則：技術術語不得刪除。**
 
