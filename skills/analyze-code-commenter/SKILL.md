@@ -654,6 +654,26 @@ Only convert when the format violates the rules (e.g., using inline comments ins
 - **NEVER** write "English + English" as fake bilingual comments - each comment pair MUST contain Traditional Chinese followed by English, not two English lines
 - For key terms, add English in parentheses: `快取 (Cache)`, `佇列 (Queue)`, `遞迴 (Recursion)`
 
+### Exception: Inline Comments in JSDoc `@example` Blocks
+
+**Inline comments (`//`) are ALLOWED within JSDoc `@example` code blocks.** This is because:
+
+1. Example comments are for documentation display purposes, not executable code
+2. Used to show expected output or behavior (e.g., `console.log(x); // Output: 3`)
+3. System limitation: Cannot use nested block comments inside examples
+
+```typescript
+/**
+ * @example
+ * ```typescript
+ * // Modifying cloned styles does not affect the original
+ * cloned._styles.push({ open: '\\x1b[34m', close: '\\x1b[39m', closeRe: /\\x1b[39m/ });
+ * console.log(source._styles.length); // 2 (original unchanged)
+ * console.log(cloned._styles.length); // 3 (cloned modified)
+ * ```
+ */
+```
+
 ### Special Directives Placement (e.g., `// @ts-ignore`)
 
 **核心原則：特殊指令註解必須緊鄰目標代碼，區塊註解應放在特殊指令之前。**

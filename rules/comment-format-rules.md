@@ -104,6 +104,26 @@ let jsonHandlerOptions = {
 - **對齊與視覺性**：註解在上方時，能清晰分隔邏輯段落，提升掃描效率
 - **IDE 支援**：將註解置於上方，更能幫助編輯器正確識別與該代碼相關的上下文
 
+#### 例外情況：JSDoc `@example` 區塊內的行內註解
+
+在 JSDoc 的 `@example` 程式碼範例區塊中，**允許使用行內註解 (`//`)**。這是因為：
+
+1. 範例中的註解屬於文件展示用途，非實際執行代碼
+2. 用於說明預期輸出或行為（如 `console.log(x); // 輸出: 3`）
+3. 系統限制：範例內無法使用巢狀的區塊註解
+
+```typescript
+/**
+ * @example
+ * ```typescript
+ * // 修改克隆的樣式不會影響原始
+ * cloned._styles.push({ open: '\\x1b[34m', close: '\\x1b[39m', closeRe: /\\x1b[39m/ });
+ * console.log(source._styles.length); // 2（原始未變）
+ * console.log(cloned._styles.length); // 3（克隆已修改）
+ * ```
+ */
+```
+
 
 ---
 
