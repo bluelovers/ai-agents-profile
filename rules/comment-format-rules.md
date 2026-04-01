@@ -6,7 +6,7 @@ IDE 及 AI 在處理程式碼時，會優先解析 **語義化標籤**（如 JSD
 
 ---
 
-## 1. 結構化文檔註解 (Documentation Blocks)
+## 結構化文檔註解 (Documentation Blocks)
 
 凡是涉及 **函式定義、類別、介面、重要的常數或設定值、複雜邏輯區塊、關鍵邏輯或算法**，必須使用編輯器可識別的標準區塊註解。這有助於 IDE 及 AI 在提供自動補全（IntelliSense）時顯示正確的提示訊息。
 
@@ -37,7 +37,7 @@ const MAX_CHARS = 2000;
 
 ---
 
-## 2. 單行區塊註解 (Single-line Block)
+## 單行區塊註解 (Single-line Block)
 
 對於能夠被編輯器標記，但內容較短的說明，使用單行的區塊註解格式。
 
@@ -63,11 +63,138 @@ private ideList: IIDEInfo[] = [];
 
 ---
 
-## 3. 註解位置規範 (Placement Rules)
+## 雙語註解格式規範 (Bilingual Comment Format)
+
+當註解需要使用**雙語**（繁體中文 + 英文）時，請遵循以下格式規範：
+
+### 格式選擇
+
+| 格式 | 適用場景 | 範例 |
+|------|----------|------|
+| **單行格式** | 簡短說明 | `/** 說明 / Description */` |
+| **多行格式** | 詳細說明或翻譯較長時 | `/** 說明\n * Description */` |
+
+### 語言順序
+
+- **中文在前，英文在後**
+- 使用 `/` 分隔，或分行書寫
+- 禁止「英文 + 英文」的假雙語
+
+```typescript
+// ✅ 正確：單行格式
+/** 是否成功 / Whether successful */
+const isActive = true;
+
+// ✅ 正確：多行格式
+/**
+ * 取得分組鍵的函式
+ * Function to get grouping key
+ *
+ * @param item - 要分組的元素 / Element to group
+ */
+getKey?(item: T, index: number, arr: T[]): any
+
+// ❌ 錯誤：假雙語（兩行都是英文）
+/**
+ * Process data
+ * Process data
+ */
+```
+
+### JSDoc 標籤雙語格式
+
+JSDoc 標籤（如 `@param`、`@returns`、`@throws` 等）中的描述也可以使用雙語格式：
+
+```typescript
+/**
+ * 取得使用者資料
+ * Get user data
+ *
+ * @param userId - 使用者識別碼 / User identifier
+ * @param options - 選項配置 / Options configuration
+ * @returns 使用者資料 / User data
+ * @throws 當使用者不存在時拋出錯誤 / Throws error when user not found
+ */
+function getUserData(userId: string, options?: GetUserOptions): UserData {
+    // ...
+}
+```
+
+**格式說明：**
+- 在 `-` 後面使用 `描述 / Description` 格式
+- 中文在前，英文在後，使用 `/` 分隔
+- 適用於所有 JSDoc 標籤： `@param`、`@returns`、`@throws`、`@see` 等
+
+---
+
+## 邏輯區塊註解規範 (Logic Block Comments)
+
+**所有邏輯區塊都需要註解**，包括私有/內部邏輯：
+
+| 邏輯類型 | 範例 |
+|----------|------|
+| 控制流程 | `if/else`, `switch/case`, `try/catch`, 迴圈 |
+| 業務邏輯 | 資料轉換、驗證、計算算法 |
+| 錯誤處理 | 異常捕獲、降級邏輯、重試機制 |
+| 巢狀邏輯 | 巢狀迴圈、巢狀條件、回呼函式 |
+
+### 註解內容原則
+
+- **解釋 WHY（為什麼），而非僅解釋 WHAT（做什麼）**
+- 複雜條件需要說明理由
+- 邊界情況必須記錄
+
+```typescript
+// ❌ 避免：複雜邏輯無註解
+if (user.isActive && subscription.status === 'active' &&
+    (payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew))
+{
+    // grant access
+}
+
+// ✅ 推薦：複雜條件加上說明
+/**
+ * 檢查使用者是否有有效訂閱且最近有付款記錄
+ * 或啟用自動續訂功能的使用者
+ * Check if user has active subscription with recent payment OR auto-renew enabled
+ */
+if (user.isActive && subscription.status === 'active' &&
+    (payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew))
+{
+    // grant access
+}
+```
+
+### 禁止多個單行註解
+
+**禁止對同一個代碼元素使用多個單行註解**（無論是單行區塊註解 `/** ... */` 或單行行內註解 `//`），應合併為一個多行區塊註解：
+
+```typescript
+// ❌ 錯誤：多個單行區塊註解
+/** 驗證訂單資料格式與必填欄位 */
+/** Validate order data format and required fields */
+const validated = validateOrder(order);
+
+// ❌ 錯誤：多個單行行內註解
+// 驗證訂單資料格式與必填欄位
+// Validate order data format and required fields
+const validated = validateOrder(order);
+
+// ✅ 正確：合併為單一多行區塊註解
+/**
+ * 驗證訂單資料格式與必填欄位
+ * Validate order data format and required fields
+ */
+const validated = validateOrder(order);
+```
+
+---
+
+## 註解位置規範 (Placement Rules)
 
 **註解應放置於代碼上方，而非代碼後方。** 這樣的安排有助於提升代碼的可讀性，並使 IDE 及 AI 能夠更好地理解上下文關聯。
 
-### 3.1 對陣列元素的註解
+### 對陣列元素的註解
 
 ```typescript
 // ✅ 推薦：註解放在上方
@@ -85,7 +212,7 @@ let arr = [
 ];
 ```
 
-### 3.2 對物件屬性的註解
+### 對物件屬性的註解
 
 ```typescript
 // ✅ 推薦：使用文檔區塊註解，放置於屬性上方
@@ -98,7 +225,7 @@ let jsonHandlerOptions = {
 }
 ```
 
-### 3.3 注意事項
+### 注意事項
 
 - **避免代碼後方註解** (`code // comment`)：直行註解會降低代碼的視覺層級，分散閱讀焦點
 - **對齊與視覺性**：註解在上方時，能清晰分隔邏輯段落，提升掃描效率
@@ -127,7 +254,7 @@ let jsonHandlerOptions = {
 
 ---
 
-## 4. 靈活性原則 (Flexibility Principle)
+## 靈活性原則 (Flexibility Principle)
 
 在不違反上述規則的情況下，可保持原有的註解風格。對於既有代碼庫或特定邏輯區塊，如果已有清晰且一致的註解慣例，無需強制改寫。重點是確保：
 
@@ -135,7 +262,7 @@ let jsonHandlerOptions = {
 - **一致性**：同一文件或模組內保持同一風格
 - **可維護性**：未來的開發者能快速理解
 
-### 4.1 改善既有代碼的註解
+### 改善既有代碼的註解
 
 當遇到需要優化的既有註解時，應同時改善邏輯清晰度和註解品質。以下是改善範例：
 
@@ -178,7 +305,7 @@ else if (m = (w1.p & w2.p))
 
 ---
 
-## 5. 短註解 (Inline/Short Comments)
+## 短註解 (Inline/Short Comments)
 
 僅限於兩行（含）以內的簡單邏輯說明或暫時性標記。否則請使用多行區塊註解格式。
 
@@ -194,6 +321,179 @@ if (cache.has(key)) return cache.get(key);
 // TODO: 優化大數據量下的迴圈效能
 processData(data);
 ```
+
+---
+
+## JSDoc 與邏輯區塊職責分離 (Responsibility Separation)
+
+**核心原則：** JSDoc 描述「合約/意圖」，邏輯區塊描述「實作細節」。
+
+| 位置 | 應包含 | 不應包含 |
+|------|--------|----------|
+| **JSDoc** | 函式用途、設計邏輯、為什麼這樣設計 | 具體如何實現、語法細節 |
+| **邏輯區塊** | 具體實作邏輯、技術細節（as any、運算子等） | 為什麼要這樣設計 |
+
+```typescript
+// ❌ 錯誤：將實作細節放在 JSDoc
+/**
+ * 處理資料（錯誤：將實作細節放在 JSDoc）
+ * Process data (wrong: implementation details in JSDoc)
+ *
+ * 使用短路運算實現：(condition && value) || default
+ */
+function process(result) {
+  return condition && value || [];
+}
+
+// ✅ 正確：JSDoc 描述意圖，邏輯區塊描述實作
+/**
+ * 從結果中取得舊版插件名稱
+ * Get legacy plugin names from result
+ */
+function getLegacyPluginNamesFromResult(result) {
+    /**
+     * 條件判斷：確保新舊插件名稱確實不同
+     * Condition check: ensure legacy and current plugin names are actually different
+     *
+     * 使用 `as any` 繞過 TypeScript 推導
+     * Uses `as any` to bypass TypeScript inference
+     *
+     * 短路運算實現：(condition && value) || default
+     * Short-circuit evaluation implementation
+     */
+    return (LEGACY_PLUGIN_NAME !== PLUGIN_NAME as any) && result[LEGACY_PLUGIN_NAME] || [];
+}
+```
+
+---
+
+## 重要約束 (Critical Constraints)
+
+### 區塊註解強制使用
+
+- **一律使用區塊註解 (`/** ... */`)** - 任何代碼都不使用行內註解 (`//`)
+- **例外**：JSDoc `@example` 區塊內、特殊指令（`// @ts-ignore` 等）
+
+#### 分隔線註解規則
+
+即使是分隔線類型的註解，也必須使用**區塊註解**，不得使用行內註解：
+
+```typescript
+// ❌ 錯誤：使用行內註解作為分隔線
+// ==================== Zod Schema 工廠函數 ====================
+
+// ✅ 正確：使用單行區塊註解作為分隔線
+/** ==================== Zod Schema 工廠函數 ==================== */
+
+// ✅ 正確：使用多行區塊註解作為分隔線
+/**
+ * ==================== Zod Schema 工廠函數 ====================
+ */
+```
+
+**錯誤原因：** 誤以為分隔線只是視覺分隔，不需要遵循區塊註解規則。
+
+**解決方法：** 所有註解（包含分隔線）都必須使用 `/** ... */` 格式。
+
+### 特殊指令放置規則
+
+特殊指令（如 `// @ts-ignore`、`// eslint-disable`）必須**緊鄰目標代碼**，區塊註解應放在特殊指令**之前**：
+
+```typescript
+// ❌ 錯誤：特殊指令放在區塊註解之前
+// @ts-ignore
+/**
+ * 將 Console2 類別指派給原型屬性
+ * Assign Console2 class to prototype property
+ */
+Console2.prototype.Console = Console2
+
+// ✅ 正確：區塊註解放在特殊指令之前
+/**
+ * 將 Console2 類別指派給原型屬性
+ * Assign Console2 class to prototype property
+ */
+// @ts-ignore
+Console2.prototype.Console = Console2
+```
+
+### 保留技術術語
+
+更新註解時**不得刪除原始技術術語**，只能新增翻譯或說明：
+
+| 術語類型 | 範例 |
+|----------|------|
+| TypeScript/JavaScript 術語 | Non-Null Assertion Operator (`!`)、Union Type、Type Guard |
+| 演算法名稱 | Dijkstra、Binary Search、Quick Sort |
+| 設計模式 | Singleton、Factory、Observer、Strategy |
+| 資料結構 | Linked List、Hash Map、Binary Tree |
+
+```typescript
+// ✅ 正確：保留原始術語並添加翻譯
+/**
+ * 使用 Non-Null Assertion Operator (!) 確保值不為 null
+ * Uses Non-Null Assertion Operator (!) to ensure value is not null
+ */
+const value = nullableValue!;
+
+// ❌ 錯誤：刪除原始術語
+/**
+ * 使用驚嘆號確保值不為空
+ * Uses exclamation mark to ensure value is not empty
+ */
+const value = nullableValue!;
+```
+
+### 識別無語義命名慣例
+
+某些命名（如 `Lazy`、`Helper`、`Util`）可能只是組織慣例，而非特定技術意涵：
+
+```typescript
+/**
+ * 配置獲取值型別
+ * Config getter value type
+ *
+ * @note Lazy 為命名慣例，無「延遲/惰性」意涵
+ * @note Lazy is a naming convention, no "lazy/惰性" meaning
+ */
+export type ILazyConfigGetterValue = ...
+```
+
+---
+
+## 註解更新規則 (Comment Update Rules)
+
+更新既有註解時，遵循以下規則以保留有價值的技術資訊：
+
+### 保留原始錯誤資訊
+
+當代碼包含錯誤碼、錯誤訊息時，**只能添加翻譯，不得刪除**：
+
+```typescript
+// ✅ 正確：保留原始錯誤碼和訊息
+/**
+ * 工具建立函式（避免 TypeScript 推導錯誤）
+ * Tool creation function (avoids TypeScript inference errors)
+ *
+ * > error TS2742: 原始錯誤訊息 (保留不刪)
+ */
+
+// ❌ 錯誤：刪除原始錯誤資訊
+/**
+ * 工具建立函式
+ * Tool creation function
+ */
+```
+
+### Issue 連結需驗證相關性
+
+新增 Issue/文件連結前，必須確認內容確實相關。無法確認時，應標註「可能相關，未驗證」。
+
+### 更新前檢查清單
+
+- [ ] 原始註解的技術資訊是否保留？（錯誤碼、版本號、檔案路徑等）
+- [ ] 新增的連結是否已驗證相關性？
+- [ ] 是否與代碼/問題/邏輯/意圖相關？
 
 ---
 

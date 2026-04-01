@@ -21,6 +21,10 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
 
 ## Logic Block Requirements (Required for ALL logic blocks)
 
+> **Reference**: For detailed logic block comment rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#邏輯區塊註解規範-logic-block-comments).
+>
+> **參考**：詳細的邏輯區塊註解規範請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#邏輯區塊註解規範-logic-block-comments)。
+
 **All logic blocks MUST be commented, including private/non-public internal logic.** Comments help future developers understand complex control flow, business rules, and edge case handling.
 
 ### What are Logic Blocks?
@@ -129,6 +133,10 @@ async function processOrder(order)
 
 ## Bilingual Comment Format Rules
 
+> **Reference**: For detailed bilingual comment format specifications, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#雙語註解格式規範-bilingual-comment-format).
+>
+> **參考**：詳細的雙語註解格式規範請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#雙語註解格式規範-bilingual-comment-format)。
+
 ## All Members Use Block Comments (Required)
 
 **All members must use block comments (`/** ... */`), NOT inline comments (`// ...`).**
@@ -171,6 +179,10 @@ The format depends on how much explanation is needed:
 ---
 
 ### Wrong Format vs Correct Format
+
+> **Reference**: For correct comment format examples, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#區塊註解強制使用).
+>
+> **參考**：正確註解格式範例請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#區塊註解強制使用)。
 
 #### Wrong Format (Using Inline Comments)
 ```typescript
@@ -219,6 +231,10 @@ return {
 
 #### Common Error: Incorrect Block Comment Formatting
 
+> **Reference**: For block comment formatting rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#區塊註解排版規則).
+>
+> **參考**：區塊註解排版規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#區塊註解排版規則)。
+
 **常見錯誤：將單行註解轉換為區塊註解時的排版錯誤**
 
 當將單行註解轉換為區塊註解，或修正多個單行區塊註解時，容易發生以下排版錯誤：
@@ -261,6 +277,10 @@ return {
 
 #### Common Error: Using Inline Comments for Section Separators
 
+> **Reference**: For section separator rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#分隔線註解規則).
+>
+> **參考**：分隔線註解規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#分隔線註解規則)。
+
 **常見錯誤：使用行內註解作為分隔線**
 
 即使是分隔線類型的註解，也必須使用區塊註解，不得使用行內註解：
@@ -291,6 +311,10 @@ return {
 ---
 
 ### Single-line vs Multi-line Block Comments
+
+> **Reference**: For single-line vs multi-line comment format rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#格式選擇).
+>
+> **參考**：單行與多行區塊註解格式規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#格式選擇)。
 
 The choice depends on **how much explanation is needed** (not code complexity).
 
@@ -345,6 +369,10 @@ const queryParams = new URLSearchParams(window.location.search);
 
 ## JSDoc (methods/classes/properties)
 
+> **Reference**: For JSDoc format rules and JSDoc tag bilingual format, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#jsdoc-標籤雙語格式).
+>
+> **參考**：JSDoc 格式規範與 JSDoc 標籤雙語格式請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#jsdoc-標籤雙語格式)。
+
 ```typescript
 /**
  * 繁體中文說明
@@ -359,6 +387,10 @@ const queryParams = new URLSearchParams(window.location.search);
 ```
 
 ### Logic Block Comments
+
+> **Reference**: For logic block comment placement rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#邏輯區塊註解規範-logic-block-comments).
+>
+> **參考**：邏輯區塊註解放置規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#邏輯區塊註解規範-logic-block-comments)。
 
 For logic blocks (if/else, loops, try/catch, etc.), use block comments above the block:
 
@@ -387,6 +419,10 @@ catch (error)
 ```
 
 #### Multiple Single-line Block Comments Rule
+
+> **Reference**: For multiple single-line comment rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#禁止多個單行註解).
+>
+> **參考**：禁止多個單行註解規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#禁止多個單行註解)。
 
 **NEVER use multiple single-line block comments for the same code element.** Merge them into one multi-line block comment.
 
@@ -519,6 +555,10 @@ function canAccess(user, resource) {
 
 #### JSDoc vs Logic Block Responsibility Separation (Preventing Information Redundancy)
 
+> **Reference**: For JSDoc vs logic block responsibility separation rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#jsdoc-與邏輯區塊職責分離-responsibility-separation).
+>
+> **參考**：JSDoc 與邏輯區塊職責分離規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#jsdoc-與邏輯區塊職責分離-responsibility-separation)。
+
 **Core Principle / 核心原則：** JSDoc describes "contract/intent", logic blocks describe "implementation details".
 
 | 位置 / Location | 應包含 / Should Include | 不應包含 / Should NOT Include |
@@ -585,6 +625,10 @@ function getLegacyPluginNamesFromResult(result) {
 
 #### JSDoc Avoid Redundant Descriptions
 
+> **Reference**: For JSDoc redundant description rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#jsdoc-避免冗餘描述).
+>
+> **參考**：JSDoc 避免冗餘描述規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#jsdoc-避免冗餘描述)。
+
 不需要「標題 + 與標題相同意思的描述」，兩段意思相同的註解只保留一組完整的描述即可。
 No need for "title + description with the same meaning" - keep only one complete set of descriptions if they mean the same thing.
 
@@ -637,6 +681,10 @@ When JSDoc needs to contain multiple independent description blocks, you can use
 
 ### Preserve Original Style
 
+> **Reference**: For preserving original comment style rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#靈活性原則-flexibility-principle).
+>
+> **參考**：保留原始註解風格規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#靈活性原則-flexibility-principle)。
+
 If original comments use block style `/** ... */`, preserve format and add English translation. Do not convert to inline comments.
 
 **Do NOT change between single-line and multi-line formats** - both are valid bilingual styles:
@@ -647,6 +695,10 @@ Only convert when the format violates the rules (e.g., using inline comments ins
 
 ## Critical Constraints
 
+> **Reference**: For detailed critical constraints and comment rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#重要約束-critical-constraints).
+>
+> **參考**：詳細的重要約束與註解規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#重要約束-critical-constraints)。
+
 - **ALWAYS use block comments (`/** ... */`)** - Never use inline comments (`//`) for any code
 - **NEVER** modify existing code formatting (indentation, line breaks, spaces)
 - **NEVER** delete old commented-out code (e.g., `// old code...`, `/* old code... */`, or `/** @deprecated */`)
@@ -655,6 +707,10 @@ Only convert when the format violates the rules (e.g., using inline comments ins
 - For key terms, add English in parentheses: `快取 (Cache)`, `佇列 (Queue)`, `遞迴 (Recursion)`
 
 ### Exception: Inline Comments in JSDoc `@example` Blocks
+
+> **Reference**: For JSDoc `@example` inline comment exception rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#例外情況jsdoc-example-區塊內的行內註解).
+>
+> **參考**：JSDoc `@example` 行內註解例外規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#例外情況jsdoc-example-區塊內的行內註解)。
 
 **Inline comments (`//`) are ALLOWED within JSDoc `@example` code blocks.** This is because:
 
@@ -675,6 +731,10 @@ Only convert when the format violates the rules (e.g., using inline comments ins
 ```
 
 ### Special Directives Placement (e.g., `// @ts-ignore`)
+
+> **Reference**: For special directives placement rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#特殊指令放置規則).
+>
+> **參考**：特殊指令放置規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#特殊指令放置規則)。
 
 **核心原則：特殊指令註解必須緊鄰目標代碼，區塊註解應放在特殊指令之前。**
 
@@ -721,6 +781,10 @@ Console2.prototype.Console = Console2
 | `// @ts-nocheck` | 停用整個檔案的 TypeScript 檢查 / Disable TypeScript checking for entire file |
 
 ### Preserve Technical Terms (DO Not Delete)
+
+> **Reference**: For technical term preservation rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#保留技術術語).
+>
+> **參考**：技術術語保留規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#保留技術術語)。
 
 **核心原則：技術術語不得刪除。**
 
@@ -784,6 +848,10 @@ function findShortestPath(graph) { ... }
 ---
 
 ### Identify Non-semantic Naming Conventions
+
+> **Reference**: For non-semantic naming convention rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#識別無語義命名慣例).
+>
+> **參考**：無語義命名慣例識別規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#識別無語義命名慣例)。
 
 **核心原則：當程式碼中存在無特殊含義的命名慣例時，註解應謹慎處理。**
 
@@ -856,7 +924,11 @@ export type ILazyConfigGetterValue = ...
 
 ###
 
-## Comment Update Rules (Preventing Comment Update Errors)
+## Comment Update Rules (Preventing Comment Update Rules)
+
+> **Reference**: For detailed comment update rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#註解更新規則-comment-update-rules).
+>
+> **參考**：詳細的註解更新規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#註解更新規則-comment-update-rules)。
 
 When updating existing comments, follow these additional rules to preserve valuable technical information.
 
