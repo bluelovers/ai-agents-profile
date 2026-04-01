@@ -225,6 +225,43 @@ let jsonHandlerOptions = {
 }
 ```
 
+### Interface 與 Type 成員註解規則
+
+**禁止在 Interface 或 Type 的 JSDoc 中使用 `@property` 描述成員**，應在每個成員上方直接添加註解：
+
+```typescript
+// ❌ 錯誤：使用 @property 在 interface JSDoc 中描述成員
+/**
+ * 工具配置介面
+ * Tool configuration interface
+ *
+ * @property description - 描述說明 / Description
+ * @property shortDescription - 簡短描述 / Short description
+ * @property args - 參數 / Arguments
+ */
+interface I_AriseToolsConfigEntry {
+	description?: string;
+	shortDescription: string;
+	args: unknown;
+}
+
+// ✅ 正確：在每個成員上方直接添加註解
+interface I_AriseToolsConfigEntry 
+{
+	/** 描述說明 / Description */
+	description?: string;
+	/** 簡短描述 / Short description */
+	shortDescription: string;
+	/** 參數 / Arguments */
+	args: unknown;
+}
+```
+
+**原因：**
+- `@property` 標籤需要額外維護，且容易與實際成員脫節
+- 成員上方的註解更直觀，IDE 可正確識別並顯示 IntelliSense
+- 符合「每個成員獨立註解」的核心原則
+
 ### 注意事項
 
 - **避免代碼後方註解** (`code // comment`)：直行註解會降低代碼的視覺層級，分散閱讀焦點

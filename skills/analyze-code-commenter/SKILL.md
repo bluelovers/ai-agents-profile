@@ -229,6 +229,46 @@ return {
 }
 ```
 
+#### Wrong Format: Using @property in Interface/Type JSDoc
+
+> **Reference**: For interface member comment rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#interface-與-type-成員註解規則).
+>
+> **參考**：Interface 成員註解規則請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#interface-與-type-成員註解規則)。
+
+**DO NOT use `@property` tags in Interface or Type JSDoc to describe members.** Instead, add comments directly above each member:
+
+```typescript
+// ❌ Wrong: Using @property in interface JSDoc to describe members
+/**
+ * Tool configuration interface
+ *
+ * @property description - Description
+ * @property shortDescription - Short description
+ * @property args - Arguments
+ */
+interface I_AriseToolsConfigEntry {
+	description?: string;
+	shortDescription: string;
+	args: unknown;
+}
+
+// ✅ Correct: Add comments directly above each member
+interface I_AriseToolsConfigEntry
+{
+	/** Description */
+	description?: string;
+	/** Short description */
+	shortDescription: string;
+	/** Arguments */
+	args: unknown;
+}
+```
+
+**Reasons:**
+- `@property` tags require extra maintenance and can become out of sync with actual members
+- Member comments are more intuitive and IDE can properly recognize them for IntelliSense
+- Follows the "each member gets its own comment" principle
+
 #### Common Error: Incorrect Block Comment Formatting
 
 > **Reference**: For block comment formatting rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#區塊註解排版規則).
