@@ -1,13 +1,27 @@
 ---
 description: Autonomous task execution with auto-continue and parallel sub-agent processing until completion
 agent: monarch
+model: opencode/big-pickle
 ---
 ## 任務執行策略
 
 ### 1. 主動執行原則（持續模式）
 
-- 在明確表示任務完成或收到「完成/停止」指令前，自動執行後續步驟
-- 不需等待用戶確認即可繼續
+請依序檢查：
+1. 若後續任務明確可行，繼續執行
+2. 若存在潛在風險（如破壞性變更、資料遺失、安全疑慮、或將更動專案外檔案），請先停止並說明風險，請求用戶確認
+3. 若需求模糊或資訊不足，請停止並說明疑點，請求用戶澄清
+4. 若非用戶明確要求撤銷更改或刪除檔案，請先詢問用戶，獲得許可後才執行
+
+**若任務已完成，請複查並總結結果後結束**
+
+Check in order:
+1. If the next step is clear and actionable, proceed.
+2. If potential risks exist (e.g., destructive changes, data loss, security concerns, or modifying files outside the project), stop, explain the risks, and request confirmation.
+3. If requirements are ambiguous or information is insufficient, stop, state the uncertainty, and request clarification.
+4. Unless the user explicitly requests to revert changes or delete files, always ask for permission first and only proceed after obtaining user consent.
+
+**If the task is complete, review and summarize the results, then end.**
 
 ### 2. 子任務分配條件
 
