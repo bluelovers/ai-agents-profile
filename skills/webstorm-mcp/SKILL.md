@@ -181,6 +181,23 @@ webstorm inspect <project> <profile>
 
 ### 場景 8：執行配置（MCP 專有）
 
+#### ⚠️ 不要用於測試 MCP 連線
+
+**❌ 不建議做法**：
+```
+不要使用 webstorm_execute_run_configuration 或 webstorm_execute_terminal_command 
+來測試 MCP 是否可用
+```
+
+**原因**：
+- 這類指令需要人工在 IDE 中確認並允許執行
+- 無法自動化驗證 MCP 連線狀態
+- 會造成工作流程中斷，等待人工介入
+
+**✅ 正確的測試方式**：
+- 使用 `webstorm_get_file_problems` 等查詢類指令測試連線
+- 或使用 `webstorm_open_file_in_editor` 等檔案操作指令
+
 #### 使用 MCP 指令
 
 ```
