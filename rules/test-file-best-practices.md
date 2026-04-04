@@ -1507,6 +1507,68 @@ export const testGroups: ITestGroup[] = [
 5. **雙語註解** - 測試資料集的註解應包含中英文
 6. **完整資料** - 每個測試用例應同時包含輸入（測試目標）與預期輸出（expected）
 
+---
+
+## 系統依賴與 Mock 規範
+
+### Mock 處理摘要
+
+**測試中涉及系統資源（檔案系統、日期時間、環境變數、網路請求）時，應遵循以下處理原則：**
+
+| 系統資源 | 處理方式 | 優先順序 |
+|---------|---------|---------|
+| **檔案系統 (fs)** | `jest.mock('fs')` 或臨時目錄 | Mock 優先 |
+| **日期時間 (Date)** | `jest.useFakeTimers()` / `spyOn(Date, 'now')` | Mock 優先 |
+| **環境變數** | `beforeEach` 複製 `process.env` | 備份與恢復 |
+| **網路請求** | `fetchMock` / `nock` / `msw` | 一律 Mock |
+
+**日期時間相關參考資源：**
+- [Jest Timer Mocks](https://jestjs.io/docs/timer-mocks)
+- [Bun MockTimers](https://bun.com/reference/node/test/default/MockTimers)
+
+### 系統依賴處理流程圖
+
+```
+需要使用系統資源?
+    │
+    ├─ 檔案系統 ───────────────────────────────────┐
+    │   可以 Mock?                                  │
+    │   ├─ 是 → 使用 jest.mock('fs')               │
+    │   │         或 spyOn 模組方法                  │
+    │   └─ 否 → 使用專案內臨時目錄 + try/finally 清理 │
+    │                                               │
+    ├─ 日期時間 ───────────────────────────────────┤
+    │   使用 jest.useFakeTimers()                   │
+    │   或 spyOn(Date, 'now')                       │
+    │                                               │
+    ├─ 環境變數 ───────────────────────────────────┤
+    │   beforeEach: 複製 process.env                │
+    │   afterAll:   恢復原值                         │
+    │                                               │
+    └─ 網路請求 ───────────────────────────────────┘
+        一律使用 fetchMock / nock / msw
+```
+
+### 重要提醒
+
+- **非臨時目錄禁止寫入**：絕對不要讓測試寫入 `/etc/`、`/usr/`、`C:\Windows\` 等系統目錄，或專案根目錄下的固定路徑
+- **僅限專案內臨時目錄**：測試產生的臨時檔案**只能**寫入專案下的臨時目錄（如專案根目錄下的 `tmp/` 或 `.tmp/`），禁止寫入系統級臨時目錄（如 `/tmp`、`os.tmpdir()`）
+- **優先使用框架 Mock**：當 Jest/Bun 提供的 `jest.mock()`、`spyOn()`、`useFakeTimers()` 能滿足需求時，**不要**自行實作複雜的 mock 機制
+- **自訂 Mock 作為最後手段**：僅當框架提供的 API 無法滿足特殊需求時，才考慮自行設計 mock 實作，且應妥善封裝並充分測試
+
+### 詳細範例與實作
+
+**完整的系統依賴處理範例請參閱：**
+
+- [測試框架 API 重構範例 - 系統依賴謹慎處理原則](./test-file-best-practices/examples.md#12-系統依賴謹慎處理原則)
+
+詳細範例包含：
+- 檔案系統 Mock 與臨時目錄使用方式
+- 依賴模組內部使用 fs 時的 Mock 策略
+- 日期時間的 fake timers 與 spyOn 技巧
+- 環境變數備份與恢復機制
+- 網路請求 Mock 實作
+
 ## 決策流程
 
 ```
@@ -1537,6 +1599,8 @@ export const testGroups: ITestGroup[] = [
 ## 相關資源
 
 - [Jest Snapshot Testing](https://jestjs.io/docs/snapshot-testing)
+- [Jest Timer Mocks](https://jestjs.io/docs/timer-mocks)
+- [Bun MockTimers](https://bun.com/reference/node/test/default/MockTimers)
 - [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
 - [測試框架 API 重構範例](./test-file-best-practices/examples.md) - 補充 Jest 與 Bun 測試相容的 API 重構範例
 - [test-snapshot-documentation skill](../skills/test-snapshot-documentation/SKILL.md) - 利用測試快照進行文件化的非常規使用方式

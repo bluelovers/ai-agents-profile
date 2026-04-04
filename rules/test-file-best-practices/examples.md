@@ -5,7 +5,7 @@
 
 ---
 
-## 0. API 可讀性原則
+## API 可讀性原則
 
 **編寫測試時，應盡量使用具有可讀性/識別性的 API，使錯誤訊息更容易理解。**
 
@@ -21,9 +21,9 @@ expect(items).toHaveLength(0);
 
 ---
 
-## 1. Snapshot 測試優先原則
+## Snapshot 測試優先原則
 
-### 1.1 基本 Snapshot 使用
+### 基本 Snapshot 使用
 
 ```typescript
 // ❌ 不良範例：手動驗證多個欄位
@@ -46,7 +46,7 @@ it('should throw error for invalid input', () => {
 });
 ```
 
-### 1.2 Property Matchers - 驗證特定欄位
+### Property Matchers - 驗證特定欄位
 
 ```typescript
 // ❌ 不良範例：手動驗證每個欄位
@@ -65,7 +65,7 @@ expect(result).toMatchSnapshot({
 });
 ```
 
-### 1.3 動態資料處理
+### 動態資料處理
 
 對於動態資料（如時間戳、隨機 ID），可使用 Asymmetric matchers：
 
@@ -84,7 +84,7 @@ expect(result.items).toMatchSnapshot({
 
 ---
 
-## 2. 單一屬性驗證
+## 單一屬性驗證
 
 **單一屬性的測試，且沒有使用快照或物件比對的狀況下，應使用 `toHaveProperty()`。**
 
@@ -100,7 +100,7 @@ expect(result).toHaveProperty('timeout', 3000);
 
 ---
 
-## 3. 陣列長度驗證
+## 陣列長度驗證
 
 **測試陣列長度時，應使用 `toHaveLength()` 而非 `expect(array.length).toBe()`。**
 
@@ -119,9 +119,9 @@ expect(tags.length).toBeGreaterThan(0);
 
 ---
 
-## 4. 物件屬性重構（進階）
+## 物件屬性重構（進階）
 
-### 4.1 toMatchObject 與 toEqual 比較
+### toMatchObject 與 toEqual 比較
 
 ```typescript
 // ❌ 不良範例：使用 toEqual 驗證部分屬性
@@ -139,7 +139,7 @@ expect(actual).toMatchObject({
 });
 ```
 
-### 4.2 expect.objectContaining 巢狀使用
+### expect.objectContaining 巢狀使用
 
 ```typescript
 // ✅ 使用 objectContaining 進行非嚴格匹配，可以巢狀嵌套在 toEqual 或 toHaveBeenCalledWith 中
@@ -160,7 +160,7 @@ test('驗證函式被正確調用', () => {
 });
 ```
 
-### 4.3 toHaveProperty 鏈式使用
+### toHaveProperty 鏈式使用
 
 ```typescript
 // ❌ 不良範例：多次斷言難以維護
@@ -180,9 +180,9 @@ expect(result.timestamp).toBeDefined();
 
 ---
 
-## 5. 數值比較重構
+## 數值比較重構
 
-### 5.1 大於 / 小於比較
+### 大於 / 小於比較
 
 ```typescript
 // ❌ 不良範例：使用 toBe true/false
@@ -194,7 +194,7 @@ expect(score).toBeGreaterThanOrEqual(60);
 expect(discount).toBeLessThan(50);
 ```
 
-### 5.2 浮點數精度比較
+### 浮點數精度比較
 
 ```typescript
 // ❌ 不良範例：直接使用 toBe 比較浮點數
@@ -207,9 +207,9 @@ expect(price * quantity).toBeCloseTo(99.99, 2); // 精確到小數點後 2 位
 
 ---
 
-## 6. 布林值與真假值重構
+## 布林值與真假值重構
 
-### 6.1 否定断言重構
+### 否定断言重構
 
 ```typescript
 // ❌ 不良範例：雙重否定語義不清
@@ -225,7 +225,7 @@ expect(isValid).toBeTruthy();
 expect(hasError).toBeFalsy();
 ```
 
-### 6.2 Null / Undefined 檢查
+### Null / Undefined 檢查
 
 ```typescript
 // ❌ 不良範例
@@ -239,7 +239,7 @@ expect(value).toBeUndefined();
 expect(value).toBeNull(); // 包含 null 和 undefined
 ```
 
-### 6.3 明確的真假值檢查
+### 明確的真假值檢查
 
 ```typescript
 // ❌ 不良範例：語意不明
@@ -255,9 +255,9 @@ expect(isEmpty).not.toBe(true);   // 當需要嚴格比對非 true 時
 
 ---
 
-## 7. 字串匹配重構
+## 字串匹配重構
 
-### 7.1 子字串包含檢查
+### 子字串包含檢查
 
 ```typescript
 // ❌ 不良範例
@@ -269,7 +269,7 @@ expect(message).toMatch(/error/);       // 正則匹配
 expect(url).toMatch(/^https/);          // 開頭匹配
 ```
 
-### 7.2 正則表達式匹配
+### 正則表達式匹配
 
 ```typescript
 // ❌ 不良範例
@@ -282,9 +282,9 @@ expect(email).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
 
 ---
 
-## 8. 陣列操作重構
+## 陣列操作重構
 
-### 8.1 陣列包含元素
+### 陣列包含元素
 
 ```typescript
 // ❌ 不良範例
@@ -298,7 +298,7 @@ expect(roles).toContain('admin');
 expect(roles).toEqual(expect.arrayContaining(['admin']));
 ```
 
-### 8.2 陣列包含匹配元素
+### 陣列包含匹配元素
 
 ```typescript
 // ❌ 不良範例
@@ -315,9 +315,9 @@ expect(users).toEqual(expect.arrayContaining([
 
 ---
 
-## 9. 類型與實例重構
+## 類型與實例重構
 
-### 9.1 類別實例檢查
+### 類別實例檢查
 
 ```typescript
 // ❌ 不良範例
@@ -331,9 +331,9 @@ expect(error).toBeInstanceOf(Error);
 
 ---
 
-## 10. Promise / Async 重構
+## Promise / Async 重構
 
-### 10.1 Promise 解決值檢查
+### Promise 解決值檢查
 
 ```typescript
 // ❌ 不良範例：手動等待
@@ -349,7 +349,7 @@ await expect(fetchData()).resolves.toMatchObject({
 await expect(fetchData()).resolves.toHaveProperty('data');
 ```
 
-### 10.2 Promise 拒絕錯誤檢查
+### Promise 拒絕錯誤檢查
 
 ```typescript
 // ❌ 不良範例
@@ -370,9 +370,9 @@ await expect(riskyOperation()).rejects.toMatchObject({
 
 ---
 
-## 11. Mock / Spy 重構
+## Mock / Spy 重構
 
-### 11.1 函式調用次數
+### 函式調用次數
 
 ```typescript
 // ❌ 不良範例
@@ -384,7 +384,7 @@ expect(mockFn).toHaveBeenCalledTimes(2);
 expect(spy).toHaveBeenCalled();
 ```
 
-### 11.2 函式調用參數
+### 函式調用參數
 
 ```typescript
 // ❌ 不良範例
@@ -398,9 +398,9 @@ expect(spy).toHaveBeenCalledWith(expect.objectContaining({ id: 1 }));
 
 ---
 
-## 12. 其他常見重構
+## 其他常見重構
 
-### 12.1 定義性檢查
+### 定義性檢查
 
 ```typescript
 // ❌ 不良範例
@@ -411,7 +411,7 @@ expect(typeof value !== 'undefined').toBe(true);
 expect(value).toBeDefined();
 ```
 
-### 12.2 完全相等
+### 完全相等
 
 ```typescript
 // ❌ 不良範例
@@ -424,11 +424,11 @@ expect(actual).toEqual(expected);     // 深度相等
 
 ---
 
-## 13. 重要例外：物件引用 Identity 測試
+## 重要例外：物件引用 Identity 測試
 
 當測試 **物件引用 identity**（兩個變數是否指向記憶體中同一個物件）時，**必須使用 `toBe()`**。這在測試物件克隆行為時特別重要。
 
-### 13.1 基礎範例
+### 基礎範例
 
 ```typescript
 /**
@@ -449,7 +449,7 @@ expect(mergedWithClone['a']).not.toBe(firstObject.a);
 expect(mergedWithClone['b']).not.toBe(secondObject.b);
 ```
 
-### 13.2 完整克隆測試模式
+### 完整克隆測試模式
 
 以下提供一個完整的克隆驗證模式，同時驗證 **物件值相等** 與 **物件引用 identity**：
 
@@ -602,7 +602,7 @@ export function _isCloneMerged<A, B = Partial<A>>(merged: A, map: B, isNotClone?
 }
 ```
 
-### 13.3 使用範例
+### 使用範例
 
 ```typescript
 // 測試未克隆的物件（共享引用）
@@ -653,6 +653,257 @@ expect(copy).toMatchObject({ id: 1 });    // ✅ 通過 (包含該屬性)
 | **物件引用 identity**（是否同一個記憶體位置） | `toBe()` / `not.toBe()` |
 | **物件值相等**（結構相同） | `toEqual()` / `toStrictEqual()` |
 | **物件包含特定屬性**（部分比對） | `toMatchObject()` / `toHaveProperty()` |
+
+---
+
+## 系統依賴謹慎處理原則
+
+### 檔案系統 (fs) 操作
+
+**測試中涉及檔案系統操作時，應極度謹慎，優先使用測試框架提供的 Mock API。**
+
+```typescript
+// ❌ 不良範例：直接操作真實檔案系統，可能污染開發環境
+it('should write config file', () => {
+    fs.writeFileSync('/etc/myapp/config.json', JSON.stringify(config));
+    const result = fs.readFileSync('/etc/myapp/config.json', 'utf-8');
+    expect(result).toBe(JSON.stringify(config));
+});
+
+// ❌ 不良範例：在非臨時目錄中建立測試檔案
+it('should process data file', () => {
+    const testPath = './test-data.txt';
+    fs.writeFileSync(testPath, 'test data');
+    const result = processFile(testPath);
+    fs.unlinkSync(testPath); // 若測試中斷，檔案殘留
+    expect(result).toBe('TEST DATA');
+});
+
+// ✅ 良好範例：使用 Jest 的 mock fs
+jest.mock('fs', () => ({
+    ...jest.requireActual('fs'),
+    writeFileSync: jest.fn(),
+    readFileSync: jest.fn(),
+}));
+
+it('should write config file', () => {
+    const { writeFileSync, readFileSync } = require('fs');
+    readFileSync.mockReturnValue(JSON.stringify(config));
+    
+    saveConfig(config);
+    
+    expect(writeFileSync).toHaveBeenCalledWith(
+        expect.stringContaining('config.json'),
+        JSON.stringify(config)
+    );
+});
+
+// ✅ 良好範例：使用臨時目錄（若必須使用真實檔案系統）
+import { tmpdir } from 'os';
+import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'fs';
+import { join } from 'path';
+
+it('should process data file', () => {
+    const tempDir = mkdtempSync(join(tmpdir(), 'test-'));
+    const testPath = join(tempDir, 'data.txt');
+    
+    try {
+        writeFileSync(testPath, 'test data');
+        const result = processFile(testPath);
+        expect(result).toBe('TEST DATA');
+    } finally {
+        // 確保清理臨時目錄
+        rmSync(tempDir, { recursive: true, force: true });
+    }
+});
+```
+
+### 依賴模組的檔案系統操作
+
+**當依賴的第三方模組內部使用檔案系統，且測試無法直接控制其行為時，必須使用 Mock。**
+
+```typescript
+// ❌ 不良範例：直接使用內部操作檔案系統的模組
+import { saveConfig } from 'some-config-lib'; // 內部使用 fs.writeFileSync
+
+it('should save config', () => {
+    // 無法控制 saveConfig 內部的檔案寫入行為
+    saveConfig('/etc/app/config.json', { key: 'value' });
+    // 可能寫入真實系統目錄，且難以驗證
+});
+
+// ✅ 良好範例：Mock 整個模組以隔離檔案系統操作
+jest.mock('some-config-lib', () => ({
+    saveConfig: jest.fn(),
+    loadConfig: jest.fn(),
+}));
+
+it('should save config', () => {
+    const { saveConfig } = require('some-config-lib');
+    const config = { key: 'value' };
+    
+    saveConfig('/app/config.json', config);
+    
+    // 驗證函式被正確呼叫，而非實際檔案操作
+    expect(saveConfig).toHaveBeenCalledWith('/app/config.json', config);
+});
+
+// ✅ 良好範例：使用 spyOn 部分 Mock 模組方法
+import * as configLib from 'some-config-lib';
+
+it('should read config without file system', () => {
+    const mockLoad = jest.spyOn(configLib, 'loadConfig').mockReturnValue({
+        key: 'mocked-value',
+    });
+    
+    const result = app.readConfiguration();
+    
+    expect(mockLoad).toHaveBeenCalled();
+    expect(result.key).toBe('mocked-value');
+    
+    mockLoad.mockRestore();
+});
+```
+
+**決策準則**：
+- 若模組 API 允許傳入 `fs` 實例或路徑參數 → 可考慮注入 mock fs 或臨時路徑
+- 若模組內部直接使用 `fs` 且無法注入 → **必須 Mock 整個模組或其方法**
+- 若模組為專案內部模組 → 優先在模組設計階段考慮測試性（依賴注入）
+
+### 日期與時間 (Date/Time) 操作
+
+**測試中涉及日期時間時，應 Mock `Date` 物件以確保測試結果穩定可重現。**
+
+```typescript
+// ❌ 不良範例：依賴當前真實時間，測試結果不穩定
+it('should return current timestamp', () => {
+    const result = getCurrentTimestamp();
+    expect(result).toBeGreaterThan(1700000000000); // 隨時間失效
+});
+
+// ❌ 不良範例：直接比較動態產生的時間字串
+it('should format date', () => {
+    const result = formatDate(new Date());
+    expect(result).toBe('2024-01-15'); // 每天都在變
+});
+
+// ✅ 良好範例：使用 Jest fake timers
+beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-01-15T10:00:00Z'));
+});
+
+afterAll(() => {
+    jest.useRealTimers();
+});
+
+it('should return current timestamp', () => {
+    const result = getCurrentTimestamp();
+    expect(result).toBe(1705312800000); // 固定時間戳
+});
+
+it('should format date', () => {
+    const result = formatDate(new Date());
+    expect(result).toBe('2024-01-15');
+});
+
+// ✅ 良好範例：使用 Bun 的 mock 機制（若使用 Bun）
+beforeEach(() => {
+    // Bun 可使用 spyOn 配合 Date.now
+    spyOn(Date, 'now').mockReturnValue(1705312800000);
+});
+```
+
+#### 參考資源
+- [Jest Timer Mocks](https://jestjs.io/docs/timer-mocks)
+- [Bun MockTimers](https://bun.com/reference/node/test/default/MockTimers)
+
+### 環境變數與全域狀態
+
+**修改環境變數或全域狀態時，必須在測試後恢復原狀。**
+
+```typescript
+// ❌ 不良範例：未恢復環境變數，影響後續測試
+it('should read API URL from env', () => {
+    process.env.API_URL = 'https://test.example.com';
+    const result = getApiUrl();
+    expect(result).toBe('https://test.example.com');
+}); // process.env.API_URL 仍為修改後的值
+
+// ✅ 良好範例：使用 jest.spyOn 或 beforeEach/afterEach 恢復
+const originalEnv = process.env;
+
+beforeEach(() => {
+    jest.resetModules();
+    process.env = { ...originalEnv };
+});
+
+afterAll(() => {
+    process.env = originalEnv;
+});
+
+it('should read API URL from env', () => {
+    process.env.API_URL = 'https://test.example.com';
+    const result = getApiUrl();
+    expect(result).toBe('https://test.example.com');
+});
+```
+
+### 網路請求
+
+**網路請求應一律 Mock，避免測試依賴外部服務。**
+
+```typescript
+// ❌ 不良範例：發送真實網路請求
+it('should fetch user data', async () => {
+    const result = await fetchUser(123);
+    expect(result.name).toBe('John'); // 依賴外部 API
+});
+
+// ✅ 良好範例：使用 jest-fetch-mock 或 nock
+import { enableFetchMocks } from 'jest-fetch-mock';
+
+beforeAll(() => {
+    enableFetchMocks();
+});
+
+it('should fetch user data', async () => {
+    fetchMock.mockResponseOnce(JSON.stringify({ id: 123, name: 'John' }));
+    
+    const result = await fetchUser(123);
+    
+    expect(result).toEqual({ id: 123, name: 'John' });
+    expect(fetchMock).toHaveBeenCalledWith('https://api.example.com/users/123');
+});
+```
+
+### 決策流程：系統依賴處理
+
+```
+需要使用系統資源?
+    │
+    ├─ 檔案系統 ────────────────────────────┐
+    │   可以 Mock?                            │
+    │   ├─ 是 → 使用 jest.mock('fs')        │
+    │   └─ 否 → 使用臨時目錄 + finally 清理   │
+    │                                          │
+    ├─ 日期時間 ────────────────────────────┤
+    │   使用 jest.useFakeTimers()             │
+    │   或 spyOn(Date, 'now')                 │
+    │                                          │
+    ├─ 環境變數 ────────────────────────────┤
+    │   在 beforeEach 複製 process.env        │
+    │   在 afterAll 恢復原值                  │
+    │                                          │
+    └─ 網路請求 ────────────────────────────┘
+        一律使用 fetchMock / nock / msw
+```
+
+**重要提醒**：
+- **非臨時目錄禁止寫入**：絕對不要讓測試寫入 `/etc/`、`/usr/`、`C:\Windows\` 等系統目錄，或專案根目錄下的固定路徑
+- **僅限專案內臨時目錄**：測試產生的臨時檔案**只能**寫入專案下的臨時目錄（如專案根目錄下的 `tmp/` 或 `.tmp/`），禁止寫入系統級臨時目錄（如 `/tmp`、`os.tmpdir()`）
+- **優先使用框架 Mock**：當 Jest/Bun 提供的 `jest.mock()`、`spyOn()`、`useFakeTimers()` 能滿足需求時，**不要**自行實作複雜的 mock 機制
+- **自訂 Mock 作為最後手段**：僅當框架提供的 API 無法滿足特殊需求時，才考慮自行設計 mock 實作，且應妥善封裝並充分測試
 
 ---
 

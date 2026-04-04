@@ -141,6 +141,15 @@ webstorm merge "helper.ts" "helper.d.ts" "helper.ts"
 
 ### 場景 6：檔案搜尋（MCP 專有）
 
+#### 搜尋指令推薦
+
+| 優先順序 | 指令 | 原因 |
+|----------|------|------|
+| ✅ 推薦 | `webstorm_search_in_files_by_regex` | 支援正則表達式，搜尋更精確靈活 |
+| 一般 | `webstorm_search_in_files_by_text` | 純文字搜尋，功能較基礎 |
+
+> **建議**：優先使用 `search_in_files_by_regex`，可透過正則表達式達到更精確的搜尋結果
+
 #### 使用 MCP 指令
 
 ```
