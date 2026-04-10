@@ -241,7 +241,21 @@ webstorm_get_run_configurations      # 取得運行配置清單
 
 ## CLI 使用注意事項
 
-### ⚠️ 不要使用輸出重定向
+### ⚠️ 在 Batch 腳本中使用 call
+
+**❌ 錯誤的用法**（腳本會提前結束）：
+```batch
+webstorm "D:\Users\WebstormProjects\project"
+echo "這行不會執行"  &:: 此行不會執行
+```
+
+**✅ 正確的用法**（使用 `call` 保留控制權）：
+```batch
+call webstorm "D:\Users\WebstormProjects\project"
+echo "WebStorm 已啟動"  &:: 此行會正常執行
+```
+
+**原因**：Windows Batch 中直接執行程式會轉移控制權且不返回。使用 `call` 可確保 WebStorm 啟動後，腳本繼續執行後續指令。
 
 **❌ 錯誤的用法**（會導致無回應）：
 ```bash
@@ -252,8 +266,18 @@ webstorm "D:\Users\WebstormProjects\project" 2>&1
 
 **✅ 正確的用法**（直接執行）：
 ```bash
-webstorm "D:\Users\WebstormProjects\project"
+webstorm "D:\Users\WebstormProjects\project" &
 ```
+
+**✅ 使用工具達到不阻塞效果**：
+```
+使用 run_background_process 工具執行 webstorm 命令
+參數：
+  - command: webstorm "專案路徑"
+  - 無需等待命令完成，立即返回
+```
+
+此方式與 CLI 的 `&` 背景執行效果相同，讓工作流程不被阻塞。
 
 ### CLI 執行特性
 
