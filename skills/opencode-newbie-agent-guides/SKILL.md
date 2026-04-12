@@ -28,88 +28,124 @@ Agent 必須使用工具完成任務。不得說「我沒有權限訪問」或�
 
 ### bash - 執行 Shell 命令
 
-| 參數 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| command | string | ✅ | 要執行的 Shell 命令 |
-| description | string | ✅ | 命令用途說明（5-10 個字） |
-| timeout | number | ❌ | 逾時時間（毫秒） |
-| workdir | string | ❌ | 工作目錄 |
+| 參數        | 類型   | 必填 | 說明                      |
+| ----------- | ------ | ---- | ------------------------- |
+| command     | string | ✅   | 要執行的 Shell 命令       |
+| description | string | ✅   | 命令用途說明（5-10 個字） |
+| timeout     | number | ❌   | 逾時時間（毫秒）          |
+| workdir     | string | ❌   | 工作目錄                  |
 
 範例：
+
 ```json
-{"command": "ls -la", "description": "List files in current directory"}
+{ "command": "ls -la", "description": "List files in current directory" }
 ```
 
 ### write - 創建或覆寫檔案
 
-| 參數 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| filePath | string | ✅ | 檔案路徑 |
-| content | string | ✅ | 檔案內容 |
+| 參數     | 類型   | 必填 | 說明             |
+| -------- | ------ | ---- | ---------------- |
+| filePath | string | ✅   | 檔案**絕對路徑** |
+| content  | string | ✅   | 檔案內容         |
+
+⚠️ **重要**：filePath 必須使用**絕對路徑**，例如：`D:/Users/WebstormProjects/ai-agent/opencode/src/app.ts`
 
 範例：
+
 ```json
-{"filePath": "src/app.ts", "content": "console.log('hello');"}
-```
-
-### read - 讀取檔案
-
-| 參數 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| filePath | string | ✅ | 檔案路徑 |
-| offset | number | ❌ | 起始行號 |
-| limit | number | ❌ | 最大行數 |
-
-範例：
-```json
-{"filePath": "src/app.ts"}
-{"filePath": "src/app.ts", "offset": 1, "limit": 50}
+{
+  "filePath": "D:/Users/WebstormProjects/ai-agent/opencode/src/app.ts",
+  "content": "console.log('hello');"
+}
 ```
 
 ### edit - 修改檔案
 
-| 參數 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| filePath | string | ✅ | 檔案路徑 |
-| oldString | string | ✅ | 要找的文字（精確匹配） |
-| newString | string | ✅ | 替換後的文字 |
-| replaceAll | boolean | ❌ | 是否全部替換 |
+| 參數       | 類型    | 必填 | 說明                   |
+| ---------- | ------- | ---- | ---------------------- |
+| filePath   | string  | ✅   | 檔案**絕對路徑**       |
+| oldString  | string  | ✅   | 要找的文字（精確匹配） |
+| newString  | string  | ✅   | 替換後的文字           |
+| replaceAll | boolean | ❌   | 是否全部替換           |
+
+⚠️ **重要**：filePath 必須使用**絕對路徑**，例如：`D:/Users/WebstormProjects/ai-agent/opencode/src/app.ts`
 
 範例：
+
 ```json
-{"filePath": "src/app.ts", "oldString": "foo", "newString": "bar"}
+{
+  "filePath": "D:/Users/WebstormProjects/ai-agent/opencode/src/app.ts",
+  "oldString": "foo",
+  "newString": "bar"
+}
+```
+
+### read - 讀取檔案
+
+| 參數     | 類型   | 必填 | 說明             |
+| -------- | ------ | ---- | ---------------- |
+| filePath | string | ✅   | 檔案**絕對路徑** |
+| offset   | number | ❌   | 起始行號         |
+| limit    | number | ❌   | 最大行數         |
+
+⚠️ **重要**：filePath 必須使用**絕對路徑**，例如：`D:/Users/WebstormProjects/ai-agent/opencode/package.json`
+
+範例：
+
+```json
+{"filePath": "D:/Users/WebstormProjects/ai-agent/opencode/src/app.ts"}
+{"filePath": "D:/Users/WebstormProjects/ai-agent/opencode/src/app.ts", "offset": 1, "limit": 50}
+```
+
+### edit - 修改檔案
+
+| 參數       | 類型    | 必填 | 說明                   |
+| ---------- | ------- | ---- | ---------------------- |
+| filePath   | string  | ✅   | 檔案**絕對路徑**               |
+| oldString  | string  | ✅   | 要找的文字（精確匹配） |
+| newString  | string  | ✅   | 替換後的文字           |
+| replaceAll | boolean | ❌   | 是否全部替換           |
+
+⚠️ **重要**：filePath 必須使用**絕對路徑**，例如：`D:/Users/WebstormProjects/ai-agent/opencode/package.json`
+
+範例：
+
+```json
+{ "filePath": "src/app.ts", "oldString": "foo", "newString": "bar" }
 ```
 
 ### glob - 查找檔案
 
-| 參數 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| pattern | string | ✅ | Glob 模式（如 `**/*.ts`） |
-| path | string | ❌ | 搜尋目錄 |
+| 參數    | 類型   | 必填 | 說明                      |
+| ------- | ------ | ---- | ------------------------- |
+| pattern | string | ✅   | Glob 模式（如 `**/*.ts`） |
+| path    | string | ❌   | 搜尋目錄                  |
 
 範例：
+
 ```json
-{"pattern": "**/*.ts"}
+{ "pattern": "**/*.ts" }
 ```
 
 ### grep - 搜尋檔案內容
 
-| 參數 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| pattern | string | ✅ | 正則表達式 |
-| path | string | ❌ | 搜尋目錄 |
-| include | string | ❌ | 檔案過濾（如 `*.js`） |
+| 參數    | 類型   | 必填 | 說明                  |
+| ------- | ------ | ---- | --------------------- |
+| pattern | string | ✅   | 正則表達式            |
+| path    | string | ❌   | 搜尋目錄              |
+| include | string | ❌   | 檔案過濾（如 `*.js`） |
 
 範例：
+
 ```json
-{"pattern": "function\\s+\\w+"}
+{ "pattern": "function\\s+\\w+" }
 ```
 
 ### todowrite - 追蹤任務
 
-| 參數 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| todos | array | ✅ | 任務陣列（不是字串！） |
+| 參數  | 類型  | 必填 | 說明                   |
+| ----- | ----- | ---- | ---------------------- |
+| todos | array | ✅   | 任務陣列（不是字串！） |
 
 每個任務物件：
 | 欄位 | 類型 | 必填 | 說明 |
@@ -119,18 +155,23 @@ Agent 必須使用工具完成任務。不得說「我沒有權限訪問」或�
 | priority | string | ✅ | high / medium / low |
 
 範例：
+
 ```json
-{"todos": [{"content": "完成功能", "status": "in_progress", "priority": "high"}]}
+{
+  "todos": [
+    { "content": "完成功能", "status": "in_progress", "priority": "high" }
+  ]
+}
 ```
 
 ⚠️ **重要**：todos 必須是陣列 `[...]`，不能是字串 `"[...]"`
 
 ### question - 提問
 
-| 參數 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| question | string | ✅ | 問題內容 |
-| follow_up | array | ✅ | 建議選項陣列 |
+| 參數      | 類型   | 必填 | 說明         |
+| --------- | ------ | ---- | ------------ |
+| question  | string | ✅   | 問題內容     |
+| follow_up | array  | ✅   | 建議選項陣列 |
 
 每個選項：
 | 欄位 | 類型 | 必填 | 說明 |
@@ -139,8 +180,15 @@ Agent 必須使用工具完成任務。不得說「我沒有權限訪問」或�
 | mode | string/null | ✅ | 要切換的模式 |
 
 範例：
+
 ```json
-{"question": "要做什麼？", "follow_up": [{"text": "功能 A", "mode": null}, {"text": "功能 B", "mode": null}]}
+{
+  "question": "要做什麼？",
+  "follow_up": [
+    { "text": "功能 A", "mode": null },
+    { "text": "功能 B", "mode": null }
+  ]
+}
 ```
 
 ## 重要提醒
@@ -154,29 +202,32 @@ Agent 必須使用工具完成任務。不得說「我沒有權限訪問」或�
 
 ## 工作目錄
 
-使用相對於工作目錄的路徑：`D:/Users/WebstormProjects/ai-agent/ai-agents-profile`
+⚠️ **重要**：所有檔案操作工具（write、read、edit）都必須使用**絕對路徑**，不能使用相對路徑。
+
+工作目錄資訊僅供參考：`D:/Users/WebstormProjects/ai-agent/ai-agents-profile`
 
 ```json
-// ✅ 正確
-{"filePath": "src/app.ts", "content": "..."}
+// ✅ 正確：使用絕對路徑
+{"filePath": "D:/Users/WebstormProjects/ai-agent/ai-agents-profile/src/app.ts", "content": "..."}
 
-// ❌ 錯誤
-{"filePath": "d:/.../src/app.ts"}
+// ❌ 錯誤：不能使用相對路徑
+{"filePath": "src/app.ts", "content": "..."}
 ```
 
 ## Quick Reference
 
-| 工具 | 必要參數 |
-|------|----------|
-| bash | command, description |
-| write | filePath, content |
-| read | filePath |
-| edit | filePath, oldString, newString |
-| glob | pattern |
-| grep | pattern |
-| todowrite | todos |
-| question | question, follow_up |
+| 工具      | 必要參數                       | 備註               |
+| --------- | ------------------------------ | ------------------ |
+| bash      | command, description           |                    |
+| write     | filePath, content              | **必須用絕對路徑** |
+| read      | filePath                       | **必須用絕對路徑** |
+| edit      | filePath, oldString, newString | **必須用絕對路徑** |
+| glob      | pattern                        |                    |
+| grep      | pattern                        |                    |
+| todowrite | todos                          |                    |
+| question  | question, follow_up            |                    |
 
 詳細參考：
+
 - [AGENTS.md](references/AGENTS.md)
 - [prompts-build.txt](references/prompts-build.txt)
