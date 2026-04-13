@@ -679,24 +679,32 @@ it('should process data file', () => {
     expect(result).toBe('TEST DATA');
 });
 
-// ✅ 良好範例：使用 Jest 的 mock fs
-jest.mock('fs', () => ({
-    ...jest.requireActual('fs'),
-    writeFileSync: jest.fn(),
-    readFileSync: jest.fn(),
-}));
+// ✅ 良好範例：使用 memfs-extra Mock fs（推薦）
+// 參考: skills/test-js-mock
+import { getVolumeFromFs } from 'memfs-extra';
+
+jest.mock('fs', () => require('memfs-extra/fs-extra'));
 
 it('should write config file', () => {
-    const { writeFileSync, readFileSync } = require('fs');
-    readFileSync.mockReturnValue(JSON.stringify(config));
+    const fs = require('fs');
+    
+    // 驗證 mock 是否成功
+    const vol = getVolumeFromFs(fs);
+    expect(vol).toBeDefined();
+    
+    // 設定測試資料
+    vol.fromJSON({
+        '/config.json': JSON.stringify(config),
+    });
     
     saveConfig(config);
     
-    expect(writeFileSync).toHaveBeenCalledWith(
-        expect.stringContaining('config.json'),
-        JSON.stringify(config)
-    );
+    // 驗證檔案被寫入虛擬檔案系統
+    expect(fs.existsSync('/config.json')).toBe(true);
 });
+
+// ⚠️ 重要：即使有 mock 檔案系統，仍須遵守路徑安全原則
+// 詳細說明請參考: skills/test-js-mock#安全性考量
 
 // ✅ 良好範例：使用臨時目錄（若必須使用真實檔案系統）
 import { tmpdir } from 'os';
@@ -900,7 +908,9 @@ it('should fetch user data', async () => {
 ```
 
 **重要提醒**：
+- ⚠️ **即使有 mock 檔案系統，仍須遵守路徑安全原則**：即使使用 memfs-extra 模擬了 fs 模組，仍應確保所有檔案操作都限制在測試臨時目錄內。詳細說明請參考 [skills/test-js-mock - 安全性考量](../skills/test-js-mock/SKILL.md#安全性考量)
 - **非臨時目錄禁止寫入**：絕對不要讓測試寫入 `/etc/`、`/usr/`、`C:\Windows\` 等系統目錄，或專案根目錄下的固定路徑
+  - ⚠️ 即使有 mock 檔案系統，仍須確保路徑不超過臨時目錄範圍，詳細說明請參考 [skills/test-js-mock - 禁止使用的路徑模式](../skills/test-js-mock/SKILL.md#路徑安全原則)
 - **僅限專案內臨時目錄**：測試產生的臨時檔案**只能**寫入專案下的臨時目錄（如專案根目錄下的 `tmp/` 或 `.tmp/`），禁止寫入系統級臨時目錄（如 `/tmp`、`os.tmpdir()`）
 - **優先使用框架 Mock**：當 Jest/Bun 提供的 `jest.mock()`、`spyOn()`、`useFakeTimers()` 能滿足需求時，**不要**自行實作複雜的 mock 機制
 - **自訂 Mock 作為最後手段**：僅當框架提供的 API 無法滿足特殊需求時，才考慮自行設計 mock 實作，且應妥善封裝並充分測試

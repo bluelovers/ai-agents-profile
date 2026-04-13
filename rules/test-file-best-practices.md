@@ -782,7 +782,7 @@ const configData = fs.readFileSync(
 
 3. **主動接管 fs 方法** - Mock 應採用能主動接管 fs 方法的方式（如 `jest.mock('fs')`），而非直接操作 mock fs 物件。因為 fs 操作可能存在於原始邏輯或第三方模組中，需要讓這些操作自動被 mock 攔截
 
-4. **Mock 隔離** - 使用 mock 環境（如 MockFs）在記憶體中模擬檔案系統操作，避免影響真實檔案系統
+4. **Mock 隔離** - 使用 memfs-extra 在記憶體中模擬檔案系統操作，避免影響真實檔案系統。詳細使用方式請參考 [skills/test-js-mock](../skills/test-js-mock/SKILL.md)
 
 ##### 安全檢查流程
 
@@ -1032,11 +1032,11 @@ const tempFile = join("../../../test/temp/output.json");  // 容易出錯
 
 ##### 注意事項
 
-- **預設啟用安全檢查** - MockFs 預設啟用 `enableSafetyCheck: true`，阻擋危險路徑操作
-- **記憶體隔離** - MockFs 在記憶體中模擬檔案系統，不會影響真實檔案系統
+- **預設啟用安全檢查** - memfs-extra 配合 Jest mock 機制，應確保路徑限制在測試臨時目錄內
+- **記憶體隔離** - memfs-extra 在記憶體中模擬檔案系統，不會影響真實檔案系統
 - **跨平台路徑處理** - 使用 `upath2` 統一處理 Windows/Unix 路徑格式
-- **並行測試安全** - 每個測試應建立獨立的 MockEnv 實例，避免狀態洩漏
-- **Audit Mode** - 如需保留測試輸出供審閱，可使用 MockFs 的 Audit Mode 功能
+- **並行測試安全** - 每個測試應確保獨立的路徑隔離，避免狀態洩漏
+- **Audit Mode** - 如需保留測試輸出供審閱，可使用 memfs-extra 的 Volume 物件進行操作
 
 #### 為什麼需要專用臨時目錄
 
@@ -1170,7 +1170,7 @@ it('should handle file operations safely', async () => {
         writeFileSync: jest.fn(),
     };
 
-    // 測試邏輯使用 mock 的檔案系統
+    // 測試邏輯使用 mock 的檔案系統（使用 memfs-extra）
     const result = await processWithMockFs(inputData, mockFs);
     expect(result).toBeDefined();
 });
@@ -1533,8 +1533,8 @@ export const testGroups: ITestGroup[] = [
     │
     ├─ 檔案系統 ───────────────────────────────────┐
     │   可以 Mock?                                  │
-    │   ├─ 是 → 使用 jest.mock('fs')               │
-    │   │         或 spyOn 模組方法                  │
+    │   ├─ 是 → 使用 jest.mock('fs') + memfs-extra │
+    │   │         或 spyOn 模組方法                 │
     │   └─ 否 → 使用專案內臨時目錄 + try/finally 清理 │
     │                                               │
     ├─ 日期時間 ───────────────────────────────────┤
@@ -1553,7 +1553,8 @@ export const testGroups: ITestGroup[] = [
 
 - **非臨時目錄禁止寫入**：絕對不要讓測試寫入 `/etc/`、`/usr/`、`C:\Windows\` 等系統目錄，或專案根目錄下的固定路徑
 - **僅限專案內臨時目錄**：測試產生的臨時檔案**只能**寫入專案下的臨時目錄（如專案根目錄下的 `tmp/` 或 `.tmp/`），禁止寫入系統級臨時目錄（如 `/tmp`、`os.tmpdir()`）
-- **優先使用框架 Mock**：當 Jest/Bun 提供的 `jest.mock()`、`spyOn()`、`useFakeTimers()` 能滿足需求時，**不要**自行實作複雜的 mock 機制
+- ⚠️ 即使有 mock 檔案系統，仍須確保路徑不超過臨時目錄範圍，詳細說明請參考 [skills/test-js-mock - 禁止使用的路徑模式](../skills/test-js-mock/SKILL.md#路徑安全原則)
+- **優先使用框架 Mock**：當 Jest/Bun 提供的 `jest.mock()`、`spyOn()`、`useFakeTimers()`, `memfs-extra` 能滿足需求時，**不要**自行實作複雜的 mock 機制
 - **自訂 Mock 作為最後手段**：僅當框架提供的 API 無法滿足特殊需求時，才考慮自行設計 mock 實作，且應妥善封裝並充分測試
 
 ### 詳細範例與實作
@@ -1604,4 +1605,5 @@ export const testGroups: ITestGroup[] = [
 - [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
 - [測試框架 API 重構範例](./test-file-best-practices/examples.md) - 補充 Jest 與 Bun 測試相容的 API 重構範例
 - [test-snapshot-documentation skill](../skills/test-snapshot-documentation/SKILL.md) - 利用測試快照進行文件化的非常規使用方式
+- [skills/test-js-mock - 使用 Jest + memfs-extra Mock 模組](../skills/test-js-mock/SKILL.md)
 

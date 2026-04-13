@@ -319,10 +319,73 @@ jest.mock('fs', () => {
 
 ## 安全性考量 / Safety Considerations
 
+### 路徑安全原則
+
+**⚠️ 重要：即使有 mock 檔案系統，仍須遵守路徑安全原則**
+
+即使使用 memfs-extra 模擬了 fs 模組，仍應確保所有檔案操作都限制在測試臨時目錄內，避免路徑有機會離開臨時目錄範圍。
+
+**禁止使用的路徑模式：**
+- 絕對根路徑（如 `/`、`C:\`）
+- 相對路徑可能導致跳出臨時目錄的路徑
+- 硬編碼的系統路徑
+
+**正確的做法：**
+
+1. **使用測試臨時目錄路徑**
+
+```typescript
+// __root.ts
+import { join } from 'path';
+
+/** 專案根目錄 / Project root directory */
+export const __ROOT = join(__dirname, '..');
+
+/** 測試目錄路徑 / Test directory path */
+export const __ROOT_TEST = join(__ROOT, 'test');
+
+/** 測試臨時目錄路徑 / Test temporary directory path */
+export const __ROOT_TEST_TEMP = join(__ROOT_TEST, 'temp');
+```
+
+2. **在測試中使用安全的路徑**
+
+```typescript
+import { join } from 'path';
+import { __ROOT_TEST_TEMP } from '../__root';
+
+// ✅ 正確：使用測試臨時目錄
+const testSettingsPath = join(__ROOT_TEST_TEMP, 'mock/settings');
+const testSettingsJsonPath = join(testSettingsPath, 'settings.json');
+
+// ❌ 錯誤：使用根路徑
+const unsafePath = '/test/config.json';
+```
+
+3. **虛擬檔案系統中的路徑**
+
+```typescript
+import fs from 'fs';
+import { getVolumeFromFs } from 'memfs-extra';
+import { __ROOT_TEST_TEMP } from '../__root';
+
+jest.mock('fs', () => require('memfs-extra/fs-extra'));
+
+const vol = getVolumeFromFs(fs);
+
+// ✅ 正確：使用臨時目錄相對路徑（在虛擬環境中）
+vol.mkdirSync(join(__ROOT_TEST_TEMP, 'mock'));
+vol.writeFileSync(join(__ROOT_TEST_TEMP, 'mock/settings.json'), '{}');
+
+// ❌ 錯誤：使用根路徑（可能覆蓋真實系統檔案）
+vol.writeFileSync('/etc/config.json', '{}');
+```
+
 ### 隔離原則
 
 - 確保虛擬檔案操作不會影響真實檔案系統
 - 測試完成後應清理虛擬檔案
+- 所有路徑都應限制在測試臨時目錄內
 
 ### 臨時目錄隔離
 
