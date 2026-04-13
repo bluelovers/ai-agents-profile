@@ -138,10 +138,16 @@ module.exports = require('memfs-extra/fs-extra');
 // test/file-service.spec.ts
 // @noUnusedParameters:false
 import fs from 'fs';
+import { getVolumeFromFs } from 'memfs-extra';
 
+// 啟動模擬
 jest.mock('fs');
 
 describe('FileService', () => {
+    // 驗證 mock 是否成功，失敗時會拋出錯誤
+    const vol = getVolumeFromFs(fs);
+    expect(vol).toBeDefined();
+
     it('should read JSON file', () => {
         const testData = { name: 'test' };
 
@@ -162,12 +168,17 @@ describe('FileService', () => {
 // test/file-service-inline.spec.ts
 // @noUnusedParameters:false
 import fs from 'fs';
+import { getVolumeFromFs } from 'memfs-extra';
 
 // Mock fs 和 fs/promises
 jest.mock('fs', () => require('memfs-extra/fs-extra'));
 jest.mock('fs/promises', () => require('memfs-extra/fs-extra').promises);
 
 describe('FileService (Inline)', () => {
+    // 驗證 mock 是否成功，失敗時會拋出錯誤
+    const vol = getVolumeFromFs(fs);
+    expect(vol).toBeDefined();
+
     it('should write and read JSON', () => {
         const testData = { name: 'test', value: 123 };
 
@@ -212,7 +223,12 @@ jest.mock('path', () => require('path'));
 
 ### 自定義 Mock 行為
 
+**⚠️ 警告：除非有必要才使用這個做法**
+
+此方法會覆寫 memfs-extra 的原生行為，可能導致預期外的問題。建議優先使用下方的「虛擬檔案結構設定」方法。
+
 ```typescript
+// ⚠️ 僅在有特殊需求時使用
 jest.mock('fs', () => {
     const memfs = require('memfs-extra/fs-extra');
 
@@ -231,6 +247,54 @@ jest.mock('fs', () => {
     return customFs;
 });
 ```
+
+### 虛擬檔案結構設定（推薦做法）
+
+使用 `getVolumeFromFs` 取得的 Volume 物件來設定虛擬檔案結構，這是設定測試資料的推薦方式：
+
+```typescript
+import fs from 'fs';
+import { getVolumeFromFs } from 'memfs-extra';
+
+jest.mock('fs', () => require('memfs-extra/fs-extra'));
+
+describe('Virtual File Structure', () => {
+    // 驗證 mock 是否成功
+    const vol = getVolumeFromFs(fs);
+    expect(vol).toBeDefined();
+
+    it('should setup virtual file structure', () => {
+        // 方法一：使用 mkdirSync 建立目錄
+        vol.mkdirSync('/test-dir');
+        vol.writeFileSync('/test-dir/file.txt', 'content');
+
+        // 方法二：使用 appendFileSync 新增檔案
+        vol.appendFileSync('/another-file.txt', 'hello');
+
+        // 方法三：使用 fromJSON 一次設定多個檔案（推薦）
+        vol.fromJSON({
+            '/config.json': JSON.stringify({ name: 'test' }),
+            '/data/users.json': JSON.stringify([{ id: 1 }]),
+            '/logs/app.log': '2024-01-01 INFO: Started\n',
+        });
+
+        // 驗證檔案存在
+        expect(fs.existsSync('/config.json')).toBe(true);
+        expect(fs.existsSync('/data/users.json')).toBe(true);
+    });
+});
+```
+
+**Volume API 常用方法：**
+
+| 方法 | 說明 |
+|------|------|
+| `vol.mkdirSync(path)` | 建立目錄 |
+| `vol.writeFileSync(path, content)` | 寫入檔案 |
+| `vol.appendFileSync(path, content)` | 追加檔案內容 |
+| `vol.fromJSON(object)` | 從物件建立多個檔案 |
+| `vol.readFileSync(path)` | 讀取檔案 |
+| `vol.rmSync(path, { recursive: true })` | 刪除檔案/目錄 |
 
 ### 與真實 fs 混合使用
 
