@@ -9,6 +9,7 @@
 | [skill-creator](./skill-creator) | 技能開發指南 | 協助建立、驗證與打包新的 AI 技能。 |
 | [analyze-code-commenter](./analyze-code-commenter) | 雙語代碼註解分析 | 分析程式碼邏輯並添加繁中/英文雙語註解。 |
 | [readme-updater](./readme-updater) | README 文件更新維護 | 分析專案結構並自動檢查或更新說明文件。 |
+| [factual-accuracy-guard](./factual-accuracy-guard) | 事實準確性防護 | 防止加入虛構內容，確保基於事實執行任務。 |
 
 ---
 
@@ -26,6 +27,11 @@
 ### 📚 [README Updater](./readme-updater)
 專案文件管理的利器，特別適合 Monorepo 大型專案。它能自動識別專案類型（Node.js, Python 等），並確保 README 文件包含所有必要章節。
 - **特點**：支援多套件 (sub-packages) 檢查、整合 `docs/` 文件、自動生成分析報告與更新建議。
+
+### 🛡️ [Factual Accuracy Guard](./factual-accuracy-guard)
+防止 AI Agent 在執行任務時加入虛構內容或基於錯誤假設行動的安全防護技能。
+- **特點**：提供輸入源權威原則、最小假設原則、事實查核強制原則，確保所有輸出基於可驗證的事實。
+- **核心功能**：名稱歧義檢查、URL 內容驗證、虛構內容檢測、角色扮演事實融合。
 
 ---
 
