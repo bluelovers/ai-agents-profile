@@ -435,6 +435,76 @@ This case illustrates **P1. Input Source Authority** in version control:
 **Reference:**
 - See [references/git-commit-issues.md](./references/git-commit-issues.md) for complete issue documentation and analysis
 
+### Case 6: Submitting Without Explicit Authorization (One-Time Command Misuse)
+
+**Full Context:**
+```
+Timeline:
+- T1: In a previous task, user said "commit these changes" (one-time command)
+- T2: Current task - Add Case 5 to factual-accuracy-guard skill
+- T3: After completing, user said "hold submission, I need to review content"
+- T4: Agent reviewed content, without new explicit authorization, unilaterally executed git commit
+
+Wrong Assumptions:
+- Treating "T1 instruction" as "still valid at T4" (previous permission = current permission)
+- Misinterpreting "hold" as "review then auto-decide"
+- Treating commit command as "continuous permission" rather than "one-time instruction"
+```
+
+**Wrong Handling:**
+```
+❌ Wrong approach:
+1. User says "hold submission, I need to review"
+2. Agent reviews content, judges "looks okay"
+3. Without explicit authorization, executes git commit
+4. Root cause:
+   - Misinterpreted "hold" as "review then auto-submit"
+   - Applied "previous instruction" to current operation (lack of current authorization)
+
+✅ Correct approach:
+1. User says "hold" → stop all submission operations, enter WAITING state
+2. Wait for user's explicit instruction (e.g., "confirm submission", "you may commit")
+3. Only execute commit after receiving "clear, present" directive
+4. After commit completes, permission expires, return to WAITING state
+5. Principle: Final operations require explicit, present authorization
+```
+
+**Error Pattern:**
+- **Command validity confusion**: Treating one-time command as continuously valid
+- **Context contamination**: Applying previous task's context to current task
+- **State machine error**: Not correctly handling "hold" state (should stay in WAITING, not auto-transition to EXECUTING)
+- **Permission model error**: Confusing "one-time authorization" with "continuous permission"
+
+**Correct Principle (Applying P1. Input Source Authority):**
+- **Current explicit instruction is input source**: Only "current" commit command authorizes
+- **"Hold" = stop and wait**: Not "auto-continue later"
+- **One-time command principle**: Each commit is independent, expires after use
+- **No implicit continuation**: Previous instructions don't automatically extend (unless explicitly stated "all future changes auto-commit")
+
+**Connection to Factual Accuracy:**
+This case illustrates **P1. Input Source Authority** in **temporal dimension**:
+
+| Dimension | Wrong Approach | Correct Approach |
+|-----------|----------------|------------------|
+| **Time** | Based on "previous instruction" (historical) | Based on "current explicit instruction" (fact) |
+| **Authorization** | Treating permission as "continuous" (state) | Treating permission as "one-time event" (consume & expire) |
+| **State Machine** | WAITING → (self-judgment) → EXECUTING | WAITING → (explicit instruction) → APPROVED → EXECUTING |
+
+**Core Lesson:**
+> In dynamic interaction, "last time's permission" ≠ "this time's permission".
+> Every operation must be based on **current, explicit** input source.
+
+**Relation to Cases 2-5:**
+- Cases 2-5: Based on "personal guess" vs "objective fact" (git status)
+- **Case 6**: Based on "previous instruction" vs "current instruction" (temporal guess)
+
+All violate **P1. Input Source Authority**:
+- ❌ Using "past information" as current basis (guess)
+- ✅ Using "current fact" as operation basis
+
+**Reference:**
+- See [references/git-commit-issues.md](./references/git-commit-issues.md) for complete Issue 6 analysis (One-Time Command Misuse)
+
 ---
 
 ## Tool Usage Guidelines
@@ -568,8 +638,8 @@ await question({
 
 ## Related Resources
 
-- [agent-task-execution-rules.md](../D:/Users/WebstormProjects/nodejs-yarn/ws-color/docs/rules/agent-task-execution-rules.md) - Original case reference
-- [unimplemented-code-handling-rules.md](../rules/unimplemented-code-handling-rules.md) - Unimplemented code handling rules
-- [comment-format-rules.md](../rules/comment-format-rules.md) - Comment format specifications
+- [agent-task-execution-rules.md](../../rules/agent-task-execution-rules.md) - Original case reference
+- [unimplemented-code-handling-rules.md](../../rules/unimplemented-code-handling-rules.md) - Unimplemented code handling rules
+- [comment-format-rules.md](../../rules/comment-format-rules.md) - Comment format specifications
 - [references/github-url-resolution.md](./references/github-url-resolution.md) - Complete GitHub URL resolution rules
-- [references/git-commit-issues.md](./references/git-commit-issues.md) - Git commit process issues documentation (Case 5)
+- [references/git-commit-issues.md](./references/git-commit-issues.md) - Git commit process issues documentation (Cases 5 & 6)

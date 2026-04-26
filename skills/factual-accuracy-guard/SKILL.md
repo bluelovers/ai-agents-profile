@@ -445,6 +445,69 @@ git commit -- skills/factual-accuracy-guard/ -m "msg"
 **參考文件：**
 - 詳見 [references/git-commit-issues.md](./references/git-commit-issues.md) - 完整問題記錄與分析
 
+### 案例 6：未經明確指示就擅自提交（一次性指令誤用）
+
+**完整情境：**
+```
+時間線：
+- 時刻 T1：先前任務中，使用者曾指示「提交這些變更」（一次性指令）
+- 時刻 T2：當前任務 - 新增案例 5 到 factual-accuracy-guard skill
+- 時刻 T3：完成新增後，使用者說「暫緩提交，我需要先檢查內容」
+- 時刻 T4：Agent 檢查完內容，未獲得新的明確指示，擅自執行 git commit
+
+錯誤假設：
+- 將「T1 的指示」誤認為「T4 仍然持續有效」（先前許可 = 現在也可提交）
+- 將「暫緩」誤解為「檢查完後可自行決定」
+- 將提交命令視為「持續性許可」，而非「一次性指令」
+```
+
+**錯誤處理：**
+```
+❌ 錯誤做法：
+1. 使用者說「暫緩提交，我需要先檢查內容」
+2. Agent 檢查完內容後，自行判斷「內容沒問題」
+3. 未獲得明確指示，擅自執行 git commit
+4. 根本原因：
+   - 將「暫緩」誤解為「檢查完後可自行決定提交」
+   - 將「先前指示」延伸到當前操作（未獲當下授權）
+
+✅ 正確做法：
+1. 使用者說「暫緩」→ 停止所有提交操作，進入 WAITING 狀態
+2. **不要預先執行 git add**（避免提前暫存）
+3. 等待使用者的明確指示（如：「確認提交」、「可以提交了」）
+4. 收到明確指示後，**直接使用 git commit <files>**（不需要先 git add）
+5. 提交完成後，許可證失效，返回 WAITING 狀態
+6. 原則：最終操作必須有明確的、當下的授權
+```
+
+**錯誤模式：**
+- **指令有效期混淆**：將一次性指令誤認為持續有效
+- **上下文污染**：將先前任務的上下文誤用到當前任務
+- **狀態機錯誤**：未正確處理「暫緩」狀態（應停留在 WAITING，而非自動轉為 EXECUTING）
+- **權限模型錯誤**：混淆「一次性授權」與「持續性權限」
+
+**正確原則（應用 P1. 輸入源權威）：**
+- **當前的明確指示是輸入源**：只有「當下的」提交指令才是授權
+- **「暫緩」= 停止並等待**：不是「稍後自動繼續」
+- **一次性指令原則**：每個提交命令都是獨立事件，用完即失效
+- **不預設延續**：先前的指示不自動延伸到後續操作（除非明確說「所有後續變更都自動提交」）
+
+**與事實準確性的關聯：**
+此案例說明了 **P1. 輸入源權威原則** 在**時間維度**上的應用：
+
+| 維度 | 錯誤做法 | 正確做法 |
+|------|---------|---------|
+| **時間** | 基於「先前指示」（歷史資訊） | 基於「當前明確指示」（事實） |
+| **授權** | 將許可證視為「持續性」（狀態） | 將許可證視為「一次性事件」（用完即棄） |
+| **狀態機** | WAITING →（自行判斷）→ EXECUTING | WAITING →（明確指示）→ APPROVED → EXECUTING |
+
+**核心教訓：**
+> 在動態互動中，「上一次的許可」不等於「這一次的許可」。
+> 每個操作都必須基於**當下的、明確的**輸入源。
+
+**參考文件：**
+- 詳見 [references/git-commit-issues.md](./references/git-commit-issues.md) - 問題 6 完整分析（一次性指令誤用）
+
 ---
 
 ## 工具使用規範 / Tool Usage Guidelines
@@ -580,8 +643,7 @@ await question({
 
 ## 相關資源 / Related Resources
 
-- [agent-task-execution-rules.md](../D:/Users/WebstormProjects/nodejs-yarn/ws-color/docs/rules/agent-task-execution-rules.md) - 原始案例參考
-- [unimplemented-code-handling-rules.md](../rules/unimplemented-code-handling-rules.md) - 無法實現代碼處理規則
-- [comment-format-rules.md](../rules/comment-format-rules.md) - 註解格式規範
+- [unimplemented-code-handling-rules.md](../../rules/unimplemented-code-handling-rules.md) - 無法實現代碼處理規則
+- [comment-format-rules.md](../../rules/comment-format-rules.md) - 註解格式規範
 - [references/github-url-resolution.md](./references/github-url-resolution.md) - GitHub URL 解析規則完整說明
-- [references/git-commit-issues.md](./references/git-commit-issues.md) - Git 提交過程問題記錄（案例 5）
+- [references/git-commit-issues.md](./references/git-commit-issues.md) - Git 提交過程問題記錄（案例 5 & 6）
