@@ -319,6 +319,42 @@ Agent：作為 1950 年的科學家，我認為量子糾纏允許超光速通訊
 4. 可加入：「根據現代科學，我們現在知道...」
 ```
 
+### 案例 4：GitHub URL 倉庫解析錯誤
+
+**原始任務：**
+```
+使用者：請查看 github.com/anomalyco/opencode/issues/24444
+情境：Agent 當前位於 OpenCode/OpenCode 倉庫中
+```
+
+**錯誤處理：**
+```
+❌ 錯誤做法：
+1. 看到 GitHub URL 後，假設它存在於「當前倉庫」（current repository）
+2. 執行：gh issue view 24444（不加 -R 參數）
+3. 結果：在錯誤的倉庫中查找，找不到對應的 issue
+4. 根本原因：將「當前工作目錄」當作預設倉庫，忽略了 URL 中明確包含的 org/repo 資訊
+
+✅ 正確做法：
+1. 解析 URL：github.com/anomalyco/opencode/issues/24444
+2. 提取倉庫資訊：owner=anomalyco, repo=opencode
+3. 執行：gh issue view 24444 -R anomalyco/opencode
+4. 原則：URL 中的 org/repo 是唯一權威依據，而非當前工作目錄
+```
+
+**錯誤模式：**
+- 忽略 URL 中明確提供的上下文（org/repo）
+- 基於「當前位置」做假設，而非根據輸入源
+- 將個人工作習慣投射到所有場景
+
+**正確原則：**
+- 以 URL 解析結果為準
+- 不要假設資源存在於當前倉庫
+- 所有 GitHub 操作都應明確指定 `-R owner/repo`
+
+**參考文件：**
+- 詳見 [references/github-url-resolution.md](./references/github-url-resolution.md) - GitHub URL 解析規則完整說明
+
 ---
 
 ## 工具使用規範 / Tool Usage Guidelines
@@ -457,3 +493,4 @@ await question({
 - [agent-task-execution-rules.md](../D:/Users/WebstormProjects/nodejs-yarn/ws-color/docs/rules/agent-task-execution-rules.md) - 原始案例參考
 - [unimplemented-code-handling-rules.md](../rules/unimplemented-code-handling-rules.md) - 無法實現代碼處理規則
 - [comment-format-rules.md](../rules/comment-format-rules.md) - 註解格式規範
+- [references/github-url-resolution.md](./references/github-url-resolution.md) - GitHub URL 解析規則完整說明

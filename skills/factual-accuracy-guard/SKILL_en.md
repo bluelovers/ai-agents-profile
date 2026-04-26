@@ -309,6 +309,42 @@ Agent: As a 1950 scientist, I believe quantum entanglement allows faster-than-li
 4. Can add: "According to modern science, we now know..."
 ```
 
+### Case 4: GitHub URL Repository Resolution Error
+
+**Original Task:**
+```
+User: Please check github.com/anomalyco/opencode/issues/24444
+Context: Agent is currently in the OpenCode/OpenCode repository
+```
+
+**Wrong Handling:**
+```
+❌ Wrong approach:
+1. Sees GitHub URL and assumes it exists in "current repository"
+2. Runs: gh issue view 24444 (without -R flag)
+3. Result: Looks in wrong repository, cannot find the issue
+4. Root cause: Assumed "current working directory" as default repo, ignoring org/repo explicitly provided in URL
+
+✅ Correct approach:
+1. Parse URL: github.com/anomalyco/opencode/issues/24444
+2. Extract repository info: owner=anomalyco, repo=opencode
+3. Run: gh issue view 24444 -R anomalyco/opencode
+4. Principle: URL's org/repo is authoritative, not current working directory
+```
+
+**Error Pattern:**
+- Ignores explicitly provided context (org/repo) in URL
+- Makes assumption based on "current location" rather than input source
+- Projects personal workflow habits onto all scenarios
+
+**Correct Principle:**
+- Follow URL parsing result
+- Never assume resource exists in current repository
+- All GitHub operations should explicitly specify `-R owner/repo`
+
+**Reference:**
+- See [references/github-url-resolution.md](./references/github-url-resolution.md) for complete GitHub URL resolution rules
+
 ---
 
 ## Tool Usage Guidelines
@@ -445,3 +481,4 @@ await question({
 - [agent-task-execution-rules.md](../D:/Users/WebstormProjects/nodejs-yarn/ws-color/docs/rules/agent-task-execution-rules.md) - Original case reference
 - [unimplemented-code-handling-rules.md](../rules/unimplemented-code-handling-rules.md) - Unimplemented code handling rules
 - [comment-format-rules.md](../rules/comment-format-rules.md) - Comment format specifications
+- [references/github-url-resolution.md](./references/github-url-resolution.md) - Complete GitHub URL resolution rules
