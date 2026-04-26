@@ -345,6 +345,96 @@ Context: Agent is currently in the OpenCode/OpenCode repository
 **Reference:**
 - See [references/github-url-resolution.md](./references/github-url-resolution.md) for complete GitHub URL resolution rules
 
+### Case 5: Git Commit Process Assumption Errors
+
+**Context:**
+```
+Task: Commit changes for factual-accuracy-guard skill
+Modified files:
+- skills/factual-accuracy-guard/SKILL.md (+37 lines)
+- skills/factual-accuracy-guard/SKILL_en.md (+37 lines)
+- skills/factual-accuracy-guard/references/github-url-resolution.md (new)
+```
+
+**Issue 2: Not Explicitly Specifying Commit Paths**
+
+```
+❌ Wrong approach:
+git commit -m "feat(skills/factual-accuracy-guard): add Case 4"
+
+Problems:
+1. No pathspec, git commits "all staged" changes
+2. May include changes from other agents/programs
+3. Unclear commit scope, risk of git state inconsistency
+
+✅ Correct approach:
+git commit skills/factual-accuracy-guard/SKILL.md \
+            skills/factual-accuracy-guard/SKILL_en.md \
+            skills/factual-accuracy-guard/references/github-url-resolution.md \
+            -m "feat(skills/factual-accuracy-guard): add Case 4 - GitHub URL repository resolution error"
+```
+
+**Issue 3: Commit Message Based on Guesswork**
+
+```
+❌ Wrong approach:
+Writing commit message without checking git diff --cached
+
+Problems:
+1. Assumes file state matches memory
+2. Commit message may be inaccurate (e.g., "add skill" when actually "add case")
+3. Violates Conventional Commits precision requirement
+
+✅ Correct approach:
+# Step 1: Check actual change statistics
+git diff --cached --stat
+
+# Output:
+#  skills/factual-accuracy-guard/SKILL.md             | 37 ++++++++++
+#  skills/factual-accuracy-guard/SKILL_en.md          | 37 ++++++++++
+#  .../references/github-url-resolution.md            | 85 ++++++++++++++++++++++
+#  3 files changed, 159 insertions(+)
+
+# Step 2: Write precise message based on actual stats
+git commit ... -m "feat(skills/factual-accuracy-guard): add Case 4 - GitHub URL repository resolution error"
+```
+
+**Issue 4: Incorrect Command Syntax (Missing Pathspec Position)**
+
+```
+❌ Wrong approach:
+git commit -m "msg" skills/factual-accuracy-guard/
+
+Problem: pathspec must come before -m, git cannot parse
+
+✅ Correct approach:
+git commit <file1> <file2> <file3> -m "msg"
+# Or use -- separator
+git commit -- skills/factual-accuracy-guard/ -m "msg"
+```
+
+**Error Pattern Summary:**
+- Based on "memory" or "guess" rather than "actual git status"
+- Ignoring authority of `git diff --cached`
+- Not understanding git commit pathspec position requirement
+- Not explicitly isolating commit scope in multi-agent environment
+
+**Correct Principle (Applying P1. Input Source Authority):**
+- **git status/diff is input source**: actual file state is sole authority
+- **Don't base on guesses**: don't assume "I remember which files I changed"
+- **Explicitly specify paths**: always list full paths to commit
+- **Check before commit**: `git diff --cached --stat` is mandatory step
+
+**Connection to Factual Accuracy:**
+This case illustrates **P1. Input Source Authority** in version control:
+- ❌ Based on personal memory (guess)
+- ✅ Based on `git diff --cached` (fact)
+- ❌ Assumes git "knows" what I want to commit
+- ✅ Explicitly tells git what to commit (pathspec)
+
+**Reference:**
+- See [references/git-commit-issues.md](./references/git-commit-issues.md) for complete issue documentation and analysis
+
 ---
 
 ## Tool Usage Guidelines
@@ -482,3 +572,4 @@ await question({
 - [unimplemented-code-handling-rules.md](../rules/unimplemented-code-handling-rules.md) - Unimplemented code handling rules
 - [comment-format-rules.md](../rules/comment-format-rules.md) - Comment format specifications
 - [references/github-url-resolution.md](./references/github-url-resolution.md) - Complete GitHub URL resolution rules
+- [references/git-commit-issues.md](./references/git-commit-issues.md) - Git commit process issues documentation (Case 5)

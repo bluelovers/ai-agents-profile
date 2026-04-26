@@ -355,6 +355,96 @@ Agent：作為 1950 年的科學家，我認為量子糾纏允許超光速通訊
 **參考文件：**
 - 詳見 [references/github-url-resolution.md](./references/github-url-resolution.md) - GitHub URL 解析規則完整說明
 
+### 案例 5：Git 提交過程中的假設錯誤
+
+**情境：**
+```
+任務：提交 factual-accuracy-guard skill 的變更
+已修改檔案：
+- skills/factual-accuracy-guard/SKILL.md (+37 行)
+- skills/factual-accuracy-guard/SKILL_en.md (+37 行)
+- skills/factual-accuracy-guard/references/github-url-resolution.md (新增)
+```
+
+**問題 2：未明確指定提交路徑**
+
+```
+❌ 錯誤做法：
+git commit -m "feat(skills/factual-accuracy-guard): add Case 4"
+
+問題：
+1. 未指定路徑，git 會提交「所有已暫存」的變更
+2. 可能包含其他 Agent 或程序造成的變更
+3. 提交範圍不明確，容易造成 git 狀態不一致
+
+✅ 正確做法：
+git commit skills/factual-accuracy-guard/SKILL.md \
+            skills/factual-accuracy-guard/SKILL_en.md \
+            skills/factual-accuracy-guard/references/github-url-resolution.md \
+            -m "feat(skills/factual-accuracy-guard): add Case 4 - GitHub URL repository resolution error"
+```
+
+**問題 3：提交訊息基於猜測而非實際 diff**
+
+```
+❌ 錯誤做法：
+直接撰寫 commit 訊息，未檢查 git diff --cached
+
+問題：
+1. 假設檔案狀態與記憶一致
+2. commit 訊息可能不準確（如「新增 skill」但實際是「新增案例」）
+3. 違反 Conventional Commits 的精確性要求
+
+✅ 正確做法：
+# 步驟 1：檢查實際變更統計
+git diff --cached --stat
+
+# 輸出：
+#  skills/factual-accuracy-guard/SKILL.md             | 37 ++++++++++
+#  skills/factual-accuracy-guard/SKILL_en.md          | 37 ++++++++++
+#  .../references/github-url-resolution.md            | 85 ++++++++++++++++++++++
+#  3 files changed, 159 insertions(+)
+
+# 步驟 2：根據實際統計撰寫精確訊息
+git commit ... -m "feat(skills/factual-accuracy-guard): add Case 4 - GitHub URL repository resolution error"
+```
+
+**問題 4：指令格式錯誤（未使用 pathspec）**
+
+```
+❌ 錯誤做法：
+git commit -m "msg" skills/factual-accuracy-guard/
+
+問題：pathspec 必須在 -m 之前，git 無法解析
+
+✅ 正確做法：
+git commit <file1> <file2> <file3> -m "msg"
+# 或使用 -- 分隔
+git commit -- skills/factual-accuracy-guard/ -m "msg"
+```
+
+**錯誤模式歸納：**
+- 基於「記憶」或「猜測」而非「實際 git 狀態」
+- 忽略 `git diff --cached` 的權威性
+- 未理解 git commit 的 pathspec 位置要求
+- 在多人/多 Agent 環境中未明確隔離提交範圍
+
+**正確原則（應用 P1. 輸入源權威）：**
+- **git status/diff 是輸入源**：實際的檔案狀態是唯一權威
+- **不要基於猜測**：不要假設「我記得改了哪些檔案」
+- **明確指定路徑**：永遠列出要提交的完整路徑
+- **先檢查再提交**：`git diff --cached --stat` 是必經步驟
+
+**與事實準確性的關聯：**
+此案例說明了 **P1. 輸入源權威原則** 在版本控制中的應用：
+- ❌ 基於個人記憶（猜測）提交
+- ✅ 基於 `git diff --cached`（事實）提交
+- ❌ 假設 git 會「知道」我要提交什麼
+- ✅ 明確告訴 git 我要提交什麼（pathspec）
+
+**參考文件：**
+- 詳見 [references/git-commit-issues.md](./references/git-commit-issues.md) - 完整問題記錄與分析
+
 ---
 
 ## 工具使用規範 / Tool Usage Guidelines
@@ -494,3 +584,4 @@ await question({
 - [unimplemented-code-handling-rules.md](../rules/unimplemented-code-handling-rules.md) - 無法實現代碼處理規則
 - [comment-format-rules.md](../rules/comment-format-rules.md) - 註解格式規範
 - [references/github-url-resolution.md](./references/github-url-resolution.md) - GitHub URL 解析規則完整說明
+- [references/git-commit-issues.md](./references/git-commit-issues.md) - Git 提交過程問題記錄（案例 5）
