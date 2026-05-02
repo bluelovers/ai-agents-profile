@@ -289,6 +289,10 @@ interface I_AriseToolsConfigEntry
 /** 驗證訂單資料格式與必填欄位
 	 * Validate order data format and required fields
 	 */
+
+// ❌ 錯誤：單行區塊註解合併或單行轉多行時錯誤
+/** 驗證訂單資料格式與必填欄位
+	 * Validate order data format and required fields */
 ```
 
 ```typescript

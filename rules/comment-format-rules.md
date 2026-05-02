@@ -199,15 +199,15 @@ const validated = validateOrder(order);
 ```typescript
 // ✅ 推薦：註解放在上方
 let arr = [
-    // 數字 / Numbers
+    /** 數字 / Numbers */
     /[\d０-９]+(?:,[\d０-９]+)?(?:\.[\d０-９]+)?/,
-    // 英文及擴展拉丁字母 / English and extended Latin
+    /** 英文及擴展拉丁字母 / English and extended Latin */
     /[\w０-９Ａ-Ｚａ-ｚ\u0100-\u017F\u00A1-\u00FF]+/,
-    // 阿拉伯文 / Arabic
+    /** 阿拉伯文 / Arabic */
     /[\u0600-\u06FF\u0750-\u077F]+/,
-    // 俄文（西里爾字母）/ Russian (Cyrillic)
+    /** 俄文（西里爾字母）/ Russian (Cyrillic) */
     /[\u0400-\u04FF]+/,
-    // 希臘文 / Greek
+    /** 希臘文 / Greek */
     /[\u0370-\u03FF]+/,
 ];
 ```
@@ -246,7 +246,7 @@ interface I_AriseToolsConfigEntry {
 }
 
 // ✅ 正確：在每個成員上方直接添加註解
-interface I_AriseToolsConfigEntry 
+interface I_AriseToolsConfigEntry
 {
 	/** 描述說明 / Description */
 	description?: string;
