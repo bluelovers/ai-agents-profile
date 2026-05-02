@@ -1,6 +1,7 @@
 ---
 name: comment-format-rules-css
-description: CSS/SCSS 註解規範。適用於撰寫或修改 CSS/SCSS 檔案時的註解格式指引。核心原則：註解應解釋「為什麼這樣做」而非只有「做了什麼」。Use when users request (1) "CSS 註解", (2) "SCSS 註解", (3) "為 CSS 添加註解", (4) "為 SCSS 添加註解", (5) "CSS 註解格式", (6) "SCSS 註解格式", (7) "CSS comment", (8) "SCSS comment", (9) "CSS documentation", (10) "SCSS documentation", (11) "為 CSS 更新註解", (12) "為 SCSS 更新註解", (13) "CSS 註解修正", (14) "SCSS 註解修正". All CSS/SCSS commenting guidelines. Core principle: comments should explain WHY, not just WHAT.
+description: >-
+  CSS/SCSS 註解規範。適用於撰寫或修改 CSS/SCSS 檔案時的註解格式指引。核心原則：註解應解釋「為什麼這樣做」而非只有「做了什麼」。Use when users request (1) "CSS 註解", (2) "SCSS 註解", (3) "為 CSS 添加註解", (4) "為 SCSS 添加註解", (5) "CSS 註解格式", (6) "SCSS 註解格式", (7) "CSS comment", (8) "SCSS comment", (9) "CSS documentation", (10) "SCSS documentation", (11) "為 CSS 更新註解", (12) "為 SCSS 更新註解", (13) "CSS 註解修正", (14) "SCSS 註解修正". All CSS/SCSS commenting guidelines. Core principle: comments should explain WHY, not just WHAT.
 ---
 
 # CSS/SCSS 註解規範
