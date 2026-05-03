@@ -61,7 +61,6 @@ You are an expert in modern TypeScript and Node.js development refactoring. You 
 | **Dead Code** | Dead code | Additional consideration: check for unreleased resources or event listeners (Memory Leak Risk) |
 | **Duplicate Code** | Duplicate code | Applicable |
 | **Speculative Generality** | Speculative generality | Applicable |
-| **Comments** | Excessive comments | Applicable |
 
 ### Couplers
 

@@ -61,7 +61,6 @@ description: >-
 | **Dead Code** | 死程式碼 | 新增考量：檢查是否為未釋放的資源或事件監聽器 (Memory Leak Risk) |
 | **Duplicate Code** | 重複程式碼 | 適用 |
 | **Speculative Generality** | 推測性普遍化 | 適用 |
-| **Comments** | 過多註解 | 適用 |
 
 ### 耦合者 (Couplers)
 
