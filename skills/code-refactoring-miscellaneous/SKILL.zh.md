@@ -142,6 +142,165 @@ handleRequest('/api/PATCH/users');  // ❌ 無效
 
 ---
 
+## 外部 API 類型安全封裝
+
+### 概述
+
+將**鬆散類型的外部 API**（如 VS Code `Memento`、`localStorage` 等）封裝為**嚴格類型的內部接口**，實現編譯期類型安全與運行時數據一致性。
+
+### 核心問題
+
+外部 API 通常為了最大靈活性而使用 `string` 鍵 + `any` 值：
+
+```typescript
+// ❌ 外部 API 的類型定義過於寬鬆
+interface Memento {
+    get<T>(key: string): T | undefined;     // key 是任意 string
+    update(key: string, value: any): void;  // value 是 any
+}
+
+// ❌ 直接使用導致的問題
+context.globalState.get('serchHistory');        // 拼寫錯誤！編譯器不報錯
+context.globalState.update('selectedIDEs', 'x'); // 類型錯誤！應該是 number[]
+```
+
+### 封裝策略
+
+#### 1. 定義鍵枚舉 + 鍵值類型映射
+
+```typescript
+export const enum EnumGlobalStateName {
+    searchHistory = 'searchHistory',
+    selectedIDEs = 'selectedIDEs',
+}
+
+// 為每個鍵定義對應的值類型
+export interface IGlobalStateSearchHistory {
+    key: EnumGlobalStateName.searchHistory;
+    value: string[];
+}
+
+export interface IGlobalStateSelectedIDEs {
+    key: EnumGlobalStateName.selectedIDEs;
+    value: number[];
+}
+
+export type IGlobalStateAll = IGlobalStateSearchHistory | IGlobalStateSelectedIDEs;
+```
+
+#### 2. 創建類型安全封裝類
+
+```typescript
+export class VscodeExtensionContextGlobalState {
+    constructor(protected globalState: Memento) {}
+
+    /**
+     * 使用泛型條件類型實現鍵→值的類型映射
+     * K extends EnumGlobalStateName: 限制鍵必須是枚舉值
+     * Extract<IGlobalStateAll, { key: K }>: 從聯合類型中提取匹配的接口
+     * T["value"]: 獲取該接口的 value 類型
+     */
+    get<K extends EnumGlobalStateName, T extends Extract<IGlobalStateAll, { key: K }>>(
+        key: K,
+        defaultValue?: T["value"]
+    ): T["value"] | undefined {
+        return this.globalState.get(key, defaultValue);
+    }
+
+    update<K extends EnumGlobalStateName, T extends Extract<IGlobalStateAll, { key: K }>>(
+        key: K,
+        value: T["value"]
+    ): Thenable<void> {
+        return this.globalState.update(key, value);
+    }
+}
+```
+
+#### 3. 類型安全的使用
+
+```typescript
+const state = new VscodeExtensionContextGlobalState(context.globalState);
+
+// ✅ 鍵名有智能提示和編譯檢查
+const history = state.get(EnumGlobalStateName.searchHistory);
+//    ^? 類型推導為 string[] | undefined
+
+// ✅ 鍵名錯誤會立即報錯
+state.get('serchHistory'); // ❌ 錯誤：類型不匹配
+
+// ✅ 值類型有編譯檢查
+state.update(EnumGlobalStateName.selectedIDEs, [1, 2, 3]);      // ✅ number[]
+state.update(EnumGlobalStateName.selectedIDEs, 'invalid');      // ❌ 類型錯誤！
+```
+
+### 重點收益
+
+| 收益 | 說明 |
+|------|------|
+| **編譯期類型安全** | 鍵名拼寫錯誤、值類型錯誤在編譯階段即可發現 |
+| **智能提示** | IDE 提供鍵名自動完成和值類型提示 |
+| **可重構性** | 重命名枚舉值可通過 IDE 全局重構 |
+| **向後兼容** | 底層外部 API 變更時，只需修改封裝層 |
+
+### 適用場景
+
+- VS Code Extension 的 `globalState` / `workspaceState`
+- 瀏覽器 `localStorage` / `sessionStorage`
+- 鍵值數據庫客戶端（Redis 等）
+- 任何 `string` 鍵 + `any` 值的外部 API
+
+### 進階用法：抽象類整合
+
+在大型專案中，可將 GlobalState 封裝整合到抽象基類中，簡化多個類別的狀態管理：
+
+#### 模式一：自動懶加載（推薦）
+
+```typescript
+/**
+ * 自動由 ExtensionContext 初始化 GlobalState
+ * 透過 getter 實現懶加載
+ */
+export abstract class AbstractClassWithContextGlobalState
+{
+    protected context!: ExtensionContext;
+    #globalState!: VscodeExtensionContextGlobalState;
+
+    protected get globalState(): VscodeExtensionContextGlobalState
+    {
+        if (!this.#globalState)
+        {
+            this.#globalState = new VscodeExtensionContextGlobalState(this.context.globalState);
+        }
+        return this.#globalState;
+    }
+}
+
+// 使用
+export class MyController extends AbstractClassWithContextGlobalState
+{
+    async saveData(data: string[]): Promise<void>
+    {
+        await this.globalState.update(EnumGlobalStateName.searchHistory, data);
+    }
+}
+```
+
+#### 模式二：工廠函數
+
+```typescript
+export function newVscodeExtensionContextGlobalState(globalState: ExtensionContext["globalState"])
+{
+    return new VscodeExtensionContextGlobalState(globalState);
+}
+
+// 使用
+const state = newVscodeExtensionContextGlobalState(context.globalState);
+```
+
+📚 **完整案例參考**：[外部 API 類型安全封裝模式](./references/external-api-type-safe-wrapper.md)
+
+---
+
 ## DOM Selector Enum Pattern
 
 ### 概述
@@ -390,6 +549,7 @@ export function SettingsNavigation()
 
 ## 延伸閱讀
 
+- [外部 API 類型安全封裝模式](./references/external-api-type-safe-wrapper.md) - 將鬆散類型的外部 API（如 VS Code Memento）封裝為嚴格類型的內部接口
 - [DOM Selector Enum Pattern - 完整參考](./references/dom-selector-enum-pattern.md) - 詳細的 HTML/JSX 整合範例與進階應用
 
 ---
