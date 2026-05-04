@@ -391,3 +391,62 @@ export function SettingsNavigation()
 ## 延伸閱讀
 
 - [DOM Selector Enum Pattern - 完整參考](./references/dom-selector-enum-pattern.md) - 詳細的 HTML/JSX 整合範例與進階應用
+
+---
+
+## 類成員訪問修飾符最佳實踐
+
+### 預設使用 `protected` 而非 `private`
+
+除非有特殊需求或使用者明確要求，否則**不建議使用 `private`**。建議**預設使用 `protected`** 來處理非公開成員。
+
+#### 原因
+
+- **支援內部繼承**：當類別需要被繼承時（即使是內部繼承），`protected` 允許子類別訪問父類別的成員，而 `private` 會完全阻斷訪問
+- **避免重構時的破壞性變更**：若日後需要將類別擴展為可繼承，從 `private` 改為 `protected` 是一個破壞性變更
+- **TypeScript 的軟性限制**：TypeScript 的 `private` 僅在編譯期檢查，運行時仍可訪問；相比之下，`protected` 提供了合理的封裝同時保留擴展彈性
+
+#### 範例
+
+```typescript
+// ❌ 不建議：過度限制，阻斷繼承可能性
+class DataProcessor {
+    private cache = new Map<string, unknown>();
+    private logger = console;
+
+    process(data: unknown) {
+        this.logger.log('Processing...');
+        // 子類別無法訪問 this.cache 和 this.logger
+    }
+}
+
+// ✅ 建議：保留繼承擴展的彈性
+class DataProcessor {
+    protected cache = new Map<string, unknown>();
+    protected logger = console;
+
+    process(data: unknown) {
+        this.logger.log('Processing...');
+        // 子類別可以正常訪問和覆寫這些成員
+    }
+}
+
+// 內部繼承時可正常運作
+class ExtendedDataProcessor extends DataProcessor {
+    async processAsync(data: unknown) {
+        // 可以訪問父類別的 protected 成員
+        this.logger.log('Async processing...');
+        const cached = this.cache.get('key');
+        // ...
+    }
+}
+```
+
+#### 例外情況
+
+以下情況**仍可考慮使用 `private`**：
+
+1. **嚴格封裝需求**：當成員完全是內部實作細節，且確定永遠不會被繼承類別需要時
+2. **明確的設計意圖**：當團隊有明確約定，特定成員絕對不應被覆寫或訪問時
+
+> **總結**：`protected` 是更安全的預設選擇，它在封裝與擴展性之間取得平衡，避免因過度限制而導致日後重構困難。
