@@ -533,27 +533,6 @@ export function SettingsNavigation()
 
 ---
 
-## 參考資源
-
-- [Martin Fowler - Refactoring](https://refactoring.com/)
-- [Single Source of Truth 設計模式](https://en.wikipedia.org/wiki/Single_source_of_truth)
-- [TypeScript Design Patterns](https://www.typescriptlang.org/docs/)
-- [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)
-- [Functional Error Handling in TypeScript](https://dev.to/gcanti/functional-error-handling-in-typescript-2g5o)
-- [TypeScript Enum 文件](https://www.typescriptlang.org/docs/handbook/enums.html)
-
-## 相關技能
-
-- [code-refactoring-expert-typescript](../code-refactoring-expert-typescript/SKILL.md) - 核心重構原則
-- [typescript-unimplemented-handler](../typescript-unimplemented-handler/SKILL.md) - 處理 TypeScript 限制
-
-## 延伸閱讀
-
-- [外部 API 類型安全封裝模式](./references/external-api-type-safe-wrapper.md) - 將鬆散類型的外部 API（如 VS Code Memento）封裝為嚴格類型的內部接口
-- [DOM Selector Enum Pattern - 完整參考](./references/dom-selector-enum-pattern.md) - 詳細的 HTML/JSX 整合範例與進階應用
-
----
-
 ## 類成員訪問修飾符最佳實踐
 
 ### 預設使用 `protected` 而非 `private`
@@ -610,3 +589,24 @@ class ExtendedDataProcessor extends DataProcessor {
 2. **明確的設計意圖**：當團隊有明確約定，特定成員絕對不應被覆寫或訪問時
 
 > **總結**：`protected` 是更安全的預設選擇，它在封裝與擴展性之間取得平衡，避免因過度限制而導致日後重構困難。
+
+---
+
+## 參考資源
+
+- [Martin Fowler - Refactoring](https://refactoring.com/)
+- [Single Source of Truth 設計模式](https://en.wikipedia.org/wiki/Single_source_of_truth)
+- [TypeScript Design Patterns](https://www.typescriptlang.org/docs/)
+- [Node.js Best Practices](https://github.com/goldbergyoni/nodebestpractices)
+- [Functional Error Handling in TypeScript](https://dev.to/gcanti/functional-error-handling-in-typescript-2g5o)
+- [TypeScript Enum 文件](https://www.typescriptlang.org/docs/handbook/enums.html)
+
+## 相關技能
+
+- [code-refactoring-expert-typescript](../code-refactoring-expert-typescript/SKILL.md) - 核心重構原則
+- [typescript-unimplemented-handler](../typescript-unimplemented-handler/SKILL.md) - 處理 TypeScript 限制
+
+## 延伸閱讀
+
+- [外部 API 類型安全封裝模式](./references/external-api-type-safe-wrapper.md) - 將鬆散類型的外部 API（如 VS Code Memento）封裝為嚴格類型的內部接口
+- [DOM Selector Enum Pattern - 完整參考](./references/dom-selector-enum-pattern.md) - 詳細的 HTML/JSX 整合範例與進階應用
