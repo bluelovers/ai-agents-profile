@@ -1,7 +1,13 @@
 ---
 name: code-refactoring-expert-typescript
 description: >-
-  TypeScript/Node.js 現代重構與設計指南，專注於類型安全、非同步流程優化、單一事實來源等現代設計原則。適用於：(1) 重構現有 TypeScript/Node.js 程式碼，(2) 實作新功能時的設計決策參考，(3) 識別並修正 TS/Node 特有的程式碼異味，(4) 建立團隊編碼規範與最佳實踐。當使用者要求「重構 TS」、「Refactor TypeScript」、「Node.js 程式碼改善」或需要「實作時的設計指導」時使用此 Skill。
+  TypeScript/Node.js 現代重構與設計指南，專注於類型安全、非同步流程優化、單一事實來源等現代設計原則。
+  適用於：
+  (1) 重構現有 TypeScript/Node.js 程式碼，
+  (2) 實作新功能時的設計決策參考，
+  (3) 識別並修正 TS/Node 特有的程式碼異味，
+  (4) 建立團隊編碼規範與最佳實踐。
+  當使用者要求「重構 TS」、「Refactor TypeScript」、「Node.js 程式碼改善」或需要「實作時的設計指導」時使用此 Skill。
 ---
 
 # TypeScript/Node.js 重構專家 (Refactoring Expert for TS/Node)

@@ -1,5 +1,5 @@
 ---
-name: refactor
+name: code-refactoring-expert
 description: Safe refactoring with design patterns, backward compatibility, and incremental changes
 ---
 
