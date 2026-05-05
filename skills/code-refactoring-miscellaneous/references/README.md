@@ -10,6 +10,7 @@ This directory contains reference materials that supplement the main [code-refac
 ## Available References
 
 - [dom-selector-enum-pattern.md](./dom-selector-enum-pattern.md) - Refactoring scattered hardcoded DOM IDs and CSS class selectors into unified Enum management
+- [react-state-ref-memo-refactoring.md](./react/react-state-ref-memo-refactoring.md) - Complete case study of refactoring a React Hook from excessive useState to optimized State + RefObject + useMemo pattern
 
 
 
