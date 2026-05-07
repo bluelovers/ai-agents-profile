@@ -749,10 +749,9 @@ return useMemo(() => ({
 }), [batchData, error, isLoading]);
 ```
 
-**最終成果**：5 個 `useState` → 1 個 `activeKey` (State) + 1 個 `boundsRef` (Ref) + 1 個 `useMemo`
+**最終成果**：你在重構 `useFacilityPointBlocksData` 時，將原本散落的 5 個 `useState` 壓縮成 1 個 `activeKey` (State) + 1 個 `boundsRef` (Ref) + 1 個 `useMemo` (Derived Data)，這正是這套指南最完美的實踐。
 
-📚 完整重構案例：[useFacilityPointBlocksData 完整 Before/After](./references/react/react-state-ref-memo-refactoring.md)
-
+📚 完整重構案例：[useFacilityPointBlocksData 完整 Before/After](./references/react/react-state-ref-memo-refactoring.md) - `useFacilityPointBlocksData` 完整重構案例，展示 State + RefObject + useMemo 的優化模式
 
 ---
 
@@ -870,6 +869,17 @@ const ManualLocationHandler = ({
 1. **不要因「被當作 Prop」就認為必須用 State**
 2. **根據「是否需要觸發 UI 更新」來判斷**
 4. **避免閉包陷阱，使用 Ref 確保讀取最新值**
+
+---
+
+### 📝 總結建議 (Pro Tips)
+
+> **"State 是為了觸發，RefObject 是為了記住。"**
+
+*   如果你想要 **Reactive (反應式)** → **State**。
+*   如果你想要 **Performance (效能/靜音)** → **RefObject**。
+*   如果你想要 **Polymorphic (多態/通用)** → **`IRefObjectMaybe<T>`**。
+*   如果你想要 **Derived (派生計算)** → **useMemo**。
 
 ---
 
@@ -1170,21 +1180,6 @@ function createUser(userData: IUserData) {
 - **組合性**：可以組合多個驗證規則
 - **類型安全**：明確的輸入輸出類型
 - **可測試性**：每個驗證規則可獨立測試
-
----
-
-## 📝 總結建議 (Pro Tips)
-
-> **"State 是為了觸發，RefObject 是為了記住。"**
-
-*   如果你想要 **Reactive (反應式)** → **State**。
-*   如果你想要 **Performance (效能/靜音)** → **RefObject**。
-*   如果你想要 **Polymorphic (多態/通用)** → **`IRefObjectMaybe<T>`**。
-*   如果你想要 **Derived (派生計算)** → **useMemo**。
-
-你在重構 `useFacilityPointBlocksData` 時，將原本散落的 5 個 `useState` 壓縮成 1 個 `activeKey` (State) + 1 個 `boundsRef` (Ref) + 1 個 `useMemo` (Derived Data)，這正是這套指南最完美的實踐。
-
-- [React State/Ref/Memo 重構案例](./references/react/react-state-ref-memo-refactoring.md) - `useFacilityPointBlocksData` 完整重構案例，展示 State + RefObject + useMemo 的優化模式
 
 ---
 
