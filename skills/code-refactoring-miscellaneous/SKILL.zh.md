@@ -37,46 +37,25 @@ description: >-
 #### ❌ 反模式：循序執行獨立呼叫
 
 ```typescript
-async function processUserData(userId: string) {
-    const user = await fetchUser(userId);      // 等待完成
-    const profile = await fetchProfile(userId); // 等待完成
-    const settings = await fetchSettings(userId); // 等待完成
-
-    return { user, profile, settings };
-}
+// 總耗時 = 3s (每個 1s)
+const user = await fetchUser(id);
+const profile = await fetchProfile(id);
 ```
 
 #### ✅ 解決方案：使用 Promise.all 平行執行
 
 ```typescript
-async function processUserData(userId: string) {
-    const [user, profile, settings] = await Promise.all([
-        fetchUser(userId),
-        fetchProfile(userId),
-        fetchSettings(userId)
-    ]);
-
-    return { user, profile, settings };
-}
+// 總耗時 = 1s (同時執行)
+const [user, profile] = await Promise.all([
+    fetchUser(id),
+    fetchProfile(id)
+]);
 ```
 
-#### ✅ 進階：使用 Promise.allSettled 處理部分失敗
-
+#### ✅ 容錯處理：Promise.allSettled 處理部分失敗
 ```typescript
-async function processUserDataSafe(userId: string) {
-    const results = await Promise.allSettled([
-        fetchUser(userId),
-        fetchProfile(userId),
-        fetchSettings(userId)
-    ]);
-
-    return {
-        user: results[0].status === 'fulfilled' ? results[0].value : null,
-        profile: results[1].status === 'fulfilled' ? results[1].value : null,
-        settings: results[2].status === 'fulfilled' ? results[2].value : null,
-        errors: results.filter(r => r.status === 'rejected').map(r => r.reason)
-    };
-}
+const results = await Promise.allSettled([fetchUser(id), fetchProfile(id)]);
+const user = results[0].status === 'fulfilled' ? results[0].value : null;
 ```
 
 ### 非同步產生器重構
@@ -86,12 +65,8 @@ async function processUserDataSafe(userId: string) {
 #### ❌ 反模式：載入所有資料
 
 ```typescript
-async function processAllRecords() {
-    const allRecords = await fetchAllRecords(); // 可能達百萬筆！
-    for (const record of allRecords) {
-        await processRecord(record);
-    }
-}
+const allRecords = await fetchAllRecords(); // 記憶體爆炸！
+for (const record of allRecords) processRecord(record);
 ```
 
 #### ✅ 解決方案：非同步產生器
@@ -99,19 +74,15 @@ async function processAllRecords() {
 ```typescript
 async function* processRecordsGenerator(): AsyncGenerator<Record> {
     let cursor = null;
-    do {
-        const { records, nextCursor } = await fetchRecordsBatch(cursor);
-        for (const record of records) {
-            yield record;
-        }
+    while (cursor !== null) {
+        const { records, nextCursor } = await fetchRecordBatch(cursor);
+        for (const record of records) yield record;
         cursor = nextCursor;
-    } while (cursor);
+    }
 }
 
-async function processAllRecords() {
-    for await (const record of processRecordsGenerator()) {
-        await processRecord(record);
-    }
+for await (const record of processRecordsGenerator()) {
+    await processRecord(record);
 }
 ```
 
@@ -418,9 +389,6 @@ export function querySelectorAllByClass<T extends HTMLElement>(classSelector: En
 ### 使用範例
 
 ```typescript
-// ✅ 使用 Enum - 類型安全、可維護
-import { EnumWebviewElemId, EnumCssClassSelector, EnumTabName } from './scripts/elem-get';
-
 // 基本元素查詢
 const searchResults = querySelectorById<HTMLDivElement>(EnumWebviewElemId.searchResults);
 
@@ -466,34 +434,14 @@ ALL_TAB_NAMES.forEach(tabName => {
 #### 完整頁面結構
 
 ```jsx
-// ❌ 之前 - 硬編碼 ID / Before - Hardcoded IDs
-<div id="sync" className="tab-content active">
-  <div className="section">
-    <h2>Search & Sync Settings</h2>
-    <div className="search-container">
-      <input type="text" className="search-input" id="searchInput" />
-    </div>
-    <div id="searchResults" className="results-container">
-      {/* 搜尋結果 / Search results */}
-    </div>
-  </div>
+// ❌ 硬編碼
+<div id="sync" className="tab-content">
+    <input id="searchInput" />
 </div>
 
-// ✅ 之後 - 使用 Enum / After - Using Enums
-<div id={EnumTabName.sync} className="tab-content active">
-  <div className="section">
-    <h2>Search & Sync Settings</h2>
-    <div className="search-container">
-      <input
-        type="text"
-        className="search-input"
-        id={EnumWebviewElemId.searchInput}
-      />
-    </div>
-    <div id={EnumWebviewElemId.searchResults} className="results-container">
-      {/* 搜尋結果 / Search results */}
-    </div>
-  </div>
+// ✅ 使用 Enum
+<div id={EnumTabName.sync} className="tab-content">
+    <input id={EnumElemId.searchInput} />
 </div>
 ```
 
