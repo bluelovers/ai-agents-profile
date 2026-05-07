@@ -679,7 +679,7 @@ return useMemo(() => ({
 
 ---
 
-### 案例：🏗️ 重構實戰流程 (Refactoring Workflow)
+### 🏗️ 重構實戰流程 (Refactoring Workflow)
 
 當你看到一段「笨重」的代碼（如你原本那堆 `useState`），請按照以下步驟清理：
 
@@ -732,22 +732,21 @@ const shouldIgnore = unwrapRefObject(ignoreCheck);
 *   **實作模式**：
 
     ```typescript
-```typescript
-// ❌ 重構前：data 和 categories 各自有 useState，onSuccess 裡各自 setXxx
-const [data, setData] = useState(fillFacilityPointData());
-const [categories, setCategories] = useState([]);
+    // ❌ 重構前：data 和 categories 各自有 useState，onSuccess 裡各自 setXxx
+    const [data, setData] = useState(fillFacilityPointData());
+    const [categories, setCategories] = useState([]);
 
-// ✅ 重構後：全部從 batchData 派生，引用穩定，onSuccess 只需更新 boundsRef
-return useMemo(() => ({
-    data: fillFacilityPointData(batchData?.data),
-    matchedRangeBounds: batchData?.matchedRangeBounds ?? null,
-    triggerThresholdRangeBounds: batchData?.triggerThresholdRangeBounds ?? null,
-    blockScanRangeBounds: batchData?.blockScanRangeBounds ?? null,
-    categories: batchData?.categories ?? [],
-    error,
-    isLoading,
-}), [batchData, error, isLoading]);
-```
+    // ✅ 重構後：全部從 batchData 派生，引用穩定，onSuccess 只需更新 boundsRef
+    return useMemo(() => ({
+        data: fillFacilityPointData(batchData?.data),
+        matchedRangeBounds: batchData?.matchedRangeBounds ?? null,
+        triggerThresholdRangeBounds: batchData?.triggerThresholdRangeBounds ?? null,
+        blockScanRangeBounds: batchData?.blockScanRangeBounds ?? null,
+        categories: batchData?.categories ?? [],
+        error,
+        isLoading,
+    }), [batchData, error, isLoading]);
+    ```
 
 **最終成果**：你在重構 `useFacilityPointBlocksData` 時，將原本散落的 5 個 `useState` 壓縮成 1 個 `activeKey` (State) + 1 個 `boundsRef` (Ref) + 1 個 `useMemo` (Derived Data)，這正是這套指南最完美的實踐。
 
@@ -760,6 +759,8 @@ return useMemo(() => ({
 #### 案例背景
 
 一個常見的錯誤分析報告認為「因為變數被當作 Prop 傳遞，所以必須使用 State」。這個案例展示為什麼這個邏輯是錯誤的，以及如何正確判斷 State vs Ref。
+
+#### 案例重構前
 
 ##### 重構前代碼
 
@@ -814,6 +815,8 @@ Decision: Should remain as State.
 
 - **使用 State：** UI 條件渲染、樣式切換、文字顯示
 - **使用 Ref：** 事件處理開關、避免閉包陷阱、效能優化
+
+#### 案例重構後
 
 ##### 重構後代碼
 
@@ -880,93 +883,6 @@ const ManualLocationHandler = ({
 *   如果你想要 **Performance (效能/靜音)** → **RefObject**。
 *   如果你想要 **Polymorphic (多態/通用)** → **`IRefObjectMaybe<T>`**。
 *   如果你想要 **Derived (派生計算)** → **useMemo**。
-
----
-
-## 錯誤處理與重構模式
-
-📚 **完整案例參考**：[React 組件重構模式 - 組件提取、條件渲染、參數傳遞優化等實用技巧](./references/react/react-component-refactoring-patterns.md)
-
-### 概念
-
-將分散的錯誤處理邏輯重構為統一的錯誤處理模式，提升代碼的健壯性和可維護性。
-
-### 重構前：分散的錯誤處理
-
-```typescript
-// ❌ 錯誤處理邏輯分散，缺乏一致性
-async function fetchUserData(userId: string) {
-    try {
-        const user = await fetchUser(userId);
-        return user;
-    } catch (error) {
-        console.error('Failed to fetch user:', error);
-        return null;
-    }
-}
-
-async function fetchUserProfile(userId: string) {
-    try {
-        const profile = await fetchProfile(userId);
-        return profile;
-    } catch (error) {
-        console.error('Failed to fetch profile:', error);
-        return null;
-    }
-}
-```
-
-### 重構後：統一錯誤處理
-
-```typescript
-// ✅ 統一的錯誤處理模式
-interface IApiError {
-    code: string;
-    message: string;
-    details?: unknown;
-}
-
-type TResult<T> =
-    | { success: true; data: T }
-    | { success: false; error: IApiError };
-
-async function safeApiCall<T>(
-    apiCall: () => Promise<T>,
-    context: string
-): Promise<TResult<T>> {
-    try {
-        const data = await apiCall();
-        return { success: true, data };
-    } catch (error) {
-        const apiError: IApiError = {
-            code: 'API_ERROR',
-            message: `Failed to ${context}`,
-            details: error
-        };
-
-        console.error(`${context} error:`, apiError);
-        return { success: false, error: apiError };
-    }
-}
-
-// 使用統一的錯誤處理
-async function fetchUserData(userId: string) {
-    const result = await safeApiCall(() => fetchUser(userId), 'fetch user');
-    return result.success ? result.data : null;
-}
-
-async function fetchUserProfile(userId: string) {
-    const result = await safeApiCall(() => fetchProfile(userId), 'fetch profile');
-    return result.success ? result.data : null;
-}
-```
-
-### 收益
-
-- **一致性**：所有 API 調用使用相同的錯誤處理模式
-- **類型安全**：明確的成功/失敗類型定義
-- **可追蹤**：統一的錯誤日誌格式
-- **可擴展**：容易添加重試、降級等邏輯
 
 ---
 
@@ -1057,6 +973,93 @@ function ConditionalLayout(props: IConditionalLayoutProps) {
 - **可維護性**：邏輯分離，易於修改
 - **類型安全**：明確的輸入輸出類型
 - **可測試性**：每個部分可獨立測試
+
+---
+
+## 錯誤處理與重構模式
+
+📚 **完整案例參考**：[React 組件重構模式 - 組件提取、條件渲染、參數傳遞優化等實用技巧](./references/react/react-component-refactoring-patterns.md)
+
+### 概念
+
+將分散的錯誤處理邏輯重構為統一的錯誤處理模式，提升代碼的健壯性和可維護性。
+
+### 重構前：分散的錯誤處理
+
+```typescript
+// ❌ 錯誤處理邏輯分散，缺乏一致性
+async function fetchUserData(userId: string) {
+    try {
+        const user = await fetchUser(userId);
+        return user;
+    } catch (error) {
+        console.error('Failed to fetch user:', error);
+        return null;
+    }
+}
+
+async function fetchUserProfile(userId: string) {
+    try {
+        const profile = await fetchProfile(userId);
+        return profile;
+    } catch (error) {
+        console.error('Failed to fetch profile:', error);
+        return null;
+    }
+}
+```
+
+### 重構後：統一錯誤處理
+
+```typescript
+// ✅ 統一的錯誤處理模式
+interface IApiError {
+    code: string;
+    message: string;
+    details?: unknown;
+}
+
+type TResult<T> =
+    | { success: true; data: T }
+    | { success: false; error: IApiError };
+
+async function safeApiCall<T>(
+    apiCall: () => Promise<T>,
+    context: string
+): Promise<TResult<T>> {
+    try {
+        const data = await apiCall();
+        return { success: true, data };
+    } catch (error) {
+        const apiError: IApiError = {
+            code: 'API_ERROR',
+            message: `Failed to ${context}`,
+            details: error
+        };
+
+        console.error(`${context} error:`, apiError);
+        return { success: false, error: apiError };
+    }
+}
+
+// 使用統一的錯誤處理
+async function fetchUserData(userId: string) {
+    const result = await safeApiCall(() => fetchUser(userId), 'fetch user');
+    return result.success ? result.data : null;
+}
+
+async function fetchUserProfile(userId: string) {
+    const result = await safeApiCall(() => fetchProfile(userId), 'fetch profile');
+    return result.success ? result.data : null;
+}
+```
+
+### 收益
+
+- **一致性**：所有 API 調用使用相同的錯誤處理模式
+- **類型安全**：明確的成功/失敗類型定義
+- **可追蹤**：統一的錯誤日誌格式
+- **可擴展**：容易添加重試、降級等邏輯
 
 ---
 
