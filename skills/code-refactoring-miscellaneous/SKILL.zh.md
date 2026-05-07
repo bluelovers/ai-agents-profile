@@ -704,6 +704,306 @@ class ExtendedDataProcessor extends DataProcessor {
 
 ---
 
+## 錯誤處理與重構模式
+
+📚 **完整案例參考**：[React 組件重構模式 - 組件提取、條件渲染、參數傳遞優化等實用技巧](./references/react/react-component-refactoring-patterns.md)
+
+### 概念
+
+將分散的錯誤處理邏輯重構為統一的錯誤處理模式，提升代碼的健壯性和可維護性。
+
+### 重構前：分散的錯誤處理
+
+```typescript
+// ❌ 錯誤處理邏輯分散，缺乏一致性
+async function fetchUserData(userId: string) {
+    try {
+        const user = await fetchUser(userId);
+        return user;
+    } catch (error) {
+        console.error('Failed to fetch user:', error);
+        return null;
+    }
+}
+
+async function fetchUserProfile(userId: string) {
+    try {
+        const profile = await fetchProfile(userId);
+        return profile;
+    } catch (error) {
+        console.error('Failed to fetch profile:', error);
+        return null;
+    }
+}
+```
+
+### 重構後：統一錯誤處理
+
+```typescript
+// ✅ 統一的錯誤處理模式
+interface IApiError {
+    code: string;
+    message: string;
+    details?: unknown;
+}
+
+type TResult<T> =
+    | { success: true; data: T }
+    | { success: false; error: IApiError };
+
+async function safeApiCall<T>(
+    apiCall: () => Promise<T>,
+    context: string
+): Promise<TResult<T>> {
+    try {
+        const data = await apiCall();
+        return { success: true, data };
+    } catch (error) {
+        const apiError: IApiError = {
+            code: 'API_ERROR',
+            message: `Failed to ${context}`,
+            details: error
+        };
+
+        console.error(`${context} error:`, apiError);
+        return { success: false, error: apiError };
+    }
+}
+
+// 使用統一的錯誤處理
+async function fetchUserData(userId: string) {
+    const result = await safeApiCall(() => fetchUser(userId), 'fetch user');
+    return result.success ? result.data : null;
+}
+
+async function fetchUserProfile(userId: string) {
+    const result = await safeApiCall(() => fetchProfile(userId), 'fetch profile');
+    return result.success ? result.data : null;
+}
+```
+
+### 收益
+
+- **一致性**：所有 API 調用使用相同的錯誤處理模式
+- **類型安全**：明確的成功/失敗類型定義
+- **可追蹤**：統一的錯誤日誌格式
+- **可擴展**：容易添加重試、降級等邏輯
+
+---
+
+## React 組件重構模式
+
+### 概念
+
+將 React 組件中的複雜邏輯重構為更清晰、可維護的模式。
+
+### 組件提取與抽象化
+
+**重構前**：內嵌組件依賴外部變數
+```typescript
+const BottomListPanel = () => (
+    <Flex vertical style={{ background: token.colorBgContainer }}>
+        <DataList data={data} onClick={handleClick} />
+    </Flex>
+);
+```
+
+**重構後**：獨立組件明確依賴
+```typescript
+interface IBottomListPanelProps {
+    data: IDataItem[];
+    onItemClick: (item: IDataItem) => void;
+    background?: string;
+}
+
+const BottomListPanel = (props: IBottomListPanelProps) => (
+    <Flex vertical style={{ background: props.background }}>
+        <DataList data={props.data} onClick={props.onItemClick} />
+    </Flex>
+);
+```
+
+### 條件渲染重構
+
+**重構前**：重複的 JSX 結構
+```typescript
+{displayMode === 'sidebar' ? (
+    <Layout.Content>...</Layout.Content>
+) : (
+    <Layout style={{ flex: 1 }}>
+        <Layout.Content>...</Layout.Content>
+        <BottomPanel />
+    </Layout>
+)}
+```
+
+**重構後**：抽象佈局組件
+```typescript
+function ConditionalLayout(props: IConditionalLayoutProps) {
+    if (props.displayMode !== EnumDisplayMode.SIDEBAR) {
+        return (
+            <Layout style={{ flex: 1 }}>
+                {props.children}
+                {props.bottomPanel}
+            </Layout>
+        );
+    }
+    return <>{props.children}</>;
+}
+```
+
+### 參數傳遞優化
+
+**重構前**：隱式依賴外部變數
+**重構後**：明確的 props 傳遞，提升組件獨立性
+
+### CSS 變數使用優化
+
+**重構前**：直接使用 token 值
+**重構後**：使用 CSS 變數支援動態主題切換
+
+### 組件組合模式
+
+**重構前**：複雜的單一組件
+**重構後**：使用組件組合替代繼承
+
+### Hook 抽象模式
+
+**重構前**：組件內複雜邏輯
+**重構後**：提取為自定義 Hook
+
+### 收益
+
+- **可重用性**：組件和邏輯可在多個地方使用
+- **可維護性**：邏輯分離，易於修改
+- **類型安全**：明確的輸入輸出類型
+- **可測試性**：每個部分可獨立測試
+
+---
+
+## 數據驗證重構模式
+
+### 概念
+
+將分散的驗證邏輯重構為可重用的驗證器模式，提升代碼的可重用性和類型安全性。
+
+### 重構前：內聯驗證
+
+```typescript
+// ❌ 驗證邏輯分散，難以重用
+function createUser(userData: any) {
+    if (!userData.name || typeof userData.name !== 'string') {
+        throw new Error('Name is required and must be string');
+    }
+
+    if (!userData.email || !userData.email.includes('@')) {
+        throw new Error('Valid email is required');
+    }
+
+    if (userData.age && (typeof userData.age !== 'number' || userData.age < 0)) {
+        throw new Error('Age must be a positive number');
+    }
+
+    // 創建用戶邏輯...
+}
+```
+
+### 重構後：驗證器模式
+
+```typescript
+// ✅ 可重用的驗證器模式
+interface IValidationRule<T> {
+    validate: (value: T) => string | null;
+    required?: boolean;
+}
+
+interface IValidator<T> {
+    rules: IValidationRule<T>[];
+    validate: (value: T) => string[];
+}
+
+// 創建驗證器工廠
+function createValidator<T>(rules: IValidationRule<T>[]): IValidator<T> {
+    return {
+        rules,
+        validate: (value: T): string[] => {
+            const errors: string[] = [];
+
+            for (const rule of rules) {
+                if (!rule.required && (value === undefined || value === null)) {
+                    continue;
+                }
+
+                const error = rule.validate(value);
+                if (error) {
+                    errors.push(error);
+                }
+            }
+
+            return errors;
+        }
+    };
+}
+
+// 常用驗證規則
+const ValidationRules = {
+    required: (message: string): IValidationRule<string> => ({
+        validate: (value) => !value ? message : null,
+        required: true
+    }),
+
+    email: (): IValidationRule<string> => ({
+        validate: (value) => {
+            if (!value) return null;
+            return !value.includes('@') ? 'Invalid email format' : null;
+        }
+    }),
+
+    positiveNumber: (message: string): IValidationRule<number> => ({
+        validate: (value) => {
+            if (value === undefined) return null;
+            return typeof value !== 'number' || value < 0 ? message : null;
+        }
+    })
+};
+
+// 使用驗證器
+const userValidator = createValidator({
+    name: ValidationRules.required('Name is required'),
+    email: [ValidationRules.required('Email is required'), ValidationRules.email()],
+    age: ValidationRules.positiveNumber('Age must be positive')
+});
+
+interface IUserData {
+    name: string;
+    email: string;
+    age?: number;
+}
+
+function createUser(userData: IUserData) {
+    const errors = [
+        ...userValidator.validate(userData.name),
+        ...userValidator.validate(userData.email),
+        ...userValidator.validate(userData.age)
+    ];
+
+    if (errors.length > 0) {
+        throw new Error(`Validation failed: ${errors.join(', ')}`);
+    }
+
+    // 創建用戶邏輯...
+}
+```
+
+### 收益
+
+- **可重用性**：驗證規則可在多個地方使用
+- **組合性**：可以組合多個驗證規則
+- **類型安全**：明確的輸入輸出類型
+- **可測試性**：每個驗證規則可獨立測試
+
+---
+
 ## 📝 總結建議 (Pro Tips)
 
 > **"State 是為了觸發，RefObject 是為了記住。"**

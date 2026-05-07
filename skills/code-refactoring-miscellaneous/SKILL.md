@@ -698,6 +698,306 @@ Find values that **can be derived from API results**.
 
 ---
 
+## Error Handling & Refactoring Patterns
+
+📚 **Complete case reference**: [React Component Refactoring Patterns - Component extraction, conditional rendering, parameter passing optimization and other practical tips](./references/react/react-component-refactoring-patterns.md)
+
+### Concept
+
+Refactor scattered error handling logic into unified error handling patterns to improve code robustness and maintainability.
+
+### Before: Scattered Error Handling
+
+```typescript
+// ❌ Error handling logic scattered, lacks consistency
+async function fetchUserData(userId: string) {
+    try {
+        const user = await fetchUser(userId);
+        return user;
+    } catch (error) {
+        console.error('Failed to fetch user:', error);
+        return null;
+    }
+}
+
+async function fetchUserProfile(userId: string) {
+    try {
+        const profile = await fetchProfile(userId);
+        return profile;
+    } catch (error) {
+        console.error('Failed to fetch profile:', error);
+        return null;
+    }
+}
+```
+
+### After: Unified Error Handling
+
+```typescript
+// ✅ Unified error handling pattern
+interface IApiError {
+    code: string;
+    message: string;
+    details?: unknown;
+}
+
+type TResult<T> =
+    | { success: true; data: T }
+    | { success: false; error: IApiError };
+
+async function safeApiCall<T>(
+    apiCall: () => Promise<T>,
+    context: string
+): Promise<TResult<T>> {
+    try {
+        const data = await apiCall();
+        return { success: true, data };
+    } catch (error) {
+        const apiError: IApiError = {
+            code: 'API_ERROR',
+            message: `Failed to ${context}`,
+            details: error
+        };
+
+        console.error(`${context} error:`, apiError);
+        return { success: false, error: apiError };
+    }
+}
+
+// Using unified error handling
+async function fetchUserData(userId: string) {
+    const result = await safeApiCall(() => fetchUser(userId), 'fetch user');
+    return result.success ? result.data : null;
+}
+
+async function fetchUserProfile(userId: string) {
+    const result = await safeApiCall(() => fetchProfile(userId), 'fetch profile');
+    return result.success ? result.data : null;
+}
+```
+
+### Benefits
+
+- **Consistency**: All API calls use the same error handling pattern
+- **Type Safety**: Clear success/failure type definitions
+- **Traceability**: Unified error log format
+- **Extensibility**: Easy to add retry, fallback, and other logic
+
+---
+
+## React Component Refactoring Patterns
+
+### Concept
+
+Refactor complex logic in React components into clearer, more maintainable patterns.
+
+### Component Extraction & Abstraction
+
+**Before**: Inline component depends on external variables
+```typescript
+const BottomListPanel = () => (
+    <Flex vertical style={{ background: token.colorBgContainer }}>
+        <DataList data={data} onClick={handleClick} />
+    </Flex>
+);
+```
+
+**After**: Independent component with explicit dependencies
+```typescript
+interface IBottomListPanelProps {
+    data: IDataItem[];
+    onItemClick: (item: IDataItem) => void;
+    background?: string;
+}
+
+const BottomListPanel = (props: IBottomListPanelProps) => (
+    <Flex vertical style={{ background: props.background }}>
+        <DataList data={props.data} onClick={props.onItemClick} />
+    </Flex>
+);
+```
+
+### Conditional Rendering Refactoring
+
+**Before**: Repeated JSX structure
+```typescript
+{displayMode === 'sidebar' ? (
+    <Layout.Content>...</Layout.Content>
+) : (
+    <Layout style={{ flex: 1 }}>
+        <Layout.Content>...</Layout.Content>
+        <BottomPanel />
+    </Layout>
+)}
+```
+
+**After**: Abstract layout component
+```typescript
+function ConditionalLayout(props: IConditionalLayoutProps) {
+    if (props.displayMode !== EnumDisplayMode.SIDEBAR) {
+        return (
+            <Layout style={{ flex: 1 }}>
+                {props.children}
+                {props.bottomPanel}
+            </Layout>
+        );
+    }
+    return <>{props.children}</>;
+}
+```
+
+### Parameter Passing Optimization
+
+**Before**: Implicit dependency on external variables
+**After**: Explicit props passing, improving component independence
+
+### CSS Variable Usage Optimization
+
+**Before**: Direct token value usage
+**After**: Using CSS variables to support dynamic theme switching
+
+### Component Composition Pattern
+
+**Before**: Complex single component
+**After**: Using component composition instead of inheritance
+
+### Hook Abstraction Pattern
+
+**Before**: Complex logic within component
+**After**: Extract into custom hooks
+
+### Benefits
+
+- **Reusability**: Components and logic can be used in multiple places
+- **Maintainability**: Logic separation, easy to modify
+- **Type Safety**: Clear input/output types
+- **Testability**: Each part can be tested independently
+
+---
+
+## Data Validation Refactoring Patterns
+
+### Concept
+
+Refactor scattered validation logic into reusable validator patterns to improve code reusability and type safety.
+
+### Before: Inline Validation
+
+```typescript
+// ❌ Validation logic scattered, difficult to reuse
+function createUser(userData: any) {
+    if (!userData.name || typeof userData.name !== 'string') {
+        throw new Error('Name is required and must be string');
+    }
+
+    if (!userData.email || !userData.email.includes('@')) {
+        throw new Error('Valid email is required');
+    }
+
+    if (userData.age && (typeof userData.age !== 'number' || userData.age < 0)) {
+        throw new Error('Age must be a positive number');
+    }
+
+    // Create user logic...
+}
+```
+
+### After: Validator Pattern
+
+```typescript
+// ✅ Reusable validator pattern
+interface IValidationRule<T> {
+    validate: (value: T) => string | null;
+    required?: boolean;
+}
+
+interface IValidator<T> {
+    rules: IValidationRule<T>[];
+    validate: (value: T) => string[];
+}
+
+// Create validator factory
+function createValidator<T>(rules: IValidationRule<T>[]): IValidator<T> {
+    return {
+        rules,
+        validate: (value: T): string[] => {
+            const errors: string[] = [];
+
+            for (const rule of rules) {
+                if (!rule.required && (value === undefined || value === null)) {
+                    continue;
+                }
+
+                const error = rule.validate(value);
+                if (error) {
+                    errors.push(error);
+                }
+            }
+
+            return errors;
+        }
+    };
+}
+
+// Common validation rules
+const ValidationRules = {
+    required: (message: string): IValidationRule<string> => ({
+        validate: (value) => !value ? message : null,
+        required: true
+    }),
+
+    email: (): IValidationRule<string> => ({
+        validate: (value) => {
+            if (!value) return null;
+            return !value.includes('@') ? 'Invalid email format' : null;
+        }
+    }),
+
+    positiveNumber: (message: string): IValidationRule<number> => ({
+        validate: (value) => {
+            if (value === undefined) return null;
+            return typeof value !== 'number' || value < 0 ? message : null;
+        }
+    })
+};
+
+// Using validator
+const userValidator = createValidator({
+    name: ValidationRules.required('Name is required'),
+    email: [ValidationRules.required('Email is required'), ValidationRules.email()],
+    age: ValidationRules.positiveNumber('Age must be positive')
+});
+
+interface IUserData {
+    name: string;
+    email: string;
+    age?: number;
+}
+
+function createUser(userData: IUserData) {
+    const errors = [
+        ...userValidator.validate(userData.name),
+        ...userValidator.validate(userData.email),
+        ...userValidator.validate(userData.age)
+    ];
+
+    if (errors.length > 0) {
+        throw new Error(`Validation failed: ${errors.join(', ')}`);
+    }
+
+    // Create user logic...
+}
+```
+
+### Benefits
+
+- **Reusability**: Validation rules can be used in multiple places
+- **Composability**: Multiple validation rules can be combined
+- **Type Safety**: Clear input/output types
+- **Testability**: Each validation rule can be tested independently
+
+---
+
 ## Summary & Pro Tips
 
 > **"State is for triggering, RefObject is for remembering."**
@@ -731,3 +1031,4 @@ When refactoring `useFacilityPointBlocksData`, compressing the originally scatte
 
 - [External API Type-Safe Wrapper Pattern](./references/external-api-type-safe-wrapper.md) - Wrapping loosely-typed external APIs (like VS Code Memento) into strictly-typed internal interfaces
 - [DOM Selector Enum Pattern - Full Reference](./references/dom-selector-enum-pattern.md) - Detailed HTML/JSX integration examples and advanced applications
+- [React Component Refactoring Patterns](./references/react/react-component-refactoring-patterns.md) - React component extraction, conditional rendering, parameter passing optimization and other practical tips
