@@ -547,7 +547,7 @@ class ExtendedDataProcessor extends DataProcessor {
 
 ---
 
-## 🟢 React 數據流判定矩陣 (Decision Matrix)
+### 🟢 React 數據流判定矩陣 (Decision Matrix)
 
 | 數據類型 | 變動時是否需要 UI 更新？ | 是否作為 Hook 依賴 (Dependency)？ | 核心定位 |
 | :--- | :--- | :--- | :--- |
@@ -558,9 +558,9 @@ class ExtendedDataProcessor extends DataProcessor {
 
 ---
 
-## 🛠️ 詳細判定指南
+### 🛠️ 詳細判定指南
 
-### 1. 什麼時候該用 State (`useState`)？
+#### 1. 什麼時候該用 State (`useState`)？
 
 當該數據的「值」是 **UI 的一部分**，或 **邏輯的觸發開關** 時。
 *   **關鍵問題**：如果這個值變了，使用者應該看到變化嗎？或是某個 Hook（如 `useSWR`, `useEffect`）應該立刻重新執行嗎？
@@ -570,7 +570,7 @@ class ExtendedDataProcessor extends DataProcessor {
     *   控制 SWR 請求的 `activeKey`。
 *   **重構信號**：如果你發現某個變數改變後，必須呼叫另一個 `set` 或觸發 `render` 才能生效，它就必須是 State。
 
-### 2. 什麼時候該用 RefObject (`useRef`)？
+#### 2. 什麼時候該用 RefObject (`useRef`)？
 
 當該數據是 **純邏輯判定** 或 **實例引用**，且不直接參與渲染時。
 *   **關鍵問題**：我是否需要「跨渲染週期」記住這個值，但又不希望值改變時導致畫面閃爍或多餘重繪？
@@ -581,7 +581,7 @@ class ExtendedDataProcessor extends DataProcessor {
     *   **上一次的 Props**：用來做 PrevProps 比較。
 *   **重構信號**：如果你發現某個 `useState` 產生的值，在程式碼中只出現在 `if` 判斷裡，從來沒出現在 JSX 中，請考慮將它重構成 RefObject 以優化效能。
 
-### 3. 什麼時候該用 `IRefObjectMaybe<T>` (`T | RefObject<T>`)？
+#### 3. 什麼時候該用 `IRefObjectMaybe<T>` (`T | RefObject<T>`)？
 
 當你在寫一個 **通用 Hook (Utility Hook)**，且希望由 **外部調用者** 決定數據的「反應式特性」時。
 *   **判定情境**：
@@ -592,7 +592,7 @@ class ExtendedDataProcessor extends DataProcessor {
     *   自定義的 `enabled` 旗標。
 *   **重構信號**：如果你正在寫一個 Library 給別人用，或者這個 Hook 會在很多不同場景出現，使用 `IRefObjectMaybe<T>` + `unwrapRefObject` 能提供最高水平的彈性。
 
-### 4. 什麼時候該用 Memo (`useMemo`)？
+#### 4. 什麼時候該用 Memo (`useMemo`)？
 
 當該數據是 **可以從其他 State/Props 推導出來的計算結果**，且 **需要保持引用穩定** 時。
 *   **關鍵問題**：
@@ -610,26 +610,26 @@ class ExtendedDataProcessor extends DataProcessor {
 
 ---
 
-## 🏗️ 重構實戰流程 (Refactoring Workflow)
+### 🏗️ 重構實戰流程 (Refactoring Workflow)
 
 當你看到一段「笨重」的代碼（如你原本那堆 `useState`），請按照以下步驟清理：
 
-### Step 1: 找出「真．驅動源」
+#### Step 1: 找出「真．驅動源」
 
 找出那個**一旦改變，全世界都要跟著動**的變數。
 *   在你的案例中，是 `activeKey`。它動了，SWR 就動。
 
-### Step 2: 降級「靜態記憶」為 RefObject
+#### Step 2: 降級「靜態記憶」為 RefObject
 
 找出那些**只在 `onSuccess` 寫入、只在 `if` 裡讀取**的變數。
 *   例如 `matchedRangeBounds`, `triggerThresholdRangeBounds`。這些本質上是「輔助判斷的記憶」，不應該是驅動 UI 的 State。
 
-### Step 3: 處理「外部配置」為 `IRefObjectMaybe<T>`
+#### Step 3: 處理「外部配置」為 `IRefObjectMaybe<T>`
 
 處理那些從參數傳進來的開關。
 *   使用 `unwrapRefObject(config)` 在 Effect 內部「拆箱」。
 
-### Step 4: 轉化「派生數據」為 Memo
+#### Step 4: 轉化「派生數據」為 Memo
 
 找出那些**可以從 API 結果推導出來**的值。
 *   例如 `categories`、`matchedRangeBounds`、`triggerThresholdRangeBounds`。這些都只是 `batchData` 的一部分，不需要自己的 `useState`。
@@ -653,13 +653,13 @@ class ExtendedDataProcessor extends DataProcessor {
 
 ---
 
-## 案例：State vs Ref - ManualLocationHandler - 錯誤的 State 判斷邏輯
+### 案例：State vs Ref - ManualLocationHandler - 錯誤的 State 判斷邏輯
 
-### 案例背景
+#### 案例背景
 
 一個常見的錯誤分析報告認為「因為變數被當作 Prop 傳遞，所以必須使用 State」。這個案例展示為什麼這個邏輯是錯誤的，以及如何正確判斷 State vs Ref。
 
-### 重構前代碼
+#### 重構前代碼
 
 ```tsx
 const ManualLocationHandler = ({
@@ -692,7 +692,7 @@ const ManualLocationHandler = ({
 />
 ```
 
-### 錯誤分析報告
+#### 錯誤分析報告
 
 ```md
 manualMode (line 362)
@@ -706,14 +706,14 @@ Decision: Should remain as State.
 
 **問題：** 報告將「作為 Prop 傳遞」誤認為「必須使用 State」的判斷標準。
 
-### 正確的判斷標準
+#### 正確的判斷標準
 
 **核心原則：** 變數的改變是否需要觸發 UI 重新渲染？
 
 - **使用 State：** UI 條件渲染、樣式切換、文字顯示
 - **使用 Ref：** 事件處理開關、避免閉包陷阱、效能優化
 
-### 重構後代碼
+#### 重構後代碼
 
 **方案：純 Ref 解決方案（推薦）**
 
@@ -753,7 +753,7 @@ const ManualLocationHandler = ({
 };
 ```
 
-### 重構收益
+#### 重構收益
 
 | 方面 | 重構前 | 重構後 |
 |------|--------|--------|
@@ -762,7 +762,7 @@ const ManualLocationHandler = ({
 | 重新渲染 | 過多（每次模式切換） | 優化（僅在 UI 需要時） |
 | 代碼清晰度 | 低（混淆數據流向） | 高（明確狀態職責） |
 
-### 關鍵教訓
+#### 關鍵教訓
 
 1. **不要因「被當作 Prop」就認為必須用 State**
 2. **根據「是否需要觸發 UI 更新」來判斷**
