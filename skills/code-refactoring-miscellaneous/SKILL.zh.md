@@ -28,7 +28,7 @@ description: >-
 
 ---
 
-## Async/Await 邊緣案例
+## Async/Await 與 生成器 (Generator) 邊緣案例
 
 ### 平行執行 vs 循序執行
 
@@ -85,6 +85,68 @@ for await (const record of processRecordsGenerator()) {
     await processRecord(record);
 }
 ```
+
+### Generator 底層抽象重構模式
+
+**問題**：多個 Generator 函數中有重複的遍歷邏輯。
+
+#### ❌ 重構前：重複的遍歷邏輯
+```typescript
+// 每個函數都有相同的遞迴邏輯
+function* convertTokenKeysToCSSVarGenerator(tokenObj, options) {
+    const { deep = false } = options || {};
+
+    function* processObject(obj) {
+        for (const key of Object.keys(obj)) {
+            const cssVarKey = antdTokenToCSSVar(key);
+            const value = obj[key];
+
+            // 重複的深度遍歷邏輯
+            if (deep && value && typeof value === 'object' && !Array.isArray(value)) {
+                yield* processObject(value);
+            } else {
+                yield [cssVarKey, value];
+            }
+        }
+    }
+
+    yield* processObject(tokenObj);
+}
+```
+
+#### ✅ 重構後：底層抽象 + 組合模式
+```typescript
+// 底層抽象：專門處理遍歷
+function* walkTokenObjectGenerator(obj, options) {
+    const { deep = false } = options || {};
+
+    for (const key of Object.keys(obj)) {
+        const value = obj[key];
+
+        if (deep && value && typeof value === 'object' && !Array.isArray(value)) {
+            yield* walkTokenObjectGenerator(value, { deep });
+        } else {
+            yield [key, value];
+        }
+    }
+}
+
+// 組合模式：基於底層抽象
+function* convertTokenKeysToCSSVarGenerator(tokenObj, options) {
+    for (const [key, value] of walkTokenObjectGenerator(tokenObj, options)) {
+        const cssVarKey = antdTokenToCSSVar(key);
+        yield [cssVarKey, value];
+    }
+}
+```
+
+#### 收益
+
+- **消除重複**：遍歷邏輯統一在底層
+- **職責分離**：遍歷與轉換邏輯分離
+- **可擴展性**：基於底層快速組合新功能
+
+📚 **完整案例參考**：[Generator 底層抽象重構模式 - 完整案例分析](./references/generator-foundation-abstraction.md)
 
 ---
 
