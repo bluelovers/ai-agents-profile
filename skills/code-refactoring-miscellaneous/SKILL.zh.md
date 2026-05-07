@@ -545,6 +545,8 @@ class ExtendedDataProcessor extends DataProcessor {
 
 這是一份針對 React 重構時，關於 **State**、**RefObject** 與 **`IRefObjectMaybe<T>` (Value/RefObject)**、**Memo** 的選擇與判定指南。你可以將這套邏輯應用在開發 Hook 或複雜組件的決策中。
 
+📚 **完整案例參考**：[React State/Ref/Memo Refactoring - useFacilityPointBlocksData Case Study](./references/react/react-state-ref-memo-refactoring.md)
+
 ---
 
 ### 🟢 React 數據流判定矩陣 (Decision Matrix)
@@ -563,6 +565,7 @@ class ExtendedDataProcessor extends DataProcessor {
 #### 1. 什麼時候該用 State (`useState`)？
 
 當該數據的「值」是 **UI 的一部分**，或 **邏輯的觸發開關** 時。
+
 *   **關鍵問題**：如果這個值變了，使用者應該看到變化嗎？或是某個 Hook（如 `useSWR`, `useEffect`）應該立刻重新執行嗎？
 *   **範例**：
     *   API 回傳的資料 (`data`)。
@@ -570,9 +573,23 @@ class ExtendedDataProcessor extends DataProcessor {
     *   控制 SWR 請求的 `activeKey`。
 *   **重構信號**：如果你發現某個變數改變後，必須呼叫另一個 `set` 或觸發 `render` 才能生效，它就必須是 State。
 
+```typescript
+// ✅ activeKey 是 State：它的改變要驅動 SWR 重新發請求
+const [activeKey, setActiveKey] = useState<string | null>(null);
+
+useEffect(() => {
+    if (shouldTrigger) {
+        setActiveKey(newKey); // 改變 → SWR 重跑 → UI 更新
+    }
+}, [position]);
+
+const { data } = useSWR(activeKey, fetcher); // activeKey 是 SWR 的驅動源
+```
+
 #### 2. 什麼時候該用 RefObject (`useRef`)？
 
 當該數據是 **純邏輯判定** 或 **實例引用**，且不直接參與渲染時。
+
 *   **關鍵問題**：我是否需要「跨渲染週期」記住這個值，但又不希望值改變時導致畫面閃爍或多餘重繪？
 *   **範例**：
     *   **邊界快取**：如你案例中的 `boundsRef`，只用來判定「要不要發請求」。
@@ -581,16 +598,48 @@ class ExtendedDataProcessor extends DataProcessor {
     *   **上一次的 Props**：用來做 PrevProps 比較。
 *   **重構信號**：如果你發現某個 `useState` 產生的值，在程式碼中只出現在 `if` 判斷裡，從來沒出現在 JSX 中，請考慮將它重構成 RefObject 以優化效能。
 
+```typescript
+// ❌ 錯誤：triggerThresholdRangeBounds 只用於 if 判斷，卻用 State 存儲
+const [triggerThresholdRangeBounds, setTriggerThresholdRangeBounds] = useState(null);
+// ...
+if (!isCoordWithinRange(coord, triggerThresholdRangeBounds)) { /* 發請求 */ }
+// JSX 中完全沒有用到它 → 每次更新都白白觸發 re-render
+
+// ✅ 正確：改用 Ref，靜默記憶，不驚動 UI
+const boundsRef = useRef<{ trigger?: IGpsLngLatMinMax | null }>({});
+// ...
+if (!isCoordWithinRange(coord, boundsRef.current.trigger)) { /* 發請求 */ }
+// onSuccess 中更新，零 re-render
+onSuccess: (res) => { boundsRef.current.trigger = res.triggerThresholdRangeBounds; }
+```
+
 #### 3. 什麼時候該用 `IRefObjectMaybe<T>` (`T | RefObject<T>`)？
 
 當你在寫一個 **通用 Hook (Utility Hook)**，且希望由 **外部調用者** 決定數據的「反應式特性」時。
 *   **判定情境**：
-    *   **傳入 Value**：外部希望「只要這個設定一變，Hook 就立刻重跑」。
-    *   **傳入 RefObject**：外部希望「我改設定時 Hook 先別動，等你下次因為其他原因（如位置變動）重跑時再順便讀取我」。
+    *   **傳入 Value**：外部希望「只要這個設定一變，Hook 就立刻重跑」。需要即時響應。
+    *   **傳入 RefObject**：外部希望「我改設定時 Hook 先別動，等你下次因為其他原因（如位置變動）自然觸發時才讀取」。不希望額外 re-render。
 *   **範例**：
     *   `ignoreCacheCheck` 開關。
     *   自定義的 `enabled` 旗標。
 *   **重構信號**：如果你正在寫一個 Library 給別人用，或者這個 Hook 會在很多不同場景出現，使用 `IRefObjectMaybe<T>` + `unwrapRefObject` 能提供最高水平的彈性。
+
+```typescript
+// Hook 簽名：外部決定 ignoreCheck 是否反應式
+function useFacilityPointBlocksData(
+    position: IGeoPointTupleLatLng,
+    ignoreCheck?: IRefObjectMaybe<boolean>  // 接受 value 或 ref 都行
+) {
+    useEffect(() => {
+        const shouldIgnore = unwrapRefObject(ignoreCheck); // 統一拆箱
+        // ...
+    }, [position]); // ignoreCheck 不在依賴陣列，不會額外觸發
+}
+
+// 調用端選擇：
+useFacilityPointBlocksData(pos, true);           // 傳 value → 反應式
+useFacilityPointBlocksData(pos, ignoreCheckRef); // 傳 ref   → 靜音
+```
 
 #### 4. 什麼時候該用 Memo (`useMemo`)？
 
@@ -608,6 +657,28 @@ class ExtendedDataProcessor extends DataProcessor {
     *   如果你發現自己為了「組裝回傳物件」而創建多個獨立的 `useState`，這些都應該用 `useMemo` 取代。
     *   如果子組件因為父組件傳入的物件引用變化而過度 re-render，使用 `useMemo` 保持引用穩定。
 
+```typescript
+// ❌ 錯誤：5 個 useState 各自存儲，onSuccess 裡 5 個 setXxx
+const [data, setData] = useState(null);
+const [categories, setCategories] = useState([]);
+const [matchedRangeBounds, setMatchedRangeBounds] = useState(null);
+// ... 還有 2 個
+
+// ✅ 正確：全部從 batchData 派生，一個 useMemo 搞定
+const { data: batchData, error, isLoading } = useSWR(activeKey, fetcher);
+
+return useMemo(() => ({
+    data: fillFacilityPointData(batchData?.data),
+    categories: batchData?.categories ?? [],
+    matchedRangeBounds: batchData?.matchedRangeBounds ?? null,
+    triggerThresholdRangeBounds: batchData?.triggerThresholdRangeBounds ?? null,
+    blockScanRangeBounds: batchData?.blockScanRangeBounds ?? null,
+    error,
+    isLoading,
+}), [batchData, error, isLoading]);
+// batchData 更新 → 所有派生值一起更新，引用穩定，子組件不會多餘 re-render
+```
+
 ---
 
 ### 🏗️ 重構實戰流程 (Refactoring Workflow)
@@ -617,38 +688,72 @@ class ExtendedDataProcessor extends DataProcessor {
 #### Step 1: 找出「真．驅動源」
 
 找出那個**一旦改變，全世界都要跟著動**的變數。
-*   在你的案例中，是 `activeKey`。它動了，SWR 就動。
+*   在此案例中，是 `activeKey`。它動了，SWR 就動。
+
+```typescript
+// ✅ activeKey 才是真正的驅動源
+// 它改變 → SWR 重跑 → batchData 更新 → UI 更新
+const [activeKey, setActiveKey] = useState<string | null>(null);
+```
 
 #### Step 2: 降級「靜態記憶」為 RefObject
 
-找出那些**只在 `onSuccess` 寫入、只在 `if` 裡讀取**的變數。
+找出那些**只在回調寫入、只在 `if` 裡讀取**的變數，它們不需要觸發渲染。
 *   例如 `matchedRangeBounds`, `triggerThresholdRangeBounds`。這些本質上是「輔助判斷的記憶」，不應該是驅動 UI 的 State。
+
+```typescript
+// ❌ 重構前：3 個多餘的 useState，每次 onSuccess 都觸發 3 次 re-render
+const [matchedRangeBounds, setMatchedRangeBounds] = useState(null);
+const [triggerThresholdRangeBounds, setTriggerThresholdRangeBounds] = useState(null);
+const [blockScanRangeBounds, setBlockScanRangeBounds] = useState(null);
+
+// ✅ 重構後：合併為 1 個 Ref，onSuccess 更新時零 re-render
+const boundsRef = useRef<{ trigger?: IGpsLngLatMinMax | null }>({});
+// onSuccess: (res) => { boundsRef.current.trigger = res.triggerThresholdRangeBounds; }
+```
 
 #### Step 3: 處理「外部配置」為 `IRefObjectMaybe<T>`
 
-處理那些從參數傳進來的開關。
+處理那些從參數傳進來的開關，讓外部決定是否需要反應式。
 *   使用 `unwrapRefObject(config)` 在 Effect 內部「拆箱」。
+
+```typescript
+// ✅ 使用 unwrapRefObject 在 Effect 內部「拆箱」
+// 無論外部傳 value 還是 ref，內部統一處理
+const shouldIgnore = unwrapRefObject(ignoreCheck);
+```
 
 #### Step 4: 轉化「派生數據」為 Memo
 
-找出那些**可以從 API 結果推導出來**的值。
+找出那些**可以從 API 結果推導出來**的值，用一個 `useMemo` 統一回傳。
 *   例如 `categories`、`matchedRangeBounds`、`triggerThresholdRangeBounds`。這些都只是 `batchData` 的一部分，不需要自己的 `useState`。
 *   **使用 `useMemo` 的好處**：
     *   確保回傳物件的 **引用穩定**（Referential Stability），避免子組件不必要的 re-render
     *   將多個相關數據封裝成單一回傳物件，簡化接口
     *   計算邏輯只在依賴項變化時執行，避免重複計算
 *   **實作模式**：
+
     ```typescript
-    return useMemo(() => ({
-        data: fillFacilityPointData(batchData?.data),
-        matchedRangeBounds: batchData?.matchedRangeBounds ?? null,
-        triggerThresholdRangeBounds: batchData?.triggerThresholdRangeBounds ?? null,
-        blockScanRangeBounds: batchData?.blockScanRangeBounds ?? null,
-        categories: batchData?.categories ?? [],
-        error,
-        isLoading,
-    }), [batchData, error, isLoading]);
-    ```
+```typescript
+// ❌ 重構前：data 和 categories 各自有 useState，onSuccess 裡各自 setXxx
+const [data, setData] = useState(fillFacilityPointData());
+const [categories, setCategories] = useState([]);
+
+// ✅ 重構後：全部從 batchData 派生，引用穩定，onSuccess 只需更新 boundsRef
+return useMemo(() => ({
+    data: fillFacilityPointData(batchData?.data),
+    matchedRangeBounds: batchData?.matchedRangeBounds ?? null,
+    triggerThresholdRangeBounds: batchData?.triggerThresholdRangeBounds ?? null,
+    blockScanRangeBounds: batchData?.blockScanRangeBounds ?? null,
+    categories: batchData?.categories ?? [],
+    error,
+    isLoading,
+}), [batchData, error, isLoading]);
+```
+
+**最終成果**：5 個 `useState` → 1 個 `activeKey` (State) + 1 個 `boundsRef` (Ref) + 1 個 `useMemo`
+
+📚 完整重構案例：[useFacilityPointBlocksData 完整 Before/After](./references/react/react-state-ref-memo-refactoring.md)
 
 
 ---
