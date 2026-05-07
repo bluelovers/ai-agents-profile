@@ -321,6 +321,123 @@ export function unwrapRefObject<T>(val: IRefObjectMaybe<T>): T
 
 ---
 
+## 案例：State vs Ref - ManualLocationHandler - 錯誤的 State 判斷邏輯
+
+### 案例背景
+
+一個常見的錯誤分析報告認為「因為變數被當作 Prop 傳遞，所以必須使用 State」。這個案例展示為什麼這個邏輯是錯誤的，以及如何正確判斷 State vs Ref。
+
+### 重構前代碼
+
+```tsx
+const ManualLocationHandler = ({
+  manualMode, // ❌ 錯誤：僅作為事件開關卻使用 State
+  setPosition,
+  setManualMode,
+}: {
+  manualMode: boolean;
+  setPosition: (value: IGeoPointTupleLatLng) => void;
+  setManualMode: (value: boolean) => void;
+}) => {
+  useMapEvents({
+    click: (e) => {
+      if (manualMode) {
+        setShouldAutoCenter(false);
+        setPosition([e.latlng.lat, e.latlng.lng]);
+        setManualMode(false);
+      }
+    },
+  });
+
+  return null;
+};
+
+// 父組件使用
+<ManualLocationHandler
+  manualMode={manualMode}
+  setPosition={setPosition}
+  setManualMode={setManualMode}
+/>
+```
+
+### 錯誤分析報告
+
+```md
+manualMode (line 362)
+Usage in code:
+Passed as prop to <ManualLocationHandler manualMode={manualMode} /> (line 1152)
+Used in that component's click handler (line 165): if (manualMode)
+JSX appearance: ✅ Yes (as prop to child component)
+
+Decision: Should remain as State.
+```
+
+**問題：** 報告將「作為 Prop 傳遞」誤認為「必須使用 State」的判斷標準。
+
+### 正確的判斷標準
+
+**核心原則：** 變數的改變是否需要觸發 UI 重新渲染？
+
+- **使用 State：** UI 條件渲染、樣式切換、文字顯示
+- **使用 Ref：** 事件處理開關、避免閉包陷阱、效能優化
+
+### 重構後代碼
+
+**方案：純 Ref 解決方案（推薦）**
+
+```tsx
+// 父組件
+const manualModeRef = useRef(false);
+
+const handleManualModeToggle = () => {
+  manualModeRef.current = true;
+};
+
+<ManualLocationHandler
+  manualModeRef={manualModeRef} // ✅ 僅傳遞 Ref
+  setPosition={setPosition}
+/>
+```
+
+```tsx
+// 重構後的 ManualLocationHandler
+const ManualLocationHandler = ({
+  manualModeRef, // ✅ 僅接收 Ref
+  setPosition,
+}: {
+  manualModeRef: React.MutableRefObject<boolean>;
+  setPosition: (value: IGeoPointTupleLatLng) => void;
+}) => {
+  useMapEvents({
+    click: (e) => {
+      if (manualModeRef.current) { // ✅ 直接讀取最新值
+        setPosition([e.latlng.lat, e.latlng.lng]);
+        manualModeRef.current = false; // 立即重置
+      }
+    },
+  });
+
+  return null;
+};
+```
+
+### 重構收益
+
+| 方面 | 重構前 | 重構後 |
+|------|--------|--------|
+| 判斷邏輯 | 錯誤（基於 Prop 傳遞） | 正確（基於渲染需求） |
+| 閉包陷阱 | 存在（可能讀到舊值） | 解決（ref.current 永遠最新） |
+| 重新渲染 | 過多（每次模式切換） | 優化（僅在 UI 需要時） |
+| 代碼清晰度 | 低（混淆數據流向） | 高（明確狀態職責） |
+
+### 關鍵教訓
+
+1. **不要因「被當作 Prop」就認為必須用 State**
+2. **根據「是否需要觸發 UI 更新」來判斷**
+4. **避免閉包陷阱，使用 Ref 確保讀取最新值**
+
+---
+
 ## 相關資源
 
 - [Main Skill Documentation](../../SKILL.zh.md) - 核心重構指南
