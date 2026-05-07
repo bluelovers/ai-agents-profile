@@ -545,8 +545,6 @@ class ExtendedDataProcessor extends DataProcessor {
 
 這是一份針對 React 重構時，關於 **State**、**RefObject** 與 **`IRefObjectMaybe<T>` (Value/RefObject)**、**Memo** 的選擇與判定指南。你可以將這套邏輯應用在開發 Hook 或複雜組件的決策中。
 
-📚 **完整案例參考**：[React State/Ref/Memo Refactoring - useFacilityPointBlocksData Case Study](./references/react/react-state-ref-memo-refactoring.md)
-
 ---
 
 ### 🟢 React 數據流判定矩陣 (Decision Matrix)
@@ -681,7 +679,7 @@ return useMemo(() => ({
 
 ---
 
-### 🏗️ 重構實戰流程 (Refactoring Workflow)
+### 案例：🏗️ 重構實戰流程 (Refactoring Workflow)
 
 當你看到一段「笨重」的代碼（如你原本那堆 `useState`），請按照以下步驟清理：
 
@@ -764,7 +762,7 @@ return useMemo(() => ({
 
 一個常見的錯誤分析報告認為「因為變數被當作 Prop 傳遞，所以必須使用 State」。這個案例展示為什麼這個邏輯是錯誤的，以及如何正確判斷 State vs Ref。
 
-#### 重構前代碼
+##### 重構前代碼
 
 ```tsx
 const ManualLocationHandler = ({
@@ -797,7 +795,7 @@ const ManualLocationHandler = ({
 />
 ```
 
-#### 錯誤分析報告
+##### 錯誤分析報告
 
 ```md
 manualMode (line 362)
@@ -818,7 +816,7 @@ Decision: Should remain as State.
 - **使用 State：** UI 條件渲染、樣式切換、文字顯示
 - **使用 Ref：** 事件處理開關、避免閉包陷阱、效能優化
 
-#### 重構後代碼
+##### 重構後代碼
 
 **方案：純 Ref 解決方案（推薦）**
 
@@ -968,7 +966,7 @@ async function fetchUserProfile(userId: string) {
 
 將 React 組件中的複雜邏輯重構為更清晰、可維護的模式。
 
-### 組件提取與抽象化
+#### 組件提取與抽象化
 
 **重構前**：內嵌組件依賴外部變數
 ```typescript
@@ -994,7 +992,7 @@ const BottomListPanel = (props: IBottomListPanelProps) => (
 );
 ```
 
-### 條件渲染重構
+#### 條件渲染重構
 
 **重構前**：重複的 JSX 結構
 ```typescript
@@ -1023,22 +1021,22 @@ function ConditionalLayout(props: IConditionalLayoutProps) {
 }
 ```
 
-### 參數傳遞優化
+#### 參數傳遞優化
 
 **重構前**：隱式依賴外部變數
 **重構後**：明確的 props 傳遞，提升組件獨立性
 
-### CSS 變數使用優化
+#### CSS 變數使用優化
 
 **重構前**：直接使用 token 值
 **重構後**：使用 CSS 變數支援動態主題切換
 
-### 組件組合模式
+#### 組件組合模式
 
 **重構前**：複雜的單一組件
 **重構後**：使用組件組合替代繼承
 
-### Hook 抽象模式
+#### Hook 抽象模式
 
 **重構前**：組件內複雜邏輯
 **重構後**：提取為自定義 Hook
@@ -1199,12 +1197,12 @@ function createUser(userData: IUserData) {
 - [Functional Error Handling in TypeScript](https://dev.to/gcanti/functional-error-handling-in-typescript-2g5o)
 - [TypeScript Enum 文件](https://www.typescriptlang.org/docs/handbook/enums.html)
 
-## 相關技能
+### 相關技能
 
 - [code-refactoring-expert-typescript](../code-refactoring-expert-typescript/SKILL.md) - 核心重構原則
 - [typescript-unimplemented-handler](../typescript-unimplemented-handler/SKILL.md) - 處理 TypeScript 限制
 
-## 延伸閱讀
+### 延伸閱讀
 
 - [外部 API 類型安全封裝模式](./references/external-api-type-safe-wrapper.md) - 將鬆散類型的外部 API（如 VS Code Memento）封裝為嚴格類型的內部接口
 - [DOM Selector Enum Pattern - 完整參考](./references/dom-selector-enum-pattern.md) - 詳細的 HTML/JSX 整合範例與進階應用
