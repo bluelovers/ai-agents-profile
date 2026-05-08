@@ -1036,6 +1036,10 @@ function ConditionalLayout(props: IConditionalLayoutProps) {
 - **類型安全**：明確的輸入輸出類型
 - **可測試性**：每個部分可獨立測試
 
+📚 **完整案例參考**：
+- [React 組件重構模式 - 組件提取、條件渲染、參數傳遞優化等實用技巧](./references/react/react-component-refactoring-patterns.md)
+- [Ant Design 主題系統架構重構 - 從動態計算到預生成架構的優化實踐](./references/react/antd/theme-system-architecture-refactoring.md)
+
 ---
 
 ## 錯誤處理與重構模式
