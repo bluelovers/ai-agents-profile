@@ -891,6 +891,84 @@ function findShortestPath(graph) { ... }
 
 ---
 
+### Preserve Non-Chinese and Non-English Comments
+
+**核心原則：若原始註解包含中文與英文以外的語言，請保留該語言的註解。**
+
+當遇到包含其他語言（包含但不限於日語、韓語、德語、法語等）的原始註解時，應保留該語言內容，並在其後添加繁體中文與英文的雙語註解。
+
+| 情境 / Scenario | 處理方式 / Handling |
+|-----------------|---------------------|
+| 原始註解為純其他語言（如日語） | 保留日語，新增繁體中文與英文翻譯 |
+| 任意多語言註解（例如：中、英、日） | 保留所有語言，維持原有結構；檢查是否缺少中英註解，若缺少則補充 |
+| 原始註解僅為中英雙語 | 遵循標準雙語註解格式 |
+
+**範例 / Examples:**
+
+### 範例 1：日語註解保留
+
+```typescript
+// 原始：
+/**
+ * パスワードを暗号化する
+ */
+function encryptPassword(password: string) { ... }
+
+// ❌ 錯誤結果（日語遺失，僅保留中英雙語）：
+/**
+ * 密碼加密函式
+ * Password encryption function
+ */
+function encryptPassword(password: string) { ... }
+
+// ✅ 正確結果（保留原始日語並添加中英雙語）：
+/**
+ * パスワードを暗号化する
+ * 密碼加密函式
+ * Password encryption function
+ */
+function encryptPassword(password: string) { ... }
+```
+
+### 範例 2：韓語註解保留
+
+```typescript
+// 原始：
+/**
+ * 데이터베이스 연결 설정
+ */
+const dbConfig = { ... };
+
+// ✅ 正確結果（保留原始韓語並添加中英雙語）：
+/**
+ * 데이터베이스 연결 설정
+ * 資料庫連線設定
+ * Database connection configuration
+ */
+const dbConfig = { ... };
+```
+
+### 範例 3：多語言註解補充中英
+
+```typescript
+// 原始（已有日語 + 英語，缺少中文）：
+/**
+ * ユーザーデータを処理する
+ * Process user data
+ */
+function processUserData(user: User) { ... }
+
+// ✅ 正確結果（保留所有語言，補充缺少的中文）：
+/**
+ * ユーザーデータを処理する
+ * 處理使用者資料
+ * Process user data
+ */
+function processUserData(user: User) { ... }
+```
+
+---
+
 ### Identify Non-semantic Naming Conventions
 
 > **Reference**: For non-semantic naming convention rules, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#識別無語義命名慣例).
