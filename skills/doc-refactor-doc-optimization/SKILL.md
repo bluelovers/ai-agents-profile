@@ -14,20 +14,14 @@ description: >-
 
 # Documentation Refactoring and Optimization
 
-You are an expert in organizing and optimizing technical documentation structure.
-This guide provides principles and patterns for maintaining clear, coherent, and well-structured technical documents.
+本技能提供文件結構重組與優化的原則與模式，確保文件具備清晰的內容結構、集中的主題論述，以及流暢的讀者體驗。
 
-> **Purpose of this guide**:
-> - **Topic coherence**: Ensure related content appears continuously without interruption
-> - **Hierarchy consistency**: Maintain proper heading levels and parent-child relationships
-> - **Reading flow**: Organize content prioritizing reader comprehension over author convenience
-> - **Bilingual title format**: Combine bilingual titles into single lines to avoid empty sections
-
----
-
-## 概述
-
-本規則定義技術文件（如 AGENTS.md）中章節與段落的組織邏輯，確保內容結構清晰、主題集中，便於讀者理解與維護。
+> **核心目標**
+> - **主題連貫性 (Topic Coherence)**：相關內容連續呈現，不受無關內容中斷
+> - **階層一致性 (Hierarchy Consistency)**：正確的標題層級與父子關係
+> - **閱讀流程優先 (Reading Flow Priority)**：以讀者理解為優先的內容組織
+> - **雙語標題格式 (Bilingual Title Format)**：中英文合併單行，避免空章節
+> - **術語保留原則 (Preserve Technical Terms)**：維護技術術語的可搜尋性與精確性
 
 ---
 
@@ -42,10 +36,10 @@ This guide provides principles and patterns for maintaining clear, coherent, and
 ```markdown
 <!-- ✅ 正確：主題集中 -->
 ├── 伺服器啟動腳本
-│   ├── 服器啟動參數
+│   ├── 伺服器啟動參數
 │   ├── 伺服器啟動限制
 │   ├── 瀏覽器互動測試
-│   └── 伺服器管理工具  ← 輔助工具放這裡
+│   └── 伺服器管理工具  ← 輔助工具置於相關內容之後
 └── 開發工具
     ├── php.bat
     └── php-test.bat
@@ -53,7 +47,7 @@ This guide provides principles and patterns for maintaining clear, coherent, and
 <!-- ❌ 錯誤：主題被中斷 -->
 ├── 伺服器啟動腳本
 ├── 開發工具           ← 錯誤：打斷了伺服器主題
-│   ├── 伺服器啟動參數   ← 錯誤：應緊接主題
+│   ├── 伺服器啟動參數   ← 錯誤：應緊接伺服器主題
 ```
 
 ---
@@ -67,22 +61,22 @@ This guide provides principles and patterns for maintaining clear, coherent, and
 | 主章節 | `##` 或 `###` | `## 7. 開發腳本` |
 | 子章節 | `###` 或 `####` | `### 伺服器啟動腳本` |
 | 細節說明 | `####` 或 `#####` | `#### 伺服器啟動參數` |
-| 並列主題 | 同級 | `### 伺服器啟動腳本` + `### 開發工具` |
+| 並列主題 | 同級標題 | `### 伺服器啟動腳本` + `### 開發工具` |
 
 ---
 
 ### 閱讀流程優先原則 (Reading Flow Priority)
 
-**規則：** 組織內容時優先考慮讀者的閱讀流程，而非作者的撰寫順序。
+**規則：** 組織內容時優先考慮讀者的理解順序，而非作者的撰寫順序。
 
 **正確順序：**
-1. 讀者需要先了解「如何啟動伺服器」
-2. 然後才需要了解「伺服器的限制與注意事項」
-3. 最後才需要「輔助管理工具」
+1. **核心概念** → 讀者需要先了解「如何啟動伺服器」
+2. **限制與細節** → 然後才需要了解「伺服器的限制與注意事項」
+3. **輔助工具** → 最後才需要「輔助管理工具」
 
 **錯誤順序：**
-1. 先介紹工具 → 讀者不知為何需要
-2. 再介紹主題 → 邏輯跳躍
+1. **先介紹工具** → 讀者不知為何需要
+2. **再介紹主題** → 邏輯跳躍，閱讀體驗差
 
 ---
 
@@ -90,7 +84,7 @@ This guide provides principles and patterns for maintaining clear, coherent, and
 
 ### 雙語標題格式原則 (Bilingual Title Format)
 
-> 此規則不適用於英文文件
+> 此規則不適用於純英文文件
 
 **規則：** 雙語標題應合併為單一行，不得拆分成獨立標題導致空章節。
 
@@ -109,11 +103,9 @@ This guide provides principles and patterns for maintaining clear, coherent, and
 
 **錯誤格式：**
 ```markdown
-<!-- ❌ 錯誤：拆分成兩個獨立標題 -->
+<!-- ❌ 錯誤：拆分成兩個獨立標題，產生空章節 -->
 ## 技術術語保留原則
 ## Preserve Technical Terms (DO Not Delete)
-
-<!-- 這會導致產生空章節，且第二個標題無內容 -->
 ```
 
 ---
@@ -122,7 +114,7 @@ This guide provides principles and patterns for maintaining clear, coherent, and
 
 **核心原則：技術術語不得刪除。**
 
-當更新或優化內容時，必須保留（包含但不限於）以下類型的原始術語。允許新增翻譯或詳細解釋，但**嚴禁**以「更好描述」或「在地化」為由刪除原始術語。
+當更新或優化內容時，必須保留以下類型的原始術語（包含但不限於）。允許新增翻譯或詳細解釋，但**嚴禁**以「更好描述」或「在地化」為由刪除原始術語。
 
 #### 多元領域術語分類與範例（包含但不限於）
 
@@ -242,11 +234,11 @@ This guide provides principles and patterns for maintaining clear, coherent, and
 
 ---
 
-## 補充規則
+## 實踐指南
 
 ### 工具歸位原則 (Tool Placement)
 
-**規則：** 輔助工具應放置於與其功能最直接相關的主題章節內。
+**規則：** 輔助工具應放置於與其功能最直接相關的主題章節內，強化主題連貫性。
 
 **決策流程：**
 
@@ -260,7 +252,7 @@ This guide provides principles and patterns for maintaining clear, coherent, and
     └─ 是多主題共用？ → 放置於最相關的主題，或獨立成章
 ```
 
-**範例：**
+**放置範例：**
 
 | 工具 | 功能 | 放置位置 |
 |------|------|---------|
