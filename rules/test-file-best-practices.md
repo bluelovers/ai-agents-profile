@@ -333,6 +333,8 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 
 #### Jest 測試檔案 Header
 
+以下為 Node.js 環境下的測試檔案 Header (請勿用於 PHP 或 Python 等環境)：
+
 **若為 Jest 測試檔案，應在檔案開頭加入 TypeScript 三斜線參考指令，以確保正確引入 Jest 與 Node.js 的類型定義。**
 
 ```typescript
