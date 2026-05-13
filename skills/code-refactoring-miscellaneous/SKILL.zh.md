@@ -1252,6 +1252,128 @@ function createUser(userData: IUserData) {
 
 ---
 
+## Barrel Index 避免規則
+
+### 概述
+
+**Barrel index**（又稱 barrel file 或 index barrel）是一種模式：建立一個中央的 `index.ts` 文件，重新導出（re-export）多個模組，以簡化導入路徑。
+
+#### 什麼是 Barrel Index？
+
+```typescript
+// ❌ Barrel file 模式 (index.ts)
+// 不從特定文件導入，而是透過中央文件重新導出所有內容
+export * from './UserService';
+export * from './OrderService';
+export * from './ProductService';
+
+// 使用方式 - 路徑變短但變得模糊
+import { UserService, OrderService } from './services';  // 從 index.ts 導入
+```
+
+```typescript
+// ✅ 直接從源文件導入（推薦）
+import { UserService } from './services/UserService';
+import { OrderService } from './services/OrderService';
+import { ProductService } from './services/ProductService';
+```
+
+### 為什麼要避免 Barrel Index？
+
+#### 1. **隱藏的依賴關係**
+
+Barrel file 遮蔽了實際的模組依賴，使得難以理解某個文件真正依賴了哪些內容。
+
+```typescript
+// ❌ 使用 barrel - 不清楚實際使用了哪些依賴
+import { UserService, OrderService } from './services';
+
+// ✅ 不使用 barrel - 明確、清晰的依賴
+import { UserService } from './services/UserService';
+import { OrderService } from './services/OrderService';
+```
+
+#### 2. **Tree Shaking 問題**
+
+Barrel exports 會干擾 Webpack、Rollup 或 ESBuild 等 bundler 的 tree shaking，可能導致 bundle size 增加，因為 bundler 無法輕易消除未使用的 exports。
+
+```typescript
+// 即使你只使用 UserService，barrel file 可能導致
+// 所有 services 都被包含在 bundle 中
+import { UserService } from './services';  // 可能也包含了 OrderService、ProductService！
+```
+
+#### 3. **IDE 與工具限制**
+
+- **Find All References**：IDE 無法追蹤符號實際來自哪個特定文件
+- **Rename Refactoring**：全局重命名可能意外破壞東西
+- **Navigation**：「Go to Definition」帶你到 barrel file 而非實際源文件
+- **Circular Dependency Detection**：更難檢測循環依賴
+
+#### 4. **編譯效能**
+
+即使只使用單一模組，TypeScript 仍需要處理所有 re-exports，這可能減緩大型專案的編譯速度。
+
+#### 5. **維護問題**
+
+當模組被移除或重新命名時，barrel file 必須同步更新，造成額外的維護負擔和過時參考的風險。
+
+### 規則：直接從源路徑導入
+
+**除非使用者或專案明確要求，否則不要創建或使用 barrel index files。所有模組應直接從原始路徑載入。**
+
+```typescript
+// ❌ 避免 - 使用 barrel index
+import { UserService } from '../services';  // 路徑模糊
+
+// ✅ 推薦 - 明確的源路徑
+import { UserService } from '../services/UserService';
+```
+
+### 何時 Barrel Index 可能可接受
+
+只有在以下情況**明確要求**時才使用 barrel index：
+
+1. **Public API 設計**：當設計函式庫的公開接口時，希望提供乾淨、統一的進入點
+2. **專案慣例**：當專案有 established convention 要求使用 barrel files
+3. **向後兼容**：當維護已廣泛使用 barrel files 的舊有程式碼時
+
+即使在此情況下，也應仔細權衡取捨。
+
+### 最佳實踐：明確導入
+
+```typescript
+// ✅ 清晰、明確的導入 - 推薦風格
+import { UserService } from './services/UserService';
+import { OrderService } from './services/OrderService';
+import { ProductService } from './services/ProductService';
+
+// ✅ 對於同一模組的多個導入，使用 namespace import 或 named imports
+import * as UserModule from './services/UserService';
+import { UserService, IUserRepository } from './services/UserService';
+```
+
+### 遷移策略
+
+#### 漸進式遷移（推薦用於已有大量 barrel files 的舊有程式碼）
+
+如果專案已經廣泛使用 barrel files，避免一次性大規模重寫。改用漸進式方式：
+
+1. **新模組**：不要建立新的 barrel files，也不要向現有的 barrel files 添加新的 exports
+2. **重構時**：當你修改某個文件時，優先將其 barrel imports 轉換為直接源導入
+3. **不要強制遷移**：不要修改未被主動修改的導入 — 讓它自然發生
+4. **最終清理**：一旦所有導入都已轉換，刪除不再需要的 barrel files
+
+#### 完整遷移（適用於新專案或小型程式碼庫）
+
+如果專案是新的或夠小，可以一次性遷移：
+
+1. **識別 barrel files**：找出所有僅重新導出的 `index.ts` 文件
+2. **更新導入**：將 barrel imports 替換為直接源導入
+3. **移除 barrel files**：刪除現已不需要的 barrel files
+
+---
+
 ## 參考資源
 
 - [Martin Fowler - Refactoring](https://refactoring.com/)

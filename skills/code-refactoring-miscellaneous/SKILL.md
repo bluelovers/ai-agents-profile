@@ -1013,6 +1013,128 @@ When refactoring `useFacilityPointBlocksData`, compressing the originally scatte
 
 ---
 
+## Barrel Index Avoidance Rule
+
+### Overview
+
+**Barrel index** (also known as "barrel file" or "index barrel") is a pattern where a central `index.ts` file re-exports multiple modules to simplify import paths.
+
+#### What is a Barrel Index?
+
+```typescript
+// ❌ Barrel file pattern (index.ts)
+// Instead of importing from specific files, you re-export everything through a central file
+export * from './UserService';
+export * from './OrderService';
+export * from './ProductService';
+
+// Usage - shorter but opaque import paths
+import { UserService, OrderService } from './services';  // Imports from index.ts
+```
+
+```typescript
+// ✅ Direct import from source files (recommended)
+import { UserService } from './services/UserService';
+import { OrderService } from './services/OrderService';
+import { ProductService } from './services/ProductService';
+```
+
+### Why Avoid Barrel Index?
+
+#### 1. **Hidden Dependencies**
+
+Barrel files obscure the actual module dependencies, making it difficult to understand what a file truly depends on.
+
+```typescript
+// ❌ With barrel - unclear what dependencies are actually used
+import { UserService, OrderService } from './services';
+
+// ✅ Without barrel - explicit, clear dependencies
+import { UserService } from './services/UserService';
+import { OrderService } from './services/OrderService';
+```
+
+#### 2. **Tree Shaking Problems**
+
+Barrel exports can interfere with tree shaking in bundlers like Webpack, Rollup, or ESBuild, potentially increasing bundle size because the bundler cannot easily eliminate unused exports.
+
+```typescript
+// Even if you only use UserService, the barrel file may cause
+// all services to be included in the bundle
+import { UserService } from './services';  // May include OrderService, ProductService too!
+```
+
+#### 3. **IDE & Tooling Limitations**
+
+- **Find All References**: IDE cannot track which specific file exports a symbol
+- **Rename Refactoring**: Global rename may break things unexpectedly
+- **Navigation**: "Go to Definition" takes you to the barrel file instead of the actual source
+- **Circular Dependency Detection**: Harder to detect circular dependencies
+
+#### 4. **Compilation Performance**
+
+TypeScript needs to process all re-exports even when only one module is needed, which can slow down compilation in large projects.
+
+#### 5. **Maintenance Issues**
+
+When a module is removed or renamed, the barrel file must be updated, creating an additional maintenance burden and potential for stale references.
+
+### Rule: Import from Source Paths Directly
+
+**Unless explicitly requested by the user or project requirements, do not create or use barrel index files. All modules should be imported directly from their source paths.**
+
+```typescript
+// ❌ Avoid - using barrel index
+import { UserService } from '../services';  // Ambiguous path
+
+// ✅ Recommended - explicit source path
+import { UserService } from '../services/UserService';
+```
+
+### When Barrel Index Might Be Acceptable
+
+Only use barrel index when **explicitly required** by:
+
+1. **Public API design**: When designing a library's public interface where you want to provide a clean, unified entry point
+2. **Project conventions**: When the project has an established convention requiring barrel files
+3. **Backward compatibility**: When maintaining legacy code that already uses barrel files extensively
+
+Even in these cases, carefully weigh the trade-offs.
+
+### Best Practice: Explicit Imports
+
+```typescript
+// ✅ Clear, explicit imports - preferred style
+import { UserService } from './services/UserService';
+import { OrderService } from './services/OrderService';
+import { ProductService } from './services/ProductService';
+
+// ✅ For multiple imports from the same module, use namespace import or named imports
+import * as UserModule from './services/UserService';
+import { UserService, IUserRepository } from './services/UserService';
+```
+
+### Migration Strategy
+
+#### Gradual Migration (Recommended for Legacy Codebases)
+
+If your project already has widespread barrel files, avoid a big-bang rewrite. Instead, follow a gradual approach:
+
+1. **New modules**: Do NOT create new barrel files or add exports to existing ones
+2. **During refactoring**: When you touch a file, prefer converting its barrel imports to direct source imports
+3. **No forced migration**: Don't change imports that aren't being actively modified — let it happen organically
+4. **Final cleanup**: Once all imports have been converted, remove the now-unused barrel files
+
+#### Full Migration (For New Projects or Small Codebases)
+
+If the project is new or small enough, you can migrate all at once:
+
+1. **Identify barrel files**: Find all `index.ts` files that only re-export
+2. **Update imports**: Replace barrel imports with direct source imports
+3. **Remove barrel files**: Delete the now-unused barrel files
+
+---
+
 ## Reference Resources
 
 - [Martin Fowler - Refactoring](https://refactoring.com/)
