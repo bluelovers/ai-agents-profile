@@ -194,6 +194,69 @@ obsidian_patch_content({
 
 ---
 
+## 新檔案建立規範
+
+### Frontmatter tags 設定
+
+**建立新的 `.md` 檔案時，除非使用者或專案有明確要求不要，否則應在 frontmatter 中自動加上 `tags` 欄位。**
+
+`tags` 的值為**文字陣列**（string array），支援多級標籤格式（`level1/level2`）。
+
+> **為什麼需要多級標籤？**
+>
+> 單一標籤在數量增多後容易失去辨識度（例如 `prompts` 無法區分是圖片生成還是文字生成的 prompts）。多級標籤透過 `/` 分層，提供以下優勢：
+>
+> - **明確分類**：`prompts/img-gen` 與 `prompts/stable-diffusion` 一眼即可辨識主題
+> - **交集查詢**：可同時搜尋多個標籤，縮小結果範圍
+> - **彈性組合**：支援單一標籤和多級標籤並存，無需強制使用多級格式
+>
+> 單一標籤仍然有效，多級標籤是進階選項，根據需要自由搭配。
+
+#### 範例
+
+```yaml
+---
+title: 觀察日誌
+tags:
+  - obsidian-mcp
+  - mcp/comparison
+  - periodic/observation
+---
+```
+
+#### 標籤命名建議
+
+| 層級 | 說明 | 範例 |
+|------|------|------|
+| 第一層 | 技能/工具類型 | `obsidian-mcp`, `kapture-mcp`, `chrome-devtools-mcp` |
+| 第二層 | 功能/主題分類 | `mcp/comparison`, `mcp/browser-automation` |
+| 第三層 | 具體細項 | `periodic/observation`, `periodic/weekly` |
+
+#### Obsidian 搜尋語法
+
+多級標籤搭配 Obsidian 的搜尋語法可實現精準查詢。tag 後面需加上 `#` 前綴：
+
+| 搜尋語法 | 說明 | 範例 |
+|----------|------|------|
+| `tag:#標籤名` | 搜尋包含指定標籤的檔案 | `tag:#obsidian-mcp` |
+| `tag:#父標籤/子標籤` | 搜尋多級標籤 | `tag:#mcp/comparison` |
+| `AND` | 交集（同時滿足） | `tag:#stable-diffusion AND tag:#img-gen` |
+| `OR` | 聯集（任一滿足） | `tag:#img-gen OR tag:#prompts/stable-diffusion` |
+| `-tag:#標籤名` | 排除（NOT） | `-tag:#draft` |
+| 組合查詢 | 混合使用 | `tag:#stable-diffusion AND (tag:#img-gen OR tag:#prompts/stable-diffusion)` |
+
+> **搜尋範例**：找出所有關於 Stable Diffusion 圖片生成的 prompts
+> ```
+> tag:#stable-diffusion AND ( tag:#img-gen OR tag:#prompts/stable-diffusion )
+> ```
+>
+> **排除範例**：找出 prompts 但排除 AI 模型訓練相關
+> ```
+> tag:#prompts/rules -tag:#ai-model-training
+> ```
+
+---
+
 ## 常見錯誤與解決方式
 
 | 錯誤 | 原因 | 解決方式 |
@@ -216,6 +279,7 @@ obsidian_patch_content({
 | [Obsidian CLI 指令](./references/obsidian-cli.md) | CLI 指令參考 |
 | [Obsidian MCP 操作指南](./references/obsidian/obsidian-mcp-operation-cookbook.md) | 詳細操作指南 |
 | [Obsidian MCP 編輯實驗報告](./references/obsidian/obsidian-mcp-edit-experiment-report.md) | 編輯操作實驗結果 |
+| [Obsidian 標籤系統](./references/obsidian/tags.md) | 多級標籤說明與使用方式 |
 
 ---
 
