@@ -1374,6 +1374,93 @@ import { UserService, IUserRepository } from './services/UserService';
 
 ---
 
+## TypeScript 6 升級與型別解析邊界情況 (Migration & Edge Cases)
+
+### 概述
+
+從 TypeScript 5.x 升級至 6+ 引入了更嚴格的型別檢查與模組解析。重構舊代碼時，需理解 TS6 如何處理泛型、模組路徑與隱式型別，優先採用自然推導，而非強制轉型。
+
+### 1. `Uint8Array` 與 `ArrayBuffer` 的處理
+
+**問題**：TS6 將 `Uint8Array` 改為泛型 `Uint8Array<T extends ArrayBufferLike>`。它嚴格區分 `Uint8Array` 與 `ArrayBuffer`，這破壞了 TS5 中將兩者互換使用的代碼。
+
+#### ❌ 負面案例：強制 `.buffer` 轉換或錯誤的型別註記
+
+```typescript
+// ❌ 錯誤的回傳型別註記，迫使不必要的轉換
+const stringToBuffer = (input: string): ArrayBuffer => {
+   const buf = new Uint8Array(input.length);
+   // ...
+   return buf.buffer;  // 治標不治本
+};
+
+// ❌ 參數型別過窄，拒絕合法輸入
+const base64Url = (buf: ArrayBuffer): string => { /* ... */ }
+base64Url(arr.buffer); // 呼叫端被 .buffer 污染
+```
+
+#### ✅ 解決方案：讓型別自然流通
+
+移除錯誤的型別註記，並為參數使用聯合型別。
+
+```typescript
+// ✅ 讓 TS 自然推導出 Uint8Array
+const stringToBuffer = (input: string) => { 
+  const buf = new Uint8Array(input.length);
+  return buf;
+};
+
+// ✅ 放寬參數型別
+const base64Url = (buf: ArrayBuffer | Uint8Array): string => { /* ... */ }
+```
+
+> **注意**：像 `crypto.subtle.digest()` 這類 API 接受 `BufferSource`，因此 `Uint8Array` 可以直接傳入，不需要 `.buffer`。
+
+### 2. 第三方套件的子路徑導入 (Subpath Imports)
+
+**問題**：TS6 嚴格檢查子路徑導入的型別宣告。如果一個套件（如 `markdown-it`）僅為主模組提供型別，子路徑導入（如 `markdown-it/lib/token`）將會報錯。
+
+#### ❌ 負面案例：自建 `declare module` 或假的 paths
+
+```typescript
+// ❌ 不要為第三方子路徑自建假的宣告模組
+declare module 'markdown-it/lib/token' { /* ... */ }
+```
+
+#### ✅ 解決方案：從主模組導入
+
+確保 `tsconfig.json` 的 `"types"` 中包含 `["package-name"]`，並從主要入口解構導入所需的型別。
+
+```typescript
+// ✅ 改從實際匯出型別的主模組導入
+import MarkdownIt, { StateBlock, StateInline, Token } from 'markdown-it';
+```
+
+### 3. 安全的 `Blob` 建構子轉型
+
+**問題**：`BlobPart[]` 預期接收 `BufferSource`，但 `Uint8Array<ArrayBufferLike>` 與 `ArrayBufferView<ArrayBuffer>` 並不嚴格相容，因為它們的 `.buffer` 屬性型別有差異。
+
+#### ✅ 解決方案：安全的 `as any`
+
+```typescript
+const body: (Uint8Array | ArrayBuffer)[] = [];
+// ...
+// ✅ 安全的繞過方式：兩者在運行時都是合法的 BlobParts
+return new Blob(body as any).arrayBuffer();
+```
+
+### 4. `http` 模組事件回呼的型別推導
+
+**問題**：Node 的 `http.createServer()` 回呼中 `req`/`res` 顯示為 `any`，是因為沒有正確載入 `@types/node`，導致推導失敗。
+
+#### ✅ 解決方案：明確引入 Node 型別
+
+不要手動為 `req`/`res` 標註型別。相反，請在 `tsconfig.json` 的 `compilerOptions.types` 加上 `"node"`，讓 TS 能夠從 `createServer()` 自動推導。
+
+📚 **完整案例參考**：[TypeScript 6 Migration & Source Changes](./references/ts6-migration.md)
+
+---
+
 ## 參考資源
 
 - [Martin Fowler - Refactoring](https://refactoring.com/)

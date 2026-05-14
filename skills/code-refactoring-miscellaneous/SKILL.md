@@ -1135,6 +1135,93 @@ If the project is new or small enough, you can migrate all at once:
 
 ---
 
+## TypeScript 6 Migration & Type Resolution Edge Cases
+
+### Overview
+
+Upgrading to TypeScript 6+ from 5.x introduces stricter type checking and module resolution. Refactoring legacy code requires understanding how TS6 handles generics, module paths, and implicit types, prioritizing natural type inference over forceful casting.
+
+### 1. `Uint8Array` vs `ArrayBuffer` Handling
+
+**Problem**: TS6 makes `Uint8Array` a generic `Uint8Array<T extends ArrayBufferLike>`. It strictly distinguishes between `Uint8Array` and `ArrayBuffer`, breaking TS5 code that treated them interchangeably.
+
+#### Anti-pattern: Forced `.buffer` conversions or wrong annotations
+
+```typescript
+// ❌ Wrong return type annotation forcing unnecessary conversions
+const stringToBuffer = (input: string): ArrayBuffer => {
+   const buf = new Uint8Array(input.length);
+   // ...
+   return buf.buffer;  // Treating the symptom, not the disease
+};
+
+// ❌ Narrow parameters rejecting valid inputs
+const base64Url = (buf: ArrayBuffer): string => { /* ... */ }
+base64Url(arr.buffer); // Calling code polluted with .buffer
+```
+
+#### Solution: Let types flow naturally
+
+Remove incorrect type annotations and use union types for parameters.
+
+```typescript
+// ✅ Let TS infer Uint8Array naturally
+const stringToBuffer = (input: string) => { 
+  const buf = new Uint8Array(input.length);
+  return buf;
+};
+
+// ✅ Broaden parameter types
+const base64Url = (buf: ArrayBuffer | Uint8Array): string => { /* ... */ }
+```
+
+> **Note**: APIs like `crypto.subtle.digest()` accept `BufferSource`, so `Uint8Array` works directly without `.buffer`.
+
+### 2. Third-Party Subpath Imports
+
+**Problem**: TS6 strictly checks for type declarations of subpath imports. If a library (like `markdown-it`) only provides types for its main module, subpath imports fail (e.g., `markdown-it/lib/token`).
+
+#### Anti-pattern: Custom `declare module` or fake paths
+
+```typescript
+// ❌ Don't declare fake modules for third-party subpaths
+declare module 'markdown-it/lib/token' { /* ... */ }
+```
+
+#### Solution: Import from the main module
+
+Ensure `"types": ["package-name"]` is in `tsconfig.json`, and import destructured types from the main entry.
+
+```typescript
+// ✅ Import from main module where types are actually exported
+import MarkdownIt, { StateBlock, StateInline, Token } from 'markdown-it';
+```
+
+### 3. Safe `Blob` Constructor Casting
+
+**Problem**: `BlobPart[]` expects `BufferSource`, but `Uint8Array<ArrayBufferLike>` is not strictly compatible with `ArrayBufferView<ArrayBuffer>` due to the `.buffer` property type differences.
+
+#### Solution: Safe `as any`
+
+```typescript
+const body: (Uint8Array | ArrayBuffer)[] = [];
+// ...
+// ✅ Safe bypass: both are valid BlobParts at runtime
+return new Blob(body as any).arrayBuffer();
+```
+
+### 4. `http` Module Event Callback Types
+
+**Problem**: Node `http.createServer()` callbacks show `req`/`res` as `any` because `@types/node` wasn't loaded properly, causing inference failure.
+
+#### Solution: Explicitly include Node types
+
+Do not manually type `req`/`res`. Instead, add `"node"` to `compilerOptions.types` in `tsconfig.json` so TS can infer from `createServer()`.
+
+📚 **Complete case reference**: [TypeScript 6 Migration & Source Changes](./references/ts6-migration.md)
+
+---
+
 ## Reference Resources
 
 - [Martin Fowler - Refactoring](https://refactoring.com/)
