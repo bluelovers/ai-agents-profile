@@ -24,7 +24,9 @@ description: >-
 
 ---
 
-## 問題情境：相對路徑與工作目錄不匹配
+## 問題情境
+
+### 相對路徑與工作目錄不匹配
 
 當 Agent 執行如下指令時：
 
@@ -39,20 +41,18 @@ hof/trust_path/bin/php-test.bat phpunit/PatternTest.php
 
 這段亂碼實際代表：「**'hof' 不是內部或外部命令、可執行的程式或批次檔。**」
 
-### 錯誤原因
+#### 錯誤原因
 
 這是一個典型的**相對路徑 (Relative Path)** 與**工作目錄 (Working Directory)** 不匹配的問題。
 
 - 在終端機（CMD, PowerShell, Git Bash）能執行成功，是因為當時所在的資料夾（CWD）剛好就在可以看見 `hof` 資料夾的位置。
 - 而執行出錯，是因為它啟動腳本時的「起點」不同（可能是在專案根目錄的上一層，或是完全不同的目錄啟動），導致系統把路徑的第一部分 `hof` 當成了一個獨立的指令來執行。
 
----
-
-## 解決辦法與執行規範
+#### 解決辦法與執行規範
 
 Agent 在執行任何腳本時，**必須**採用以下三種方法之一，以確保腳本能被正確解析與執行：
 
-### 方法 1：使用絕對路徑 (推薦的第一個嘗試方法)
+##### 方法 1：使用絕對路徑 (推薦的第一個嘗試方法)
 
 **建議 Agent 執行的完整指令寫法：**
 
@@ -65,7 +65,7 @@ Agent 在執行任何腳本時，**必須**採用以下三種方法之一，以�
 "D:/Users/WebstormProjects/game/Hall-of-Fame/.codenomad/worktrees/develop5/hof/trust_path/bin/php-test.bat" phpunit/PatternTest.php
 ```
 
-### 方法 2：使用相對路徑的正確標記
+##### 方法 2：使用相對路徑的正確標記
 
 在執行指令前加上 `./`，明確告訴系統這是一個當前目錄下的路徑。
 
@@ -76,7 +76,7 @@ Agent 在執行任何腳本時，**必須**採用以下三種方法之一，以�
 ./hof/trust_path/bin/php-test.bat phpunit/PatternTest.php
 ```
 
-### 方法 3：先切換目錄
+##### 方法 3：先切換目錄
 
 如果 Agent 支援多行指令，先進入目錄再執行：
 *(註：這裡使用反斜線 `/` 是為了確保在所有 Windows 命令提示字元環境下都有最高的相容性)*
@@ -86,6 +86,47 @@ Agent 在執行任何腳本時，**必須**採用以下三種方法之一，以�
 cd /d "D:/Users/WebstormProjects/game/Hall-of-Fame/.codenomad/worktrees/develop5"
 hof/trust_path/bin/php-test.bat phpunit/PatternTest.php
 ```
+
+---
+
+### 目錄已存在導致 mkdir 失敗（Big5 亂碼）
+
+> 此情境為亂碼診斷的補充範例，與路徑問題無直接關聯，故獨立為情境二。
+
+當 Agent 執行如下指令時：
+
+```batch
+mkdir -p .kilocode/rules-code .kilocode/rules-debug .kilocode/rules-ask .kilocode/rules-architect
+mkdir .kilocode
+```
+
+可能會遇到以下錯誤（Big5 編碼亂碼）：
+```
+�R�O�y�k�����T�C
+
+�l�ؿ����ɮ� .kilocode �w�g�s�b�C
+
+ l ؿ    ɮ  .kilocode  w g s b C
+
+ R O y k     T C
+```
+
+這段亂碼實際代表：「**無法在已存在的 .kilocode 目錄下建立目錄**」（Windows CMD 回報目標目錄已存在）。
+
+#### 錯誤原因
+
+這不是路徑問題，而是**目標目錄已經存在**，`mkdir` 指令因目錄重複建立而失敗。
+
+- 亂碼中的可辨識片段 `.kilocode` 和 `w g s b C`（已存在）是關鍵線索
+- 常見錯誤模式：`�l�ؿ����ɮ� <路徑> �w�g�s�b�C` → 目標目錄已存在，無法建立
+- 常見錯誤模式：`�R�O�y�k�����T�C` → 無法建立目錄（原因：已存在）
+
+#### 處理方式
+
+- **不要**嘗試變化 `mkdir` 指令的語法（如改用 `mkdirs`、`md` 等）來繞過錯誤
+- **不要**嘗試撰寫代碼解碼亂碼
+- **正確做法**：從亂碼中辨識出「目錄已存在」的含義，直接跳過已存在的目錄建立步驟，或改用 `mkdir` 不帶 `-p` 的寫法確認錯誤類型
+- 若目錄確實已存在且內容正確，則無需再次建立
 
 ---
 
@@ -110,10 +151,12 @@ hof/trust_path/bin/php-test.bat phpunit/PatternTest.php
     - 少數情況下，前一個中文訊息的亂碼會影響後面的字元，導致連串亂碼
     - 常見錯誤模式：`'<路徑>' 不是內部或外部命令` → 路徑不正確或檔案不存在
     - 常見錯誤模式：`系統找不到指定的路徑` → 工作目錄錯誤或路徑不存在
+    - 常見錯誤模式：`�l�ؿ����ɮ� <路徑> �w�g�s�b�C` → 目標目錄已存在，無法建立（如 `mkdir` 時目錄已存在）
     - 若訊息包含檔案名稱或路徑片段，代表系統嘗試執行該路徑但失敗
 - **禁止不必要的腳本讀取與指令重構**：
   - 若錯誤原因僅在於路徑找不到執行檔，**不應嘗試讀取執行檔內容來企圖自行構建指令**。
   - 應修正呼叫路徑、切換正確的工作目錄，或改用絕對路徑。只有在路徑完全正確但執行結果與預期不符時，才考慮分析腳本內容。
+  - 若錯誤為目錄已存在（如 `mkdir` 亂碼），**不應嘗試變化指令語法來繞過錯誤**，應直接跳過已存在的目錄。
 
 ### 3. 停止嘗試與請求指示 / Stop Attempting and Request Instructions
 
