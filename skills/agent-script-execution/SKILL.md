@@ -123,8 +123,13 @@ hof/trust_path/bin/php-test.bat phpunit/PatternTest.php
 - **避免重複失敗**：嚴禁在之後的動作中再次嘗試相同的失敗行為。
 - **尋求使用者指示**：此時應先停下來，主動回報問題並詢問使用者的指示，避免陷入無意義的錯誤循環。
 
+### 4. 利用環境檢測增強語法正確性 / Use Environment Detection to Enhance Syntax Accuracy
+
+在執行指令前或遇到語法不明確時，**可使用 `agent-detect-shell` 技能來檢測當前終端環境**（如 CMD, PowerShell, Bash 等）。精準辨識所在環境的 Shell 類型，能幫助您採用對應的正確語法及路徑格式，進而大幅增強指令執行的正確性，減少跨環境的語法衝突。
+
 ---
 
 ## 相關資源
 
 - [VS Code Copilot 指令載入規則](../docs/VS_Code_Copilot.md)
+- [agent-detect-shell 技能](../agent-detect-shell/SKILL.md)

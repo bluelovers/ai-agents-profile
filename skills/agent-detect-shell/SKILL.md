@@ -54,6 +54,16 @@ When agents encounter command errors, this skill provides a standard process for
 5. 重新執行修正後的指令
 ```
 
+### 檢測後的執行準則
+
+當成功檢測並確認當前環境後，請直接使用該環境原生支援的語法執行指令，避免不必要的 Shell 巢狀呼叫：
+
+- **若是 PowerShell 環境**：不應該使用 `powershell -Command` 或 `pwsh -c` 等指令來包裝執行，請直接執行您的命令。
+- **若是 CMD 環境**：不應該使用 `cmd /c` 或 `cmd /k` 等指令來包裝執行，請直接執行您的命令。
+
+> **例外情況**：除非有明確的特殊意圖或必須如此做的技術理由，否則請遵守此準則以減少變數解析或引號轉義所導致的錯誤。
+
+
 ---
 
 ## 快速使用
