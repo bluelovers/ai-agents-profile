@@ -1,6 +1,12 @@
 ---
 name: test-file-best-practices
 description: 測試檔案最佳實踐規範。Use when users request (1) Testing best practices, (2) Test file organization, (3) "測試檔案規範", (4) "測試最佳實踐", (5) "測試檔案組織", (6) "測試資料管理", (7) "臨時檔案管理", (8) "重構測試", (9) "優化測試", (10) "整合測試". Defines guidelines for writing and organizing test files, including test location patterns, naming conventions, snapshot testing, fixtures management, and temporary file handling.
+tags:
+  - rules
+  - testing
+  - best-practices
+  - jest
+  - snapshot
 ---
 
 # 測試檔案最佳實踐規範

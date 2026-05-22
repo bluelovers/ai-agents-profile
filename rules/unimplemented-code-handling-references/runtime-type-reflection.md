@@ -1,3 +1,11 @@
+---
+tags:
+  - reference
+  - unimplemented
+  - type-reflection
+  - TypeScript
+---
+
 # 運行時類型反射
 # Runtime Type Reflection
 

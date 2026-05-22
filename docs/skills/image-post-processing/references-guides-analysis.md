@@ -1,3 +1,12 @@
+---
+tags:
+  - docs
+  - image-post-processing
+  - analysis
+  - guides
+  - reference
+---
+
 # 指南類 (Guides) 文件分析
 
 ## 分析對象

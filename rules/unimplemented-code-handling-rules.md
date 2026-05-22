@@ -1,3 +1,12 @@
+---
+tags:
+  - rules
+  - unimplemented
+  - code
+  - handling
+  - documentation
+---
+
 # 無法實現代碼處理規則
 # Unimplemented Code Handling Rules
 

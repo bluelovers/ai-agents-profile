@@ -1,3 +1,12 @@
+---
+tags:
+  - docs
+  - image-post-processing
+  - analysis
+  - modes
+  - reference
+---
+
 # 參考類 (References) 文件分析
 
 ## 分析對象

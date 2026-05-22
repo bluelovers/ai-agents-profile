@@ -1,3 +1,11 @@
+---
+tags:
+  - docs
+  - image-post-processing
+  - attribution
+  - reference
+---
+
 # 來源歸屬 (Source Attribution)
 
 ## 專案來源

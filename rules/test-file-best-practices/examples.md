@@ -1,3 +1,12 @@
+---
+tags:
+  - reference
+  - testing
+  - examples
+  - jest
+  - API
+---
+
 # 測試框架 API 重構範例
 # Test Framework API Refactoring Examples
 

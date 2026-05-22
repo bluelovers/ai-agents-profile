@@ -1,3 +1,12 @@
+---
+tags:
+  - rules
+  - module
+  - execution
+  - jest
+  - tsx
+---
+
 # 模組執行規則
 
 ## 概述

@@ -1,3 +1,10 @@
+---
+tags:
+  - docs
+  - autocomplete
+  - reference
+---
+
 # 自動完成
 
 ## mistralai/codestral-2508

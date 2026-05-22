@@ -1,3 +1,12 @@
+---
+tags:
+  - docs
+  - image-post-processing
+  - analysis
+  - specifications
+  - reference
+---
+
 # 規範類 (Specifications) 文件分析
 
 ## 分析對象

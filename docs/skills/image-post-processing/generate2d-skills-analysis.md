@@ -1,3 +1,12 @@
+---
+tags:
+  - docs
+  - image-post-processing
+  - analysis
+  - generate2d
+  - reference
+---
+
 # Generate2D Skills 分析報告
 
 ## 概述

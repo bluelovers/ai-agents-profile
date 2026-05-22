@@ -1,3 +1,12 @@
+---
+tags:
+  - docs
+  - VS-Code
+  - copilot
+  - instructions
+  - configuration
+---
+
 # VS Code Copilot 指令配置規範指南
 
 本文件定義了專案中 GitHub Copilot 指令（Custom Instructions）的層次結構與定位，旨在統一 AI 生成程式碼的風格、架構與品質控管。

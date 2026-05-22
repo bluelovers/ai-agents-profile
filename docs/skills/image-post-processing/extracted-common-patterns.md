@@ -1,3 +1,12 @@
+---
+tags:
+  - docs
+  - image-post-processing
+  - analysis
+  - patterns
+  - reference
+---
+
 # 提取的共用模式與規範
 
 ## 概述

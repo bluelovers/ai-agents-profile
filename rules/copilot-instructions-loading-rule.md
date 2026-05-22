@@ -1,3 +1,12 @@
+---
+tags:
+  - rules
+  - copilot
+  - instructions
+  - loading
+  - github
+---
+
 # GitHub Copilot 指令載入規則
 # GitHub Copilot Instructions Loading Rule
 

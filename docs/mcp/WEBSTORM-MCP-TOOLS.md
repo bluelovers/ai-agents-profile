@@ -1,3 +1,12 @@
+---
+tags:
+  - docs
+  - webstorm
+  - mcp
+  - tools
+  - reference
+---
+
 # WebStorm MCP 工具說明
 
 ## 概述

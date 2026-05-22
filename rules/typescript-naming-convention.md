@@ -1,3 +1,13 @@
+---
+tags:
+  - rules
+  - TypeScript
+  - naming
+  - convention
+  - interface
+  - enum
+---
+
 # TypeScript 命名規則
 # TypeScript Naming Convention
 
