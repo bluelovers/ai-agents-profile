@@ -4,6 +4,7 @@ tags:
   - mcp
   - commands
   - execute
+  - documentation/references
 ---
 
 # `POST /commands/{commandId}/` — Execute Command

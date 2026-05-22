@@ -1,10 +1,10 @@
 ---
 tags:
-  - webstorm
+  - jetbrains/webstorm
   - cli
   - commands
   - jetbrains
-  - reference
+  - documentation/references
 ---
 
 # WebStorm CLI 指令文檔

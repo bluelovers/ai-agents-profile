@@ -5,6 +5,7 @@ tags:
   - periodic-notes
   - put
   - with-date
+  - documentation/references
 ---
 
 # `PUT /periodic/{year}/{month}/{day}/{period}/` — Update Periodic Note (With Date)

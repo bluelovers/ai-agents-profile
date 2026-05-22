@@ -4,6 +4,7 @@ tags:
   - mcp
   - active-file
   - patch
+  - documentation/references
 ---
 
 # `PATCH /active/` — Patch Active File

@@ -5,6 +5,7 @@ tags:
   - accuracy
   - fact-checking
   - safety
+  - agents/skills
 ---
 
 # 事實準確性防護技能

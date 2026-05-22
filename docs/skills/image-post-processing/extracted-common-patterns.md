@@ -1,10 +1,10 @@
 ---
 tags:
-  - docs
+  - documentation
   - image-post-processing
   - analysis
   - patterns
-  - reference
+  - documentation/references
 ---
 
 # 提取的共用模式與規範

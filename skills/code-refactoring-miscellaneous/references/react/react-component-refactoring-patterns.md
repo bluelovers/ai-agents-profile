@@ -1,7 +1,7 @@
 ---
 description: React 組件重構模式 - 組件提取、條件渲染、參數傳遞優化等實用技巧
 tags:
-  - reference
+  - documentation/references
   - React
   - refactoring
   - react/components

@@ -10,7 +10,7 @@ description: >-
   當使用者要求「重構 TS」、「Refactor TypeScript」、「Node.js 程式碼改善」或需要「實作時的設計指導」時使用此 Skill。
 tags:
   - TypeScript
-  - Node.js
+  - nodejs
   - refactoring
   - type-safety
 ---

@@ -5,6 +5,7 @@ tags:
   - periodic-notes
   - delete
   - with-date
+  - documentation/references
 ---
 
 # `DELETE /periodic/{year}/{month}/{day}/{period}/` — Delete Periodic Note (With Date)

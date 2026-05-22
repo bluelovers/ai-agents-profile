@@ -4,6 +4,7 @@ tags:
   - mcp
   - search
   - simple
+  - documentation/references
 ---
 
 # `POST /search/simple/` — Simple Search

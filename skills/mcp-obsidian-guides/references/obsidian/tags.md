@@ -2,8 +2,9 @@
 tags:
   - obsidian
   - tags
-  - frontmatter
+  - markdown/frontmatter
   - note-taking
+  - documentation/references
 ---
 
 ## 🏷️ 標籤說明（多級標籤系統）

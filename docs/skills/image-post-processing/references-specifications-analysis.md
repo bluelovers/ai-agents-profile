@@ -1,10 +1,10 @@
 ---
 tags:
-  - docs
+  - documentation
   - image-post-processing
   - analysis
   - specifications
-  - reference
+  - documentation/references
 ---
 
 # 規範類 (Specifications) 文件分析

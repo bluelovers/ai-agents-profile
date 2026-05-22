@@ -3,8 +3,8 @@ tags:
   - obsidian
   - rest-api
   - openapi
-  - tools
-  - reference
+  - agents/tools
+  - documentation/references
 ---
 
 # Obsidian Local REST API 工具文件

@@ -1,6 +1,6 @@
 ---
 tags:
-  - rules
+  - agents/rules
   - unimplemented
   - code
   - handling

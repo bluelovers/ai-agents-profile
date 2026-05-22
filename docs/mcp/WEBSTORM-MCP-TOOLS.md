@@ -1,10 +1,10 @@
 ---
 tags:
-  - docs
-  - webstorm
+  - documentation
+  - jetbrains/webstorm
   - mcp
-  - tools
-  - reference
+  - agents/tools
+  - documentation/references
 ---
 
 # WebStorm MCP 工具說明

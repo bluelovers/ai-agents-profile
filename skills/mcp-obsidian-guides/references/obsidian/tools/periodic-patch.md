@@ -4,6 +4,7 @@ tags:
   - mcp
   - periodic-notes
   - patch
+  - documentation/references
 ---
 
 # `PATCH /periodic/{period}/` — Patch Periodic Note (Period Only)

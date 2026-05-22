@@ -1,6 +1,6 @@
 ---
 tags:
-  - reference
+  - documentation/references
   - TypeScript
   - typescript/migration
   - typescript/upgrade

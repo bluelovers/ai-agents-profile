@@ -5,6 +5,7 @@ tags:
   - vault
   - post
   - append
+  - documentation/references
 ---
 
 # `POST /vault/{filename}` — Append to File

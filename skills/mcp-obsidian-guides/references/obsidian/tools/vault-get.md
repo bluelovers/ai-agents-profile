@@ -5,6 +5,7 @@ tags:
   - vault
   - get
   - read
+  - documentation/references
 ---
 
 # `GET /vault/{filename}` — Get File Content

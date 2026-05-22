@@ -1,10 +1,10 @@
 ---
 tags:
-  - docs
+  - documentation
   - image-post-processing
   - analysis
   - guides
-  - reference
+  - documentation/references
 ---
 
 # 指南類 (Guides) 文件分析

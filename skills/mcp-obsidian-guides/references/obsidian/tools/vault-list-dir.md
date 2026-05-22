@@ -5,6 +5,7 @@ tags:
   - vault
   - list
   - directory
+  - documentation/references
 ---
 
 # `GET /vault/{pathToDirectory}/` — List Directory

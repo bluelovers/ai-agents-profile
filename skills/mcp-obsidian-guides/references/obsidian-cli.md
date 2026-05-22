@@ -3,6 +3,7 @@ tags:
   - obsidian
   - cli
   - commands
+  - documentation/references
 ---
 
 # Obsidian CLI 指令

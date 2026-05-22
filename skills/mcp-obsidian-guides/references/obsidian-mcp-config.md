@@ -4,6 +4,7 @@ tags:
   - mcp
   - configuration
   - setup
+  - documentation/references
 ---
 
 # Obsidian MCP 配置

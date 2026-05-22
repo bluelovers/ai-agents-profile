@@ -5,6 +5,7 @@ tags:
   - vault
   - list
   - root
+  - documentation/references
 ---
 
 # `GET /vault/` — List Vault Root

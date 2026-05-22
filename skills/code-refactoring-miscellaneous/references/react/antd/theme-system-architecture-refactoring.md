@@ -2,7 +2,7 @@
 title: Ant Design 主題系統架構重構 - 完整案例分析
 description: React + Ant Design 主題系統的全面重構，從動態計算到預生成架構的優化實踐
 tags:
-  - reference
+  - documentation/references
   - React
   - Ant-Design
   - refactoring

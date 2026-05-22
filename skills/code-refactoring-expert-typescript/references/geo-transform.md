@@ -1,6 +1,6 @@
 ---
 tags:
-  - reference
+  - documentation/references
   - geo
   - refactoring
   - TypeScript

@@ -1,8 +1,8 @@
 ---
 tags:
-  - reference
+  - documentation/references
   - unimplemented
-  - type-reflection
+  - typescript/type-reflection
   - TypeScript
 ---
 

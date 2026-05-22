@@ -3,10 +3,10 @@ name: skill-creator
 description: 建立有效 Skill 的指南。當使用者想要建立新的 Skill（或更新現有 Skill）來擴充 Claude 的能力，提供專業知識、工作流程或工具整合時，應使用此 Skill。
 license: Complete terms in LICENSE.txt
 tags:
-  - skill-creation
+  - agents/skills/skill-creation
   - opencode
-  - agent-development
-  - workflow
+  - agents/core
+  - agents/workflow
 ---
 
 # Skill Creator

@@ -14,9 +14,10 @@ description: >-
 tags:
   - refactoring
   - TypeScript
-  - Node.js
+  - nodejs
   - edge-cases
   - React
+  - agents/skills
 ---
 
 # TypeScript/Node.js Refactoring - Miscellaneous Cases and Concepts

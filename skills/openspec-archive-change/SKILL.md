@@ -11,7 +11,8 @@ tags:
   - openspec
   - change-management
   - archiving
-  - workflow
+  - agents/workflow
+  - agents/skills
 ---
 
 Archive a completed change in the experimental workflow.

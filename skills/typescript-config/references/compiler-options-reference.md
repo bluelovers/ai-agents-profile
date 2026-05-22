@@ -1,9 +1,9 @@
 ---
 tags:
   - typescript
-  - compiler-options
-  - reference
-  - tsconfig
+  - typescript/tsconfig/compiler-options
+  - documentation/references
+  - typescript/tsconfig
   - configuration
 ---
 

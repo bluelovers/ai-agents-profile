@@ -1,9 +1,10 @@
 ---
 tags:
-  - skill-creation
-  - workflow
+  - agents/skills/skill-creation
+  - agents/workflow
   - patterns
   - opencode
+  - documentation/references
 ---
 
 # Workflow Patterns

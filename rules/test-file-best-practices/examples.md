@@ -1,9 +1,9 @@
 ---
 tags:
-  - reference
+  - documentation/references
   - testing
   - examples
-  - jest
+  - testing/jest
   - API
 ---
 

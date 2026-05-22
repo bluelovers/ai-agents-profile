@@ -1,10 +1,11 @@
 ---
 tags:
   - opencode
-  - tools
+  - agents/tools
   - write
   - bash
   - comparison
+  - documentation/references
 ---
 
 # write、bash 工具建立資料夾/檔案功能比較

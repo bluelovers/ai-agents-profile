@@ -6,6 +6,7 @@ tags:
   - bilingual
   - documentation
   - JSDoc
+  - agents/skills
 ---
 
 # Analyze Code Commenter

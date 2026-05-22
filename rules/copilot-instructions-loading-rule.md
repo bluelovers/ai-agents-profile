@@ -1,8 +1,7 @@
 ---
 tags:
-  - rules
+  - agents/rules
   - copilot
-  - instructions
   - loading
   - github
 ---

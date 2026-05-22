@@ -4,6 +4,7 @@ tags:
   - mcp
   - periodic-notes
   - put
+  - documentation/references
 ---
 
 # `PUT /periodic/{period}/` — Update Periodic Note (Period Only)

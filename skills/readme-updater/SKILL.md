@@ -6,6 +6,7 @@ tags:
   - documentation
   - project-analysis
   - monorepo
+  - agents/skills
 ---
 
 # README Updater

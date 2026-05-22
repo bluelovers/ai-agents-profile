@@ -1,10 +1,10 @@
 ---
 tags:
-  - rules
+  - agents/rules
   - TypeScript
   - execution
   - agents
-  - tsx
+  - typescript/tsx
 ---
 
 # Agents 執行 TypeScript 檔案規則

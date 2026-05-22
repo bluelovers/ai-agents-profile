@@ -4,6 +4,7 @@ tags:
   - mcp
   - active-file
   - delete
+  - documentation/references
 ---
 
 # `DELETE /active/` — Delete Active File

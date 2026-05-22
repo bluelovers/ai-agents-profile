@@ -5,6 +5,7 @@ tags:
   - periodic-notes
   - post
   - with-date
+  - documentation/references
 ---
 
 # `POST /periodic/{year}/{month}/{day}/{period}/` — Append to Periodic Note (With Date)

@@ -4,6 +4,7 @@ tags:
   - mcp
   - vault
   - patch
+  - documentation/references
 ---
 
 # `PATCH /vault/{filename}` — Patch File

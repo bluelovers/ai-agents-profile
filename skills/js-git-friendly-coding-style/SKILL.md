@@ -5,7 +5,8 @@ tags:
   - JavaScript
   - coding-style
   - git
-  - Allman
+  - coding-style/Allman
+  - agents/skills
 ---
 
 # JavaScript Git-Friendly 代碼風格

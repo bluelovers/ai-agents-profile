@@ -5,6 +5,7 @@ tags:
   - periodic-notes
   - get
   - with-date
+  - documentation/references
 ---
 
 # `GET /periodic/{year}/{month}/{day}/{period}/` — Get Periodic Note (With Date)

@@ -4,11 +4,11 @@ description: >-
   Provides guidelines to standardize agent behaviors,
 	avoid common mistakes, and prevent unnecessary actions during task execution.
 tags:
-  - agent-behavior
-  - standardization
-  - guidelines
+  - agents/behavior
+  - agents/guidelines
   - file-operations
   - encoding
+  - agents/skills
 ---
 
 # Agent 行為標準化指南 / Agent Behavior Standardization Guide

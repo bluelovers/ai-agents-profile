@@ -1,10 +1,10 @@
 ---
 tags:
-  - docs
+  - documentation
   - image-post-processing
   - analysis
   - classification
-  - reference
+  - documentation/references
 ---
 
 # References 文件分類總覽

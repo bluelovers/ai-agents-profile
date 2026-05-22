@@ -1,8 +1,8 @@
 ---
 tags:
-  - reference
+  - documentation/references
   - git
-  - commit
+  - git/commit
   - troubleshooting
 ---
 

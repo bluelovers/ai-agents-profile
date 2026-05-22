@@ -4,6 +4,7 @@ tags:
   - mcp
   - status
   - healthcheck
+  - documentation/references
 ---
 
 # `GET /` — Server Status

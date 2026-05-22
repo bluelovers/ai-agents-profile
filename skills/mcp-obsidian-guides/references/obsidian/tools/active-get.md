@@ -5,6 +5,7 @@ tags:
   - active-file
   - get
   - read
+  - documentation/references
 ---
 
 # `GET /active/` — Get Active File

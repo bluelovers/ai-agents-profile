@@ -1,8 +1,8 @@
 ---
 tags:
-  - docs
+  - documentation
   - autocomplete
-  - reference
+  - documentation/references
 ---
 
 # 自動完成

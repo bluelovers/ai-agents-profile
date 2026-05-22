@@ -1,9 +1,9 @@
 ---
 tags:
-  - docs
-  - VS-Code
+  - documentation
+  - vscode
   - copilot
-  - instructions
+  - agents/rules
   - configuration
 ---
 

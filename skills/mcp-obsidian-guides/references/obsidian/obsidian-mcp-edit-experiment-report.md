@@ -5,6 +5,7 @@ tags:
   - experiment
   - report
   - editing
+  - documentation/references
 ---
 
 # Obsidian MCP 編輯操作實驗報告

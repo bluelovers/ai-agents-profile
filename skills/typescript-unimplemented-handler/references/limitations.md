@@ -3,7 +3,7 @@ tags:
   - typescript
   - limitations
   - type-system
-  - reference
+  - documentation/references
   - troubleshooting
 ---
 

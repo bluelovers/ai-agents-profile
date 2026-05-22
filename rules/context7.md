@@ -1,7 +1,7 @@
 ---
 alwaysApply: true
 tags:
-  - rules
+  - agents/rules
   - context7
   - mcp
   - documentation

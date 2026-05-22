@@ -1,10 +1,10 @@
 ---
 tags:
-  - docs
+  - documentation
   - image-post-processing
   - analysis
   - generate2d
-  - reference
+  - documentation/references
 ---
 
 # Generate2D Skills 分析報告

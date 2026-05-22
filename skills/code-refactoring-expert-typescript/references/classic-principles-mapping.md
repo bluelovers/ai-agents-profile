@@ -1,9 +1,9 @@
 ---
 tags:
-  - reference
+  - documentation/references
   - refactoring
   - TypeScript
-  - Node.js
+  - nodejs
 ---
 
 # 經典重構原則與 TypeScript/Node.js 對照表

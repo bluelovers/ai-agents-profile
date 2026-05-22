@@ -1,10 +1,11 @@
 ---
 tags:
-  - skill-creation
+  - agents/skills/skill-creation
   - output
   - patterns
   - templates
   - opencode
+  - documentation/references
 ---
 
 # Output Patterns

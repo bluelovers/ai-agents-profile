@@ -14,6 +14,7 @@ tags:
   - note-taking
   - knowledge-management
   - integration
+  - agents/skills
 ---
 
 # MCP Obsidian Guides

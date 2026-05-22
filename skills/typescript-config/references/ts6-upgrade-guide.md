@@ -3,8 +3,9 @@ tags:
   - typescript
   - typescript/upgrade
   - typescript/migration
-  - version-6
-  - guide
+  - typescript/v6
+  - agents/guidelines
+  - documentation/references
 ---
 
 # TypeScript 6 升級完整指南

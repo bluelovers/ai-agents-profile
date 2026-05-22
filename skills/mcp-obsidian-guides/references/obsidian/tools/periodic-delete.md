@@ -4,6 +4,7 @@ tags:
   - mcp
   - periodic-notes
   - delete
+  - documentation/references
 ---
 
 # `DELETE /periodic/{period}/` — Delete Periodic Note (Period Only)

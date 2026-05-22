@@ -7,10 +7,11 @@ metadata:
   domain: testing
 tags:
   - testing
-  - jest
-  - mocking
+  - testing/jest
+  - testing/mock
   - filesystem
   - nodejs
+  - agents/skills
 ---
 
 ## 介紹 / Introduction

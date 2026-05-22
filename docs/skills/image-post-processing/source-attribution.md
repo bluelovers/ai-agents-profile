@@ -1,9 +1,9 @@
 ---
 tags:
-  - docs
+  - documentation
   - image-post-processing
   - attribution
-  - reference
+  - documentation/references
 ---
 
 # 來源歸屬 (Source Attribution)

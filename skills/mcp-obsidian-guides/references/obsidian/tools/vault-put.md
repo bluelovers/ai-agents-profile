@@ -5,6 +5,7 @@ tags:
   - vault
   - put
   - create
+  - documentation/references
 ---
 
 # `PUT /vault/{filename}` — Create or Update File

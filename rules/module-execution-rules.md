@@ -1,10 +1,10 @@
 ---
 tags:
-  - rules
+  - agents/rules
   - module
   - execution
-  - jest
-  - tsx
+  - testing/jest
+  - typescript/tsx
 ---
 
 # 模組執行規則

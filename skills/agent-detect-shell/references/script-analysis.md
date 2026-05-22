@@ -1,6 +1,6 @@
 ---
 tags:
-  - reference
+  - documentation/references
   - script-analysis
   - implementation
 ---

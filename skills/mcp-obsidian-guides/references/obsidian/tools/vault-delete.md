@@ -4,6 +4,7 @@ tags:
   - mcp
   - vault
   - delete
+  - documentation/references
 ---
 
 # `DELETE /vault/{filename}` — Delete File

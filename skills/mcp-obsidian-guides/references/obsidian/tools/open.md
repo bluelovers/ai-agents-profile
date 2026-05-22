@@ -3,6 +3,7 @@ tags:
   - obsidian
   - mcp
   - open-file
+  - documentation/references
 ---
 
 # `POST /open/{filename}` — Open Document

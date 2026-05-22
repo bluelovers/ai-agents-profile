@@ -4,7 +4,7 @@ tags:
   - mcp
   - cookbook
   - operations
-  - reference
+  - documentation/references
 ---
 
 # Obsidian MCP 操作指南

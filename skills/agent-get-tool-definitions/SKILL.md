@@ -2,9 +2,10 @@
 name: agent-get-tool-definitions
 description: 說明如何在 OpenCode 平台中取得工具定義（Tool Definitions）。AI 可透過會話初始化時自動注入的 System Prompt 取得工具定義的完整內容，包括工具名稱、參數類型與描述說明。Use when users request (1) 取得工具定義, (2) Tool definition source, (3) Tool metadata, (4) OpenCode tool definitions, (5) 工具元數據取得.
 tags:
-  - tool-definitions
+  - agents/tools/tool-definitions
   - opencode
-  - system-prompt
+  - agents/prompts/system-prompts
+  - agents/skills
 ---
 
 # 工具定義（Tool Definitions）取得說明

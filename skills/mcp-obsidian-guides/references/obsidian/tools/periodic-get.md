@@ -4,6 +4,7 @@ tags:
   - mcp
   - periodic-notes
   - get
+  - documentation/references
 ---
 
 # `GET /periodic/{period}/` — Get Periodic Note (Period Only)

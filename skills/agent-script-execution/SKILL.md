@@ -15,6 +15,7 @@ tags:
   - path-resolution
   - working-directory
   - troubleshooting
+  - agents/skills
 ---
 
 # Agent Script Execution Path Rules

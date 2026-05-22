@@ -11,7 +11,8 @@ tags:
   - openspec
   - change-management
   - implementation
-  - workflow
+  - agents/workflow
+  - agents/skills
 ---
 
 Implement tasks from an OpenSpec change.

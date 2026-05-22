@@ -11,10 +11,11 @@ description: |
    - "驗證 Obsidian 標籤 / validate Obsidian tags"
 tags:
   - obsidian
-  - frontmatter
+  - markdown/frontmatter
   - tags
   - note-taking
   - markdown
+  - agents/skills
 ---
 
 # Obsidian Frontmatter Tags 技能

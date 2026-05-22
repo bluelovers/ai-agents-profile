@@ -20,9 +20,10 @@ description: |-
 tags:
   - typescript
   - configuration
-  - tsconfig
-  - compiler-options
+  - typescript/tsconfig
+  - typescript/tsconfig/compiler-options
   - setup
+  - agents/skills
 ---
 
 # TypeScript 配置技能

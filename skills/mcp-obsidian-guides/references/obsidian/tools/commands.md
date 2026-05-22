@@ -4,7 +4,7 @@ tags:
   - mcp
   - commands
   - list
-  - reference
+  - documentation/references
 ---
 
 # `GET /commands/` — List Available Commands

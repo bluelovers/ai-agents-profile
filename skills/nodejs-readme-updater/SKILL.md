@@ -5,8 +5,9 @@ tags:
   - nodejs
   - documentation/README
   - documentation
-  - npm
-  - package-management
+  - nodejs/package-management/npm
+  - nodejs/package-management
+  - agents/skills
 ---
 
 # Node.js README Updater

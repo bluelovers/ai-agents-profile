@@ -1,11 +1,12 @@
 ---
 tags:
   - opencode
-  - tools
+  - agents/tools
   - read
   - glob
   - grep
   - comparison
+  - documentation/references
 ---
 
 # read、glob、grep 工具功能比較

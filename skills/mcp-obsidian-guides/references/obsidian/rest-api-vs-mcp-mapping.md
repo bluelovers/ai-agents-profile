@@ -4,6 +4,7 @@ tags:
   - rest-api
   - mcp
   - comparison
+  - documentation/references
 ---
 
 # REST API 與 MCP Tool 對應表

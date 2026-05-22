@@ -11,6 +11,7 @@ tags:
   - browser
   - automation
   - testing
+  - agents/skills
 ---
 
 ## What I do

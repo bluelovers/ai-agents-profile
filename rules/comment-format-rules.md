@@ -1,6 +1,6 @@
 ---
 tags:
-  - rules
+  - agents/rules
   - comments
   - format
   - documentation

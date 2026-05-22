@@ -5,6 +5,7 @@ tags:
   - refactoring
   - design
   - backward-compatibility
+  - agents/skills
 ---
 
 # Refactoring Expert

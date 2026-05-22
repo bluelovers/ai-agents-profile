@@ -3,8 +3,8 @@ name: opencode-newbie-agent-guides
 description: "Teaches new agents how to operate correctly in the OpenCode system. Includes: (1) Recognizing running in OpenCode environment, (2) Correctly using OpenCode tools, (3) Following parameter names and types from tool descriptions, (4) Actively executing tasks instead of just providing suggestions. Use when agent is unsure what environment it's running in, needs to learn OpenCode tool usage, or needs environment awareness."
 tags:
   - opencode
-  - agent-guides
-  - tool-usage
+  - agents/guidelines
+  - agents/tools/tool-usage
 ---
 
 # OpenCode Newbie Agent Guide

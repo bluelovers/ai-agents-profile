@@ -15,6 +15,7 @@ tags:
   - refactoring
   - organization
   - technical-writing
+  - agents/skills
 ---
 
 # Documentation Refactoring and Optimization

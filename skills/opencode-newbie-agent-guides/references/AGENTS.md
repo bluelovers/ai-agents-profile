@@ -1,8 +1,9 @@
 ---
 tags:
   - opencode
-  - agent-instructions
+  - agents/guidelines
   - tool-reference
+  - documentation/references
 ---
 
 # OpenCode Agent Instructions

@@ -1,6 +1,6 @@
 ---
 tags:
-  - reference
+  - documentation/references
   - error-log
   - file-operations
   - troubleshooting

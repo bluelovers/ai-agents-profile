@@ -2,7 +2,7 @@
 title: React State/Ref/Memo Refactoring - useFacilityPointBlocksData Case Study
 description: React 將過度使用 useState 的 React Hook 重構為 State + RefObject + useMemo 的優化模式 - 完整重構案例分析
 tags:
-  - reference
+  - documentation/references
   - React
   - refactoring
   - react/hooks

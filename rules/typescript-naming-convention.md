@@ -1,6 +1,6 @@
 ---
 tags:
-  - rules
+  - agents/rules
   - TypeScript
   - naming
   - convention

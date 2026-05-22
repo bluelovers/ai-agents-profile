@@ -4,6 +4,7 @@ tags:
   - mcp
   - search
   - complex
+  - documentation/references
 ---
 
 # `POST /search/` — Complex Search

@@ -4,6 +4,7 @@ tags:
   - mcp
   - periodic-notes
   - post
+  - documentation/references
 ---
 
 # `POST /periodic/{period}/` — Append to Periodic Note (Period Only)

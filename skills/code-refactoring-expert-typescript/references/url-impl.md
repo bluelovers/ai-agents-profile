@@ -1,6 +1,6 @@
 ---
 tags:
-  - reference
+  - documentation/references
   - url
   - refactoring
   - code-logic

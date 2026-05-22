@@ -5,6 +5,7 @@ tags:
   - periodic-notes
   - patch
   - with-date
+  - documentation/references
 ---
 
 # `PATCH /periodic/{year}/{month}/{day}/{period}/` — Patch Periodic Note (With Date)

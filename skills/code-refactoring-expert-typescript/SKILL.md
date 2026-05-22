@@ -10,10 +10,11 @@ description: >-
   Use this Skill when users request "Refactor TS", "Refactor TypeScript", "Node.js code improvement", or need "implementation design guidance".
 tags:
   - TypeScript
-  - Node.js
+  - nodejs
   - refactoring
   - type-safety
   - async
+  - agents/skills
 ---
 
 # TypeScript/Node.js Refactoring Expert

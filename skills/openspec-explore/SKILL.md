@@ -12,6 +12,7 @@ tags:
   - exploration
   - requirements
   - design
+  - agents/skills
 ---
 
 Enter explore mode. Think deeply. Visualize freely. Follow the conversation wherever it goes.

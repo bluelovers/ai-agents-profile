@@ -3,11 +3,12 @@ name: nodejs-module-path
 description: 取得 node_modules 中已安裝的 Node.js 模組路徑。當需要 (1) 查找已安裝模組的位置，(2) 取得 package.json 路徑，(3) 解析模組入口點，(4) 在 pnpm Yarn 環境下搜尋套件時使用此技能。此技能支援 PowerShell、cmd、Node.js 和 bash 等多種方法來搜尋 node_modules 中的套件路徑。/ Get installed Node.js module paths in node_modules. Use when (1) Finding installed module locations, (2) Getting package.json path, (3) Resolving module entry point, (4) Searching packages in pnpm Yarn environments. Supports PowerShell, cmd, Node.js and bash methods.
 tags:
   - nodejs
-  - module-resolution
-  - npm
-  - pnpm
-  - yarn
+  - nodejs/module-resolution
+  - nodejs/package-management/npm
+  - nodejs/package-management/pnpm
+  - nodejs/package-management/yarn
   - path
+  - agents/skills
 ---
 
 # Node.js Module Path
