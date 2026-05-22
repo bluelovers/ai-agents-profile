@@ -1,3 +1,12 @@
+---
+tags:
+  - typescript
+  - compiler-options
+  - reference
+  - tsconfig
+  - configuration
+---
+
 # TypeScript 編譯選項完整參考
 # TypeScript Compiler Options Complete Reference
 

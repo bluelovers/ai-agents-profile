@@ -11,6 +11,12 @@ description: >-
   (5) React/JSX/HTML/DOM specific considerations,
   and (6) Cross-domain concerns.
   Use this Skill when users ask about "miscellaneous refactoring", "edge cases", "advanced patterns", or when the core guide needs supplementation.
+tags:
+  - refactoring
+  - TypeScript
+  - Node.js
+  - edge-cases
+  - React
 ---
 
 # TypeScript/Node.js Refactoring - Miscellaneous Cases and Concepts
@@ -1166,7 +1172,7 @@ Remove incorrect type annotations and use union types for parameters.
 
 ```typescript
 // ✅ Let TS infer Uint8Array naturally
-const stringToBuffer = (input: string) => { 
+const stringToBuffer = (input: string) => {
   const buf = new Uint8Array(input.length);
   return buf;
 };

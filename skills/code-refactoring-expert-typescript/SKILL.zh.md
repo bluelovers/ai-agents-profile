@@ -8,6 +8,11 @@ description: >-
   (3) 識別並修正 TS/Node 特有的程式碼異味，
   (4) 建立團隊編碼規範與最佳實踐。
   當使用者要求「重構 TS」、「Refactor TypeScript」、「Node.js 程式碼改善」或需要「實作時的設計指導」時使用此 Skill。
+tags:
+  - TypeScript
+  - Node.js
+  - refactoring
+  - type-safety
 ---
 
 # TypeScript/Node.js 重構專家 (Refactoring Expert for TS/Node)

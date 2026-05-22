@@ -1,3 +1,12 @@
+---
+tags:
+  - typescript
+  - limitations
+  - type-system
+  - reference
+  - troubleshooting
+---
+
 # TypeScript 類型系統限制詳細說明
 
 本文件列出常見的 TypeScript 類型系統限制，提供問題識別和處理解決方案。

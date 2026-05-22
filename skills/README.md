@@ -1,3 +1,11 @@
+---
+tags:
+  - agents/skills
+  - documentation/README
+  - documentation
+  - documentation/index
+---
+
 # AI Agent 技能庫 (Skills)
 
 本目錄收錄了一系列用於擴展 AI Agent 能力的「技能」(Skills)。每個技能都是一個模組化的、自包含的軟體包，包含特定領域的專業知識、工作流程、指令腳本或參考資源，旨在將 AI 從通用助手轉變為具備特定專業能力的專家。

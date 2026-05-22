@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - periodic-notes
+  - get
+---
+
 # `GET /periodic/{period}/` — Get Periodic Note (Period Only)
 
 > Tags: `Periodic Notes`

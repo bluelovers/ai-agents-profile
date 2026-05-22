@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - experiment
+  - report
+  - editing
+---
+
 # Obsidian MCP 編輯操作實驗報告
 
 > 實驗日期：2026-05-12

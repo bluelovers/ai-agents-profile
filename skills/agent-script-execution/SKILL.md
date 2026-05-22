@@ -10,6 +10,11 @@ description: >-
   (4) Using absolute paths to avoid environment PATH assumptions,
   (5) Error diagnosis and stopping rules for failed script execution.
   Use this Skill when users ask about "script execution", "path resolution", "working directory", "relative path errors", or "command not found".
+tags:
+  - script-execution
+  - path-resolution
+  - working-directory
+  - troubleshooting
 ---
 
 # Agent Script Execution Path Rules

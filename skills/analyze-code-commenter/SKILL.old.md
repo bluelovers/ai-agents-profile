@@ -1,6 +1,9 @@
 ---
 name: analyze-code-commenter
 description: 分析代碼並添加雙語註解（繁體中文與英文），針對核心邏輯、複雜邏輯區塊、函數、類別成員/方法、陣列/物件元素、保留原始風格添加詳細的雙語註解。
+tags:
+  - comments
+  - bilingual
 ---
 
 # Analyze Code Commenter Skill

@@ -5,6 +5,10 @@ compatibility: opencode
 metadata:
   audience: agents
   domain: safety, quality-control
+tags:
+  - accuracy
+  - fact-checking
+  - safety
 ---
 
 # Factual Accuracy Guard Skill

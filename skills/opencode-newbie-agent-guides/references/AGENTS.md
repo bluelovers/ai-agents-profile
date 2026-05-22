@@ -1,3 +1,10 @@
+---
+tags:
+  - opencode
+  - agent-instructions
+  - tool-reference
+---
+
 # OpenCode Agent Instructions
 
 You are a coding assistant with FULL access to the user's file system and terminal through tools.

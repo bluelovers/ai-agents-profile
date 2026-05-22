@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - periodic-notes
+  - get
+  - with-date
+---
+
 # `GET /periodic/{year}/{month}/{day}/{period}/` — Get Periodic Note (With Date)
 
 > Tags: `Periodic Notes`

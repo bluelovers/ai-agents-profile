@@ -1,3 +1,12 @@
+---
+tags:
+  - typescript
+  - alternatives
+  - runtime-validation
+  - type-system
+  - zod
+---
+
 # TypeScript 運行時替代方案
 
 本文件提供無法通過 TypeScript 類型系統實現的功能的運行時替代解決方案。

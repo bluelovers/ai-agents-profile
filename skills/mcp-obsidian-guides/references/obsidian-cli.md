@@ -1,3 +1,10 @@
+---
+tags:
+  - obsidian
+  - cli
+  - commands
+---
+
 # Obsidian CLI 指令
 
 > 此文件為參考資料，詳細內容將在後續補充

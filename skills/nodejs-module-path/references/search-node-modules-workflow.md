@@ -1,3 +1,12 @@
+---
+tags:
+  - nodejs
+  - node_modules
+  - pnpm
+  - workflow
+  - module-resolution
+---
+
 # 搜尋 node_modules 中的套件 - 工作流程指南
 
 ## 概述

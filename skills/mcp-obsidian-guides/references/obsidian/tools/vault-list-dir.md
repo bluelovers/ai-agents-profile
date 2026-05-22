@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - vault
+  - list
+  - directory
+---
+
 # `GET /vault/{pathToDirectory}/` — List Directory
 
 > Tags: `Vault Directories`

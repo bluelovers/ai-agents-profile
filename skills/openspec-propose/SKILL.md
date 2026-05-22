@@ -7,6 +7,12 @@ metadata:
   author: openspec
   version: "1.0"
   generatedBy: "1.2.0"
+tags:
+  - openspec
+  - proposal
+  - change-management
+  - design
+  - planning
 ---
 
 Propose a new change - create the change and generate all artifacts in one step.

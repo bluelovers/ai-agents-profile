@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - periodic-notes
+  - patch
+---
+
 # `PATCH /periodic/{period}/` — Patch Periodic Note (Period Only)
 
 > Tags: `Periodic Notes`

@@ -1,3 +1,11 @@
+---
+tags:
+  - typescript
+  - errors
+  - troubleshooting
+  - compilation
+---
+
 # TypeScript 常見錯誤與解決方案
 # TypeScript Common Errors and Solutions
 

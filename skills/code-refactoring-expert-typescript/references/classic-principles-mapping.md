@@ -1,3 +1,11 @@
+---
+tags:
+  - reference
+  - refactoring
+  - TypeScript
+  - Node.js
+---
+
 # 經典重構原則與 TypeScript/Node.js 對照表
 
 ## 概述

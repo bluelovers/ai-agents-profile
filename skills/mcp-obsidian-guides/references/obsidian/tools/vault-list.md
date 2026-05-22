@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - vault
+  - list
+  - root
+---
+
 # `GET /vault/` — List Vault Root
 
 > Tags: `Vault Directories`

@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - tags
+  - frontmatter
+  - note-taking
+---
+
 ## 🏷️ 標籤說明（多級標籤系統）
 
 本文件使用層級化標籤（`level1/level2` 格式），便於分類與交集查詢：

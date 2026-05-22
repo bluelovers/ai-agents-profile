@@ -8,6 +8,12 @@ description: >-
   (3) identifying and fixing TS/Node-specific code smells,
   (4) establishing team coding standards and best practices.
   Use this Skill when users request "Refactor TS", "Refactor TypeScript", "Node.js code improvement", or need "implementation design guidance".
+tags:
+  - TypeScript
+  - Node.js
+  - refactoring
+  - type-safety
+  - async
 ---
 
 # TypeScript/Node.js Refactoring Expert

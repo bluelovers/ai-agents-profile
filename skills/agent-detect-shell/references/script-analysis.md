@@ -1,3 +1,10 @@
+---
+tags:
+  - reference
+  - script-analysis
+  - implementation
+---
+
 # agent-detect-shell.js 腳本分析報告
 
 ## 概述

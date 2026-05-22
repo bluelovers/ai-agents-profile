@@ -1,3 +1,11 @@
+---
+tags:
+  - reference
+  - TypeScript
+  - typescript/migration
+  - typescript/upgrade
+---
+
 # TypeScript 6 升級 — 原始碼變更要點
 
 > 基於 TypeScript 5.3.x → 6.0.3 升級經驗整理

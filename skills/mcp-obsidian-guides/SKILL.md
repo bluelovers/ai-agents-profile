@@ -7,7 +7,13 @@ description: >-
   (2) Obsidian MCP integration,
   (3) "mcp-obsidian 指南",
   (4) "Obsidian MCP 工具",
-  (5) "如何使用 Obsidian MCP".
+   (5) "如何使用 Obsidian MCP".
+tags:
+  - obsidian
+  - mcp
+  - note-taking
+  - knowledge-management
+  - integration
 ---
 
 # MCP Obsidian Guides

@@ -1,6 +1,12 @@
 ---
 name: typescript-unimplemented-handler
 description: 處理 TypeScript 類型系統無法實現的代碼模式。當遇到受限於 TypeScript 類型系統而無法實現的功能時，保留原始實作為註解並提供雙語說明。適用於：(1) 需要保留無法實現的類型定義時，(2) 處理 TypeScript 類型系統限制，(3) 為未來可能的實現預留參考。
+tags:
+  - typescript
+  - type-system
+  - unimplemented
+  - limitations
+  - documentation
 ---
 
 # TypeScript 無法實現代碼處理器

@@ -1,3 +1,12 @@
+---
+tags:
+  - opencode
+  - tools
+  - write
+  - bash
+  - comparison
+---
+
 # write、bash 工具建立資料夾/檔案功能比較
 
 本文比較 OpenCode 平臺上兩個可用於建立資料夾和檔案的工具，幫助開發者根據不同情境選擇適合的工具。

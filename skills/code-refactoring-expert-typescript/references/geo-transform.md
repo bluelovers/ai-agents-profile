@@ -1,3 +1,11 @@
+---
+tags:
+  - reference
+  - geo
+  - refactoring
+  - TypeScript
+---
+
 # 座標處理重構案例 (Coordinate Processing Case Study)
 
 本案例展示如何透過型別設計從根源上消除隱性錯誤，並平衡外部庫相容性與程式碼安全性。

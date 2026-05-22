@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - vault
+  - delete
+---
+
 # `DELETE /vault/{filename}` — Delete File
 
 > Tags: `Vault Files`

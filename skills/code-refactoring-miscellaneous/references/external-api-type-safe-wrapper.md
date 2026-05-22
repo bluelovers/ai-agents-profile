@@ -1,6 +1,12 @@
 ---
 title: 外部 API 類型安全封裝模式
 description: 將鬆散類型的外部 API（如 VS Code Memento）封裝為嚴格類型的內部接口，實現編譯期類型安全與運行時數據一致性。
+tags:
+  - reference
+  - type-safety
+  - encapsulation
+  - API
+  - refactoring
 ---
 
 # 外部 API 類型安全封裝模式

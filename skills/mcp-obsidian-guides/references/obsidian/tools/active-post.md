@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - active-file
+  - post
+  - append
+---
+
 # `POST /active/` — Append to Active File
 
 > Tags: `Active File`

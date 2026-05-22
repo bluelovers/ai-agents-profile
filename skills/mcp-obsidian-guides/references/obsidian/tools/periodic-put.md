@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - periodic-notes
+  - put
+---
+
 # `PUT /periodic/{period}/` — Update Periodic Note (Period Only)
 
 > Tags: `Periodic Notes`

@@ -1,6 +1,12 @@
 ---
 name: nodejs-readme-updater
 description: Update Node.js module README.md with installation commands and package.json description/keywords. Use when users request (1) Update README installation section, (2) Add missing install commands, (3) Update package.json description, (4) Update package.json keywords, (5) "更新 README 安裝指令", (6) "補齊安裝指令", (7) "更新模組描述", (8) "補齊關鍵字", (9) Node.js module documentation update.
+tags:
+  - nodejs
+  - documentation/README
+  - documentation
+  - npm
+  - package-management
 ---
 
 # Node.js README Updater

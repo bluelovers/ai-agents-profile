@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - periodic-notes
+  - put
+  - with-date
+---
+
 # `PUT /periodic/{year}/{month}/{day}/{period}/` — Update Periodic Note (With Date)
 
 > Tags: `Periodic Notes`

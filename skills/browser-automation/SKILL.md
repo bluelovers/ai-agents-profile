@@ -6,6 +6,11 @@ compatibility: opencode
 metadata:
   audience: agents
   domain: browser
+tags:
+  - browser/automation
+  - browser
+  - automation
+  - testing
 ---
 
 ## What I do

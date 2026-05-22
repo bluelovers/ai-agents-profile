@@ -1,6 +1,12 @@
 ---
 name: webstorm-mcp
 description: 啟動並呼叫 WebStorm MCP (Model Context Protocol) 服務，提供與 WebStorm IDE 的整合能力。當 MCP 連接失敗時，會自動回退至使用 CLI 指令。Use when users request (1) WebStorm MCP integration, (2) Open file in WebStorm, (3) Format file in WebStorm, (4) Search in WebStorm, (5) Code analysis in WebStorm, (6) "啟動 WebStorm", (7) "開啟 WebStorm 檔案", (8) "WebStorm MCP", (9) "webstorm_open_file_in_editor", (10) "webstorm_reformat_file".
+tags:
+  - webstorm
+  - mcp
+  - jetbrains
+  - ide-integration
+  - cli
 ---
 
 # WebStorm MCP Skill

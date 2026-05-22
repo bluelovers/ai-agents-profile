@@ -5,6 +5,12 @@ compatibility: opencode
 metadata:
   audience: agents
   domain: testing
+tags:
+  - testing
+  - jest
+  - mocking
+  - filesystem
+  - nodejs
 ---
 
 ## 介紹 / Introduction

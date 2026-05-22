@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - active-file
+  - delete
+---
+
 # `DELETE /active/` — Delete Active File
 
 > Tags: `Active File`

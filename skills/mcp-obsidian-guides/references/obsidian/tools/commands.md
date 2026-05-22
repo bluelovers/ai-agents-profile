@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - commands
+  - list
+  - reference
+---
+
 # `GET /commands/` — List Available Commands
 
 > Tags: `Commands`

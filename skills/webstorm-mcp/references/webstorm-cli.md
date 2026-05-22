@@ -1,3 +1,12 @@
+---
+tags:
+  - webstorm
+  - cli
+  - commands
+  - jetbrains
+  - reference
+---
+
 # WebStorm CLI 指令文檔
 
 ## 指令總覽表

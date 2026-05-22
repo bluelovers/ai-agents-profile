@@ -1,5 +1,11 @@
 ---
 description: React 組件重構模式 - 組件提取、條件渲染、參數傳遞優化等實用技巧
+tags:
+  - reference
+  - React
+  - refactoring
+  - react/components
+  - patterns
 ---
 
 # React 組件重構模式

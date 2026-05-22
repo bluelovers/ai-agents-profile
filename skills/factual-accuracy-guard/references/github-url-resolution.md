@@ -1,3 +1,11 @@
+---
+tags:
+  - reference
+  - GitHub
+  - URL
+  - resolution
+---
+
 # GitHub URL 解析規則
 
 ## 規則

@@ -1,3 +1,10 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - open-file
+---
+
 # `POST /open/{filename}` — Open Document
 
 > Tags: `Open`

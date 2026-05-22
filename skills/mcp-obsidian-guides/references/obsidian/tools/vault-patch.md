@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - vault
+  - patch
+---
+
 # `PATCH /vault/{filename}` — Patch File
 
 > Tags: `Vault Files`

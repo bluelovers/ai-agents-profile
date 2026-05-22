@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - commands
+  - execute
+---
+
 # `POST /commands/{commandId}/` — Execute Command
 
 > Tags: `Commands`

@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - search
+  - simple
+---
+
 # `POST /search/simple/` — Simple Search
 
 > Tags: `Search`

@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - periodic-notes
+  - delete
+  - with-date
+---
+
 # `DELETE /periodic/{year}/{month}/{day}/{period}/` — Delete Periodic Note (With Date)
 
 > Tags: `Periodic Notes`

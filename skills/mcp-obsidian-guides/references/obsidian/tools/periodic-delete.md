@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - periodic-notes
+  - delete
+---
+
 # `DELETE /periodic/{period}/` — Delete Periodic Note (Period Only)
 
 > Tags: `Periodic Notes`

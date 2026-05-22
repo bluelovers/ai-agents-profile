@@ -1,6 +1,12 @@
 ---
 title: References for Code Refactoring - Miscellaneous
 description: Reference materials for TypeScript/Node.js refactoring patterns and best practices
+tags:
+  - reference
+  - refactoring
+  - TypeScript
+  - Node.js
+  - documentation/index
 ---
 
 # References for Code Refactoring - Miscellaneous

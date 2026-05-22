@@ -1,6 +1,11 @@
 ---
 name: analyze-code-commenter
 description: Analyze code and add bilingual comments (Traditional Chinese zh-TW + English). Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) "為代碼添加註解", (5) "分析並註解程式碼", (6) "為代碼更新註解", (7) "為代碼修正註解", (8) "重構代碼更新註解", (9) "雙語註釋/雙語註解", (10) "添加註釋", (11) "程式碼註解", (12) "文件註解", (13) "JSDoc", (14) "區塊註解", (15) "註解格式", (16) "程式碼說明", (17) "註釋翻譯", (18) "code comments", (19) "bilingual comments", (20) "block comments". Uses ONLY block comments (single-line or multi-line). Never uses inline comments.
+tags:
+  - comments
+  - bilingual
+  - documentation
+  - JSDoc
 ---
 
 # Analyze Code Commenter

@@ -1,6 +1,13 @@
 ---
 title: Ant Design 主題系統架構重構 - 完整案例分析
 description: React + Ant Design 主題系統的全面重構，從動態計算到預生成架構的優化實踐
+tags:
+  - reference
+  - React
+  - Ant-Design
+  - refactoring
+  - theme
+  - architecture
 ---
 
 # Ant Design 主題系統架構重構案例
@@ -17,19 +24,19 @@ description: React + Ant Design 主題系統的全面重構，從動態計算到
 // ❌ 重構前：動態計算模式
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [isDark, setIsDark] = useState(false);
-    
+
     // 多個分散的狀態
     const [antdTheme, setAntdTheme] = useState<ThemeConfig>({
         token: {},
         algorithm: theme.defaultAlgorithm,
     });
     const [antdTokens, setAntdTokens] = useState<IAntdTokens | null>(null);
-    
+
     // 初始化時動態計算
     useEffect(() => {
         const stored = localStorage.getItem('theme');
         let initialDark = false;
-        
+
         if (stored === 'dark') {
             initialDark = true;
         } else if (stored === 'light') {
@@ -37,13 +44,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         } else {
             initialDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         }
-        
+
         setIsDark(initialDark);
         const { config, tokens } = createThemeConfig(initialDark);
         setAntdTheme(config);
         setAntdTokens(tokens); // 每次切換都要重新計算
     }, []);
-    
+
     // 系統主題監聽（另一個 useEffect）
     useEffect(() => {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -57,21 +64,21 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                 setAntdTokens(tokens);
             }
         };
-        
+
         mediaQuery.addEventListener('change', handleChange);
         return () => mediaQuery.removeEventListener('change', handleChange);
     }, []);
-    
+
     const toggleTheme = () => {
         const newTheme = !isDark;
         setIsDark(newTheme);
         localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-        
+
         const { config, tokens } = createThemeConfig(newTheme); // 再次重複計算
         setAntdTheme(config);
         setAntdTokens(tokens);
     };
-    
+
     return (
         <ThemeContext.Provider value={{ isDark, toggleTheme, antdTheme, antdTokens }}>
             {children}
@@ -114,7 +121,7 @@ export interface IThemeContext {
     isDark: boolean;
     /** 切換主題 */
     toggleTheme: () => void;
-    
+
     /** 暗色主題完整資料 */
     darkTheme: IThemeSet;
     /** 亮色主題完整資料 */
@@ -127,13 +134,13 @@ export interface IThemeContext {
 ```typescript
 export function ThemeProvider({ children }: { children: ReactNode }) {
     const [isDark, setIsDark] = useState(false);
-    
+
     /**
      * 兩套完整主題資料集（dark + light），初始化時一次產生
      */
     const [darkTheme] = useState<IThemeSet>(() => createThemeConfig(true));
     const [lightTheme] = useState<IThemeSet>(() => createThemeConfig(false));
-    
+
     // ... 其他邏輯
 }
 ```
@@ -146,7 +153,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
  */
 useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     /** 根據優先順序計算當前應有的主題狀態 */
     const getInitialThemeIsDark = () => {
         const stored = localStorage.getItem('theme');
@@ -155,11 +162,11 @@ useEffect(() => {
         /** 若無快取，則追隨系統 */
         return mediaQuery.matches;
     };
-    
+
     /** 執行初始化 */
     const initialDark = getInitialThemeIsDark();
     setIsDark(initialDark);
-    
+
     /** 定義系統變化時的處理函式 */
     const handleChange = (e: MediaQueryListEvent) => {
         const stored = localStorage.getItem('theme');
@@ -169,10 +176,10 @@ useEffect(() => {
             setIsDark(newDark);
         }
     };
-    
+
     /** 綁定監聽器 */
     mediaQuery.addEventListener('change', handleChange);
-    
+
     /** 清理監聽器 */
     return () => mediaQuery.removeEventListener('change', handleChange);
 }, []);
@@ -185,7 +192,7 @@ const toggleTheme = () => {
     const newTheme = !isDark;
     setIsDark(newTheme);
     localStorage.setItem('theme', newTheme ? EnumThemeDataAttr.DARK : EnumThemeDataAttr.LIGHT);
-    
+
     // ✅ 無需重新計算主題，只需切換狀態
     console.log('Theme toggled:', newTheme);
 };
@@ -206,7 +213,7 @@ function _selectThemeSet(isDark: boolean, sets: Pick<IThemeContext, 'darkTheme' 
  */
 export function useCurrentTheme(forcedIsDark?: boolean): IThemeSet {
     const { isDark, darkTheme, lightTheme } = useTheme();
-    
+
     return _selectThemeSet(forcedIsDark ?? isDark, { darkTheme, lightTheme });
 }
 ```
@@ -326,7 +333,7 @@ function useMultiTheme(themeName: string) {
 function ThemePreview() {
     const darkTheme = useCurrentTheme(true);
     const lightTheme = useCurrentTheme(false);
-    
+
     return (
         <div>
             <ConfigProvider theme={darkTheme.config}>

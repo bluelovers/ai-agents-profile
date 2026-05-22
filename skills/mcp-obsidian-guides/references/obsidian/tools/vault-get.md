@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - vault
+  - get
+  - read
+---
+
 # `GET /vault/{filename}` — Get File Content
 
 > Tags: `Vault Files`

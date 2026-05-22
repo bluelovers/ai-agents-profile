@@ -1,3 +1,11 @@
+---
+tags:
+  - reference
+  - examples
+  - comments
+  - bilingual
+---
+
 # Code Comment Examples
 
 Detailed before/after examples for bilingual comment patterns (Traditional Chinese + English).

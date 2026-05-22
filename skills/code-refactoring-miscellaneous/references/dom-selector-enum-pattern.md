@@ -1,6 +1,12 @@
 ---
 title: 🧠 DOM Selector Enum Pattern - 高階架構模式
 description: Refactoring hardcoded selectors into unified Enums, elevating UI element management from a 'lookup tool' to a 'semantic contract'.
+tags:
+  - reference
+  - DOM
+  - enum
+  - refactoring
+  - architecture
 ---
 
 # 🌐 DOM Selector Enum Pattern：從定位器到語義合約的昇華

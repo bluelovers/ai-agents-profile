@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - status
+  - healthcheck
+---
+
 # `GET /` — Server Status
 
 > Tags: `Status`

@@ -7,6 +7,11 @@ metadata:
   author: openspec
   version: "1.0"
   generatedBy: "1.2.0"
+tags:
+  - openspec
+  - exploration
+  - requirements
+  - design
 ---
 
 Enter explore mode. Think deeply. Visualize freely. Follow the conversation wherever it goes.

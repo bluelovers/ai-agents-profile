@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - periodic-notes
+  - post
+  - with-date
+---
+
 # `POST /periodic/{year}/{month}/{day}/{period}/` — Append to Periodic Note (With Date)
 
 > Tags: `Periodic Notes`

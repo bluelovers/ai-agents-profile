@@ -1,3 +1,12 @@
+---
+tags:
+  - typescript
+  - unimplemented
+  - examples
+  - type-system
+  - limitations
+---
+
 # TypeScript 無法實現代碼處理完整範例
 
 本文件提供完整的無法實現類型處理範例，展示如何正確保留、註釋和提供替代方案。

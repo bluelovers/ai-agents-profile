@@ -1,3 +1,13 @@
+---
+tags:
+  - opencode
+  - tools
+  - read
+  - glob
+  - grep
+  - comparison
+---
+
 # read、glob、grep 工具功能比較
 
 本文比較 OpenCode 平臺上三個常用的檔案操作工具，幫助開發者根據不同情境選擇適合的工具。

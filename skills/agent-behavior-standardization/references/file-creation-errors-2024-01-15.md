@@ -1,3 +1,12 @@
+---
+tags:
+  - reference
+  - error-log
+  - file-operations
+  - troubleshooting
+  - encoding
+---
+
 # 檔案建立錯誤紀錄
 # File Creation Error Log
 

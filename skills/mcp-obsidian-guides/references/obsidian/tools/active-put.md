@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - active-file
+  - put
+  - update
+---
+
 # `PUT /active/` — Update Active File
 
 > Tags: `Active File`

@@ -1,3 +1,11 @@
+---
+tags:
+  - skill-creation
+  - workflow
+  - patterns
+  - opencode
+---
+
 # Workflow Patterns
 
 ## Sequential Workflows

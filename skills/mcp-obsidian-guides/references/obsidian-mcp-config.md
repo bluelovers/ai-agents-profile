@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - configuration
+  - setup
+---
+
 # Obsidian MCP 配置
 
 ## 前置準備

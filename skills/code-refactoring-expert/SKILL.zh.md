@@ -1,6 +1,10 @@
 ---
 name: code-refactoring-expert
 description: 安全重構技術，包括設計模式 (design patterns)、向後相容性 (backward compatibility) 與漸進式變更 (incremental changes)。當使用者要求 (1) 重構程式碼，(2) 改善代碼結構，(3) 識別程式碼異味，(4) "重構"、"Refactor"、"程式碼改善" 時使用此 Skill。
+tags:
+  - refactoring
+  - design
+  - backward-compatibility
 ---
 
 # 重構專家 (Refactoring Expert)

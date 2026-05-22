@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - vault
+  - put
+  - create
+---
+
 # `PUT /vault/{filename}` — Create or Update File
 
 > Tags: `Vault Files`

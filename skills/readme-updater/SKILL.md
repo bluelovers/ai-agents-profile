@@ -1,6 +1,11 @@
 ---
 name: readme-updater
 description: Analyze monorepo or single projects, check and update README documentation. Use when users request (1) Update README, (2) Check README completeness, (3) "更新 README", (4) "檢查說明文件", (5) Documentation review. Supports docs directory references and sub-package README checks.
+tags:
+  - documentation/README
+  - documentation
+  - project-analysis
+  - monorepo
 ---
 
 # README Updater

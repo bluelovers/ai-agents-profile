@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - vault
+  - post
+  - append
+---
+
 # `POST /vault/{filename}` — Append to File
 
 > Tags: `Vault Files`

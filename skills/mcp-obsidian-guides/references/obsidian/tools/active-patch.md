@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - active-file
+  - patch
+---
+
 # `PATCH /active/` — Patch Active File
 
 > Tags: `Active File`

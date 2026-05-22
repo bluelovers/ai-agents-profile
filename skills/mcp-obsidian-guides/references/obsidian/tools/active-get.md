@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - active-file
+  - get
+  - read
+---
+
 # `GET /active/` — Get Active File
 
 > Tags: `Active File`

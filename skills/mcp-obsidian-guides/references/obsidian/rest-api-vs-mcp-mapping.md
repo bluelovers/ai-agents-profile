@@ -1,3 +1,11 @@
+---
+tags:
+  - obsidian
+  - rest-api
+  - mcp
+  - comparison
+---
+
 # REST API 與 MCP Tool 對應表
 
 > 建立日期：2026-05-12

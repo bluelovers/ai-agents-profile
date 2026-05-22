@@ -1,10 +1,10 @@
 ---
 name: factual-accuracy-guard
-description: "防止 AI Agent 在回答或查詢時加入與事實無關的內容，避免在未查核的情況下基於虛假、虛構、錯誤的先入為主觀念而執行後續的錯誤任務。禁止虛構不存在的事實，即使在角色扮演模式下也需融合事實來進行角色扮演，除非架空世界規則不同。Prevents AI agents from adding unfactual content in responses or queries, avoiding execution of erroneous tasks based on unverified false, fictional, or incorrect preconceptions. Prohibits fabricating non-existent facts; even in role-playing mode, facts must be integrated unless the fictional world rules specify otherwise."
-compatibility: opencode
-metadata:
-  audience: agents
-  domain: safety, quality-control
+description: 防止 AI Agent 在回答或查詢時加入與事實無關的內容，避免在未查核的情況下基於虛假、虛構、錯誤的先入為主觀念而執行後續的錯誤任務。禁止虛構不存在的事實，即使在角色扮演模式下也需融合事實來進行角色扮演，除非架空世界規則不同。Prevents AI agents from adding unfactual content in responses or queries, avoiding execution of erroneous tasks based on unverified false, fictional, or incorrect preconceptions. Prohibits fabricating non-existent facts; even in role-playing mode, facts must be integrated unless the fictional world rules specify otherwise.
+tags:
+  - accuracy
+  - fact-checking
+  - safety
 ---
 
 # 事實準確性防護技能

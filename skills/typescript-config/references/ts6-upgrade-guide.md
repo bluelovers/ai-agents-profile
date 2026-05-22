@@ -1,3 +1,12 @@
+---
+tags:
+  - typescript
+  - typescript/upgrade
+  - typescript/migration
+  - version-6
+  - guide
+---
+
 # TypeScript 6 升級完整指南
 # TypeScript 6 Upgrade Complete Guide
 

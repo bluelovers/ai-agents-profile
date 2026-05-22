@@ -10,6 +10,11 @@ description: >-
   (4) Optimizing hierarchy consistency in markdown files,
   (5) Managing tool placement and reading flow in documentation.
   Use this Skill when users ask about "documentation organization", "file structure", "chapter reorganization", or when refactoring technical documents.
+tags:
+  - documentation
+  - refactoring
+  - organization
+  - technical-writing
 ---
 
 # Documentation Refactoring and Optimization

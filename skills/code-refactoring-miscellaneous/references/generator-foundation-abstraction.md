@@ -1,6 +1,11 @@
 ---
 title: Generator 底層抽象重構模式 - 完整案例分析
 description: 將重複的 Generator 邏輯提取為底層抽象，實現職責分離和代碼復用的詳細案例分析
+tags:
+  - reference
+  - refactoring
+  - generator
+  - abstraction
 ---
 
 # Generator 底層抽象重構模式

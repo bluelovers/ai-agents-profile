@@ -17,6 +17,12 @@ description: |-
   - type definitions
   - module resolution
   - target/lib/types
+tags:
+  - typescript
+  - configuration
+  - tsconfig
+  - compiler-options
+  - setup
 ---
 
 # TypeScript 配置技能

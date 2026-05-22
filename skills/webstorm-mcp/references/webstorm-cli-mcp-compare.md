@@ -1,3 +1,12 @@
+---
+tags:
+  - webstorm
+  - cli
+  - mcp
+  - comparison
+  - jetbrains
+---
+
 # WebStorm CLI 與 MCP 指令比較
 
 ## 1. 概述

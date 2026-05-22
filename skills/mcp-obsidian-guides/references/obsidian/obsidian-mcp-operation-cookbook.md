@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - mcp
+  - cookbook
+  - operations
+  - reference
+---
+
 # Obsidian MCP 操作指南
 
 > 基於實驗報告 `obsidian-mcp-edit-experiment-report.md` 整理

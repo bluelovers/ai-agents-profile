@@ -1,3 +1,12 @@
+---
+tags:
+  - obsidian
+  - rest-api
+  - openapi
+  - tools
+  - reference
+---
+
 # Obsidian Local REST API 工具文件
 
 > 依據 OpenAPI spec 整理（commit: 4aac5c2b）

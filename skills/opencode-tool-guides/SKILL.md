@@ -1,6 +1,13 @@
 ---
 name: opencode-tool-guides
 description: 清楚解釋 OpenCode 平台工具的使用方法，幫助開發者了解如何在不同情境下選擇並使用正確的工具。Use when users request (1) 如何使用 OpenCode 工具, (2) OpenCode 工具教學, (3) 工具功能比較, (4) read/glob/grep 使用指南, (5) OpenCode tool usage guide.
+tags:
+  - opencode
+  - tools
+  - guide
+  - read
+  - glob
+  - grep
 ---
 
 # OpenCode 工具使用指南

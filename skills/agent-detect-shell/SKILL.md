@@ -8,6 +8,10 @@ description: >-
   (2) 取得系統資訊,
   (3) 避免重複錯誤嘗試,
   (4) 環境適應性檢查.
+tags:
+  - environment-detection
+  - shell
+  - troubleshooting
 ---
 
 # Agent 環境檢測技能

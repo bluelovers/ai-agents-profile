@@ -1,6 +1,11 @@
 ---
 name: js-git-friendly-coding-style
 description: 基於 JavaScript 的代碼風格，優化 Git diff 可讀性與可合併性。使用 Tab 縮排（除非原始縮排是空格），Allman 風格大括號。
+tags:
+  - JavaScript
+  - coding-style
+  - git
+  - Allman
 ---
 
 # JavaScript Git-Friendly 代碼風格

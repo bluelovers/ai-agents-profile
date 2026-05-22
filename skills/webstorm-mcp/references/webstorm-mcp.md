@@ -1,3 +1,12 @@
+---
+tags:
+  - webstorm
+  - mcp
+  - protocol
+  - commands
+  - jetbrains
+---
+
 # WebStorm MCP (Model Context Protocol) 文檔
 
 ## 協議概述

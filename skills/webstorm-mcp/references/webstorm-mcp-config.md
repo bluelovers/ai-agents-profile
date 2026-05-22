@@ -1,3 +1,12 @@
+---
+tags:
+  - webstorm
+  - mcp
+  - configuration
+  - setup
+  - jetbrains
+---
+
 # WebStorm MCP 配置說明
 
 ## 概述

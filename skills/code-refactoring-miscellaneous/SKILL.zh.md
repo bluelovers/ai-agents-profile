@@ -11,6 +11,12 @@ description: >-
   (5) React/JSX/HTML/DOM 特定考量，
   以及 (6) 跨領域關注點。
   當使用者詢問「雜項重構」、「邊緣案例」、「進階模式」或核心指南需要補充時使用此 Skill。
+tags:
+  - refactoring
+  - TypeScript
+  - Node.js
+  - edge-cases
+  - React
 ---
 
 # TypeScript/Node.js 重構 - 雜項案例與概念
@@ -1405,7 +1411,7 @@ base64Url(arr.buffer); // 呼叫端被 .buffer 污染
 
 ```typescript
 // ✅ 讓 TS 自然推導出 Uint8Array
-const stringToBuffer = (input: string) => { 
+const stringToBuffer = (input: string) => {
   const buf = new Uint8Array(input.length);
   return buf;
 };

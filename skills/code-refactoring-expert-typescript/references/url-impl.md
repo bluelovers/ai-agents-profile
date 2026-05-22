@@ -1,3 +1,11 @@
+---
+tags:
+  - reference
+  - url
+  - refactoring
+  - code-logic
+---
+
 # 💡 代碼邏輯重構與實作時參考指南 (Code Logic Refactoring Guide)
 
 ## 🎯 目標：從靜態模式分派轉向流程抽象化
