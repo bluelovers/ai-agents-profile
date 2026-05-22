@@ -2,9 +2,9 @@
 tags:
   - obsidian
   - mcp
-  - vault
-  - list
-  - directory
+  - obsidian/vault
+  - obsidian/list
+  - obsidian/directory
   - documentation/references
 ---
 

@@ -2,8 +2,8 @@
 tags:
   - obsidian
   - mcp
-  - vault
-  - patch
+  - obsidian/vault
+  - obsidian/rest/patch
   - documentation/references
 ---
 

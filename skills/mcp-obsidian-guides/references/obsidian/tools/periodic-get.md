@@ -2,8 +2,7 @@
 tags:
   - obsidian
   - mcp
-  - periodic-notes
-  - get
+  - obsidian/rest/get
   - documentation/references
 ---
 

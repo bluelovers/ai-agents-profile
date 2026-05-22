@@ -2,7 +2,7 @@
 tags:
   - obsidian
   - cli
-  - commands
+  - cli/commands
   - documentation/references
 ---
 

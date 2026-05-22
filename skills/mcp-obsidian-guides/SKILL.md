@@ -13,7 +13,7 @@ tags:
   - mcp
   - note-taking
   - knowledge-management
-  - integration
+  - obsidian/integration
   - agents/skills
 ---
 

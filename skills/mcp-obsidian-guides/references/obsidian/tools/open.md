@@ -2,7 +2,7 @@
 tags:
   - obsidian
   - mcp
-  - open-file
+  - obsidian/open-file
   - documentation/references
 ---
 

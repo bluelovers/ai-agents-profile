@@ -2,9 +2,9 @@
 tags:
   - obsidian
   - mcp
-  - active-file
-  - get
-  - read
+  - obsidian/active-file
+  - obsidian/rest/get
+  - obsidian/rest/read
   - documentation/references
 ---
 

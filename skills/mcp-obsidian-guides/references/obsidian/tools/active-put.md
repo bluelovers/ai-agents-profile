@@ -2,9 +2,9 @@
 tags:
   - obsidian
   - mcp
-  - active-file
-  - put
-  - update
+  - obsidian/active-file
+  - obsidian/rest/put
+  - obsidian/rest/update
   - documentation/references
 ---
 

@@ -2,9 +2,9 @@
 tags:
   - obsidian
   - mcp
-  - vault
-  - get
-  - read
+  - obsidian/vault
+  - obsidian/rest/get
+  - obsidian/rest/read
   - documentation/references
 ---
 

@@ -2,9 +2,9 @@
 tags:
   - obsidian
   - mcp
-  - vault
-  - put
-  - create
+  - obsidian/vault
+  - obsidian/rest/put
+  - obsidian/rest/create
   - documentation/references
 ---
 

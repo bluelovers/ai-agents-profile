@@ -2,8 +2,7 @@
 tags:
   - obsidian
   - mcp
-  - periodic-notes
-  - put
+  - obsidian/rest/put
   - documentation/references
 ---
 

@@ -2,7 +2,7 @@
 tags:
   - obsidian
   - mcp
-  - cookbook
+  - guidelines
   - operations
   - documentation/references
 ---

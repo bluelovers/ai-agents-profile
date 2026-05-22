@@ -2,9 +2,9 @@
 tags:
   - obsidian
   - mcp
-  - active-file
-  - post
-  - append
+  - obsidian/active-file
+  - obsidian/rest/post
+  - obsidian/rest/append
   - documentation/references
 ---
 

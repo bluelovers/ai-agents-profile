@@ -2,9 +2,7 @@
 tags:
   - obsidian
   - mcp
-  - periodic-notes
-  - patch
-  - with-date
+  - obsidian/rest/patch
   - documentation/references
 ---
 

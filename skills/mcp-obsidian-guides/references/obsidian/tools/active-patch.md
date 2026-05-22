@@ -2,8 +2,8 @@
 tags:
   - obsidian
   - mcp
-  - active-file
-  - patch
+  - obsidian/active-file
+  - obsidian/rest/patch
   - documentation/references
 ---
 

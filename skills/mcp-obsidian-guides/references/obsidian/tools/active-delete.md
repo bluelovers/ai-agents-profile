@@ -2,8 +2,8 @@
 tags:
   - obsidian
   - mcp
-  - active-file
-  - delete
+  - obsidian/active-file
+  - obsidian/rest/delete
   - documentation/references
 ---
 

@@ -2,8 +2,7 @@
 tags:
   - obsidian
   - mcp
-  - periodic-notes
-  - delete
+  - obsidian/rest/delete
   - documentation/references
 ---
 

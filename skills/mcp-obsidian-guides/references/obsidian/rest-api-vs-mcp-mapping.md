@@ -1,7 +1,7 @@
 ---
 tags:
   - obsidian
-  - rest-api
+  - obsidian/rest
   - mcp
   - comparison
   - documentation/references

@@ -2,8 +2,7 @@
 tags:
   - obsidian
   - mcp
-  - commands
-  - execute
+  - obsidian/rest/commands
   - documentation/references
 ---
 

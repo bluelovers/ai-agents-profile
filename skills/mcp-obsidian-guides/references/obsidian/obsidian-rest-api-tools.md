@@ -1,8 +1,7 @@
 ---
 tags:
   - obsidian
-  - rest-api
-  - openapi
+  - obsidian/rest
   - agents/tools
   - documentation/references
 ---

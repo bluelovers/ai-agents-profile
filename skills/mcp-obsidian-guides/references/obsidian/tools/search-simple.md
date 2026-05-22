@@ -2,8 +2,7 @@
 tags:
   - obsidian
   - mcp
-  - search
-  - simple
+  - obsidian/search
   - documentation/references
 ---
 

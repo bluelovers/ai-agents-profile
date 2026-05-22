@@ -2,8 +2,8 @@
 tags:
   - obsidian
   - mcp
-  - vault
-  - delete
+  - obsidian/vault
+  - obsidian/rest/delete
   - documentation/references
 ---
 

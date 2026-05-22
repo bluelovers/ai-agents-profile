@@ -2,8 +2,7 @@
 tags:
   - obsidian
   - mcp
-  - status
-  - healthcheck
+  - obsidian/rest/status
   - documentation/references
 ---
 

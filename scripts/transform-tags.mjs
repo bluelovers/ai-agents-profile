@@ -121,6 +121,7 @@ const TAG_MAP = new Map([
   ["docs", "documentation"],
   ["reference", "documentation/references"],
   ["guide", "guidelines"],
+  ["cookbook", "guidelines"],
 
   // 通用
   ["workflow", "agents/workflow"],

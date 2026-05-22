@@ -2,9 +2,7 @@
 tags:
   - obsidian
   - mcp
-  - experiment
-  - report
-  - editing
+  - obsidian/editing
   - documentation/references
 ---
 
