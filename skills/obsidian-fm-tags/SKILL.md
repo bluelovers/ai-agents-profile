@@ -8,7 +8,7 @@ description: |
   - "管理 Obsidian tags"
   - "Obsidian 前頁標籤 / frontmatter tags"
   - "obsidian 標籤格式 / tag format"
-   - "驗證 Obsidian 標籤 / validate Obsidian tags"
+  - "驗證 Obsidian 標籤 / validate Obsidian tags"
 tags:
   - obsidian
   - markdown/frontmatter
@@ -39,7 +39,7 @@ Obsidian 的 `tags` 位於 frontmatter（YAML 區塊）中，格式為**文字�
 | 底線 | `_` (Underscore) |
 | 連字號 | `-` (Hyphen) |
 | 斜線 | `/`（用於巢狀標籤 / Nested tags） |
-| Unicode | 通用 Unicode 字元，包含 Emoji 與其他符號 |
+| Unicode | 通用 Unicode 字元 |
 
 ### 限制
 
@@ -61,14 +61,6 @@ tags:
 
 ## Frontmatter 格式
 
-### 行內陣列格式（單行）
-
-```yaml
----
-tags: [tag1, tag2, project/active]
----
-```
-
 ### 多行列表格式（推薦）
 
 ```yaml
@@ -78,6 +70,16 @@ tags:
   - tag2
   - project/active
   - area/health
+---
+```
+
+### 行內陣列格式（單行）
+
+> 僅限系統限制時使用
+
+```yaml
+---
+tags: [tag1, tag2, project/active]
 ---
 ```
 
@@ -175,7 +177,16 @@ await vault_patch({
 
 ---
 
+## 標籤標準化
+
+為了避免語意重複的標籤，請參閱 [tag-normalization.md](references/tag-normalization.md) 參照檔案。
+
+### 常見標準化規則
+
+- **使用小寫字母**：`Node.js` → `nodejs`
+- **使用連字號分隔多詞**：`code review` → `code-review`
+- **移除特殊字元**：`C++` → `cpp`, `C#` → `csharp`
+
 ## 參考資源
 
 - [Obsidian 官方標籤格式文件](https://help.obsidian.md/Editing+and+formatting/Tags)
-- [Obsidian Local REST API](https://github.com/obsidianmd/obsidian-rest-api)
