@@ -14,5 +14,5 @@
 
 # 請載入以下技能
 
-- [agent-behavior-standardization](../../skills/agent-behavior-standardization/SKILL.md)
+- `agent-behavior-standardization` — 使用 `skill` 工具載入此技能（Use the `skill` tool to load this skill）
 

@@ -113,14 +113,55 @@ This reference file defines tag normalization rules for Obsidian to avoid semant
 
 ---
 
-## 巢狀標籤建議
+## 巢狀標籤適度使用原則
 
-### 巢狀標籤範例
+### 核心原則
+
+**適度使用巢狀標籤 (nested tags)**，僅在有意義的層級關係時使用 `/` 分隔。不需要所有標籤都使用巢狀格式，也不需要同一份檔案中的所有標籤共享相同的上級標籤。每個標籤獨立表達自身的領域路徑。
+
+### 巢狀使用決策表
+
+| 情境 | 做法 | 範例 |
+|------|------|------|
+| 有明確層級關係 | 使用巢狀 `/` | `nodejs/vitest/cli` |
+| 無上下層關係 | 使用獨立標籤 | `git` + `github` (非 `git/github`) |
+| 跨領域標籤 | 獨立標籤，無需強制巢狀 | `powershell` 不應硬套為 `github/powershell` |
+| 同一檔案多標籤 | 各標籤獨立表達自身領域路徑 | `git` + `github/cli` 共存 |
+
+### 不良範例
 
 ```yaml
+# ❌ 強制所有標籤共享上級（git 不應巢狀於 github 下）
+tags:
+  - git/github
+  - git/github/cli
+  - git/github/cli/workflow
+
+# ❌ 跨領域標籤被硬套巢狀
+tags:
+  - github/cli/powershell   # powershell 不是 github 的子領域
+```
+
+### 良好範例
+
+```yaml
+# ✅ 各標籤獨立表達自身層級
+tags:
+  - git
+  - github
+  - github/cli
+  - github/cli/workflow
+  - powershell
+```
+
+### 巢狀標籤基礎語法
+
+```yaml
+# 有意義的層級關係
 tags:
   - status/closed
   - documentation/references
+  - projects/active/web
 ```
 
 ---

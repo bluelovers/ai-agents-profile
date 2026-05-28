@@ -48,13 +48,52 @@ Obsidian 的 `tags` 位於 frontmatter（YAML 區塊）中，格式為**文字�
 
 ### 巢狀標籤
 
-使用 `/` 建立層級關係，例如：
+**適度使用巢狀標籤**，僅在有意義的層級關係時使用 `/` 分隔。不需要所有標籤都使用巢狀格式，也不需要同一份檔案中的所有標籤共享相同的上級標籤。每個標籤獨立表達自身的領域路徑。
 
 ```yaml
+---
 tags:
-  - projects/active/web
-  - projects/archived
-  - area/health/fitness
+  - git                       # ✅ 無層級關係時，使用獨立標籤
+  - github                    # ✅ 獨立標籤
+  - github/cli                # ✅ 僅在有必要層級時才巢狀
+  - github/cli/workflow       # ✅ 進一步細分
+  - powershell                # ✅ 跨領域標籤，無需強制巢狀
+---
+```
+
+#### 巢狀使用原則 / Nesting Principles
+
+| 情境 | 做法 | 範例 |
+|------|------|------|
+| 有明確層級關係 | 使用巢狀 `/` | `nodejs/vitest/cli` |
+| 無上下層關係 | 使用獨立標籤 | `git` + `github` (非 `git/github`) |
+| 跨領域標籤 | 獨立標籤，無需強制巢狀 | `powershell` 不應硬套為 `github/powershell` |
+| 同一檔案多標籤 | 各標籤獨立表達自身領域路徑 | `git` + `github/cli` 共存 |
+
+#### 不良範例 / Bad Examples
+
+```yaml
+# ❌ 強制所有標籤共享上級（git 不應巢狀於 github 下）
+tags:
+  - git/github
+  - git/github/cli
+  - git/github/cli/workflow
+
+# ❌ 跨領域標籤被硬套巢狀
+tags:
+  - github/cli/powershell   # powershell 不是 github 的子領域
+```
+
+#### 良好範例 / Good Examples
+
+```yaml
+# ✅ 各標籤獨立表達自身層級
+tags:
+  - git
+  - github
+  - github/cli
+  - github/cli/workflow
+  - powershell
 ```
 
 ---
