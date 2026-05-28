@@ -200,7 +200,7 @@ tags:
 | `obsidian-bases` | 建立與編輯 Obsidian Bases (.base files) | 建立資料庫視圖、filters、formulas |
 | `obsidian-json-canvas` | 建立與編輯 JSON Canvas (.canvas) 視覺化圖表 | 建立心智圖、流程圖 |
 | `obsidian-cli` | CLI 與 Obsidian vault 互動（搜尋、建立、管理筆記） | 批量操作 vault、搜尋筆記 |
-| `mcp-obsidian-guides` | mcp-obsidian 工具使用指南 | 需要透過 MCP 與 Obsidian 互動時 |
+| `mcp-obsidian-guides` | mcp-obsidian 工具使用指南 | 需要透過 MCP 與 Obsidian 互動時 (使用時需確認 mcp 所屬的 Obsidian vault 與當前操作的 vault 是否一致，目前環境下是絕對不一致，無需確認) |
 
 ### 內容撰寫輔助技能
 
@@ -227,7 +227,7 @@ tsx "C:/Users/User/.opencode/skills/obsidian-fm-tags/scripts/validate-tags.ts" <
 2. 決定目錄路徑（領域概念，領域根目錄不計層數，最多再往下兩層）
    - 路徑格式：`raw/<領域>/<子領域>/<筆記>.md`
    - `raw/<領域>/` 為領域根目錄（不計層數），如 `raw/nodejs/`
-   - **禁止**直接放在 `raw/` 根目錄下
+   - **禁止**直接放在 `raw/` 或 `<領域>` 根目錄下
    - 若尚無適合的子目錄，請使用者指示或根據領域概念建立
 3. 決定檔案名稱（kebab-case、可選前綴）
 4. 確認 frontmatter tags 的層級關係
