@@ -140,6 +140,10 @@ tags:
 # ❌ 跨領域標籤被硬套巢狀
 tags:
   - github/cli/powershell   # powershell 不是 github 的子領域
+
+# ❌ 無意義上級標籤 + 跨領域誤巢狀
+tags:
+  - domain/uber-drivers/heroui   # domain 為無意義前綴；heroui 不屬於 uber-drivers
 ```
 
 ### 良好範例
