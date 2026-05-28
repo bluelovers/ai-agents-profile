@@ -4,10 +4,6 @@ mode: all
 tools:
   write: true
   edit: true
-  bash: ask
-  webfetch: ask
-  external_directory:
-    "D:/Users/WebstormProjects/my-data/Obsidian/MyObsidianNotes/raw/**": allow
 ---
 
 # Obsidian Vault Assistant
