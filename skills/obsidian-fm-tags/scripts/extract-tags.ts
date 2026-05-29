@@ -89,7 +89,7 @@ function extractTagsFromFile(filePath: string): void
 {
 	if (!existsSync(filePath))
 	{
-		console.error(`❌ 檔案不存在 / File not found: ${filePath}`);
+		console.error(`❌ File not found: ${filePath}`);
 		process.exit(1);
 	}
 
@@ -98,7 +98,6 @@ function extractTagsFromFile(filePath: string): void
 
 	if (!frontmatter)
 	{
-		console.log(`ℹ️  檔案 "${filePath}" 沒有 frontmatter 區塊`);
 		console.log(`ℹ️  File "${filePath}" has no frontmatter block`);
 		process.exit(0);
 	}
@@ -107,16 +106,15 @@ function extractTagsFromFile(filePath: string): void
 
 	if (tags.length === 0)
 	{
-		console.log(`ℹ️  檔案 "${filePath}" 的 frontmatter 中沒有 tags`);
 		console.log(`ℹ️  No tags found in frontmatter of "${filePath}"`);
 		process.exit(0);
 	}
 
-	console.log(`=== 標籤提取結果 / Tag Extraction Results ===`);
-	console.log(`檔案 / File: ${filePath}`);
-	console.log(`標籤數量 / Tag count: ${tags.length}`);
+	console.log(`=== Tag Extraction Results ===`);
+	console.log(`File: ${filePath}`);
+	console.log(`Tag count: ${tags.length}`);
 	console.log("");
-	console.log("標籤列表 / Tag list:");
+	console.log("Tag list:");
 
 	for (const tag of tags)
 	{
@@ -130,7 +128,7 @@ const args = process.argv.slice(2);
 
 if (args.length === 0)
 {
-	console.error("用法 / Usage: tsx extract-tags.ts <file-path>");
+	console.error("Usage: tsx extract-tags.ts <file-path>");
 	process.exit(1);
 }
 

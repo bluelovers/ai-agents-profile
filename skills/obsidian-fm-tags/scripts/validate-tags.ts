@@ -43,14 +43,14 @@ function validateSingleTag(tag: string): { valid: boolean; error?: string }
 {
 	if (!tag || tag.trim().length === 0)
 	{
-		return { valid: false, error: "標籤不可為空 / Tag cannot be empty" };
+		return { valid: false, error: "Tag cannot be empty" };
 	}
 
 	if (isPurelyNumeric(tag))
 	{
 		return {
 			valid: false,
-			error: `標籤 "${tag}" 僅包含數字，無效 / Tag "${tag}" is purely numeric, invalid`,
+			error: `Tag "${tag}" is purely numeric, invalid`,
 		};
 	}
 
@@ -61,7 +61,7 @@ function validateSingleTag(tag: string): { valid: boolean; error?: string }
 	{
 		return {
 			valid: false,
-			error: `標籤 "${tag}" 包含不允許的字元 / Tag "${tag}" contains disallowed characters`,
+			error: `Tag "${tag}" contains disallowed characters`,
 		};
 	}
 
@@ -73,14 +73,14 @@ function validateSingleTag(tag: string): { valid: boolean; error?: string }
 		{
 			return {
 				valid: false,
-				error: `標籤 "${tag}" 包含空的巢狀層級（連續斜線或前後斜線）/ Tag "${tag}" contains empty nested level`,
+				error: `Tag "${tag}" contains empty nested level`,
 			};
 		}
 		if (isPurelyNumeric(part))
 		{
 			return {
 				valid: false,
-				error: `標籤 "${tag}" 的巢狀層級 "${part}" 僅包含數字 / Nested level "${part}" in tag "${tag}" is purely numeric`,
+				error: `Nested level "${part}" in tag "${tag}" is purely numeric`,
 			};
 		}
 	}
@@ -98,13 +98,13 @@ function main(): void
 
 	if (args.length === 0)
 	{
-		console.error("用法 / Usage: tsx validate-tags.ts <tag1> <tag2> ...");
+		console.error("Usage: tsx validate-tags.ts <tag1> <tag2> ...");
 		process.exit(1);
 	}
 
 	let hasError = false;
 
-	console.log("=== Obsidian 標籤驗證結果 / Tag Validation Results ===");
+	console.log("=== Obsidian Tag Validation Results ===");
 	console.log("");
 
 	for (const tag of args)
@@ -115,12 +115,12 @@ function main(): void
 
 		if (result.valid)
 		{
-			console.log(`   狀態 / Status: 有效 / Valid`);
+			console.log(`   Status: Valid`);
 		}
 		else
 		{
-			console.log(`   狀態 / Status: 無效 / Invalid`);
-			console.log(`   原因 / Reason: ${result.error}`);
+			console.log(`   Status: Invalid`);
+			console.log(`   Reason: ${result.error}`);
 			hasError = true;
 		}
 
@@ -133,7 +133,7 @@ function main(): void
 	}
 	else
 	{
-		console.log("所有標籤皆有效 / All tags are valid.");
+		console.log("All tags are valid.");
 	}
 }
 

@@ -199,6 +199,11 @@ tags:
 | `obsidian-markdown` | Obsidian 風格的 wikilink、embed、callout、properties 語法 | 撰寫筆記內容、引用連結 |
 | `obsidian-bases` | 建立與編輯 Obsidian Bases (.base files) | 建立資料庫視圖、filters、formulas |
 | `obsidian-json-canvas` | 建立與編輯 JSON Canvas (.canvas) 視覺化圖表 | 建立心智圖、流程圖 |
+
+### Obsidian 進階技能 (除非有明確目的或要求才使用以下技能)
+
+| 技能 | 用途 | 觸發時機 |
+|------|------|---------|
 | `obsidian-cli` | CLI 與 Obsidian vault 互動（搜尋、建立、管理筆記） | 批量操作 vault、搜尋筆記 |
 | `mcp-obsidian-guides` | mcp-obsidian 工具使用指南 | 需要透過 MCP 與 Obsidian 互動時 (使用時需確認 mcp 所屬的 Obsidian vault 與當前操作的 vault 是否一致，目前環境下是絕對不一致，無需確認) |
 
