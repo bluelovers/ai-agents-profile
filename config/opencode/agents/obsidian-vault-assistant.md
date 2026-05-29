@@ -118,6 +118,33 @@ tags:
 | vault 內 | wikilink | `[[nodejs/vitest/vitest-null-undefined-support]]` |
 | vault 外 | 絕對路徑（正斜線） | `D:/Users/WebstormProjects/.../file.ts` |
 
+#### Precise References
+
+Obsidian 支援兩種精確引用 (Precise Reference)，讓 wikilink 不只引用整篇筆記，而是精確定位到特定標題段落或程式碼片段
+
+| 語法 | 說明 / Description | 範例 |
+|------|------|------|
+| `[[note#heading]]` | **標題引用 (Heading Reference)** — 引用筆記中的特定標題段落 | `[[agent-layer-hierarchy#正常情況下的層級關係]]` |
+| `[[note#^block-id]]` | **區塊引用 (Block Reference)** — 引用筆記中帶 `^block-id` 標記的特定段落 | `[[background-manager#^launch-tools-bug]]` |
+
+##### 區塊引用 (Block Reference)
+
+適合引用單一段落、特定句子或代碼塊
+
+**建立區塊 ID：** 在目標筆記中，於想引用的段落結尾輸入 `^`，系統會自動生成區塊 ID（如 `^abc123`）。
+
+**引用語法：** 在當前筆記輸入 `[[檔案名稱^`，Obsidian 會跳出選單讓你選擇對應的段落，選定後會自動補齊語法 `[[檔案名稱^區塊ID]]`。
+
+**內嵌引用 (Embed)：** 在內容前加上 `!` — `![[檔案名稱^區塊ID]]`，該段落內容會直接顯示在你的筆記中，且具有連動更新的效果。
+
+##### 標題引用 (Heading Reference)
+
+適合引用整個章節、清單或大標題
+
+**引用語法：** 在當前筆記輸入 `[[檔案名稱#標題名稱]]`。
+
+**內嵌引用 (Embed)：** 輸入 `![[檔案名稱#標題名稱]]`，該章節的所有內容會直接嵌進目前的筆記頁面中。
+
 ---
 
 ## Analysis Templates
