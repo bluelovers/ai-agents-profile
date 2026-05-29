@@ -39,6 +39,113 @@ Agent 在讀寫檔案或目錄時，**應優先使用具備的技能或內建環
 
 ---
 
+## 5. 單一事實來源原則 / Single Source of Truth
+
+**所有邏輯設計與文件撰寫，都應基於「單一事實來源 (Single Source of Truth)」的概念，避免各自維護相同內容。**
+
+**原因 / Reason:**
+- 同一份邏輯或資訊分散在多處，容易導致不一致與維護困難
+- 修改一處卻忘記更新另一處，將產生難以追蹤的錯誤
+- 違反 DRY (Don't Repeat Yourself) 原則，增加不必要的維護成本
+
+### 適用場景 / Applicable Scenarios
+
+- **配置定義 (Configuration Definitions)**: 預設值、常量、枚舉定義應集中管理，各模組引用同一來源。
+- **類型定義 (Type Definitions)**: 共用型別應提取至共用型別檔案，而非在各模組重複定義。
+- **業務邏輯 (Business Logic)**: 核心邏輯應封裝在共用函式或服務中，避免各處複製貼上相同的實作。
+- **文件與註解 (Documentation & Comments)**: 相同的技術決策或設計說明，應指向同一份文件而非各自撰寫。
+
+### 實作範例 / Implementation Examples
+
+```typescript
+// ❌ 錯誤：各自維護相同邏輯
+// File A: user-service.ts
+function formatUserName(user: IUser): string {
+    return `${user.lastName} ${user.firstName}`;
+}
+// File B: profile-service.ts
+function formatUserName(user: IUser): string {
+    return `${user.lastName} ${user.firstName}`; // 重複邏輯
+}
+
+// ✅ 正確：提取至共用工具函式
+// utils/format.ts
+/**
+ * 格式化使用者全名
+ * Format user full name
+ */
+export function formatUserName(user: IUser): string {
+    return `${user.lastName} ${user.firstName}`;
+}
+```
+
+---
+
+## 6. 工具使用效率原則 / Tool Usage Efficiency
+
+**使用 grep、glob 等搜尋工具時，應在每次指令內同時搜尋相關內容，而非多次執行指令分別搜尋。**
+
+**原因 / Reason:**
+- 多次獨立搜尋浪費執行時間與 Token 配額
+- 批次搜尋能更快取得完整上下文，減少決策延遲
+- 一次查看更多相關資訊，有助於發現模式與關聯
+
+### grep 批次搜尋範例 / grep Batch Search Examples
+
+```typescript
+// ❌ 錯誤：多次獨立搜尋
+grep({ pattern: "TODO" })
+grep({ pattern: "FIXME" })      // 第二次搜尋
+grep({ pattern: "HACK" })       // 第三次搜尋
+
+// ✅ 正確：一次搜尋所有相關內容
+/**
+ * 一次搜尋所有待辦 / 問題標記
+ * Search all TODO/FIXME/HACK markers in one call
+ */
+grep({ pattern: "TODO|FIXME|HACK" })
+
+// ✅ 正確：結合搜尋主題與過濾條件
+/**
+ * 搜尋特定主題，同時過濾檔案類型
+ * Search specific topic with file type filter
+ */
+grep({ pattern: "function|class|interface", include: "*.ts" })
+```
+
+### glob 批次搜尋範例 / glob Batch Search Examples
+
+```typescript
+// ❌ 錯誤：多次獨立搜尋
+glob({ pattern: "src/**/*.ts" })
+glob({ pattern: "test/**/*.ts" })   // 第二次搜尋
+glob({ pattern: "lib/**/*.ts" })    // 第三次搜尋
+
+// ✅ 正確：一次搜尋多個目錄與副檔名
+/**
+ * 一次搜尋多個目錄下的 TypeScript 檔案
+ * Search TypeScript files across multiple directories in one call
+ */
+glob({ pattern: "{src,test,lib}/**/*.{ts,tsx}" })
+
+// ✅ 正確：搭配排除模式
+/**
+ * 搜尋所有 TypeScript 檔案，排除測試檔案
+ * Search all TypeScript files, excluding test files
+ */
+glob({ pattern: "src/**/*.ts", path: "D:/project/src" })
+```
+
+### 原則總結 / Principle Summary
+
+| 情境 | 錯誤做法 | 正確做法 |
+|------|---------|---------|
+| 多個關鍵字搜尋 | 多次 grep 呼叫 | 使用 `|` 合併正則：`grep({ pattern: "A\|B\|C" })` |
+| 多個目錄搜尋 | 多次 glob 呼叫 | 使用大括號擴展：`glob({ pattern: "{dir1,dir2}/**/*.ts" })` |
+| 關聯檔案搜尋 | 分別搜尋各類型 | 批次縮小範圍：`glob({ pattern: "**/*.{ts,tsx,json}" })` |
+
+---
+
 ## 推薦使用的相關技能 / Recommended Skills
 
 為確保行為的準確性與安全性，可使用以下技能來協助任務執行：
