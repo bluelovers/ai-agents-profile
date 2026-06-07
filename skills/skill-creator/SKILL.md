@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
+description: Guide for creating effective skills, with structured workflows for capturing intent, drafting, testing, and iteratively improving skills. Use when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
 license: Complete terms in LICENSE.txt
 tags:
   - agents/skills/skill-creation
@@ -12,14 +12,32 @@ tags:
 
 # Skill Creator
 
-This skill provides guidance for creating effective skills.
+## Core Workflow
+
+Creating an effective skill follows this loop:
+
+- Decide what you want the skill to do and roughly how it should do it
+- Write a draft of the SKILL.md and any bundled resources
+- Create a few realistic test prompts and run them with the skill
+- Evaluate the results with the user, identify struggles or inefficiencies
+- Rewrite based on feedback
+- Repeat until satisfied, then package and share
+
+Wherever possible, extract answers from the current conversation first (e.g., "turn this into a skill"). The user may need to fill gaps — confirm before proceeding.
+
+## Communicating with the user
+
+The skill creator may be used by people with varying familiarity with technical terminology. Pay attention to context cues:
+
+- "evaluation" and "benchmark" are borderline but acceptable
+- For "JSON" and "assertion", gauge the user's familiarity before using them without explanation
+- It's OK to briefly explain terms or ask for clarification when unsure
+
+---
 
 ## About Skills
 
-Skills are modular, self-contained packages that extend Claude's capabilities by providing
-specialized knowledge, workflows, and tools. Think of them as "onboarding guides" for specific
-domains or tasks—they transform Claude from a general-purpose agent into a specialized agent
-equipped with procedural knowledge that no model can fully possess.
+Skills are modular, self-contained packages that extend Claude's capabilities by providing specialized knowledge, workflows, and tools—"onboarding guides" for specific domains or tasks.
 
 ### What Skills Provide
 
@@ -49,6 +67,17 @@ Match the level of specificity to the task's fragility and variability:
 **Low freedom (specific scripts, few parameters)**: Use when operations are fragile and error-prone, consistency is critical, or a specific sequence must be followed.
 
 Think of Claude as exploring a path: a narrow bridge with cliffs needs specific guardrails (low freedom), while an open field allows many routes (high freedom).
+
+### Capture Intent
+
+Before drafting, confirm these four points with the user:
+
+1. What should this skill enable Claude to do?
+2. When should it trigger? (what user phrases/contexts)
+3. What's the expected output format?
+4. Should test cases verify the skill's behavior?
+
+Skills with objectively verifiable outputs (file transforms, data extraction, code generation, fixed workflow steps) benefit from test cases. Skills with subjective outputs (writing style, creative work) often don't need them — suggest the appropriate default based on the skill type, but let the user decide.
 
 ### Anatomy of a Skill
 
@@ -123,8 +152,10 @@ The skill should only contain the information needed for an AI agent to do the j
 Skills use a three-level loading system to manage context efficiently:
 
 1. **Metadata (name + description)** - Always in context (~100 words)
-2. **SKILL.md body** - When skill triggers (<5k words)
-3. **Bundled resources** - As needed by Claude (Unlimited because scripts can be executed without reading into context window)
+2. **SKILL.md body** - When skill triggers (<500 lines ideal)
+3. **Bundled resources** - As needed by Claude (unlimited — scripts can execute without loading)
+
+For reference files longer than 300 lines, include a table of contents at the top so Claude can see the full scope when previewing.
 
 #### Progressive Disclosure Patterns
 
@@ -201,6 +232,16 @@ For simple edits, modify the XML directly.
 
 Claude reads REDLINING.md or OOXML.md only when the user needs those features.
 
+**Examples pattern**: Structure documentation with clear Input/Output pairs so Claude can recognize the desired format:
+
+```markdown
+## Commit message format
+
+**Example:**
+Input: Added user authentication with JWT tokens
+Output: feat(auth): implement JWT-based authentication
+```
+
 **Important guidelines:**
 
 - **Avoid deeply nested references** - Keep references one level deep from SKILL.md. All reference files should link directly from SKILL.md.
@@ -210,14 +251,13 @@ Claude reads REDLINING.md or OOXML.md only when the user needs those features.
 
 Skill creation involves these steps:
 
-1. Understand the skill with concrete examples
+1. Capture intent (4 questions above) and interview the user for edge cases, input/output formats, and success criteria
 2. Plan reusable skill contents (scripts, references, assets)
-3. Initialize the skill (run init_skill.py)
-4. Edit the skill (implement resources and write SKILL.md)
-5. Package the skill (run package_skill.py)
-6. Iterate based on real usage
+3. Edit the skill — implement resources, write SKILL.md, and write the frontmatter description in a "pushy" way
+4. Package the skill (run `scripts/package_skill.py <path/to/skill-folder>`)
+5. Iterate based on real usage and user feedback
 
-Follow these steps in order, skipping only if there is a clear reason why they are not applicable.
+Follow these steps in order, skipping only if there is a clear reason why they are not applicable. Most work happens in steps 3–5.
 
 ### Step 1: Understanding the Skill with Concrete Examples
 
@@ -234,7 +274,14 @@ For example, when building an image-editor skill, relevant questions include:
 
 To avoid overwhelming users, avoid asking too many questions in a single message. Start with the most important questions and follow up as needed for better effectiveness.
 
-Conclude this step when there is a clear sense of the functionality the skill should support.
+Conclude this step when there is a clear sense of the functionality the skill should support. Follow up with questions incrementally — avoid overwhelming the user.
+
+Proactively ask about edge cases, input/output formats, example files, success criteria, and dependencies. Wait to write test prompts until you've got this part ironed out.
+
+**Interviewing questions to consider:**
+- "What should the output look like in this scenario?"
+- "Are there edge cases or inputs that should be handled differently?"
+- "What does success look like for this skill?"
 
 ### Step 2: Planning the Reusable Skill Contents
 
@@ -313,10 +360,12 @@ Any example files and directories not needed for the skill should be deleted. Th
 Write the YAML frontmatter with `name` and `description`:
 
 - `name`: The skill name
-- `description`: This is the primary triggering mechanism for your skill, and helps Claude understand when to use the skill.
-  - Include both what the Skill does and specific triggers/contexts for when to use it.
-  - Include all "when to use" information here - Not in the body. The body is only loaded after triggering, so "When to Use This Skill" sections in the body are not helpful to Claude.
-  - Example description for a `docx` skill: "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. Use when Claude needs to work with professional documents (.docx files) for: (1) Creating new documents, (2) Modifying or editing content, (3) Working with tracked changes, (4) Adding comments, or any other document tasks"
+- `description`: This is the primary triggering mechanism for your skill.
+  - Include **what the skill does** AND **specific contexts for when to use it**.
+  - All "when to use" information goes here, not in the body. The body is only loaded after triggering, so "When to Use This Skill" sections in the body are not helpful to Claude.
+  - **Note**: Claude tends to "undertrigger" skills — failing to use them when useful. To combat this, make the description a little "pushy": include explicit trigger phrases and contexts so the skill fires even when the user doesn't name it directly.
+  - **Good example**: "How to build a dashboard for internal metrics. Make sure to use this skill whenever the user mentions dashboards, data visualization, internal metrics, or wants to display any kind of company data, even if they don't explicitly ask for a 'dashboard.'"
+  - **Bad example**: "Helps with dashboards." (too vague to trigger reliably)
 
 Do not include any other fields in YAML frontmatter.
 
@@ -326,30 +375,7 @@ Write instructions for using the skill and its bundled resources.
 
 ### Step 5: Packaging a Skill
 
-Once development of the skill is complete, it must be packaged into a distributable .skill file that gets shared with the user. The packaging process automatically validates the skill first to ensure it meets all requirements:
-
-```bash
-scripts/package_skill.py <path/to/skill-folder>
-```
-
-Optional output directory specification:
-
-```bash
-scripts/package_skill.py <path/to/skill-folder> ./dist
-```
-
-The packaging script will:
-
-1. **Validate** the skill automatically, checking:
-
-   - YAML frontmatter format and required fields
-   - Skill naming conventions and directory structure
-   - Description completeness and quality
-   - File organization and resource references
-
-2. **Package** the skill if validation passes, creating a .skill file named after the skill (e.g., `my-skill.skill`) that includes all files and maintains the proper directory structure for distribution. The .skill file is a zip file with a .skill extension.
-
-If validation fails, the script will report the errors and exit without creating a package. Fix any validation errors and run the packaging command again.
+Once the skill is ready to share, package it into a distributable `.skill` file. See `references/packaging.md` for the full packaging workflow, validation steps, and how to handle updates when the skill is already installed.
 
 ### Step 6: Iterate
 
@@ -361,3 +387,28 @@ After testing the skill, users may request improvements. Often this happens righ
 2. Notice struggles or inefficiencies
 3. Identify how SKILL.md or bundled resources should be updated
 4. Implement changes and test again
+
+**Optional: Test case tracking.** For skills where you want a record of test prompts, create an `evals/evals.json` file alongside the skill:
+
+```json
+{
+  "skill_name": "my-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "What the user would say",
+      "expected_output": "Description of expected result",
+      "files": []
+    }
+  ]
+}
+```
+
+This is optional — use it when the skill is mature enough to justify a structured test record. It does not replace running the skill with real prompts.
+
+**How to think about improvements:**
+
+1. **Generalize from the feedback.** Ask: "Would this change help on other inputs, or does it only fix this one case?" Avoid overfitting to a specific example.
+2. **Keep the prompt lean.** Remove instructions that aren't pulling their weight. Watch the transcripts — if the skill makes the model waste time on unproductive steps, trim those parts.
+3. **Explain the why.** When telling the model to do something, explain the reasoning rather than relying on ALWAYS / NEVER in all caps. LLMs respond better to understanding the rationale.
+4. **Look for repeated work.** If multiple test cases inspire the same script or pattern, it's a signal the skill should bundle it. Write it once, put it in `scripts/`, and reference it from `SKILL.md`.
