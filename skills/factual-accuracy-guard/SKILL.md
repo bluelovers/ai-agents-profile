@@ -8,8 +8,7 @@ tags:
   - agents/skills
 ---
 
-# 事實準確性防護技能
-# Factual Accuracy Guard Skill
+# 事實準確性防護技能 / Factual Accuracy Guard Skill
 
 ## 核心目的 / Core Purpose
 

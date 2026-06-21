@@ -91,7 +91,10 @@ You are an expert in modern TypeScript and Node.js development refactoring. You 
 
 **Core Concept:** Composition over Duplication. When multiple data structures share the same underlying data, that underlying data must be extracted as an independent type.
 
-**Applies to:** `Data Clumps`, `Primitive Obsession`
+**Applies to:** `Data Clumps`, `Primitive Obsession`, `Type Drift`
+
+Includes two core principles:
+- **Type Traceability:** When type fields or parameters are based on another type, use index access or `Pick` to preserve references to the original type, ensuring type changes propagate automatically (see 1.5)
 
 #### ❌ Anti-pattern: Scattered Definitions
 
@@ -155,6 +158,7 @@ export interface IStationBase extends IGeoCoord {
 |-------|--------|
 | Are there repeated property groups? | Execute `Extract Interface/Type` |
 | Can inheritance relationship be established? | Use `extends` or nested composition |
+| Are there fields based on another type? | Use `OriginalType['fieldName']` or `Pick<OriginalType, ...>` |
 | Do modifications require changes in multiple places? | Confirm violation of SSoT, needs refactoring |
 
 #### 💡 Advanced Technique: Tuple Semantic Annotation
@@ -181,7 +185,100 @@ export type IGeoPointTupleLatLng = [
 
 ---
 
-### 2. Strict Type Control
+### 1.5 Type Traceability
+
+**Core Concept:** When type fields or parameters are based on another type, use Index Access or `Pick` to preserve references to the original type, ensuring type changes propagate automatically and maintain single source of truth.
+
+**Applies to:** `Type Drift`, cross-module type duplication
+
+#### ❌ Anti-pattern: Type Drift and Duplicate Definitions
+
+```typescript
+// Problem: Directly duplicating types - even if original ITripDetail changes,
+// you must manually sync multiple places
+export interface ITripDetailMapValue {
+    hero?: IRawHeroV2;
+    addresses?: IRawAddressBlockV2;
+    stats?: IRawStatTable;
+    breakdown: IRawBreakdownItem[];
+    mapUrl: string;        // Duplicate definition, if ITripDetail.mapUrl changes to URL object,
+                           // all locations must be manually updated
+    message: string;       // Duplicate definition
+    pickupCoords: { lng: number; lat: number };  // Duplicated coordinate type
+    dropoffCoords: { lng: number; lat: number };  // Duplicated coordinate type
+    // ... more duplicated fields
+}
+```
+
+#### ✅ Correct: Single Source + Index Access
+
+```typescript
+/**
+ * Geographic coordinate - Single source of truth
+ * Geographic coordinate - Single source of truth
+ */
+export interface IGeoCoord {
+    lng: number;
+    lat: number;
+}
+
+/**
+ * Trip detail - Complete type definition
+ * Trip detail - Complete type definition
+ */
+export interface ITripDetail {
+    hero?: IRawHeroV2;
+    addresses?: IRawAddressBlockV2;
+    stats?: IRawStatTable;
+    breakdown: IRawBreakdownItem[];
+    mapUrl: string;
+    message: string;
+    pickupCoords: IGeoCoord;
+    dropoffCoords: IGeoCoord;
+    cancelCoords: IGeoCoord;
+    unknownCoords: IGeoCoord;
+}
+
+/**
+ * Trip detail map value - Selects coordinate-related fields from ITripDetail
+ * Trip detail map value - Selects coordinate-related fields from ITripDetail
+ *
+ * Using Pick preserves type traceability - auto-syncs when ITripDetail changes
+ * Using Pick preserves type traceability, auto-syncs when ITripDetail changes
+ */
+export interface ITripDetailMapValue extends Pick<ITripDetail, 'mapUrl' | 'message' | 'pickupCoords' | 'dropoffCoords' | 'cancelCoords' | 'unknownCoords'> {
+    hero?: IRawHeroV2;
+    addresses?: IRawAddressBlockV2;
+    stats?: IRawStatTable;
+    breakdown: IRawBreakdownItem[];
+}
+```
+
+#### Single Field Index Access
+
+When referencing only a single field, use index access for readability:
+
+```typescript
+// ✅ Single field using index access
+interface IUserRef {
+    /** User identifier / User identifier */
+    id: IUser['id'];           // From IUser, auto-syncs if IUser.id type changes
+    /** User display name / User display name */
+    displayName: IUser['name']; // From IUser, maintains type consistency
+}
+```
+
+#### Refactoring Guide
+
+| Check | Action |
+|-------|--------|
+| Are there fields based on another type? | Use `OriginalType['fieldName']` or `Pick<OriginalType, 'field1' \| 'field2'>` |
+| Do you need multiple fields from the same type? | Use `Pick<OriginalType, 'field1' \| 'field2' \| ...>` instead of multiple index accesses |
+| Do changes require updates in multiple places? | Confirm SSoT violation, refactor to index access or Pick |
+
+---
+
+### 3. Strict Type Control
 
 **Core Concept:** When business logic defines a finite set of states, **prefer Enum over string union types**. String union types are erased after compilation, losing IDE support and runtime checking capabilities; Enums provide complete development experience and runtime safety.
 
@@ -244,7 +341,7 @@ enum EnumStatus {
 
 ## Node.js Asynchronous Flow Refactoring
 
-### 3. Identifying Asynchronous Bottlenecks
+### 4. Identifying Asynchronous Bottlenecks
 
 In Node.js environments, the definition of "long method" should consider **temporal complexity of async flows** rather than just line count. The essence of asynchronous flow is "decomposition in time dimension", mixing interwoven I/O logic leads to difficult-to-locate errors, hard-to-isolate tests, and difficult-to-track side effects.
 
@@ -358,7 +455,7 @@ processor.teardown();
 
 ## TypeScript-Specific Refactoring Techniques
 
-### 5. Leveraging Type-Driven Refactoring
+### 6. Leveraging Type-Driven Refactoring
 
 TypeScript's type system is not just a checking tool but a safety net for refactoring.
 
@@ -514,7 +611,7 @@ After: Flow accumulation
 
 ---
 
-### Focus on Intent (Focus on Intent, Not Implementation Details)
+### 7. Focus on Intent (Focus on Intent, Not Implementation Details)
 
 **Core concept:** Code is **written for humans** — this "person" is **your future self in six months** and the **maintainer forced to read your code**. Computers can execute any syntactically correct code, but only humans need to understand its **intent and design**.
 
@@ -549,7 +646,7 @@ return buildWebSearchUrl(enhancedQuery);
 
 ---
 
-### Documentation as Intent
+### 8. Documentation as Intent
 
 **Core concept:** Comments are not "explaining what the code does" but "explaining why it was designed this way". Good comments let maintainers understand design intent in seconds without reverse engineering.
 
@@ -648,7 +745,7 @@ When proposing refactoring suggestions:
 
 ## Type Safety Checklist
 - [ ] Enum definitions cover all business states
-- [ ] Interfaces follow SSoT principle
+- [ ] Interfaces follow SSoT principle and type traceability
 - [ ] Async flows can be independently tested
 - [ ] Resource release logic is correct
 ```

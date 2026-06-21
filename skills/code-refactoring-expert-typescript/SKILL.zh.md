@@ -89,7 +89,10 @@ tags:
 
 **核心概念：** 組合優先於重複定義 (Composition over Duplication)。當多個數據結構共享同一塊基礎資料時，必須將該基礎資料提取為獨立的型別。
 
-**適用於：** `Data Clumps`, `Primitive Obsession`
+**適用於：** `Data Clumps`, `Primitive Obsession`, `Type Drift`
+
+包含二大原則：
+- **型別可追溯性 (Type Traceability)**：當型別欄位基於另一個型別時，使用索引存取或 `Pick` 保留對原始型別的引用，確保型別變更可自動傳播（參見 1.5）
 
 #### ❌ 反模式：分散定義
 
@@ -152,6 +155,7 @@ export interface IStationBase extends IGeoCoord {
 |--------|------|
 | 是否有重複的屬性群組？ | 執行 `Extract Interface/Type` |
 | 是否可建立繼承關係？ | 使用 `extends` 或巢狀組合 |
+| 是否有基於另一型別的欄位？ | 使用 `OriginalType['fieldName']` 或 `Pick<OriginalType, ...>` |
 | 修改時是否需要多處調整？ | 確認違反 SSoT，需重構 |
 
 #### 💡 進階技巧：Tuple 語義標註
@@ -178,7 +182,98 @@ export type IGeoPointTupleLatLng = [
 
 ---
 
-### 2. 嚴格類型控制 (Strict Type Control)
+### 1.5 類型可追溯性 (Type Traceability)
+
+**核心概念：** 當型別欄位或參數基於另一個型別時，應透過索引存取 (Index Access) 或 `Pick` 保留對原始型別的引用，確保型別變更可以自動傳播並維持單一事實來源。
+
+**適用於：** `Type Drift`（型別漂移），跨模組型別重複定義
+
+#### ❌ 反模式：型別漂移與重複定義
+
+```typescript
+// 問題：直接重複定義型別，即使原始 ITripDetail 變更，也需手動同步多個地方
+export interface ITripDetailMapValue {
+    hero?: IRawHeroV2;
+    addresses?: IRawAddressBlockV2;
+    stats?: IRawStatTable;
+    breakdown: IRawBreakdownItem[];
+    mapUrl: string;        // 重複定義，若 ITripDetail.mapUrl 改為 URL 物件則需遍歷修改
+    message: string;       // 重複定義
+    pickupCoords: { lng: number; lat: number };  // 重複定義座標型別
+    dropoffCoords: { lng: number; lat: number }; // 重複定義座標型別
+    // ... 更多重複欄位
+}
+```
+
+#### ✅ 正確：單一來源 + 索引存取
+
+```typescript
+/**
+ * 地理座標 - 單一事實來源
+ * Geographic coordinate - Single source of truth
+ */
+export interface IGeoCoord {
+    lng: number;
+    lat: number;
+}
+
+/**
+ * 行程詳細資訊 - 完整型別定義
+ * Trip detail - Complete type definition
+ */
+export interface ITripDetail {
+    hero?: IRawHeroV2;
+    addresses?: IRawAddressBlockV2;
+    stats?: IRawStatTable;
+    breakdown: IRawBreakdownItem[];
+    mapUrl: string;
+    message: string;
+    pickupCoords: IGeoCoord;
+    dropoffCoords: IGeoCoord;
+    cancelCoords: IGeoCoord;
+    unknownCoords: IGeoCoord;
+}
+
+/**
+ * 行程詳細地圖值 - 僅選取 ITripDetail 中的座標相關欄位
+ * Trip detail map value - Picks coordinate-related fields from ITripDetail
+ *
+ * 使用 Pick 保留型別可追溯性，當 ITripDetail 改變時自動同步
+ * Using Pick preserves type traceability, auto-syncs when ITripDetail changes
+ */
+export interface ITripDetailMapValue extends Pick<ITripDetail, 'mapUrl' | 'message' | 'pickupCoords' | 'dropoffCoords' | 'cancelCoords' | 'unknownCoords'> {
+    hero?: IRawHeroV2;
+    addresses?: IRawAddressBlockV2;
+    stats?: IRawStatTable;
+    breakdown: IRawBreakdownItem[];
+}
+```
+
+#### 單一欄位索引存取
+
+當僅需引用單一欄位時，使用索引存取提升可讀性：
+
+```typescript
+// ✅ 單一欄位使用索引存取
+interface IUserRef {
+    /** 使用者識別碼 / User identifier */
+    id: IUser['id'];           // 來自 IUser，若 IUser.id 改型則自動同步
+    /** 使用者顯示名稱 / User display name */
+    displayName: IUser['name']; // 來自 IUser，保持型別一致性
+}
+```
+
+#### 重構指導
+
+| 檢查點 | 操作 |
+|--------|------|
+| 是否有基於另一型別的欄位？ | 使用 `OriginalType['fieldName']` 或 `Pick<OriginalType, 'field1' \| 'field2'>` |
+| 是否需要多個欄位來自同一型別？ | 使用 `Pick<OriginalType, 'field1' \| 'field2' \| ...>` 取代多個索引存取 |
+| 修改後是否需要遍歷多處同步？ | 確認違反 SSoT，需重構為索引存取或 Pick |
+
+---
+
+### 3. 嚴格類型控制 (Strict Type Control)
 
 **核心概念：** 當業務邏輯定義了有限的狀態集時，**優先使用 Enum 而非字串聯合型別**。字串聯合型別在編譯後會被擦除，失去 IDE 支援與運行時檢查能力；Enum 則提供完整的開發時體驗與運行時安全。
 
@@ -239,7 +334,7 @@ enum EnumStatus {
 
 ## Node.js 非同步流程重構
 
-### 3. 識別非同步瓶頸 (Asynchronous Bottleneck)
+### 4. 識別非同步瓶頸 (Asynchronous Bottleneck)
 
 在 Node.js 環境中，「過長方法」的定義應考慮**非同步流程的時序複雜性**而非單純行數。非同步流程的本質是「時間維度的分解」，將 I/O 操作交織的邏輯混在一起，會導致錯誤難以定位、測試難以隔離、副作用難以追蹤。
 
@@ -353,7 +448,7 @@ processor.teardown();
 
 ## TypeScript 專用重構技法
 
-### 5. 利用型別驅動重構
+### 6. 利用型別驅動重構
 
 TypeScript 的類型系統不僅是檢查工具，更是重構的安全網。
 
@@ -509,11 +604,11 @@ After: 流程累積
 
 ---
 
-### Focus on Intent (關注意圖而非實現細節)
+### 7. Focus on Intent (關注意圖而非實現細節)
 
 **核心概念：** 代碼是**寫給人看的**——這個「人」是**六個月後的你自己**，以及**被迫閱讀你程式碼的維護者**。電腦能執行任何語法正確的程式碼，但只有人類需要理解其**意圖與設計**。
 
-> 💡 **程式碼被閱讀的次數遠遠多於被編寫的次數。** 花一個小時讓程式碼更清晰，可以節省未來數十個小時的除錯與維護時間。
+> 💡 **程式碼被閱讀的次數遠達多於被編寫的次數。** 花一個小時讓程式碼更清晰，可以節省未來數十個小時的除錯與維護時間。
 
 當程式碼描述「要做什麼」時，閱讀者能快速理解業務邏輯；當描述「如何做」時，閱讀者必須解構實現細節才能理解目的——這對未來的自己是一種時間上的債務。
 
@@ -544,7 +639,7 @@ return buildWebSearchUrl(enhancedQuery);
 
 ---
 
-### 善用註解表達意圖 (Documentation as Intent)
+### 8. 善用註解表達意圖 (Documentation as Intent)
 
 **核心概念：** 註解不是「解釋程式碼在做什麼」，而是「說明為什麼這樣設計」。良好的註解能讓維護者在幾秒鐘內理解設計意圖，無需反向工程。
 
@@ -641,7 +736,7 @@ if (user.isActive && subscription.status === 'active' &&
 
 ## 類型安全檢查清單
 - [ ] Enum 定義涵蓋所有業務狀態
-- [ ] Interface 遵循 SSoT 原則
+- [ ] Interface 遵循 SSoT 原則與類型可追溯性
 - [ ] 非同步流程可獨立測試
 - [ ] 資源釋放邏輯正確
 ```
