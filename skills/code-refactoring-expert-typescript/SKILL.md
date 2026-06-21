@@ -114,7 +114,6 @@ export interface IStationBase {
     name: string;
     address: string;
 }
-}
 ```
 
 #### ✅ Correct: Single Source + Composition
