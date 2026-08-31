@@ -20,6 +20,7 @@ tags:
   - sd-webui
   - prompts/rules
   - prompts
+  - prompts/natural-language
 ---
 
 # Vision Promptor
