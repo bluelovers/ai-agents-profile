@@ -5,7 +5,6 @@ tags:
   - nodejs
   - documentation/README
   - documentation
-  - nodejs/package-management/npm
   - nodejs/package-management
   - agents/skills
 ---
@@ -13,6 +12,23 @@ tags:
 # Node.js README Updater
 
 Update Node.js module README.md with complete installation commands and synchronize package.json description and keywords.
+
+## Discovering Target Modules
+
+### Search Strategy
+
+When multiple modules are present in a workspace (monorepo or multi-package project), discover targets using file search tools — **never read all `package.json` or `README.md` files at once**:
+
+1. **Locate packages** - Use `glob` to find all `package.json` files (e.g. `**/package.json`)
+2. **One at a time** - Read each `package.json` and `README.md` individually before editing
+
+### One-at-a-Time Principle
+
+| Principle | Description | Why |
+|-----------|-------------|-----|
+| No batch reads | After discovery, read only the target package — **never read all package.json/README.md at once** | Saves context, avoids noise from unrelated info |
+| Create todos | Add discovered packages to a todo list and process sequentially | Makes progress trackable, prevents overlooking packages |
+| Cross-package reads | Only read additional packages when there's a cross-package need (e.g. shared config, dependency analysis) | Minimizes unnecessary file reads |
 
 ## Workflow
 
@@ -23,17 +39,46 @@ Update Node.js module README.md with complete installation commands and synchron
 5. **Check keywords** - Analyze and suggest missing keywords
 6. **Apply updates** - Modify files after analysis
 
+## Incremental Update Workflow
+
+When updating multiple packages, process them **one at a time** using a todo list to track progress:
+
+### Todo List Structure
+
+For each discovered package, create a todo entry:
+```
+[ ] Package: <name> - Read package.json, Read README.md
+[ ] Package: <name> - Update installation commands
+[ ] Package: <name> - Update description, README.md
+[ ] Package: <name> - Update keywords
+```
+
+### Per-Package Execution
+
+1. **Mark in-progress** - Set the first todo item to `in_progress`
+2. **Read package.json** - Fetch name, description, keywords only
+3. **Read README.md** - Analyze content and structure
+4. **Apply changes** - Edit files with exact string replacements
+5. **Mark completed** - Move to the next package's todo
+
+### Cross-Package Dependencies
+
+Only read additional `package.json` files when there is a cross-package need:
+- Shared configuration packages (e.g. `@scope/eslint-config`)
+- Dependency analysis for keywords (read the dependency's `package.json` for one package at a time)
+- Monorepo workspace root `package.json` (read once for workspace context)
+
 ## Installation Commands Detection
 
 ### Package Managers to Check
 
 | Manager | Command Pattern | Alias |
 |---------|----------------|-------|
-| npm | `npm install <name>` | - |
+| pnpm | `pnpm add <name>` | - |
 | yarn | `yarn add <name>` | - |
 | yarn-tool | `yarn-tool add <name>` | - |
 | yt | `yt add <name>` | yarn-tool alias |
-| pnpm | `pnpm add <name>` | - |
+| npm | `npm install <name>` | - |
 
 ### Detection Logic
 
@@ -120,6 +165,7 @@ Generate appropriate keywords from:
 2. **Dependencies** - Related packages indicate category
    - `npm-check-updates` → `npm`, `update`, `dependencies`
    - `yarnlock` → `yarn`, `lockfile`
+   - **Cross-package note**: Only read dependency `package.json` when deeper analysis is needed for one package at a time (see Incremental Update Workflow)
 
 3. **Main export file** - Function/class names suggest purpose
    - Export `parseSemVer` → `parse`, `parser`
