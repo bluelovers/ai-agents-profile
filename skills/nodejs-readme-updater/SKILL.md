@@ -290,6 +290,7 @@ Final keywords array:
 - **Traditional Chinese** - Use Taiwan terminology
 - **Package name accuracy** - Use exact name from package.json
 - **No duplicate commands** - Check before adding
+- **Module name source** - Determine module name from `package.json` `name` field, not directory name
 
 ## Generic Sections Constraint
 
