@@ -22,11 +22,13 @@ When multiple modules are present in a workspace (monorepo or multi-package proj
 1. **Locate packages** - Use `glob` to find all `package.json` files (e.g. `**/package.json`)
 2. **One at a time** - Read each `package.json` and `README.md` individually before editing
 
+> **Strictly one-at-a-time**: Never pre-read all modules for any reason (including but not limited to finding modules that need updating). Process only one module at a time, proceed to the next only after completing the current one.
+
 ### One-at-a-Time Principle
 
 | Principle | Description | Why |
 |-----------|-------------|-----|
-| No batch reads | After discovery, read only the target package — **never read all package.json/README.md at once** | Saves context, avoids noise from unrelated info |
+| No batch reads | After discovery, read only the target package — **never pre-read all modules for any reason** | Saves context, avoids noise from unrelated info |
 | Create todos | Add discovered packages to a todo list and process sequentially | Makes progress trackable, prevents overlooking packages |
 | Cross-package reads | Only read additional packages when there's a cross-package need (e.g. shared config, dependency analysis) | Minimizes unnecessary file reads |
 
