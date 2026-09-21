@@ -18,6 +18,7 @@ tags:
   - edge-cases
   - React
   - agents/skills
+  - single-source-of-truth
 ---
 
 # TypeScript/Node.js Refactoring - Miscellaneous Cases and Concepts

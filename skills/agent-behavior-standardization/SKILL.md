@@ -9,6 +9,7 @@ tags:
   - file-operations
   - encoding
   - agents/skills
+  - single-source-of-truth
 ---
 
 # Agent 行為標準化指南 / Agent Behavior Standardization Guide
