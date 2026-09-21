@@ -125,7 +125,7 @@ tags:
 
 #### 1. 撰寫 YAML Frontmatter
 Frontmatter 決定了技能的觸發與標籤化，必須嚴格配置：
-- **`name`**：技能名稱。**極為重要：YAML 中的技能名稱（`name`）必須與該技能的資料夾名稱完全一致**（例如：資料夾名稱為 `skill-creator-fine-tuned`，則 Frontmatter 中 `name` 欄位的值必須完全為 `skill-creator-fine-tuned`，不可有大小寫、底線或連字號的任何差異，否則驗證與打包會失敗）。
+- **`name`**：技能名稱。**極為重要：YAML 中的技能名稱（`name`）必須與該技能的資料夾名稱完全一致**（例如：資料夾名稱為 `skill-creator-fine-tuned`，則 Frontmatter 中 `name` 欄位的值必須完全為 `skill-creator-fine-tuned`，不可有大小寫、底線或連字號的任何差異，否則驗證與打包會失敗）。技能名稱只能包含小寫字母、數字和連字號。
 - **`description`**：這是主要的觸發機制。
   - **核心要求**：**必須包含明確的觸發詞列表**（Triggers when user mentions...）。
   - **語法要求**：因為包含列表與換行，**主 `SKILL.md` 的 description 欄位一律必須使用 `|-` 語法**以保留排版。
