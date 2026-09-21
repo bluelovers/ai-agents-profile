@@ -1,8 +1,8 @@
 ---
-name: Agent Behavior Standardization Guide
+name: agent-behavior-standardization
 description: >-
   Provides guidelines to standardize agent behaviors,
-	avoid common mistakes, and prevent unnecessary actions during task execution.
+  avoid common mistakes, and prevent unnecessary actions during task execution.
 tags:
   - agents/behavior
   - agents/guidelines
@@ -13,13 +13,13 @@ tags:
 
 # Agent 行為標準化指南 / Agent Behavior Standardization Guide
 
-## 目的 / Purpose
+## 目的
 
 本技能旨在建立 Agent 在執行任務時的標準化行為準則，避免各 Agent 犯下常見錯誤或進行不必要的行為，提升任務執行效率與成功率。
 
-## 檔案操作準則 / File Operation Guidelines
+## 檔案操作準則
 
-### 1. 優先使用技能與內建工具 / Prioritize Skills and Built-in Tools
+### 1. 優先使用技能與內建工具
 Agent 在讀寫檔案或目錄時，**應優先使用具備的技能或內建環境工具**，而不是自行構建 CLI 指令。（註：不同 Agent 環境下的工具名稱可能有所不同，請依據當下環境實際提供的對應工具進行操作）。
 
 **原因 / Reason:**
@@ -28,13 +28,13 @@ Agent 在讀寫檔案或目錄時，**應優先使用具備的技能或內建環
 - 編碼錯誤 (Encoding errors)
 - 路徑錯誤 (Path errors)
 
-### 2. 依賴工具的自動化設計 / Rely on Tool's Automation
+### 2. 依賴工具的自動化設計
 大多數的寫入檔案工具都具有自動建立路徑的設計，**不需要**手動提前建立路徑（例如避免預先執行建立資料夾的指令）。
 
-### 3. 編輯檔案前先讀取 / Read Before Editing
+### 3. 編輯檔案前先讀取
 在編輯或更新檔案時，**絕對不應該假設檔案沒有被更改過而直接使用記憶中的內容作更改**。
 
-### 4. 注意非英文環境的編碼問題 / Note Encoding Issues in Non-English Environments
+### 4. 注意非英文環境的編碼問題
 對於非英文的環境或專案，請特別留意編碼問題。特別是在 CJK（中日韓語系）環境下，不論是檔案讀寫或終端機的輸入、輸出，還是顯示的錯誤訊息，都非常容易遭遇編碼衝突（例如 UTF-8 與 Big5 之間的轉換錯誤）。當終端機顯示亂碼時，應優先考慮是否為編碼問題所致，而非盲目猜測指令邏輯錯誤或指令存在。在處理這類環境的檔案或指令時，請確保使用正確的編碼格式，以免造成資料損壞或無法正確解析。
 
 ---
@@ -48,14 +48,14 @@ Agent 在讀寫檔案或目錄時，**應優先使用具備的技能或內建環
 - 修改一處卻忘記更新另一處，將產生難以追蹤的錯誤
 - 違反 DRY (Don't Repeat Yourself) 原則，增加不必要的維護成本
 
-### 適用場景 / Applicable Scenarios
+### 適用場景
 
-- **配置定義 (Configuration Definitions)**: 預設值、常量、枚舉定義應集中管理，各模組引用同一來源。
-- **類型定義 (Type Definitions)**: 共用型別應提取至共用型別檔案，而非在各模組重複定義。
-- **業務邏輯 (Business Logic)**: 核心邏輯應封裝在共用函式或服務中，避免各處複製貼上相同的實作。
-- **文件與註解 (Documentation & Comments)**: 相同的技術決策或設計說明，應指向同一份文件而非各自撰寫。
+- **配置定義**: 預設值、常量、枚舉定義應集中管理，各模組引用同一來源。
+- **類型定義**: 共用型別應提取至共用型別檔案，而非在各模組重複定義。
+- **業務邏輯**: 核心邏輯應封裝在共用函式或服務中，避免各處複製貼上相同的實作。
+- **文件與註解**: 相同的技術決策或設計說明，應指向同一份文件而非各自撰寫。
 
-### 實作範例 / Implementation Examples
+### 實作範例
 
 ```typescript
 // ❌ 錯誤：各自維護相同邏輯
@@ -81,16 +81,16 @@ export function formatUserName(user: IUser): string {
 
 ---
 
-## 6. 工具使用效率原則 / Tool Usage Efficiency
+## 6. 工具使用效率原則
 
 **使用 grep、glob 等搜尋工具時，應在每次指令內同時搜尋相關內容，而非多次執行指令分別搜尋。**
 
-**原因 / Reason:**
+**原因:**
 - 多次獨立搜尋浪費執行時間與 Token 配額
 - 批次搜尋能更快取得完整上下文，減少決策延遲
 - 一次查看更多相關資訊，有助於發現模式與關聯
 
-### grep 批次搜尋範例 / grep Batch Search Examples
+### grep 批次搜尋範例
 
 ```typescript
 // ❌ 錯誤：多次獨立搜尋
@@ -113,7 +113,7 @@ grep({ pattern: "TODO|FIXME|HACK" })
 grep({ pattern: "function|class|interface", include: "*.ts" })
 ```
 
-### glob 批次搜尋範例 / glob Batch Search Examples
+### glob 批次搜尋範例
 
 ```typescript
 // ❌ 錯誤：多次獨立搜尋
@@ -136,7 +136,7 @@ glob({ pattern: "{src,test,lib}/**/*.{ts,tsx}" })
 glob({ pattern: "src/**/*.ts", path: "D:/project/src" })
 ```
 
-### 原則總結 / Principle Summary
+### 原則總結
 
 | 情境 | 錯誤做法 | 正確做法 |
 |------|---------|---------|
@@ -146,7 +146,7 @@ glob({ pattern: "src/**/*.ts", path: "D:/project/src" })
 
 ---
 
-## 推薦使用的相關技能 / Recommended Skills
+## 推薦使用的相關技能
 
 為確保行為的準確性與安全性，可使用以下技能來協助任務執行：
 
