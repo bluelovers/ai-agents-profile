@@ -9,8 +9,7 @@ tags:
   - testing/snapshot
 ---
 
-# 測試檔案最佳實踐規範
-# Test File Best Practices
+# 測試檔案最佳實踐規範 / Test File Best Practices
 
 ## 概述
 
