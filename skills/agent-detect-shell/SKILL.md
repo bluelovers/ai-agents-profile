@@ -1,7 +1,7 @@
 ---
 name: agent-detect-shell
 description: >-
-  檢測 AI Agent 運行環境資訊，包括 Shell 類型、平台架構、可用工具等。
+  檢測 AI Agent 運行環境資訊，包括 cmd、PowerShell、bash 等 Shell 類型、windows 平台架構、可用工具等。
   防止 Agent 在未知環境下隨機嘗試指令，減少重複錯誤。
   Use when agents need to
   (1) 檢測運行環境,
@@ -232,7 +232,56 @@ When agents encounter command errors, this skill provides a standard process for
    - 確認 Node.js/Bun 已正確安裝
    - 檢查執行權限
 
-> **重要處理原則**：檢測失敗時就直接以最簡單的指令來執行，除非後續的任務需要 Node.js/Bun，否則不需要再考慮偵測 Node.js/Bun。
+> **重要處理原則**：檢測失敗時就直接以最簡單的指令來執行，除非後續的任務需要 Node.js/Bun，否則不需要再考慮偡測 Node.js/Bun。
+
+---
+
+### 常見狀況：因為無差別使用 `cd /d` 而導致指令錯誤
+
+`cd /d` 是 **CMD 專有的語法**，用於同時切換磁碟機和目錄。當 Agent 在不同 Shell 環境中無差別使用 `cd /d` 會導致以下錯誤：
+
+| Shell 類型 | `cd /d` 的錯誤行為 | 錯誤說明 |
+|-----------|-------------------|----------|
+| **PowerShell** | `cd : The term 'd' is not recognized` | `/d` 被當作參數或路徑的一部分解析，PowerShell 會嘗著將 `d` 當作一個命令或路徑 |
+| **Bash** | `bash: cd: too few arguments` 或 `no such file or directory` | `/d` 被解析為路徑，Bash 會嘗著前往 `/d` 目錄 |
+
+#### 錯誤發生時的處理方式
+
+1. **停止重試**：不要繼續嘗試 `cd /d D:\path\to\dir` 或類似語法。
+2. **執行環境檢測**：使用上文的自動檢測指令確認當前 Shell 類型。
+3. **根據 Shell 類型選擇正確語法**：
+
+   - **CMD 環境**：可以使用 `cd /d D:\path\to\dir`（切換磁碟機和目錄）。
+   - **PowerShell 環境**：使用 `Set-Location -Path "D:\path\to\dir"` 或 `cd "D:\path\to\dir"`（PowerShell 會自動處理磁碟機切換）。
+   - **Bash 環境**：使用 `cd /d/path/to/dir` 或 `cd "D:\path\to\dir"`（視環境而定）。
+
+#### 補充說明
+
+> **重要**：`cd /d` 只在 CMD 中才需要 `/d` 參數來同時切換磁碟機。PowerShell 和 Bash 都支援直接切換到其他磁碟機的目錄，無需額外參數。
+
+---
+
+### 常見狀況：從錯誤訊息判斷 Shell 類型
+
+部分環境在執行指令失敗時，會在回應中告知目前的 Shell 類型或路徑。Agent 應善用這些線索來判斷執行環境。
+
+#### 錯誤訊息中的 Shell 類型線索
+
+| 錯誤訊息 | 判斷依據 | 對應 Shell |
+|---------|---------|------------|
+| `/usr/bin/bash: line 1: cd: too many arguments` | 路徑格式為 `/usr/bin/bash`，訊息格式為 `<shell_path>: line <n>: <command>: <error>` | Bash |
+| `/bin/sh: 1: cd: too many arguments` | 路徑格式為 `/bin/sh`，訊息格式為 `<shell_path>: <n>: <command>: <error>` | sh / Bash |
+| `bash: line 1: <command>: command not found` | 訊息以 `bash:` 開頭 | Bash |
+
+#### 使用方式
+
+1. **觀察錯誤訊息格式**：許多錯誤訊息會直接包含 Shell 類型資訊，無需額外執行檢測指令。
+2. **直接執行指令**：確認判斷結果後，即可調整指令語法重試。如果能正確執行指令，則不需要額外使用本技能的自動檢測指令進行二次驗證。
+3. **調整指令語法**：根據判斷結果選用對應 Shell 的正確語法，避免在錯誤環境中重試。
+
+> **注意**：本技能的自動檢測並非完美方案，仍存在限制。當錯誤訊息已明確指示 Shell 類型時，信任錯誤訊息的判斷結果即可，無需額外驗證。
+
+> **例題**：若看到錯誤訊息 `/usr/bin/bash: line 1: cd: too many arguments`，即可判斷目前環境為 Bash，應使用 Bash 的 `cd` 語法而非 CMD 的 `cd /d`。
 
 ---
 
