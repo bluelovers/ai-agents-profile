@@ -245,7 +245,7 @@ export type ISegExternalUnknownArray<T extends unknown = unknown> = T[] | null;
 
 ## 命名約束
 
-- **一律使用 `I` 開頭**（參考 `typescript-naming-convention`）
+- **一律使用 `I` 開頭**（參考 [typescript-naming-convention](../../typescript-naming-convention/SKILL.md)）
 - **語意優先於精確**：寧可 `IPercentage = number` 也不要過度約束導致不符實際
 - **避免型別爆炸**：只在有價值的場景建立語意化型別
 - **文件即型別**：型別名稱本身應能自我解釋，註解補充細節

@@ -767,6 +767,6 @@ When proposing refactoring suggestions:
 
 ### Memory Rules (System Level)
 - [comment-format-rules](../../rules/comment-format-rules.md) - Comment format rules (bilingual, block comments, JSDoc)
-- [typescript-naming-convention](../../rules/typescript-naming-convention.md) - TypeScript naming conventions (Enum, Interface, Type)
+- [typescript-naming-convention](../typescript-naming-convention/SKILL.md) - TypeScript naming conventions (Enum, Interface, Type)
 - [unimplemented-code-handling-rules](../../rules/unimplemented-code-handling-rules.md) - Unimplementable code handling rules
 - [test-file-best-practices](../../rules/test-file-best-practices.md) - Test file best practices

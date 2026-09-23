@@ -63,7 +63,7 @@ export type ITimestampUnix = number;
 
 ## 命名規範
 
-嚴格遵循專案既有的 TypeScript 命名慣例（參考 `typescript-naming-convention` 規則）：
+嚴格遵循專案既有的 TypeScript 命名慣例（參考 [typescript-naming-convention](../typescript-naming-convention/SKILL.md)）：
 
 | 型別種類 | 命名格式 | 範例 |
 |---------|---------|------|
