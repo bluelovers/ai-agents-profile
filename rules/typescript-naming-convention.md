@@ -8,8 +8,7 @@ tags:
   - enum
 ---
 
-# TypeScript 命名規則
-# TypeScript Naming Convention
+# TypeScript 命名規則 / TypeScript Naming Convention
 
 ## 概述
 
