@@ -231,3 +231,10 @@ type IValidator<T> = {
 - 不要省略型別宣告的區塊文件。
 - 不要用單行 `//` 註解取代型別文件。
 - 不要將未涵蓋的型別強行套用本規則的前綴。
+
+---
+
+## 相關資源
+
+- [TypeScript 官方風格指南](https://www.typescriptlang.org/docs/handbook/declaration-files/by-example.html)
+
