@@ -11,20 +11,42 @@ tags:
 
 # 指令執行規則參照 | Command Execution Rules
 
+## 0. 優先使用 `package.json` 定義的指令
+
+執行任何操作前，**應先檢查 `package.json` 中是否已有對應的 script**，有則優先使用，不直接呼叫底層工具。
+
+```bash
+# ✅ 優先（package.json 已定義時）
+pnpm run build
+pnpm run lint
+pnpm run test
+pnpm run type-check
+
+# ✅ 直接呼叫（package.json 無對應 script，或定義的 script 不符合當前需求時）
+tsx path/to/file.ts
+tsc --noEmit
+jest --testPathPattern=foo.spec.ts   # script 僅跑全部，需個別指定時可直接呼叫
+```
+
+> [!NOTE]
+> 「不符合需求」的判斷標準：當 `package.json` 中的 script 與當前任務所需的參數、範圍或行為不一致時（例如 script 永遠跑全部測試，但此次只需針對單一檔案），才允許直接呼叫工具。
+
+---
+
 ## 1. 嚴禁使用 `npx` 執行指令
 
 **禁止透過 `npx` 執行任何指令**（如 `npx tsx ...`、`npx vitest ...`、`npx tsc ...` 等）。
 
 ### 正確替代方式（依優先順序）
 
-1. **使用 `package.json` 中定義的 npm script**：
+1. **優先使用 `package.json` 中定義的 npm script**（有對應 script 時，一律先用）：
    ```bash
    pnpm run test:tsc
    pnpm run build
    pnpm run lint
    ```
 
-2. **直接呼叫全域安裝的工具**（不透過 npx）：
+2. **直接呼叫工具**（package.json 無對應 script，或 script 不符合需求時）：
    ```bash
    tsx path/to/file.ts
    tsc --noEmit

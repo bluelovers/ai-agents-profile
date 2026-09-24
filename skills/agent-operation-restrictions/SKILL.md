@@ -42,6 +42,7 @@ tags:
 
 | 規則 | 說明 |
 |---|---|
+| ✅ 優先使用 `package.json` scripts | 有對應 script 時，一律先用它；不符合需求時才直接呼叫工具 |
 | 🚫 禁止 `npx` | 改用 `package.json` scripts 或直接呼叫工具 |
 | 🚫 禁止 `node_modules/.bin/` | 直接呼叫工具名稱即可 |
 | 🚫 避免 `cd xxx &&` 前置 | 透過工具的 `cwd` 參數指定工作目錄 |
