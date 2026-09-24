@@ -63,7 +63,15 @@ npx tsc --noEmit
 npx vitest --run
 npx jest
 npm exec tsx path/to/file.ts
+pnpm exec tsc --noEmit   # package.json 已有對應 script 時同樣禁止
 ```
+
+> [!NOTE]
+> `pnpm exec` 僅在以下兩個條件**同時成立**時才允許使用：
+> 1. 環境限制導致無法直接呼叫工具（如工具未全域安裝）
+> 2. `package.json` 中沒有對應的 script
+>
+> 只要 `package.json` 已定義對應 script，**無論環境為何，都應優先使用 `pnpm run <script>`**。
 
 ---
 
