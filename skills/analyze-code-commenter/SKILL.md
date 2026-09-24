@@ -139,6 +139,35 @@ async function processOrder(order)
 
 ## Bilingual Comment Format Rules
 
+### 彈性捨棄雙語原則 (Flexible Bilingual Omission)
+
+當雙語造成**閱讀障礙**或**內容過長**時，保留最清晰的一種語言即可，無需強制雙語。
+
+**例外：技術術語的雙語標註仍應保留**（如 `聯合類型 (Union Type)`、`快取 (Cache)`）。
+
+| 情境 | 建議做法 |
+|------|---------|
+| 短句、術語名稱已自明 | 可省略另一語言 |
+| 雙語合併後超過一行且可讀性下降 | 選擇最清晰的語言，捨棄另一語言 |
+| 技術術語首次出現 | **必須保留雙語標註**，格式：`中文 (Term)` |
+| 已有完整雙語 | 保留，不主動刪除 |
+
+```typescript
+// ✅ 短句已自明，可只保留一種語言
+/** 是否啟用 */
+const isEnabled = true;
+
+// ✅ 雙語過長時，選最清晰的語言
+/**
+ * 當使用者處於非活躍狀態且訂閱已到期，系統將自動封存帳號並寄送通知信
+ */
+
+// ✅ 技術術語仍須保留雙語
+/**
+ * 使用快取 (Cache) 避免重複查詢，並透過聯合類型 (Union Type) 表達多種回傳格式
+ */
+```
+
 > **Reference**: For detailed bilingual comment format specifications, see [rules/comment-format-rules.md](../../rules/comment-format-rules.md#雙語註解格式規範-bilingual-comment-format).
 >
 > **參考**：詳細的雙語註解格式規範請參閱 [rules/comment-format-rules.md](../../rules/comment-format-rules.md#雙語註解格式規範-bilingual-comment-format)。

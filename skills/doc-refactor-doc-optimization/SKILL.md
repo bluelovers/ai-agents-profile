@@ -172,6 +172,32 @@ tags:
 | **標記語法** | Heading Level、Code Block、Frontmatter |
 | **工具與路徑** | `start_and_kill.bat`、`docker-compose.yml`、`node_modules/` |
 
+#### 彈性捨棄雙語原則 (Flexible Bilingual Omission)
+
+當雙語造成**閱讀障礙**或**內容過長**時，保留最清晰的一種語言即可，無需強制雙語。
+
+**例外：技術術語的雙語標註仍應保留**（如 `聯合類型 (Union Type)`、`目錄 (Table of Contents, TOC)`）。
+
+| 情境 | 建議做法 |
+|------|---------|
+| 標題說明已自明、短句 | 可省略另一語言 |
+| 雙語標題合併後過長影響閱讀 | 選擇最清晰的語言，捨棄另一語言 |
+| 技術術語首次出現 | **必須保留雙語標註**，格式：`中文 (Term)` |
+| 已有完整雙語 | 保留，不主動刪除 |
+
+```markdown
+<!-- ✅ 標題已自明，只保留中文 -->
+## 閱讀流程優先原則
+
+<!-- ✅ 雙語合併後不過長，保留雙語 -->
+## 閱讀流程優先原則 (Reading Flow Priority)
+
+<!-- ✅ 技術術語仍須保留雙語 -->
+文件的目錄 (Table of Contents, TOC) 應清楚列出所有章節 (Section)。
+```
+
+---
+
 #### 雙語術語標註原則 (Bilingual Terminology Annotation Principle)
 
 **規則：技術術語首次出現時應確保中英文資訊並存，確保對譯的完整性。**
