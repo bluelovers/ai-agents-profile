@@ -32,11 +32,12 @@ tags:
 
 ## 重構黃金法則 (Golden Rules)
 
-1. **重構時絕不改變行為** - 重構與功能變更應分開提交
-2. **重構前先有測試** - 若測試不存在，先撰寫測試
-3. **進行小型、漸進式的變更** - 每個步驟應可獨立驗證
-4. **保持程式碼正常運作** - 系統應在每次變更後通過測試
-5. **程式碼是寫給人看的** - 電腦能執行模糊複雜的程式碼，但**六個月後的你自己**和**維護團隊**需要理解意圖與設計。清晰的程式碼比重構前的「聰明」程式碼更有價值
+1. **單一事實原則 (SSoT) 為最優先** - 在架構設計、日常實作與重構時，SSoT 均為最高準則。型別、邏輯、狀態與常數都必須擁有唯一的單一事實來源，杜絕重複定義與多處維護
+2. **重構時絕不改變行為** - 重構與功能變更應分開提交
+3. **重構前先有測試，阻礙測試或複用時應抽離細化** - 若測試不存在先撰寫測試；當現有實作阻礙測試或複用時，應抽離細化為獨立可測試單元，**嚴禁為了測試而複製邏輯**，避免脫離單一事實來源
+4. **進行小型、漸進式的變更** - 每個步驟應可獨立驗證
+5. **保持程式碼正常運作** - 系統應在每次變更後通過測試
+6. **程式碼是寫給人看的** - 電腦能執行模糊複雜的程式碼，但**六個月後的你自己**和**維護團隊**需要理解意圖與設計。清晰的程式碼比重構前的「聰明」程式碼更有價值
 
 ---
 
@@ -90,17 +91,38 @@ tags:
 
 ### 1. 單一事實來源 (Single Source of Truth - SSoT)
 
-**核心概念：** 組合優先於重複定義 (Composition over Duplication)。當多個數據結構共享同一塊基礎資料時，必須將該基礎資料提取為獨立的型別。
+> 🌟 **最高原則：設計、實作與重構時，單一事實原則 (SSoT) 為最優先考量 (Highest Priority)！**
+> 無論是從零架構設計、日常功能實作、或是既有程式碼重構，都必須將建立與維護 SSoT 視為第一順位準則。資料、狀態、邏輯或型別只要存在多份分散定義，必然導致維護失控、型別漂移、重複維護與多處散落修改。
 
-**適用於：** `Data Clumps`, `Primitive Obsession`, `Type Drift`
+**核心概念：** 繼承與組合優先於重複定義 (Inheritance & Composition over Duplication)。任何業務實體、型別結構與運算邏輯，在系統中必須有且僅有唯一的權威單一事實來源。
 
-包含二大原則：
-- **型別可追溯性 (Type Traceability)**：當型別欄位基於另一個型別時，使用索引存取或 `Pick` 保留對原始型別的引用，確保型別變更可自動傳播（參見 1.5）
+**適用於：** `Data Clumps`, `Primitive Obsession`, `Duplicate Code`, `Type Drift`, `Shotgun Surgery`
 
-#### ❌ 反模式：分散定義
+#### SSoT 五大核心支柱
 
+1. **同領域或重覆定義型別「優先採用繼承」而非各自定義**：
+   - 同領域 (Same Domain) 或具有重疊欄位/語義的模型，**應優先採用繼承 (`interface ... extends ...`) 或基礎型別擴展，而非各自獨立定義**。
+   - 各自定義會破壞模型的血緣關係，引發「型別漂移 (Type Drift)」。繼承能確保基礎模型演進時，所有衍生型別自動向下保持同步。
+2. **業務狀態與有限集合「優先採用 Enum 設計」而非字串聯合**：
+   - 定義有限狀態集、分類、運作模式等業務集合時，**應優先採用 Enum 設計，而非字串聯合 (String Union)**。
+   - **避免事後二次重構成本**：初期若便宜行事使用字串聯合，隨業務演進（如需迭代枚舉所有選項、反向映射、執行期防禦校驗、IDE 重命名與跨檔案引用追蹤），往往迫使團隊**事後再次耗費龐大精力將字串聯合全面重構為 Enum**。在設計/實作期直接以 Enum 作為單一事實來源，一步到位確立型別與數值的雙重唯一來源。
+3. **重複邏輯「抽離為共用」而非散落各處各自維護**：
+   - SSoT 不僅管轄型別結構，更深植於**業務邏輯與流程運算**。
+   - **重複的判斷、計算、驗證或資料轉換邏輯，應強制抽離為共用函式 (Shared Utility / Pure Function / Service)，絕不允許重複散落於各處**。
+   - 散落於多處會造成「各自維護」的惡夢：業務規則更新時必須在所有散落點同步修改（典型「霰彈式修改 Shotgun Surgery」）；一旦漏改任一處，即造成各處行為不一致與嚴重生產事故。
+4. **阻礙測試或複用時「應抽離細化，嚴禁為測試複製邏輯」**：
+   - 當任何現有實作因結構過大、深度耦合或副作用而阻礙測試或難以複用時，**必須對該實作進行抽離細化 (Decompose & Refine)**，將純運算與核心邏輯提取為獨立單元。
+   - **嚴禁為了測試而複製邏輯 (Strictly Forbid Logic Duplication for Testing)**：絕不能為了寫單元測試或輔助比對，而在測試檔案中複製或重寫一套實作邏輯。複製邏輯會徹底脫離單一事實來源，在生產邏輯變更時無法同步，讓測試失去防護價值並埋下重大隱患。
+5. **型別依賴與衍生「保留型別可追溯性 (Type Traceability)」**：
+   - 當欄位依賴另一型別時，使用索引存取 (`OriginalType['fieldName']`) 或 `Pick<OriginalType, ...>` 保留對原始型別的引用，確保變更自動傳播（參見 1.5）。
+
+---
+
+#### 規範 A：同領域型別優先繼承，杜絕各自定義
+
+##### ❌ 反模式：分散定義同領域型別
 ```typescript
-// 座標定義在多處重複出現
+// 座標與站點在同領域，卻各自重複定義基礎屬性
 export interface IGeoBounds {
     northWest: { lng: number; lat: number; };  // 重複定義
     northEast: { lng: number; lat: number; };  // 重複定義
@@ -109,7 +131,7 @@ export interface IGeoBounds {
 }
 
 export interface IStationBase {
-    lng: number;  // 再次重複
+    lng: number;  // 再次重複，若座標改為支援高程 alt 則無法自動同步
     lat: number;  // 再次重複
     dataType: EnumDatasetType;
     name: string;
@@ -117,8 +139,7 @@ export interface IStationBase {
 }
 ```
 
-#### ✅ 正確：單一來源 + 組合
-
+##### ✅ 正確：提取基礎 Interface 並優先繼承/組合
 ```typescript
 /**
  * 地理座標 - 單一事實來源
@@ -141,7 +162,7 @@ export interface IGeoBounds {
 }
 
 /**
- * 站點基礎資訊 - 繼承並擴展
+ * 站點基礎資訊 - 優先繼承 IGeoCoord 而非各自重複定義
  * Station base info - Extends IGeoCoord
  */
 export interface IStationBase extends IGeoCoord {
@@ -152,14 +173,178 @@ export interface IStationBase extends IGeoCoord {
 }
 ```
 
+---
+
+#### 規範 B：重複邏輯抽離共用，杜絕散落各處各自維護
+
+##### ❌ 反模式：運算與業務邏輯散落各處，各自硬編碼維護
+```typescript
+// 購物車結帳邏輯
+async function checkoutCart(cart: ICart): Promise<number> {
+    const subtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const taxRate = 0.05; // 稅率邏輯散落
+    const shipping = subtotal >= 1000 ? 0 : 60; // 免運門檻散落
+    return Math.round((subtotal * (1 + taxRate) + shipping) * 100) / 100;
+}
+
+// 發票產生邏輯：相同邏輯再次重複編寫！
+async function generateInvoice(order: IOrder): Promise<IInvoice> {
+    const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const taxRate = 0.05; // 重複維護：若稅率調整，極易漏改此處
+    const shipping = subtotal >= 1000 ? 0 : 60; // 重複維護：門檻調整時兩邊行為不同步
+    const total = Math.round((subtotal * (1 + taxRate) + shipping) * 100) / 100;
+    return { orderId: order.id, subtotal, taxRate, shipping, total };
+}
+```
+
+##### ✅ 正確：抽離為單一事實來源的共用領域邏輯
+```typescript
+/**
+ * 訂價規則常數 - 單一事實來源
+ */
+export const PRICING_CONFIG = {
+    TAX_RATE: 0.05,
+    FREE_SHIPPING_THRESHOLD: 1000,
+    DEFAULT_SHIPPING_FEE: 60,
+} as const;
+
+export interface IOrderPricingBreakdown {
+    subtotal: number;
+    tax: number;
+    shipping: number;
+    total: number;
+}
+
+/**
+ * 訂單費用計算 - 唯一的業務邏輯單一事實來源
+ * 規則更新只需修改此處，購物車、發票、報表全部自動保持一致
+ */
+export function calculateOrderPricing(
+    items: ReadonlyArray<{ price: number; quantity: number }>
+): IOrderPricingBreakdown {
+    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const tax = Math.round(subtotal * PRICING_CONFIG.TAX_RATE * 100) / 100;
+    const shipping = subtotal >= PRICING_CONFIG.FREE_SHIPPING_THRESHOLD ? 0 : PRICING_CONFIG.DEFAULT_SHIPPING_FEE;
+    const total = Math.round((subtotal + tax + shipping) * 100) / 100;
+
+    return { subtotal, tax, shipping, total };
+}
+```
+
+---
+
+#### 規範 C：業務狀態優先採用 Enum 設計，避免二次重構
+
+##### ❌ 反模式：使用字串聯合導致後續被迫二次重構
+```typescript
+// 初始使用字串聯合
+type IUserRole = 'admin' | 'editor' | 'viewer';
+
+// 隨業務擴展，需要：
+// 1. 在 UI 遍歷所有角色渲染下拉選單 -> 字串聯合無法在 runtime 迭代
+// 2. 驗證後端 API 回傳的 unknown 資料 -> 無法像 Object.values(Enum) 般輕易驗證
+// 3. 安全重新命名 'editor' -> 'content_manager' -> 全域字串查找替換風險極高
+// 結果：不得不耗費大量時間再次重構，將全專案的 UserRole 重構為 EnumUserRole！
+```
+
+##### ✅ 正確：設計與實作時直接採用 Enum，一步到位
+```typescript
+/**
+ * 使用者角色列舉 - 型別與執行期數值的單一事實來源
+ * User role enumeration - Single source of truth for types and values
+ */
+export enum EnumUserRole {
+    ADMIN = 'admin',
+    EDITOR = 'editor',
+    VIEWER = 'viewer',
+}
+
+// 獲得完整能力，杜絕二度重構：
+export const ALL_USER_ROLES = Object.values(EnumUserRole); // 自由迭代
+export function isValidRole(value: unknown): value is EnumUserRole {
+    return typeof value === 'string' && Object.values(EnumUserRole).includes(value as EnumUserRole);
+}
+```
+
+---
+
+#### 規範 D：阻礙測試或複用時抽離細化，嚴禁為測試複製邏輯
+
+##### ❌ 反模式：現有實作阻礙測試，開發者為測試在測試代碼中複製/重寫邏輯
+```typescript
+// 業務模組 (bonusService.ts)
+// 現有實作將資料庫 I/O、郵件發送與複雜的點數計算全部揉合在一個方法中，難以直接單元測試
+export class BonusService {
+    async processUserBonus(userId: string): Promise<void> {
+        const user = await db.findUser(userId);
+        // 核心計算邏輯深埋在 I/O 流程中：
+        const bonus = (user.points > 1000 ? user.points * 0.1 : user.points * 0.05) + (user.isVip ? 50 : 0);
+        await db.saveBonus(userId, bonus);
+        await emailClient.send(user.email, `Bonus: ${bonus}`);
+    }
+}
+
+// 測試檔案 (bonusService.spec.ts)
+// ❌ 嚴重壞味道：因為 BonusService 難測，開發者直接在測試檔中複製邏輯來比對！
+function calculateExpectedBonusForTest(points: number, isVip: boolean): number {
+    // 複製了生產環境邏輯！脫離了單一事實來源 (SSoT)
+    return (points > 1000 ? points * 0.1 : points * 0.05) + (isVip ? 50 : 0);
+}
+
+it('should calculate bonus', () => {
+    // 測試依賴複製的邏輯；若生產端將 VIP 獎勵改為 100，測試若未手動更新將報假警報；
+    // 若生產端計算出現 bug，複製邏輯也可能複製了 bug，造成測試虛假通過！
+    expect(calculateExpectedBonusForTest(2000, true)).toBe(250);
+});
+```
+
+##### ✅ 正確：抽離細化為純函式，生產與測試共享唯一單一事實來源
+```typescript
+// 抽離出的共用計算單元 (bonusCalculator.ts) - 純粹、易測、高度可複用
+export interface IUserBonusMetrics {
+    points: number;
+    isVip: boolean;
+}
+
+/**
+ * 計算使用者獎勵點數 - 唯一的單一事實來源
+ * 抽離細化後，解除了測試阻礙，且可被其他服務安全複用
+ */
+export function calculateUserBonus(metrics: IUserBonusMetrics): number {
+    const baseRate = metrics.points > 1000 ? 0.1 : 0.05;
+    const vipBonus = metrics.isVip ? 50 : 0;
+    return metrics.points * baseRate + vipBonus;
+}
+
+// 業務模組 (bonusService.ts) - 生產程式碼直接調用抽離出的單一權威來源
+export class BonusService {
+    async processUserBonus(userId: string): Promise<void> {
+        const user = await db.findUser(userId);
+        const bonus = calculateUserBonus({ points: user.points, isVip: user.isVip });
+        await db.saveBonus(userId, bonus);
+        await emailClient.send(user.email, `Bonus: ${bonus}`);
+    }
+}
+
+// 測試檔案 (bonusCalculator.spec.ts) - 直接測試權威實體，零複製邏輯
+it('should calculate correct bonus', () => {
+    expect(calculateUserBonus({ points: 2000, isVip: true })).toBe(250);
+});
+```
+
+---
+
 #### 重構指導
 
 | 檢查點 | 操作 |
 |--------|------|
-| 是否有重複的屬性群組？ | 執行 `Extract Interface/Type` |
-| 是否可建立繼承關係？ | 使用 `extends` 或巢狀組合 |
-| 是否有基於另一型別的欄位？ | 使用 `OriginalType['fieldName']` 或 `Pick<OriginalType, ...>` |
-| 修改時是否需要多處調整？ | 確認違反 SSoT，需重構 |
+| 是否在進行設計、實作或重構？ | **將 SSoT 置於最優先原則**，檢查所有型別與邏輯是否具備單一權威來源 |
+| 是否為同領域或有重複屬性群組？ | **優先採用繼承 (`interface ... extends ...`)**，或建立巢狀組合，杜絕各自獨立定義 |
+| 是否定義了有限的業務狀態、分類或選項？ | **優先採用 Enum 設計**而非字串聯合，避免日後需求擴展時再次耗費精力重構為 Enum |
+| 是否存在重複的計算、校驗或轉換邏輯？ | **抽離為共用純函式/工具**，杜絕邏輯重複散落導致各處各自維護與更新遺漏 |
+| 現有實作阻礙測試或難以複用？ | **進行抽離細化 (Decompose & Refine)**，將核心邏輯抽離為獨立純函式；**嚴禁為測試複製邏輯**而脫離 SSoT |
+| 是否有基於另一型別的欄位？ | 使用 `OriginalType['fieldName']` 或 `Pick<OriginalType, ...>` 保留可追溯性 |
+| 修改時是否需要手動在多處同步調整？ | 確認嚴重違反 SSoT，需立即重構為單一事實來源 |
 
 #### 💡 進階技巧：Tuple 語義標註
 
@@ -278,7 +463,11 @@ interface IUserRef {
 
 ### 3. 嚴格類型控制 (Strict Type Control)
 
-**核心概念：** 當業務邏輯定義了有限的狀態集時，**優先使用 Enum 而非字串聯合型別**。字串聯合型別在編譯後會被擦除，失去 IDE 支援與運行時檢查能力；Enum 則提供完整的開發時體驗與運行時安全。
+**核心概念：** 當業務邏輯定義了有限的狀態集時，**優先使用 Enum 而非字串聯合型別**。字串聯合型別在編譯後會被擦除，失去 IDE 支援與運行時檢查能力；Enum 則提供完整的開發時體驗與運行時安全，是型別空間與數值空間的唯一單一事實來源 (SSoT)。
+
+> ⚠️ **避免事後二次重構的沉重代價**：
+> 開發初期常因省事而宣告字串聯合（例如 `type Status = 'active' | 'inactive'`），但隨著業務演進，系統必然會需要：遍歷所有選項（渲染下拉選單/過濾器）、執行期參數防禦校驗、鍵值映射表（如狀態轉中文/顏色）、安全重新命名與跨檔案重構。此時字串聯合因無執行期實體，往往迫使團隊**事後再次耗費龐大時間與風險，將整個程式碼庫的字串聯合重構為 Enum**。
+> **在設計與實作初期即應優先採用 Enum**，一步到位確立單一事實來源，免除後續二次重構的沉重負擔。
 
 **適用於：** `Primitive Obsession`, 業務狀態定義
 

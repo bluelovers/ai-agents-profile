@@ -41,11 +41,12 @@ You are an expert in modern TypeScript and Node.js development refactoring. You 
 
 ## Golden Rules
 
-1. **Never change behavior during refactoring** - Keep refactoring and feature changes in separate commits
-2. **Have tests before refactoring** - If tests don't exist, write them first
-3. **Make small, incremental changes** - Each step should be independently verifiable
-4. **Keep the code working** - System should pass tests after every change
-5. **Code is written for humans** - Computers can execute vague and complex code, but **your future self in six months** and the **maintenance team** need to understand intent and design. Clear code is more valuable than "clever" code before refactoring
+1. **Single Source of Truth (SSoT) is Top Priority** - In architecture design, daily implementation, and refactoring, SSoT is the highest principle. Types, logic, states, and constants must have a single authoritative source, eliminating duplicate definitions and scattered maintenance
+2. **Never change behavior during refactoring** - Keep refactoring and feature changes in separate commits
+3. **Have tests before refactoring; decompose and refine when testing/reuse is blocked** - If tests don't exist, write them first. When existing implementations hinder testing or reuse, decompose and refine them into independent units. **Never duplicate logic for tests**, as this breaks the Single Source of Truth
+4. **Make small, incremental changes** - Each step should be independently verifiable
+5. **Keep the code working** - System should pass tests after every change
+6. **Code is written for humans** - Computers can execute vague and complex code, but **your future self in six months** and the **maintenance team** need to understand intent and design. Clear code is more valuable than "clever" code before refactoring
 
 ---
 
@@ -99,17 +100,38 @@ You are an expert in modern TypeScript and Node.js development refactoring. You 
 
 ### 1. Single Source of Truth (SSoT)
 
-**Core Concept:** Composition over Duplication. When multiple data structures share the same underlying data, that underlying data must be extracted as an independent type.
+> 🌟 **Top Priority: Single Source of Truth (SSoT) is the Highest Priority in Design, Implementation, and Refactoring!**
+> Whether designing architecture from scratch, implementing everyday features, or refactoring existing code, establishing and maintaining SSoT must be the primary consideration. When data, states, logic, or types exist in multiple scattered definitions, system degradation, type drift, duplicate maintenance, and shotgun surgery inevitably follow.
 
-**Applies to:** `Data Clumps`, `Primitive Obsession`, `Type Drift`
+**Core Concept:** Inheritance & Composition over Duplication. Any business entity, type structure, or calculation logic must have one and only one authoritative source of truth in the system.
 
-Includes two core principles:
-- **Type Traceability:** When type fields or parameters are based on another type, use index access or `Pick` to preserve references to the original type, ensuring type changes propagate automatically (see 1.5)
+**Applies to:** `Data Clumps`, `Primitive Obsession`, `Duplicate Code`, `Type Drift`, `Shotgun Surgery`
 
-#### ❌ Anti-pattern: Scattered Definitions
+#### Five Core Pillars of SSoT
 
+1. **Same-Domain or Duplicate Types: Prioritize Inheritance over Independent Definitions**:
+   - Types within the same domain or sharing overlapping fields/semantics **should prioritize inheritance (`interface ... extends ...`) or base type extension over independent redefinition**.
+   - Defining types separately breaks domain bloodlines and causes "Type Drift". Inheritance ensures that when base models evolve, all derived types automatically stay in sync.
+2. **Business States and Finite Sets: Prioritize Enum over String Unions**:
+   - When defining finite state sets, categories, or operation modes, **prioritize Enum design over string union types (`'a' | 'b'`)**.
+   - **Avoid costly secondary refactoring**: Developers often start with string unions for brevity, but as requirements grow (iterating options for UI dropdowns, reverse lookups, runtime defensive validation, safe renaming across files), teams are frequently forced to **refactor string unions into Enums all over again**. Designing with Enums from day one establishes a single source of truth for both type space and value space, eliminating redundant refactoring cycles.
+3. **Duplicate Logic: Extract into Shared Units, Never Scatter for Independent Maintenance**:
+   - SSoT governs not only types, but fundamentally **business logic and processing flows**.
+   - **Duplicate evaluation, calculation, validation, or transformation logic must be strictly extracted into shared functions (utilities, pure functions, or services), never scattered across multiple locations**.
+   - Scattering duplicate logic creates a maintenance nightmare: whenever business rules update or bugs are fixed, developers must manually patch all scattered copies (classic Shotgun Surgery). Missing even one leads to inconsistent behavior and severe production bugs.
+4. **Decompose and Refine When Blocked; Never Duplicate Logic for Testing**:
+   - When any existing implementation hinders testing or reuse due to excessive size, tight coupling, or side-effects, **strictly decompose and refine the implementation (Extract & Refine)** into independent, testable, and reusable units.
+   - **Strictly Forbid Logic Duplication for Testing**: Never duplicate or re-implement business logic in test files, mock helpers, or shadow modules to satisfy tests. Duplicating logic completely breaks SSoT. When production logic changes, unsynchronized duplicate test logic creates false confidence, invalidates tests, and breeds severe maintenance blind spots.
+5. **Type Dependencies and Derivations: Preserve Type Traceability**:
+   - When a field or parameter is based on another type, use index access (`OriginalType['field']`) or `Pick<OriginalType, ...>` to preserve the reference chain, ensuring automatic change propagation (see 1.5).
+
+---
+
+#### Guideline A: Prioritize Inheritance for Same-Domain Types, Avoid Independent Redefinition
+
+##### ❌ Anti-pattern: Scattered Independent Definitions in the Same Domain
 ```typescript
-// Coordinate definitions repeated in multiple places
+// Coordinates and stations belong to the same domain, yet base properties are redefined separately
 export interface IGeoBounds {
     northWest: { lng: number; lat: number; };  // Repeated definition
     northEast: { lng: number; lat: number; };  // Repeated definition
@@ -118,7 +140,7 @@ export interface IGeoBounds {
 }
 
 export interface IStationBase {
-    lng: number;  // Repeated again
+    lng: number;  // Repeated again; cannot auto-sync if coordinates add altitude `alt`
     lat: number;  // Repeated again
     dataType: EnumDatasetType;
     name: string;
@@ -126,11 +148,9 @@ export interface IStationBase {
 }
 ```
 
-#### ✅ Correct: Single Source + Composition
-
+##### ✅ Correct: Extract Base Interface and Prioritize Inheritance / Composition
 ```typescript
 /**
- * Geographic coordinate - Single source of truth
  * Geographic coordinate - Single source of truth
  */
 export interface IGeoCoord {
@@ -139,7 +159,6 @@ export interface IGeoCoord {
 }
 
 /**
- * Geographic bounds - Composed from IGeoCoord
  * Geographic bounds - Composed from IGeoCoord
  */
 export interface IGeoBounds {
@@ -150,8 +169,7 @@ export interface IGeoBounds {
 }
 
 /**
- * Station base info - Extends IGeoCoord
- * Station base info - Extends IGeoCoord
+ * Station base info - Extends IGeoCoord rather than redefining independently
  */
 export interface IStationBase extends IGeoCoord {
     dataType: EnumDatasetType;
@@ -161,14 +179,177 @@ export interface IStationBase extends IGeoCoord {
 }
 ```
 
+---
+
+#### Guideline B: Extract Duplicate Logic into Shared Units, Eliminate Multi-place Maintenance
+
+##### ❌ Anti-pattern: Calculation and Business Logic Scattered in Multiple Places
+```typescript
+// Shopping cart checkout logic
+async function checkoutCart(cart: ICart): Promise<number> {
+    const subtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const taxRate = 0.05; // Hardcoded tax calculation
+    const shipping = subtotal >= 1000 ? 0 : 60; // Free shipping threshold logic scattered
+    return Math.round((subtotal * (1 + taxRate) + shipping) * 100) / 100;
+}
+
+// Invoice generation: Identical pricing logic duplicated!
+async function generateInvoice(order: IOrder): Promise<IInvoice> {
+    const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const taxRate = 0.05; // Duplicate maintenance: easily missed if tax rate changes
+    const shipping = subtotal >= 1000 ? 0 : 60; // Duplicate maintenance: easily desynchronized
+    const total = Math.round((subtotal * (1 + taxRate) + shipping) * 100) / 100;
+    return { orderId: order.id, subtotal, taxRate, shipping, total };
+}
+```
+
+##### ✅ Correct: Extract as Shared Domain Logic with Single Source of Truth
+```typescript
+/**
+ * Pricing configuration constants - Single source of truth
+ */
+export const PRICING_CONFIG = {
+    TAX_RATE: 0.05,
+    FREE_SHIPPING_THRESHOLD: 1000,
+    DEFAULT_SHIPPING_FEE: 60,
+} as const;
+
+export interface IOrderPricingBreakdown {
+    subtotal: number;
+    tax: number;
+    shipping: number;
+    total: number;
+}
+
+/**
+ * Calculate order pricing breakdown - Authoritative single source of truth for pricing logic
+ * Rule changes only need to be updated once here, automatically synchronized across carts, invoices, and reports
+ */
+export function calculateOrderPricing(
+    items: ReadonlyArray<{ price: number; quantity: number }>
+): IOrderPricingBreakdown {
+    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const tax = Math.round(subtotal * PRICING_CONFIG.TAX_RATE * 100) / 100;
+    const shipping = subtotal >= PRICING_CONFIG.FREE_SHIPPING_THRESHOLD ? 0 : PRICING_CONFIG.DEFAULT_SHIPPING_FEE;
+    const total = Math.round((subtotal + tax + shipping) * 100) / 100;
+
+    return { subtotal, tax, shipping, total };
+}
+```
+
+---
+
+#### Guideline C: Prioritize Enum Design for Business States to Prevent Secondary Refactoring
+
+##### ❌ Anti-pattern: String Unions Leading to Inevitable Secondary Refactoring
+```typescript
+// Initial implementation uses string union
+type IUserRole = 'admin' | 'editor' | 'viewer';
+
+// As requirements expand, the team needs to:
+// 1. Iterate over all roles to render dropdown menus in UI -> String unions cannot be iterated at runtime
+// 2. Validate unknown API response data -> Cannot easily validate unlike Object.values(Enum)
+// 3. Safely rename 'editor' -> 'content_manager' -> Global string find-and-replace is risky
+// Result: Forced to spend extensive effort refactoring UserRole to EnumUserRole across the entire codebase!
+```
+
+##### ✅ Correct: Use Enum from Day One as Single Source of Truth
+```typescript
+/**
+ * User role enumeration - Single source of truth for both types and runtime values
+ */
+export enum EnumUserRole {
+    ADMIN = 'admin',
+    EDITOR = 'editor',
+    VIEWER = 'viewer',
+}
+
+// Full capabilities out-of-the-box, preventing secondary refactoring:
+export const ALL_USER_ROLES = Object.values(EnumUserRole); // Easily iterable
+export function isValidRole(value: unknown): value is EnumUserRole {
+    return typeof value === 'string' && Object.values(EnumUserRole).includes(value as EnumUserRole);
+}
+```
+
+---
+
+#### Guideline D: Decompose and Refine When Blocked; Never Duplicate Logic for Testing
+
+##### ❌ Anti-pattern: Existing Implementation Hinders Testing, Logic Duplicated in Tests
+```typescript
+// Business module (bonusService.ts)
+// Database I/O, email notifications, and complex bonus calculation are tangled in one method, making unit testing difficult
+export class BonusService {
+    async processUserBonus(userId: string): Promise<void> {
+        const user = await db.findUser(userId);
+        // Core calculation logic buried inside I/O flow:
+        const bonus = (user.points > 1000 ? user.points * 0.1 : user.points * 0.05) + (user.isVip ? 50 : 0);
+        await db.saveBonus(userId, bonus);
+        await emailClient.send(user.email, `Bonus: ${bonus}`);
+    }
+}
+
+// Test file (bonusService.spec.ts)
+// ❌ Severe smell: Because BonusService is hard to test, developer duplicated the logic inside the test file!
+function calculateExpectedBonusForTest(points: number, isVip: boolean): number {
+    // Duplicated production logic! Deviates from Single Source of Truth (SSoT)
+    return (points > 1000 ? points * 0.1 : points * 0.05) + (isVip ? 50 : 0);
+}
+
+it('should calculate bonus', () => {
+    // Test relies on copied logic; if production bonus changes (e.g. VIP bonus becomes 100),
+    // test fails to catch discrepancies unless manually synchronized, or can falsely pass if the copy replicates the bug!
+    expect(calculateExpectedBonusForTest(2000, true)).toBe(250);
+});
+```
+
+##### ✅ Correct: Decompose and Refine into Pure Function, Shared Single Source of Truth
+```typescript
+// Extracted shared calculation unit (bonusCalculator.ts) - Pure, testable, highly reusable
+export interface IUserBonusMetrics {
+    points: number;
+    isVip: boolean;
+}
+
+/**
+ * Calculate user bonus points - Authoritative single source of truth
+ * Decomposing removes testing obstacles and allows safe reuse across other services
+ */
+export function calculateUserBonus(metrics: IUserBonusMetrics): number {
+    const baseRate = metrics.points > 1000 ? 0.1 : 0.05;
+    const vipBonus = metrics.isVip ? 50 : 0;
+    return metrics.points * baseRate + vipBonus;
+}
+
+// Business module (bonusService.ts) - Production code invokes the authoritative single source
+export class BonusService {
+    async processUserBonus(userId: string): Promise<void> {
+        const user = await db.findUser(userId);
+        const bonus = calculateUserBonus({ points: user.points, isVip: user.isVip });
+        await db.saveBonus(userId, bonus);
+        await emailClient.send(user.email, `Bonus: ${bonus}`);
+    }
+}
+
+// Test file (bonusCalculator.spec.ts) - Directly tests the authoritative entity with zero logic duplication
+it('should calculate correct bonus', () => {
+    expect(calculateUserBonus({ points: 2000, isVip: true })).toBe(250);
+});
+```
+
+---
+
 #### Refactoring Guide
 
 | Check | Action |
 |-------|--------|
-| Are there repeated property groups? | Execute `Extract Interface/Type` |
-| Can inheritance relationship be established? | Use `extends` or nested composition |
-| Are there fields based on another type? | Use `OriginalType['fieldName']` or `Pick<OriginalType, ...>` |
-| Do modifications require changes in multiple places? | Confirm violation of SSoT, needs refactoring |
+| Designing, implementing, or refactoring? | **Treat SSoT as top priority**; verify all types and logic have a single authoritative source |
+| Same-domain or duplicate property groups? | **Prioritize inheritance (`interface ... extends ...`)** or composition; avoid separate definitions |
+| Finite business states, categories, or options? | **Prioritize Enum design** over string unions to avoid secondary refactoring later |
+| Duplicate calculation, validation, or transformation logic? | **Extract into shared pure functions/utilities**; eliminate multi-place maintenance |
+| Implementation hinders testing or reuse? | **Decompose and refine (Extract & Refine)** into pure/isolated units; **never duplicate logic for tests** |
+| Are there fields based on another type? | Use `OriginalType['fieldName']` or `Pick<OriginalType, ...>` to preserve traceability |
+| Do modifications require changes in multiple places? | Confirm severe SSoT violation, refactor immediately to a single source of truth |
 
 #### 💡 Advanced Technique: Tuple Semantic Annotation
 
@@ -289,7 +470,11 @@ interface IUserRef {
 
 ### 3. Strict Type Control
 
-**Core Concept:** When business logic defines a finite set of states, **prefer Enum over string union types**. String union types are erased after compilation, losing IDE support and runtime checking capabilities; Enums provide complete development experience and runtime safety.
+**Core Concept:** When business logic defines a finite set of states, **prefer Enum over string union types**. String union types are erased after compilation, losing IDE support and runtime checking capabilities; Enums provide complete development experience and runtime safety, serving as the single source of truth (SSoT) for both type space and value space.
+
+> ⚠️ **Avoid the Heavy Cost of Secondary Refactoring**:
+> Early in development, teams often declare string unions (e.g., `type Status = 'active' | 'inactive'`) for quick setup. However, as the system grows, requirements inevitably demand: enumerating all options (rendering UI dropdowns/filters), runtime defensive validation, dictionary/mapping tables (e.g., status-to-label or color), and safe IDE renaming with cross-file reference tracking. Because string unions lack runtime presence, teams are eventually **forced to spend immense time and risk refactoring string unions into Enums across the entire codebase**.
+> **Prioritize Enum from day one in design and implementation** to establish a single source of truth upfront and eliminate the burden of secondary refactoring.
 
 **Applies to:** `Primitive Obsession`, business state definitions
 
