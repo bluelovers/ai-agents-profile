@@ -337,6 +337,61 @@ enum EnumStatus {
 | Need to iterate all possible values | **Enum** | Runtime needs to enumerate all options (e.g., rendering dropdown menus), Enum provides structured iteration capability |
 | Need reverse lookup (value → key) | **Enum** | When reverse mapping from backend data to display names, Enum's reverse mapping avoids hardcoded lookup tables |
 
+#### ⚠️ Complete Refactoring: Update All Comparison Sites, Not Just the Type Signature
+
+When migrating a string-based type to an Enum, **you must update every comparison value** (`switch`/`case`, `===`, `==`, object keys, etc.) to reference the Enum member. Changing only the parameter/return type signature while leaving literal strings in the branches is a "half-refactored" state — the code still compiles (because the Enum's string value matches), but you lose the very IDE safety, rename propagation, and typo-catching that motivated the migration.
+
+```typescript
+// ✅ Correct: Enum definition for target type
+enum EnumTargetType {
+    /** Enemy / Enemy */
+    Enemy = 'enemy',
+    /** Friend / Friend */
+    Friend = 'friend',
+    /** Self / Self */
+    Self = 'self',
+    /** All / All */
+    All = 'all',
+}
+
+// ❌ Half-refactored: only the signature changed, comparisons still use raw strings
+function targetClass(target: EnumTargetType) {
+  switch (target) {
+    case 'enemy': return 'dmg';        // String literal survives — no IDE assist, typo-prone
+    case 'friend': return 'recover';
+    case 'self': return 'support';
+    case 'all': return 'support';
+    default: return 'support';
+  }
+}
+
+// ✅ Correct: every comparison site uses the Enum member
+function targetClass(target: EnumTargetType) {
+  switch (target) {
+    case EnumTargetType.Enemy: return 'dmg';
+    case EnumTargetType.Friend: return 'recover';
+    case EnumTargetType.Self: return 'support';
+    case EnumTargetType.All: return 'support';
+    default: return 'support';
+  }
+}
+```
+
+**Why this matters:**
+- **Rename safety**: Renaming `EnumTargetType.Enemy` propagates to all `case` sites only if they reference the member; raw strings require unsafe global search-and-replace.
+- **Typo catching**: `case 'enemey':` is silently unreachable (falls to `default`); `case EnumTargetType.Enemey` fails at compile time.
+- **Single source of truth**: The valid value set lives in the Enum, not scattered across string literals.
+
+**Checklist when migrating to an Enum:**
+| Site | Action |
+|------|--------|
+| Function parameter / return type | Change type to the Enum |
+| `switch (x)` / `case` | Replace string literals with `Enum.X` members |
+| `if (x === '...')` / `x !== '...'` | Replace with `x === Enum.X` |
+| Object/map keys (`{ 'enemy': ... }`) | Replace with computed keys `[EnumTargetType.Enemy]` or `Enum.X` keys |
+| Ternary / array `.includes(['...'])` | Replace members with Enum references |
+| Default/unknown handling | Keep `default` only if the input is genuinely external/untrusted |
+
 When refactoring string-based identifiers to enums for improved type safety, **the `I = Enum` pattern (e.g., `IUserRole = EnumUserRole`) is fundamentally flawed and should never be used**.
 
 **Correct approach: Use TypeScript enums directly**

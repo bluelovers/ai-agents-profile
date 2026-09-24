@@ -330,6 +330,61 @@ enum EnumStatus {
 | 需要迭代所有可能值 | **Enum** | 運行時需要枚舉所有選項（如渲染下拉選單），Enum 提供結構化的迭代能力 |
 | 需要反向查找 (value → key) | **Enum** | 從後端數據反查顯示名稱時，Enum 的反向映射避免硬編碼對照表 |
 
+#### ⚠️ 完整重構：比對值必須一併更新，而非只改型別簽名
+
+將字串型別遷移為 Enum 時，**必須同步更新所有比對值**（`switch`/`case`、`===`、`==`、物件鍵等）以引用 Enum 成員。若只修改參數/回傳值的型別簽名，而分支中仍保留字串字面值，則屬於「半吊子重構」——程式碼雖仍可編譯（因 Enum 的字串值相符），但卻失去了當初遷移所追求的 IDE 輔助、重新命名自動傳播與拼寫錯誤攔截能力。
+
+```typescript
+// ✅ 正確：目標類型的 Enum 定義
+enum EnumTargetType {
+    /** 敵人 / Enemy */
+    Enemy = 'enemy',
+    /** 友方 / Friend */
+    Friend = 'friend',
+    /** 自身 / Self */
+    Self = 'self',
+    /** 全體 / All */
+    All = 'all',
+}
+
+// ❌ 半吊子重構：只改了簽名，比對值仍使用原始字串
+function targetClass(target: EnumTargetType) {
+  switch (target) {
+    case 'enemy': return 'dmg';        // 字串字面值殘留 —— 無 IDE 輔助、易拼錯
+    case 'friend': return 'recover';
+    case 'self': return 'support';
+    case 'all': return 'support';
+    default: return 'support';
+  }
+}
+
+// ✅ 正確：每個比對位置都使用 Enum 成員
+function targetClass(target: EnumTargetType) {
+  switch (target) {
+    case EnumTargetType.Enemy: return 'dmg';
+    case EnumTargetType.Friend: return 'recover';
+    case EnumTargetType.Self: return 'support';
+    case EnumTargetType.All: return 'support';
+    default: return 'support';
+  }
+}
+```
+
+**為什麼重要：**
+- **重新命名安全性**：將 `EnumTargetType.Enemy` 重新命名時，只有在 `case` 中引用成員才會自動傳播；原始字串仍需靠不安全的全局搜索替換。
+- **拼寫錯誤攔截**：`case 'enemey':` 會靜默地變成不可達（落入 `default`）；`case EnumTargetType.Enemey` 則在編譯期即報錯。
+- **單一事實來源**：合法值集合存在於 Enum 中，而非散落在各處字串字面值。
+
+**遷移至 Enum 時的檢查清單：**
+| 位置 | 操作 |
+|------|------|
+| 函式參數 / 回傳值型別 | 將型別改為 Enum |
+| `switch (x)` / `case` | 將字串字面值替換為 `Enum.X` 成員 |
+| `if (x === '...')` / `x !== '...'` | 替換為 `x === Enum.X` |
+| 物件/對照表鍵 (`{ 'enemy': ... }`) | 替換為計算鍵 `[EnumTargetType.Enemy]` 或 `Enum.X` 鍵 |
+| 三元運算式 / 陣列 `.includes(['...'])` | 將成員替換為 Enum 引用 |
+| 預設/未知處理 | 僅當輸入確實來自外部/不可信時才保留 `default` |
+
 ---
 
 ## Node.js 非同步流程重構
