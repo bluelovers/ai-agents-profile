@@ -103,9 +103,10 @@ tags:
 1. **同領域或重覆定義型別「優先採用繼承」而非各自定義**：
    - 同領域 (Same Domain) 或具有重疊欄位/語義的模型，**應優先採用繼承 (`interface ... extends ...`) 或基礎型別擴展，而非各自獨立定義**。
    - 各自定義會破壞模型的血緣關係，引發「型別漂移 (Type Drift)」。繼承能確保基礎模型演進時，所有衍生型別自動向下保持同步。
-2. **業務狀態與有限集合「優先採用 Enum 設計」而非字串聯合**：
-   - 定義有限狀態集、分類、運作模式等業務集合時，**應優先採用 Enum 設計，而非字串聯合 (String Union)**。
-   - **避免事後二次重構成本**：初期若便宜行事使用字串聯合，隨業務演進（如需迭代枚舉所有選項、反向映射、執行期防禦校驗、IDE 重命名與跨檔案引用追蹤），往往迫使團隊**事後再次耗費龐大精力將字串聯合全面重構為 Enum**。在設計/實作期直接以 Enum 作為單一事實來源，一步到位確立型別與數值的雙重唯一來源。
+2. **業務狀態與有限集合「優先採用 Enum 設計」而非字面值聯合（字串或數字聯合）**：
+   - 定義有限狀態集、分類、運作模式等業務集合時，**應優先採用 Enum 設計，而非字串或數字等字面值聯合型別 (Literal Union: `'a' | 'b'` 或 `0 | 1`)**。
+   - **數字聯合型別是字面值聯合的另一種形式（本質是魔術數字 Magic Number）**：例如 `{ /** 技能類型：0＝物理, 1＝魔法 */ type: 0 | 1; }` 或 `export type ISkillDamageType = 0 | 1;`，即使抽成了 Type Alias，本質依然是披著型別外衣的魔術數字。程式碼充斥看不出意圖的 `0` 與 `1`，必須時刻依賴註解反查；**應同樣重構為語義明確的 Enum**（如 `enum EnumSkillDamageType { PHYSICAL = 0, MAGIC = 1 }`）。
+   - **避免事後二次重構成本**：初期若便宜行事使用字串或數字聯合，隨業務演進（如需迭代枚舉所有選項、反向映射、執行期防禦校驗、IDE 重命名與跨檔案引用追蹤），往往迫使團隊**事後再次耗費龐大精力將字串/數字聯合全面重構為 Enum**。在設計/實作期直接以 Enum 作為單一事實來源，一步到位確立型別與數值的雙重唯一來源。
 3. **重複邏輯「抽離為共用」而非散落各處各自維護**：
    - SSoT 不僅管轄型別結構，更深植於**業務邏輯與流程運算**。
    - **重複的判斷、計算、驗證或資料轉換邏輯，應強制抽離為共用函式 (Shared Utility / Pure Function / Service)，絕不允許重複散落於各處**。
@@ -233,9 +234,9 @@ export function calculateOrderPricing(
 
 ---
 
-#### 規範 C：業務狀態優先採用 Enum 設計，避免二次重構
+#### 規範 C：業務狀態優先採用 Enum 設計，避免字串/數字聯合引發二次重構
 
-##### ❌ 反模式：使用字串聯合導致後續被迫二次重構
+##### ❌ 反模式 1：使用字串聯合導致後續被迫二次重構
 ```typescript
 // 初始使用字串聯合
 type IUserRole = 'admin' | 'editor' | 'viewer';
@@ -244,7 +245,29 @@ type IUserRole = 'admin' | 'editor' | 'viewer';
 // 1. 在 UI 遍歷所有角色渲染下拉選單 -> 字串聯合無法在 runtime 迭代
 // 2. 驗證後端 API 回傳的 unknown 資料 -> 無法像 Object.values(Enum) 般輕易驗證
 // 3. 安全重新命名 'editor' -> 'content_manager' -> 全域字串查找替換風險極高
-// 結果：不得不耗費大量時間再次重構，將全專案的 UserRole 重構為 EnumUserRole！
+// 結果：不得不耗費大量時間再次重構，將全專案的 IUserRole 重構為 EnumUserRole！
+```
+
+##### ❌ 反模式 2：數字聯合型別（魔術數字型別）
+```typescript
+// 數字型的聯合型別也是字面值聯合的另一種形式，甚至更隱晦，淪為披著型別外衣的魔術數字 (Magic Number)
+export interface ISkill {
+    name: string;
+    /**
+     * 技能類型：0＝物理 (physical)、1＝魔法 (magic)
+     */
+    type: 0 | 1; // ❌ 壞味道：在介面中直接宣告數字聯合
+}
+
+// ❌ 壞味道：即使獨立抽成型別別名，依然只是數字聯合，未能解決魔術數字與 SSoT 問題
+export type ISkillDamageType = 0 | 1;
+
+// 使用端充斥看不出意圖的數字，失去自我解釋能力，且需仰賴記憶或註解對照
+function applyDamage(skill: ISkill) {
+    if (skill.type === 0) { // 0 是什麼？維護者必須反查定義與註解
+        // 物理傷害處理
+    }
+}
 ```
 
 ##### ✅ 正確：設計與實作時直接採用 Enum，一步到位
@@ -263,6 +286,30 @@ export enum EnumUserRole {
 export const ALL_USER_ROLES = Object.values(EnumUserRole); // 自由迭代
 export function isValidRole(value: unknown): value is EnumUserRole {
     return typeof value === 'string' && Object.values(EnumUserRole).includes(value as EnumUserRole);
+}
+
+/**
+ * 技能傷害類型列舉 - 徹底取代 0 | 1 數字聯合
+ * Skill damage type enumeration - Completely replaces 0 | 1 numeric union
+ */
+export enum EnumSkillDamageType {
+    /** 物理傷害 / Physical damage */
+    PHYSICAL = 0,
+    /** 魔法傷害 / Magic damage */
+    MAGIC = 1,
+}
+
+export interface ISkill {
+    name: string;
+    /** 技能傷害類型 / Skill damage type */
+    type: EnumSkillDamageType; // ✅ 語義明確，直接引用 Enum 作為單一事實來源
+}
+
+// 使用端語義明確，享受 IDE 自動補齊、拼寫防護與安全重新命名：
+function applyDamage(skill: ISkill) {
+    if (skill.type === EnumSkillDamageType.PHYSICAL) {
+        // 意圖一目了然，無需依賴脆弱的註解反查
+    }
 }
 ```
 
@@ -340,7 +387,7 @@ it('should calculate correct bonus', () => {
 |--------|------|
 | 是否在進行設計、實作或重構？ | **將 SSoT 置於最優先原則**，檢查所有型別與邏輯是否具備單一權威來源 |
 | 是否為同領域或有重複屬性群組？ | **優先採用繼承 (`interface ... extends ...`)**，或建立巢狀組合，杜絕各自獨立定義 |
-| 是否定義了有限的業務狀態、分類或選項？ | **優先採用 Enum 設計**而非字串聯合，避免日後需求擴展時再次耗費精力重構為 Enum |
+| 是否定義了有限的業務狀態、分類或數字標記（如 0/1）？ | **優先採用 Enum 設計**而非字串或數字聯合，避免日後需求擴展時再次耗費精力重構為 Enum |
 | 是否存在重複的計算、校驗或轉換邏輯？ | **抽離為共用純函式/工具**，杜絕邏輯重複散落導致各處各自維護與更新遺漏 |
 | 現有實作阻礙測試或難以複用？ | **進行抽離細化 (Decompose & Refine)**，將核心邏輯抽離為獨立純函式；**嚴禁為測試複製邏輯**而脫離 SSoT |
 | 是否有基於另一型別的欄位？ | 使用 `OriginalType['fieldName']` 或 `Pick<OriginalType, ...>` 保留可追溯性 |
@@ -463,23 +510,29 @@ interface IUserRef {
 
 ### 3. 嚴格類型控制 (Strict Type Control)
 
-**核心概念：** 當業務邏輯定義了有限的狀態集時，**優先使用 Enum 而非字串聯合型別**。字串聯合型別在編譯後會被擦除，失去 IDE 支援與運行時檢查能力；Enum 則提供完整的開發時體驗與運行時安全，是型別空間與數值空間的唯一單一事實來源 (SSoT)。
+**核心概念：** 當業務邏輯定義了有限的狀態集時，**優先使用 Enum 而非字串或數字等字面值聯合型別 (Literal Union)**。字面值聯合型別在編譯後會被擦除，失去 IDE 支援與運行時檢查能力；Enum 則提供完整的開發時體驗與運行時安全，是型別空間與數值空間的唯一單一事實來源 (SSoT)。
 
-> ⚠️ **避免事後二次重構的沉重代價**：
-> 開發初期常因省事而宣告字串聯合（例如 `type Status = 'active' | 'inactive'`），但隨著業務演進，系統必然會需要：遍歷所有選項（渲染下拉選單/過濾器）、執行期參數防禦校驗、鍵值映射表（如狀態轉中文/顏色）、安全重新命名與跨檔案重構。此時字串聯合因無執行期實體，往往迫使團隊**事後再次耗費龐大時間與風險，將整個程式碼庫的字串聯合重構為 Enum**。
+> ⚠️ **避免事後二次重構的沉重代價（字串與數字聯合皆然）**：
+> 開發初期常因省事而宣告字串聯合（例如 `type Status = 'active' | 'inactive'`）或數字聯合（例如 `type: 0 | 1` 或 `type ISkillDamageType = 0 | 1`）。
+> - **字串聯合**隨業務演進，面臨需遍歷選項渲染下拉選單、執行期防禦校驗、狀態對照表、安全重新命名等需求，無執行期實體的字串聯合終將難以應對；
+> - **數字聯合**本質上更是「披著型別外衣的魔術數字 (Magic Number)」，不僅同樣面臨二度重構困境，還嚴重損害程式碼可讀性，迫使開發者在維護時依賴脆弱的 JSDoc 註解去猜測 `0` 與 `1` 代表什麼。
+> 兩者最終都會迫使團隊**事後再次耗費龐大時間與風險，將整個程式碼庫的聯合型別重構為 Enum**。
 > **在設計與實作初期即應優先採用 Enum**，一步到位確立單一事實來源，免除後續二次重構的沉重負擔。
 
 **適用於：** `Primitive Obsession`, 業務狀態定義
 
-#### ❌ 反模式：字串聯合型別漂移
+#### ❌ 反模式：字串與數字聯合型別漂移
 
 ```typescript
-// 問題：維護困難，編譯後失去類型資訊，無法被 IDE 完整支援與重構，容易拼寫錯誤
-type DatasetType = 'wifi' | 'charging' | 'parking';
+// 1. 字串聯合問題：維護困難，編譯後失去類型資訊，無法被 IDE 完整支援與重構，容易拼寫錯誤
+type IDatasetType = 'wifi' | 'charging' | 'parking';
 
-// 使用時無法獲得良好的 IntelliSense，當需要修改 'wifi' 為 'wireless' 時，無法安全重構，必須全局搜索替換
-function process(type: DatasetType) {
+// 2. 數字聯合問題：本質是魔術數字，失去自我解釋能力，極易混淆
+type ISkillDamageType = 0 | 1; // 0=物理? 1=魔法? 難以一眼看出
+
+function process(type: IDatasetType, damageType: ISkillDamageType) {
     if (type === 'wfi') { /* 拼寫錯誤在編譯時無法發現，執行時才暴露 */ }
+    if (damageType === 0) { /* 魔術數字 0 是什麼？維護者必須反查定義與註解 */ }
 }
 ```
 
@@ -497,6 +550,17 @@ enum EnumDatasetType {
     CHARGING = "charging",
     /** 停車場 / Parking */
     PARKING = "parking",
+}
+
+/**
+ * 技能傷害類型列舉
+ * Skill damage type enumeration
+ */
+enum EnumSkillDamageType {
+    /** 物理傷害 / Physical damage */
+    PHYSICAL = 0,
+    /** 魔法傷害 / Magic damage */
+    MAGIC = 1,
 }
 
 /**
@@ -518,6 +582,7 @@ enum EnumStatus {
 | 情境 | 建議使用 | 核心原因（Why） |
 |------|----------|----------------|
 | 業務狀態、配置類型、服務層級 | **Enum** | 業務概念需要長期維護與團隊共識，Enum 的 IDE 支援（重構、查找引用）大幅降低修改成本 |
+| 狀態代碼、數值旗標（如 0/1 狀態） | **Enum** | 數字聯合如 `0 \| 1` 本質為魔術數字，Enum 能提供語義化命名、消除對註解的脆弱依賴 |
 | API 臨時回傳、第三方函式參數 | Union Type | 短暫存在的類型，不需長期維護，輕量定義減少 boilerplate |
 | 需要迭代所有可能值 | **Enum** | 運行時需要枚舉所有選項（如渲染下拉選單），Enum 提供結構化的迭代能力 |
 | 需要反向查找 (value → key) | **Enum** | 從後端數據反查顯示名稱時，Enum 的反向映射避免硬編碼對照表 |
@@ -571,8 +636,9 @@ function targetClass(target: EnumTargetType) {
 | 位置 | 操作 |
 |------|------|
 | 函式參數 / 回傳值型別 | 將型別改為 Enum |
-| `switch (x)` / `case` | 將字串字面值替換為 `Enum.X` 成員 |
+| `switch (x)` / `case` | 將字串或數字字面值替換為 `Enum.X` 成員 |
 | `if (x === '...')` / `x !== '...'` | 替換為 `x === Enum.X` |
+| 數字字面值比對 (`x === 0` / `x === 1`) | 替換為 `x === Enum.X` 成員，消除魔術數字 |
 | 物件/對照表鍵 (`{ 'enemy': ... }`) | 替換為計算鍵 `[EnumTargetType.Enemy]` 或 `Enum.X` 鍵 |
 | 三元運算式 / 陣列 `.includes(['...'])` | 將成員替換為 Enum 引用 |
 | 預設/未知處理 | 僅當輸入確實來自外部/不可信時才保留 `default` |

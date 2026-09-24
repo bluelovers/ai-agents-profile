@@ -112,9 +112,10 @@ You are an expert in modern TypeScript and Node.js development refactoring. You 
 1. **Same-Domain or Duplicate Types: Prioritize Inheritance over Independent Definitions**:
    - Types within the same domain or sharing overlapping fields/semantics **should prioritize inheritance (`interface ... extends ...`) or base type extension over independent redefinition**.
    - Defining types separately breaks domain bloodlines and causes "Type Drift". Inheritance ensures that when base models evolve, all derived types automatically stay in sync.
-2. **Business States and Finite Sets: Prioritize Enum over String Unions**:
-   - When defining finite state sets, categories, or operation modes, **prioritize Enum design over string union types (`'a' | 'b'`)**.
-   - **Avoid costly secondary refactoring**: Developers often start with string unions for brevity, but as requirements grow (iterating options for UI dropdowns, reverse lookups, runtime defensive validation, safe renaming across files), teams are frequently forced to **refactor string unions into Enums all over again**. Designing with Enums from day one establishes a single source of truth for both type space and value space, eliminating redundant refactoring cycles.
+2. **Business States and Finite Sets: Prioritize Enum over Literal Unions (String or Numeric Unions)**:
+   - When defining finite state sets, categories, or operation modes, **prioritize Enum design over literal union types (e.g., `'a' | 'b'` or `0 | 1`)**.
+   - **Numeric literal unions are another form of literal unions (disguised magic numbers)**: For instance, `{ /** Skill type: 0=physical, 1=magic */ type: 0 | 1; }` or `export type ISkillDamageType = 0 | 1;`—even when extracted into a type alias—remains a magic number disguised as a type. The code becomes littered with obscure `0`s and `1`s that force maintainers to cross-reference fragile comments. They must likewise be refactored into explicit Enums (e.g. `enum EnumSkillDamageType { PHYSICAL = 0, MAGIC = 1 }`).
+   - **Avoid costly secondary refactoring**: Developers often start with string or numeric unions for brevity, but as requirements grow (iterating options for UI dropdowns, reverse lookups, runtime defensive validation, safe renaming across files), teams are frequently forced to **refactor literal unions into Enums all over again**. Designing with Enums from day one establishes a single source of truth for both type space and value space, eliminating redundant refactoring cycles.
 3. **Duplicate Logic: Extract into Shared Units, Never Scatter for Independent Maintenance**:
    - SSoT governs not only types, but fundamentally **business logic and processing flows**.
    - **Duplicate evaluation, calculation, validation, or transformation logic must be strictly extracted into shared functions (utilities, pure functions, or services), never scattered across multiple locations**.
@@ -239,9 +240,9 @@ export function calculateOrderPricing(
 
 ---
 
-#### Guideline C: Prioritize Enum Design for Business States to Prevent Secondary Refactoring
+#### Guideline C: Prioritize Enum Design for Business States to Prevent Secondary Refactoring from String/Numeric Unions
 
-##### ❌ Anti-pattern: String Unions Leading to Inevitable Secondary Refactoring
+##### ❌ Anti-pattern 1: String Unions Leading to Inevitable Secondary Refactoring
 ```typescript
 // Initial implementation uses string union
 type IUserRole = 'admin' | 'editor' | 'viewer';
@@ -250,7 +251,29 @@ type IUserRole = 'admin' | 'editor' | 'viewer';
 // 1. Iterate over all roles to render dropdown menus in UI -> String unions cannot be iterated at runtime
 // 2. Validate unknown API response data -> Cannot easily validate unlike Object.values(Enum)
 // 3. Safely rename 'editor' -> 'content_manager' -> Global string find-and-replace is risky
-// Result: Forced to spend extensive effort refactoring UserRole to EnumUserRole across the entire codebase!
+// Result: Forced to spend extensive effort refactoring IUserRole to EnumUserRole across the entire codebase!
+```
+
+##### ❌ Anti-pattern 2: Numeric Literal Unions (Magic Numbers in Disguise)
+```typescript
+// Numeric literal unions are another form of literal unions, acting as magic numbers with a type veneer
+export interface ISkill {
+    name: string;
+    /**
+     * Skill type: 0 = physical, 1 = magic
+     */
+    type: 0 | 1; // ❌ Smell: Direct numeric literal union in interface
+}
+
+// ❌ Smell: Even extracted as a type alias, it remains an opaque numeric union without SSoT value
+export type ISkillDamageType = 0 | 1;
+
+// Usage sites become littered with confusing numbers, losing self-explanatory power and forcing reliance on comments:
+function applyDamage(skill: ISkill) {
+    if (skill.type === 0) { // What does 0 mean? Maintainers must look up comments or definitions
+        // Physical damage calculation
+    }
+}
 ```
 
 ##### ✅ Correct: Use Enum from Day One as Single Source of Truth
@@ -268,6 +291,29 @@ export enum EnumUserRole {
 export const ALL_USER_ROLES = Object.values(EnumUserRole); // Easily iterable
 export function isValidRole(value: unknown): value is EnumUserRole {
     return typeof value === 'string' && Object.values(EnumUserRole).includes(value as EnumUserRole);
+}
+
+/**
+ * Skill damage type enumeration - Completely replaces 0 | 1 numeric union
+ */
+export enum EnumSkillDamageType {
+    /** Physical damage */
+    PHYSICAL = 0,
+    /** Magic damage */
+    MAGIC = 1,
+}
+
+export interface ISkill {
+    name: string;
+    /** Skill damage type */
+    type: EnumSkillDamageType; // ✅ Clear semantics, references Enum directly as single source of truth
+}
+
+// Clear intent at call sites, equipped with IDE autocompletion, type safety, and safe renaming:
+function applyDamage(skill: ISkill) {
+    if (skill.type === EnumSkillDamageType.PHYSICAL) {
+        // Obvious intent without checking comments
+    }
 }
 ```
 
@@ -345,7 +391,7 @@ it('should calculate correct bonus', () => {
 |-------|--------|
 | Designing, implementing, or refactoring? | **Treat SSoT as top priority**; verify all types and logic have a single authoritative source |
 | Same-domain or duplicate property groups? | **Prioritize inheritance (`interface ... extends ...`)** or composition; avoid separate definitions |
-| Finite business states, categories, or options? | **Prioritize Enum design** over string unions to avoid secondary refactoring later |
+| Finite business states, categories, or numeric flags (e.g., 0/1)? | **Prioritize Enum design** over string or numeric unions to avoid secondary refactoring later |
 | Duplicate calculation, validation, or transformation logic? | **Extract into shared pure functions/utilities**; eliminate multi-place maintenance |
 | Implementation hinders testing or reuse? | **Decompose and refine (Extract & Refine)** into pure/isolated units; **never duplicate logic for tests** |
 | Are there fields based on another type? | Use `OriginalType['fieldName']` or `Pick<OriginalType, ...>` to preserve traceability |
@@ -470,25 +516,29 @@ interface IUserRef {
 
 ### 3. Strict Type Control
 
-**Core Concept:** When business logic defines a finite set of states, **prefer Enum over string union types**. String union types are erased after compilation, losing IDE support and runtime checking capabilities; Enums provide complete development experience and runtime safety, serving as the single source of truth (SSoT) for both type space and value space.
+**Core Concept:** When business logic defines a finite set of states, **prefer Enum over literal union types (string or numeric unions)**. Literal union types are erased after compilation, losing IDE support and runtime checking capabilities; Enums provide complete development experience and runtime safety, serving as the single source of truth (SSoT) for both type space and value space.
 
-> ⚠️ **Avoid the Heavy Cost of Secondary Refactoring**:
-> Early in development, teams often declare string unions (e.g., `type Status = 'active' | 'inactive'`) for quick setup. However, as the system grows, requirements inevitably demand: enumerating all options (rendering UI dropdowns/filters), runtime defensive validation, dictionary/mapping tables (e.g., status-to-label or color), and safe IDE renaming with cross-file reference tracking. Because string unions lack runtime presence, teams are eventually **forced to spend immense time and risk refactoring string unions into Enums across the entire codebase**.
+> ⚠️ **Avoid the Heavy Cost of Secondary Refactoring (String and Numeric Unions Alike)**:
+> Early in development, teams often declare string unions (e.g., `type Status = 'active' | 'inactive'`) or numeric unions (e.g., `type: 0 | 1` or `type ISkillDamageType = 0 | 1`).
+> - **String unions**, as business evolves, inevitably hit limitations when needing to iterate options for UI dropdowns/filters, perform runtime defensive validation, maintain label/color dictionaries, or safely rename values across files;
+> - **Numeric unions** are essentially "magic numbers disguised as types". In addition to the same refactoring bottlenecks, they severely harm readability, forcing developers to rely on fragile comments to decipher what `0` or `1` means.
+> Both eventually force teams to **spend immense time and take risks refactoring union types into Enums across the codebase**.
 > **Prioritize Enum from day one in design and implementation** to establish a single source of truth upfront and eliminate the burden of secondary refactoring.
 
 **Applies to:** `Primitive Obsession`, business state definitions
 
-#### ❌ Anti-pattern: String Union Type Drift
+#### ❌ Anti-pattern: String and Numeric Union Type Drift
 
 ```typescript
-// Problem: Difficult to maintain, type information lost after compilation,
-// cannot be fully supported and refactored by IDE, prone to spelling errors
-type DatasetType = 'wifi' | 'charging' | 'parking';
+// 1. String union issues: Difficult to maintain, type information erased after compilation, prone to spelling errors
+type IDatasetType = 'wifi' | 'charging' | 'parking';
 
-// No good IntelliSense when using, when needing to change 'wifi' to 'wireless',
-// cannot safely refactor, must use global search and replace
-function process(type: DatasetType) {
+// 2. Numeric union issues: Disguised magic numbers, lack self-explanatory semantics
+type ISkillDamageType = 0 | 1; // 0=physical? 1=magic? Obscure without checking comments
+
+function process(type: IDatasetType, damageType: ISkillDamageType) {
     if (type === 'wfi') { /* Spelling error not caught at compile time, exposed at runtime */ }
+    if (damageType === 0) { /* What is magic number 0? Developers must look up definitions */ }
 }
 ```
 
@@ -496,7 +546,6 @@ function process(type: DatasetType) {
 
 ```typescript
 /**
- * Dataset type enumeration
  * Dataset type enumeration
  */
 enum EnumDatasetType {
@@ -509,7 +558,16 @@ enum EnumDatasetType {
 }
 
 /**
- * Status enumeration
+ * Skill damage type enumeration
+ */
+enum EnumSkillDamageType {
+    /** Physical damage */
+    PHYSICAL = 0,
+    /** Magic damage */
+    MAGIC = 1,
+}
+
+/**
  * Status enumeration
  */
 enum EnumStatus {
@@ -527,6 +585,7 @@ enum EnumStatus {
 | Scenario | Recommended | Core Reason (Why) |
 |----------|-------------|-------------------|
 | Business states, config types, service levels | **Enum** | Business concepts need long-term maintenance and team consensus, Enum's IDE support (refactoring, find references) greatly reduces modification costs |
+| State codes, numeric flags (e.g., 0/1 states) | **Enum** | Numeric unions like `0 \| 1` are magic numbers; Enum provides semantic naming and eliminates reliance on fragile comments |
 | API temporary responses, third-party function parameters | Union Type | Transient types, no long-term maintenance needed, lightweight definitions reduce boilerplate |
 | Need to iterate all possible values | **Enum** | Runtime needs to enumerate all options (e.g., rendering dropdown menus), Enum provides structured iteration capability |
 | Need reverse lookup (value → key) | **Enum** | When reverse mapping from backend data to display names, Enum's reverse mapping avoids hardcoded lookup tables |
@@ -580,8 +639,9 @@ function targetClass(target: EnumTargetType) {
 | Site | Action |
 |------|--------|
 | Function parameter / return type | Change type to the Enum |
-| `switch (x)` / `case` | Replace string literals with `Enum.X` members |
+| `switch (x)` / `case` | Replace string or numeric literals with `Enum.X` members |
 | `if (x === '...')` / `x !== '...'` | Replace with `x === Enum.X` |
+| Numeric literal comparisons (`x === 0` / `x === 1`) | Replace with `x === Enum.X` members, eliminating magic numbers |
 | Object/map keys (`{ 'enemy': ... }`) | Replace with computed keys `[EnumTargetType.Enemy]` or `Enum.X` keys |
 | Ternary / array `.includes(['...'])` | Replace members with Enum references |
 | Default/unknown handling | Keep `default` only if the input is genuinely external/untrusted |
