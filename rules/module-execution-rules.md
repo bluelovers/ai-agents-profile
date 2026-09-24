@@ -75,11 +75,6 @@ npm exec tsx path/to/file.ts
 jest
 tsx path/to/file.ts
 mocha test/**/*.spec.ts
-
-# 若直接呼叫失敗，改用 npx
-npx jest
-npx tsx path/to/file.ts
-npx mocha test/**/*.spec.ts
 ```
 
 #### 錯誤範例

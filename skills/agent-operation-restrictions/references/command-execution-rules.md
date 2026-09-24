@@ -53,6 +53,7 @@ jest --testPathPattern=foo.spec.ts   # script 僅跑全部，需個別指定時�
    jest
    vitest --run
    ```
+   永遠假設常見工具指令已安裝，無需進行前置確認行為，執行失敗後從錯誤訊息中檢查原因。
 
 ### 錯誤範例
 
