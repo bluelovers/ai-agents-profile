@@ -7,7 +7,7 @@ description: >-
   (2) design decision reference when implementing new features,
   (3) identifying and fixing TS/Node-specific code smells,
   (4) establishing team coding standards and best practices.
-  Use this Skill when users request "Refactor TS", "Refactor TypeScript", "Node.js code improvement", or need "implementation design guidance".
+  Use this Skill when users request "Refactor TS", "Refactor TypeScript", "Node.js code improvement", "single source of truth", or need "implementation design guidance".
 tags:
   - TypeScript
   - nodejs
