@@ -303,5 +303,6 @@ Agent 的最終報告必須建立在**成功驗證的工具結果**上。
 為確保行為的準確性與安全性，可使用以下技能來協助任務執行：
 
 - **`skills/agent-detect-shell`**: 可使用此技能來了解該如何取得環境資訊。
-- **`skills/agent-script-execution`**: 可使用此技能來了解該如何防止指令構建錯誤。
+- **`skills/agent-script-execution`**: 可使用此技能來了解如何防止指令構建錯誤。
+- **`skills/agent-operation-restrictions`**: 可使用此技能來了解 Agent 在執行任務時必須遵守的嚴格操作限制。
 - **`skills/factual-accuracy-guard`**: 可使用此技能來了解如何確保事實準確性，避免過度依賴假設。

@@ -337,7 +337,23 @@ enum EnumStatus {
 | Need to iterate all possible values | **Enum** | Runtime needs to enumerate all options (e.g., rendering dropdown menus), Enum provides structured iteration capability |
 | Need reverse lookup (value → key) | **Enum** | When reverse mapping from backend data to display names, Enum's reverse mapping avoids hardcoded lookup tables |
 
----
+#### ⚠️ Backward Compatibility Warning
+
+When refactoring string-based identifiers to enums for improved type safety, **do not create type ISkillTarget = EnumSkillTarget** syntax. While enums provide strong compile-time and development-time protection, creating custom type aliases like `ISkillTarget` can break backward compatibility by:
+
+- Requiring manual updates across all consumption points when the original string values change
+- Making it harder to maintain consistent type definitions across the codebase
+- Potentially causing runtime errors if the enum values differ from expected string literals
+
+Instead, use standard TypeScript enums directly:
+```typescript
+enum SkillTarget {
+  Basic = "basic";
+  Advanced = "advanced";
+}
+```
+
+This approach ensures automatic type safety while maintaining seamless integration with existing string-based APIs.
 
 ## Node.js Asynchronous Flow Refactoring
 
