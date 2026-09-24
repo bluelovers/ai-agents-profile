@@ -98,23 +98,26 @@ tags:
 
 **適用於：** `Data Clumps`, `Primitive Obsession`, `Duplicate Code`, `Type Drift`, `Shotgun Surgery`
 
-#### SSoT 五大核心支柱
+#### SSoT 六大核心支柱
 
 1. **同領域或重覆定義型別「優先採用繼承」而非各自定義**：
    - 同領域 (Same Domain) 或具有重疊欄位/語義的模型，**應優先採用繼承 (`interface ... extends ...`) 或基礎型別擴展，而非各自獨立定義**。
    - 各自定義會破壞模型的血緣關係，引發「型別漂移 (Type Drift)」。繼承能確保基礎模型演進時，所有衍生型別自動向下保持同步。
-2. **業務狀態與有限集合「優先採用 Enum 設計」而非字面值聯合（字串或數字聯合）**：
+2. **型別與 Class 之間重覆的定義「應使用 implements 約束」**：
+   - 當 Class 與 Interface/Type 之間存在重覆的結構、屬性或方法宣告時，**必須在 Class 上明確宣告 `implements Interface` 強制契約約束**，而非各自獨立撰寫相同的欄位。
+   - 各自宣告會破壞 SSoT，導致 Interface 作為規範與 Class 作為實作之間產生「靜默型別漂移 (Silent Type Drift)」。宣告 `implements` 能讓編譯器在介面規格變更時立即防禦報錯，並強化 IDE 的雙向導航（尋找實作/轉至介面）。
+3. **業務狀態與有限集合「優先採用 Enum 設計」而非字面值聯合（字串或數字聯合）**：
    - 定義有限狀態集、分類、運作模式等業務集合時，**應優先採用 Enum 設計，而非字串或數字等字面值聯合型別 (Literal Union: `'a' | 'b'` 或 `0 | 1`)**。
    - **數字聯合型別是字面值聯合的另一種形式（本質是魔術數字 Magic Number）**：例如 `{ /** 技能類型：0＝物理, 1＝魔法 */ type: 0 | 1; }` 或 `export type ISkillDamageType = 0 | 1;`，即使抽成了 Type Alias，本質依然是披著型別外衣的魔術數字。程式碼充斥看不出意圖的 `0` 與 `1`，必須時刻依賴註解反查；**應同樣重構為語義明確的 Enum**（如 `enum EnumSkillDamageType { PHYSICAL = 0, MAGIC = 1 }`）。
    - **避免事後二次重構成本**：初期若便宜行事使用字串或數字聯合，隨業務演進（如需迭代枚舉所有選項、反向映射、執行期防禦校驗、IDE 重命名與跨檔案引用追蹤），往往迫使團隊**事後再次耗費龐大精力將字串/數字聯合全面重構為 Enum**。在設計/實作期直接以 Enum 作為單一事實來源，一步到位確立型別與數值的雙重唯一來源。
-3. **重複邏輯「抽離為共用」而非散落各處各自維護**：
+4. **重複邏輯「抽離為共用」而非散落各處各自維護**：
    - SSoT 不僅管轄型別結構，更深植於**業務邏輯與流程運算**。
    - **重複的判斷、計算、驗證或資料轉換邏輯，應強制抽離為共用函式 (Shared Utility / Pure Function / Service)，絕不允許重複散落於各處**。
    - 散落於多處會造成「各自維護」的惡夢：業務規則更新時必須在所有散落點同步修改（典型「霰彈式修改 Shotgun Surgery」）；一旦漏改任一處，即造成各處行為不一致與嚴重生產事故。
-4. **阻礙測試或複用時「應抽離細化，嚴禁為測試複製邏輯」**：
+5. **阻礙測試或複用時「應抽離細化，嚴禁為測試複製邏輯」**：
    - 當任何現有實作因結構過大、深度耦合或副作用而阻礙測試或難以複用時，**必須對該實作進行抽離細化 (Decompose & Refine)**，將純運算與核心邏輯提取為獨立單元。
    - **嚴禁為了測試而複製邏輯 (Strictly Forbid Logic Duplication for Testing)**：絕不能為了寫單元測試或輔助比對，而在測試檔案中複製或重寫一套實作邏輯。複製邏輯會徹底脫離單一事實來源，在生產邏輯變更時無法同步，讓測試失去防護價值並埋下重大隱患。
-5. **型別依賴與衍生「保留型別可追溯性 (Type Traceability)」**：
+6. **型別依賴與衍生「保留型別可追溯性 (Type Traceability)」**：
    - 當欄位依賴另一型別時，使用索引存取 (`OriginalType['fieldName']`) 或 `Pick<OriginalType, ...>` 保留對原始型別的引用，確保變更自動傳播（參見 1.5）。
 
 ---
@@ -381,12 +384,80 @@ it('should calculate correct bonus', () => {
 
 ---
 
+#### 規範 E：型別與 Class 之間重覆的定義，應使用 `implements` 約束
+
+##### ❌ 反模式：Class 與 Interface 結構重覆，卻未以 `implements` 約束
+```typescript
+// 領域契約介面
+export interface IUserProfile {
+    id: string;
+    username: string;
+    email: string;
+    updateEmail(newEmail: string): Promise<void>;
+}
+
+// ❌ 壞味道：UserProfileEntity 實現了完全相同的結構與方法，卻未宣告 implements！
+// 兩者各自獨立宣告，若 IUserProfile 的 email 更名或變更型別，此處不會觸發任何編譯期錯誤，造成「靜默型別漂移」
+export class UserProfileEntity {
+    id: string;
+    username: string;
+    email: string;
+
+    constructor(id: string, username: string, email: string) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+    }
+
+    async updateEmail(newEmail: string): Promise<void> {
+        this.email = newEmail;
+    }
+}
+```
+
+##### ✅ 正確：使用 `implements` 建立強型別編譯期契約約束
+```typescript
+/**
+ * 使用者資訊契約 - 單一事實來源
+ */
+export interface IUserProfile {
+    id: string;
+    username: string;
+    email: string;
+    updateEmail(newEmail: string): Promise<void>;
+}
+
+/**
+ * 使用者實體類別 - 明確宣告 implements IUserProfile
+ * 強制受 Interface 約束，任何屬性、型別或方法簽名變更皆由編譯器防禦報錯，杜絕靜默漂移
+ */
+export class UserProfileEntity implements IUserProfile {
+    constructor(
+        public id: string,
+        public username: string,
+        public email: string,
+    ) {}
+
+    async updateEmail(newEmail: string): Promise<void> {
+        this.email = newEmail;
+    }
+}
+```
+
+**為什麼這對 SSoT 至關重要：**
+- **消除重複維護與靜默漂移**：Interface 是「契約與規格的單一事實來源」，`implements` 確保 Class 忠實履行契約。若介面欄位更名或型別調整，編譯器在 Class 定義處立即報錯，而非等到下游使用端賦值時才暴露問題。
+- **IDE 雙向導航與重構支援**：`implements` 建立語法層級的直接連結，IDE 可一鍵「尋找所有實作 (Find Implementations)」或「跳至介面定義 (Go to Interface)」，重命名符號時自動雙向同步。
+- **職責清晰**：Interface 負責對外契約與規格抽象，Class 負責具體實作與封裝，邊界涇渭分明。
+
+---
+
 #### 重構指導
 
 | 檢查點 | 操作 |
 |--------|------|
 | 是否在進行設計、實作或重構？ | **將 SSoT 置於最優先原則**，檢查所有型別與邏輯是否具備單一權威來源 |
 | 是否為同領域或有重複屬性群組？ | **優先採用繼承 (`interface ... extends ...`)**，或建立巢狀組合，杜絕各自獨立定義 |
+| Class 與 Interface 之間存在重複結構或契約？ | **在 Class 上使用 `implements Interface` 約束**，杜絕各自獨立宣告導致靜默型別漂移 |
 | 是否定義了有限的業務狀態、分類或數字標記（如 0/1）？ | **優先採用 Enum 設計**而非字串或數字聯合，避免日後需求擴展時再次耗費精力重構為 Enum |
 | 是否存在重複的計算、校驗或轉換邏輯？ | **抽離為共用純函式/工具**，杜絕邏輯重複散落導致各處各自維護與更新遺漏 |
 | 現有實作阻礙測試或難以複用？ | **進行抽離細化 (Decompose & Refine)**，將核心邏輯抽離為獨立純函式；**嚴禁為測試複製邏輯**而脫離 SSoT |
@@ -825,6 +896,27 @@ function isValidData(data: unknown): data is IValidData {
         'someMethod' in data &&
         typeof (data as IValidData).someMethod === 'function'
     );
+}
+```
+
+#### Enforce Interface Implementation on Class (以 implements 約束類別實作)
+
+```typescript
+// Before: Class 與 Interface 各自獨立宣告相同契約，缺乏編譯期強制性，易導致型別漂移
+interface IUserRepository {
+    findById(id: string): Promise<IUser | null>;
+    save(user: IUser): Promise<void>;
+}
+
+class SqlUserRepository { // ❌ 未宣告 implements，與 IUserRepository 脫節
+    async findById(id: string): Promise<IUser | null> { /* ... */ }
+    async save(user: IUser): Promise<void> { /* ... */ }
+}
+
+// After: 明確以 implements 建立契約約束，Interface 作為單一事實來源
+class SqlUserRepository implements IUserRepository { // ✅ 受編譯期強制約束
+    async findById(id: string): Promise<IUser | null> { /* ... */ }
+    async save(user: IUser): Promise<void> { /* ... */ }
 }
 ```
 

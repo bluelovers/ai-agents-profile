@@ -107,23 +107,26 @@ You are an expert in modern TypeScript and Node.js development refactoring. You 
 
 **Applies to:** `Data Clumps`, `Primitive Obsession`, `Duplicate Code`, `Type Drift`, `Shotgun Surgery`
 
-#### Five Core Pillars of SSoT
+#### Six Core Pillars of SSoT
 
 1. **Same-Domain or Duplicate Types: Prioritize Inheritance over Independent Definitions**:
    - Types within the same domain or sharing overlapping fields/semantics **should prioritize inheritance (`interface ... extends ...`) or base type extension over independent redefinition**.
    - Defining types separately breaks domain bloodlines and causes "Type Drift". Inheritance ensures that when base models evolve, all derived types automatically stay in sync.
-2. **Business States and Finite Sets: Prioritize Enum over Literal Unions (String or Numeric Unions)**:
+2. **Type-to-Class Contracts: Enforce Duplicate Definitions with `implements`**:
+   - When a Class and an Interface/Type share duplicate property or method definitions, **the Class must explicitly declare `implements Interface` to enforce a compile-time contract**, rather than declaring identical fields in isolation.
+   - Separate declarations violate SSoT, allowing "Silent Type Drift" between the interface specification and the class implementation. Declaring `implements` provides instant compiler defense upon interface changes and enables bidirectional IDE navigation (Find Implementations / Go to Interface).
+3. **Business States and Finite Sets: Prioritize Enum over Literal Unions (String or Numeric Unions)**:
    - When defining finite state sets, categories, or operation modes, **prioritize Enum design over literal union types (e.g., `'a' | 'b'` or `0 | 1`)**.
    - **Numeric literal unions are another form of literal unions (disguised magic numbers)**: For instance, `{ /** Skill type: 0=physical, 1=magic */ type: 0 | 1; }` or `export type ISkillDamageType = 0 | 1;`—even when extracted into a type alias—remains a magic number disguised as a type. The code becomes littered with obscure `0`s and `1`s that force maintainers to cross-reference fragile comments. They must likewise be refactored into explicit Enums (e.g. `enum EnumSkillDamageType { PHYSICAL = 0, MAGIC = 1 }`).
    - **Avoid costly secondary refactoring**: Developers often start with string or numeric unions for brevity, but as requirements grow (iterating options for UI dropdowns, reverse lookups, runtime defensive validation, safe renaming across files), teams are frequently forced to **refactor literal unions into Enums all over again**. Designing with Enums from day one establishes a single source of truth for both type space and value space, eliminating redundant refactoring cycles.
-3. **Duplicate Logic: Extract into Shared Units, Never Scatter for Independent Maintenance**:
+4. **Duplicate Logic: Extract into Shared Units, Never Scatter for Independent Maintenance**:
    - SSoT governs not only types, but fundamentally **business logic and processing flows**.
    - **Duplicate evaluation, calculation, validation, or transformation logic must be strictly extracted into shared functions (utilities, pure functions, or services), never scattered across multiple locations**.
    - Scattering duplicate logic creates a maintenance nightmare: whenever business rules update or bugs are fixed, developers must manually patch all scattered copies (classic Shotgun Surgery). Missing even one leads to inconsistent behavior and severe production bugs.
-4. **Decompose and Refine When Blocked; Never Duplicate Logic for Testing**:
+5. **Decompose and Refine When Blocked; Never Duplicate Logic for Testing**:
    - When any existing implementation hinders testing or reuse due to excessive size, tight coupling, or side-effects, **strictly decompose and refine the implementation (Extract & Refine)** into independent, testable, and reusable units.
    - **Strictly Forbid Logic Duplication for Testing**: Never duplicate or re-implement business logic in test files, mock helpers, or shadow modules to satisfy tests. Duplicating logic completely breaks SSoT. When production logic changes, unsynchronized duplicate test logic creates false confidence, invalidates tests, and breeds severe maintenance blind spots.
-5. **Type Dependencies and Derivations: Preserve Type Traceability**:
+6. **Type Dependencies and Derivations: Preserve Type Traceability**:
    - When a field or parameter is based on another type, use index access (`OriginalType['field']`) or `Pick<OriginalType, ...>` to preserve the reference chain, ensuring automatic change propagation (see 1.5).
 
 ---
@@ -385,12 +388,80 @@ it('should calculate correct bonus', () => {
 
 ---
 
+#### Guideline E: Enforce `implements` Constraint between Types and Classes
+
+##### ❌ Anti-pattern: Duplicate Structure between Class and Interface without `implements`
+```typescript
+// Domain contract interface
+export interface IUserProfile {
+    id: string;
+    username: string;
+    email: string;
+    updateEmail(newEmail: string): Promise<void>;
+}
+
+// ❌ Smell: UserProfileEntity declares the exact same properties and methods, but omits `implements`!
+// Both are maintained in isolation; if IUserProfile changes property types or names, no compile error is raised here, causing "Silent Type Drift"
+export class UserProfileEntity {
+    id: string;
+    username: string;
+    email: string;
+
+    constructor(id: string, username: string, email: string) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+    }
+
+    async updateEmail(newEmail: string): Promise<void> {
+        this.email = newEmail;
+    }
+}
+```
+
+##### ✅ Correct: Use `implements` to Enforce a Strong Compile-Time Contract
+```typescript
+/**
+ * User profile contract - Single source of truth
+ */
+export interface IUserProfile {
+    id: string;
+    username: string;
+    email: string;
+    updateEmail(newEmail: string): Promise<void>;
+}
+
+/**
+ * User profile entity - Explicitly implements IUserProfile
+ * Bound to the interface contract; any property or method signature changes immediately trigger compiler errors
+ */
+export class UserProfileEntity implements IUserProfile {
+    constructor(
+        public id: string,
+        public username: string,
+        public email: string,
+    ) {}
+
+    async updateEmail(newEmail: string): Promise<void> {
+        this.email = newEmail;
+    }
+}
+```
+
+**Why this is crucial for SSoT:**
+- **Eliminates Duplicate Maintenance & Silent Drift**: The interface serves as the authoritative single source of truth for the contract. Declaring `implements` ensures compiler enforcement at the class definition, rather than discovering mismatches downstream at call sites.
+- **IDE Navigation & Refactoring Tooling**: `implements` establishes a direct syntax link, enabling IDE features like "Find Implementations", "Go to Interface", and safe automated symbol renaming.
+- **Clear Separation of Concerns**: Interface defines public abstraction and contract; class encapsulates implementation and state.
+
+---
+
 #### Refactoring Guide
 
 | Check | Action |
 |-------|--------|
 | Designing, implementing, or refactoring? | **Treat SSoT as top priority**; verify all types and logic have a single authoritative source |
 | Same-domain or duplicate property groups? | **Prioritize inheritance (`interface ... extends ...`)** or composition; avoid separate definitions |
+| Duplicate structure or contract between Class and Interface? | **Use `implements Interface` on the Class** to eliminate isolated declarations and silent type drift |
 | Finite business states, categories, or numeric flags (e.g., 0/1)? | **Prioritize Enum design** over string or numeric unions to avoid secondary refactoring later |
 | Duplicate calculation, validation, or transformation logic? | **Extract into shared pure functions/utilities**; eliminate multi-place maintenance |
 | Implementation hinders testing or reuse? | **Decompose and refine (Extract & Refine)** into pure/isolated units; **never duplicate logic for tests** |
@@ -832,6 +903,27 @@ function isValidData(data: unknown): data is IValidData {
         'someMethod' in data &&
         typeof (data as IValidData).someMethod === 'function'
     );
+}
+```
+
+#### Enforce Interface Implementation on Class
+
+```typescript
+// Before: Class and Interface independently declare identical contracts without compiler binding
+interface IUserRepository {
+    findById(id: string): Promise<IUser | null>;
+    save(user: IUser): Promise<void>;
+}
+
+class SqlUserRepository { // ❌ No `implements`, disconnected from IUserRepository
+    async findById(id: string): Promise<IUser | null> { /* ... */ }
+    async save(user: IUser): Promise<void> { /* ... */ }
+}
+
+// After: Explicitly bind contract using `implements`, establishing Interface as SSoT
+class SqlUserRepository implements IUserRepository { // ✅ Enforced by compiler
+    async findById(id: string): Promise<IUser | null> { /* ... */ }
+    async save(user: IUser): Promise<void> { /* ... */ }
 }
 ```
 
