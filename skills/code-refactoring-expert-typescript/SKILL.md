@@ -1,13 +1,22 @@
 ---
 name: code-refactoring-expert-typescript
 description: >-
-  Modern TypeScript/Node.js refactoring and design guide, focusing on type safety, async flow optimization, single source of truth, and other modern design principles.
-  Suitable for:
+  A modern TypeScript/Node.js refactoring and design guide focused on type safety,
+  asynchronous workflow optimization, Single Source of Truth (SSOT), maintainability,
+  consistency, and other modern software design principles.
+  Includes, but is not limited to:
   (1) refactoring existing TypeScript/Node.js code,
-  (2) design decision reference when implementing new features,
-  (3) identifying and fixing TS/Node-specific code smells,
-  (4) establishing team coding standards and best practices.
-  Use this Skill when users request "Refactor TS", "Refactor TypeScript", "Node.js code improvement", "single source of truth", or need "implementation design guidance".
+  (2) providing architectural and design guidance when implementing new features,
+  (3) identifying and correcting TypeScript/Node.js-specific code smells,
+  (4) establishing team coding standards and best practices,
+  (5) preventing duplicated definitions and fragmented data sources while maintaining
+      a Single Source of Truth (SSOT),
+  (6) improving type design, modularity, testability, readability, and maintainability.
+  Applicable to:
+  (1) requests such as "Refactor TypeScript", "Refactor TS", or "Improve Node.js code",
+  (2) requests for TypeScript/Node.js implementation and design guidance,
+  (3) requests involving improvements to code architecture, type safety,
+      asynchronous workflows, maintainability, or code quality.
 tags:
   - TypeScript
   - nodejs
