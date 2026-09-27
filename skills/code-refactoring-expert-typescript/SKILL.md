@@ -709,13 +709,16 @@ function targetClass(target: EnumTargetType) {
 **Checklist when migrating to an Enum:**
 | Site | Action |
 |------|--------|
-| Function parameter / return type | Change type to the Enum |
+| Function parameter / return type | Change parameter type to the Enum; **do NOT widen the return type to `string`** — let it infer a precise Enum-derived (template-literal) type to preserve SSoT and type safety |
 | `switch (x)` / `case` | Replace string or numeric literals with `Enum.X` members |
 | `if (x === '...')` / `x !== '...'` | Replace with `x === Enum.X` |
 | Numeric literal comparisons (`x === 0` / `x === 1`) | Replace with `x === Enum.X` members, eliminating magic numbers |
 | Object/map keys (`{ 'enemy': ... }`) | Replace with computed keys `[EnumTargetType.Enemy]` or `Enum.X` keys |
+| Object/map value type (`Record<X, string>`, `Record<string, string>`) | Typing values as `string` widens literals and **defeats `as const`** — keep `as const` and use one of: drop the `Record<string>` annotation, `as const satisfies PreciseType`, or type it as the precise literal/template-literal type |
 | Ternary / array `.includes(['...'])` | Replace members with Enum references |
 | Default/unknown handling | Keep `default` only if the input is genuinely external/untrusted |
+
+> 📌 **Real-world example:** See [Status Key Enum Migration Case](./references/status-key-enum-migration.md) — a production patch that migrates string-literal `as const` prefixes (`STATUS_UP_PREFIX`, `COMP_PREFIX`, …) to `EnumStatusPrefix`, and updates every `??` fallback and template-literal concatenation site to reference the Enum members.
 
 When refactoring string-based identifiers to enums for improved type safety, **the `I = Enum` pattern (e.g., `IUserRole = EnumUserRole`) is fundamentally flawed and should never be used**.
 
@@ -1163,6 +1166,7 @@ When proposing refactoring suggestions:
 - [Classic Principles Mapping](./references/classic-principles-mapping.md) - Detailed comparison with Martin Fowler's classic refactoring principles
 - [URL Refactoring Case](./references/url-impl.md) - Flow accumulation and intent-oriented implementation example
 - [Coordinate Handling Case](./references/geo-transform.md) - SSoT principle and Tuple semantic annotation best practices
+- [Status Key Enum Migration Case](./references/status-key-enum-migration.md) - Complete Enum migration: update all `??` fallback and template-literal usage sites, not just the type signature
 
 ### Related Skills
 - [analyze-code-commenter](../analyze-code-commenter/SKILL.md) - Bilingual comment addition and code documentation

@@ -706,13 +706,16 @@ function targetClass(target: EnumTargetType) {
 **遷移至 Enum 時的檢查清單：**
 | 位置 | 操作 |
 |------|------|
-| 函式參數 / 回傳值型別 | 將型別改為 Enum |
+| 函式參數 / 回傳值型別 | 參數型別改為 Enum；**回傳型別不可退化標註為 `string`** —— 應由 Enum 推導精確樣板字串型別，以維護 SSoT 與型別安全 |
 | `switch (x)` / `case` | 將字串或數字字面值替換為 `Enum.X` 成員 |
 | `if (x === '...')` / `x !== '...'` | 替換為 `x === Enum.X` |
 | 數字字面值比對 (`x === 0` / `x === 1`) | 替換為 `x === Enum.X` 成員，消除魔術數字 |
 | 物件/對照表鍵 (`{ 'enemy': ... }`) | 替換為計算鍵 `[EnumTargetType.Enemy]` 或 `Enum.X` 鍵 |
+| 物件/對照表 value 型別 (`Record<X, string>`、`Record<string, ...>`) | 把 value 標註為 `string` 會將字面量加寬並**使 `as const` 失效**；應保留 `as const`，並改採三者之一：移除 `Record<string>` 標註 / `as const satisfies` 精確型別 / 改為 `ITSStringLiteralPrefixedRecord` 等精確樣板字串型別 |
 | 三元運算式 / 陣列 `.includes(['...'])` | 將成員替換為 Enum 引用 |
 | 預設/未知處理 | 僅當輸入確實來自外部/不可信時才保留 `default` |
+
+> 📌 **實際案例：** 參見 [狀態鍵 Enum 遷移案例](./references/status-key-enum-migration.md) —— 一份生產環境 patch，將字串字面值 `as const` 前綴（`STATUS_UP_PREFIX`、`COMP_PREFIX` 等）遷移為 `EnumStatusPrefix`，並將每個 `??` fallback 與樣板字串拼接位置都改為引用 Enum 成員。
 
 ---
 
@@ -1154,6 +1157,7 @@ if (user.isActive && subscription.status === 'active' &&
 - [與經典原則的對照表](./references/classic-principles-mapping.md) - 與 Martin Fowler 經典重構原則的詳細對照
 - [URL 重構案例](./references/url-impl.md) - 流程累積與意圖導向的實作範例
 - [座標處理案例](./references/geo-transform.md) - SSoT 原則與 Tuple 語義標註的最佳實踐
+- [狀態鍵 Enum 遷移案例](./references/status-key-enum-migration.md) - 完整 Enum 遷移：連同 `??` fallback 與樣板字串使用位置一併更新，而非只改型別簽名
 
 ### 相關技能
 - [analyze-code-commenter](../analyze-code-commenter/SKILL.md) - 雙語註解添加與程式碼文件化
