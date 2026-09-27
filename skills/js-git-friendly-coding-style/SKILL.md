@@ -1,6 +1,13 @@
 ---
 name: js-git-friendly-coding-style
-description: 基於 JavaScript 的代碼風格，優化 Git diff 可讀性與可合併性。使用 Tab 縮排（除非原始縮排是空格），Allman 風格大括號。
+description: >-
+  基於 JavaScript 的代碼風格，優化 Git diff 可讀性與可合併性。使用 Tab 縮排（除非原始縮排是空格），Allman 風格大括號。
+  適用場景：
+  (1) 編輯或修改現有 JavaScript/JSX 程式碼，需保持 Git diff 乾淨、減少視覺雜訊時；
+  (2) 重構或調整程式碼格式（縮排、大括號風格），而不想產生大量無關變更時；
+  (3) 提交前整理變更、進行程式碼審查，需提升合併安全性與可讀性時；
+  (4) AI Agent 準備自動格式化或改寫 JS 程式碼，應遵循「不增加原本沒有的元素」原則時；
+  (5) 建立新專案或新檔案時，預設採用此風格（Tab 縮排、Allman 大括號）作為基準規範。
 tags:
   - JavaScript
   - coding-style
