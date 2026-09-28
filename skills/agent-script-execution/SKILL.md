@@ -89,7 +89,7 @@ Agent 在執行任何腳本時，**必須**採用以下三種方法之一，以�
 
 ```batch
 # ✅ 正確範例
-cd /d "D:/Users/WebstormProjects/game/Hall-of-Fame/.codenomad/worktrees/develop5"
+cd "D:/Users/WebstormProjects/game/Hall-of-Fame/.codenomad/worktrees/develop5"
 hof/trust_path/bin/php-test.bat phpunit/PatternTest.php
 ```
 
