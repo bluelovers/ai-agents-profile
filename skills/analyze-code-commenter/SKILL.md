@@ -1,6 +1,14 @@
 ---
 name: analyze-code-commenter
-description: Analyze code and add bilingual comments (Traditional Chinese zh-TW + English). Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) "為代碼添加註解", (5) "分析並註解程式碼", (6) "為代碼更新註解", (7) "為代碼修正註解", (8) "重構代碼更新註解", (9) "雙語註釋/雙語註解", (10) "添加註釋", (11) "程式碼註解", (12) "文件註解", (13) "JSDoc", (14) "區塊註解", (15) "註解格式", (16) "程式碼說明", (17) "註釋翻譯", (18) "code comments", (19) "bilingual comments", (20) "block comments". Uses ONLY block comments (single-line or multi-line). Never uses inline comments.
+description: |-
+  Analyze code and add bilingual comments (Traditional Chinese zh-TW + English). Uses ONLY block comments (single-line or multi-line). Never uses inline comments.
+
+  Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, or mention keywords such as:
+  - "為代碼添加註解", "分析並註解程式碼", "為代碼更新註解", "為代碼修正註解"
+  - "重構代碼更新註解", "雙語註釋/雙語註解", "添加註釋"
+  - "程式碼註解", "文件註解", "JSDoc", "區塊註解", "註解格式"
+  - "程式碼說明", "註釋翻譯"
+  - "code comments", "bilingual comments", "block comments"
 tags:
   - comments
   - bilingual
@@ -1220,6 +1228,22 @@ const cwd = process.cwd();
 // ✅ Single-line with detail
 /** 處理使用者輸入資料並進行驗證 / Process and validate user input data */
 ```
+
+## Helper Tool
+
+This skill ships with a safe inline-comment (`//`) → block-comment converter that batch-converts existing inline comments into block comments (dry-run by default; add `--write` to actually write):
+
+- Script: [references/inline-to-block.cjs](references/inline-to-block.cjs)
+- Batch launcher (uses `%~dp0` to locate the sibling script and forwards parameters): [references/inline-to-block.bat](references/inline-to-block.bat)
+- Usage & feature reference: [references/inline-to-block.md](references/inline-to-block.md)
+
+```bat
+REM Usage:
+REM   inline-to-block.bat <target> [--write] [--diff] [--no-recursive]
+inline-to-block.bat ./src --write --diff
+```
+
+> Note: the batch file forwards all arguments to the `.cjs` script via `%*`, so flags like `--write`, `--diff`, `--no-recursive` are supported.
 
 ## Code Formatting Rules
 
