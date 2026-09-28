@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 安全的 `//` → 區塊註解轉換器 (v24)
+ * 安全的 `//` → 區塊註解轉換器 (v34)
  *
  * 功能特性:
  *  - 預設為 dry-run（不編輯），需加上 `--write` 才會實際寫入檔案；`--diff` 顯示變更對照
@@ -17,6 +17,9 @@
  *  - 去重：同一檔案可能同時經由目錄掃描與明確參數收集
  *  - 保留原始換行格式（CRLF/LF）；Retained 與 Skipped 分開統計；日誌一律英文
  *  - 以 async/await 與 fs.promises 實作
+ *  - 未提供路徑時顯示用法與旗標說明；提供路徑但找不到檔案時逐項說明原因
+ *  - 檔案過多警告時列出前 5 個檔案；可用 `--max-files <N>` 放寬上限
+ *  - 每個檔案處理完成時立即輸出該檔報告（不等待全部處理完才輸出）
  */
 
 const fs = require('fs');
@@ -688,9 +691,14 @@ function parseArgs(rawArgs)
 	let writeMode = false;
 	let showDiff = false;
 	let recursive = true;
+
+	/** 放寬後的上限（未指定時使用 MAX_FILES）/ overridden file limit (null → MAX_FILES) */
+	let maxFiles = null;
+
 	const targets = [];
-	for (const a of rawArgs)
+	for (let idx = 0; idx < rawArgs.length; idx++)
 	{
+		const a = rawArgs[idx];
 		if (a === '--write')
 		{
 			writeMode = true;
@@ -703,19 +711,31 @@ function parseArgs(rawArgs)
 		{
 			recursive = false;
 		}
+		else if (a === '--max-files')
+		{
+			/** --max-files 需接一個正整數值 / requires a positive integer value */
+			const next = rawArgs[idx + 1];
+			const parsed = parseInt(next, 10);
+			if (next === undefined || !Number.isInteger(parsed) || parsed <= 0)
+			{
+				throw new Error(`--max-files requires a positive integer, got: ${next === undefined ? '(missing)' : next}`);
+			}
+			maxFiles = parsed;
+			idx++; // 消耗該值 / consume the value
+		}
 		else
 		{
 			targets.push(a);
 		}
 	}
-	return { writeMode, showDiff, recursive, targets };
+	return { writeMode, showDiff, recursive, maxFiles, targets };
 }
 
 /**
  * 收集所有符合條件的檔案（含大小寫驗證與目錄掃描）
  * Collect all matching files (with case validation and directory walk)
  */
-async function collectFiles(targets, filesToProcess, caseMismatch, recursive = true, dollarSkips = null)
+async function collectFiles(targets, filesToProcess, caseMismatch, recursive = true, dollarSkips = null, missingTargets = null)
 {
 	for (const t of targets)
 	{
@@ -726,7 +746,8 @@ async function collectFiles(targets, filesToProcess, caseMismatch, recursive = t
 		}
 		catch
 		{
-			/** 路徑不存在或無法存取，跳過 / Path missing or inaccessible, skip */
+			/** 路徑不存在或無法存取：記錄後跳過 / Record missing paths and skip */
+			if (missingTargets) missingTargets.push(t);
 			continue;
 		}
 
@@ -838,31 +859,111 @@ function printDiff(fp, diff)
 }
 
 /**
- * 處理所有檔案並累計報告資料
- * Process all files and aggregate report data
+ * 輸出目前的目標路徑（依最頂層共同父路徑分組，子目錄目標以相對路徑顯示）
+ * Print the current target paths (grouped by top-level common parent; subdir targets shown with relative paths)
+ */
+function printTargets(targets)
+{
+	if (targets.length === 0)
+	{
+		console.log('[TARGETS] (none)');
+		return;
+	}
+
+	/** 目標清單 / raw target paths */
+	const parents = targets.map((t) => path.normalize(path.dirname(t)));
+
+	/**
+	 * 找出 p 在集合內的最頂層祖先（沒有集合內祖先則為自己）
+	 * Find the top-level ancestor of p within the parent set (itself if none)
+	 */
+	const topAncestor = (p) =>
+	{
+		let cur = p;
+		while (true)
+		{
+			const up = path.normalize(path.dirname(cur));
+			if (up === cur) break; // 已到檔案系統根 / reached a filesystem root
+			if (parents.indexOf(up) !== -1) { cur = up; continue; }
+			break;
+		}
+		return cur;
+	};
+
+	/**
+	 * 目標從群組根算起的顯示名稱（子目錄用相對路徑，如 other\same）
+	 * Display name of a target relative to the group root (e.g. other\same)
+	 */
+	const displayName = (root, t) =>
+	{
+		const parent = path.normalize(path.dirname(t));
+		const base = path.basename(t);
+		if (parent === root) return base;
+		return path.join(path.relative(root, parent), base);
+	};
+
+	/** 群組根 → 顯示名稱清單 / group root -> display names */
+	const groups = new Map();
+	for (const t of targets)
+	{
+		const root = topAncestor(path.normalize(path.dirname(t)));
+		if (!groups.has(root)) groups.set(root, []);
+		groups.get(root).push(displayName(root, t));
+	}
+
+	console.log('[TARGETS]');
+	const roots = [...groups.keys()].sort();
+	for (const root of roots)
+	{
+		/** 以 `.` 表示目前工作目錄並標示 / Mark `.` as the current working directory */
+		const label = root === '.' ? `${root} (current cwd)` : root;
+		console.log(`  ${label}`);
+		for (const name of groups.get(root))
+		{
+			console.log(`    - ${name}`);
+		}
+	}
+}
+
+/**
+ * 處理所有檔案，並在每個檔案處理完成時立即輸出其報告（不等待全部處理完）
+ * Process all files, streaming each file's report as it completes
  */
 async function processAll(filesToProcess, writeMode, showDiff)
 {
 	let changed = 0;
 	let retainedCount = 0;
 	let reviewCount = 0;
-	const fileReports = [];
 	const fileSkips = [];
-	const report = [];
 
 	for (const fp of filesToProcess)
 	{
 		const { changed: ch, skipped, fileSkip, diff } = await convertFile(fp, writeMode, showDiff);
 
+		/** 整檔跳過（過大等）：立即輸出 / Whole-file skip: print immediately */
 		if (fileSkip)
 		{
 			fileSkips.push({ file: fp, reason: fileSkip });
+			console.log(`[Skipped]  ${fp}  (${fileSkip})`);
 			continue;
 		}
 
 		if (ch) changed++;
 
-		fileReports.push({ file: fp, changed: ch, skippedCount: skipped.length });
+		/** 每個檔案處理完立即輸出處理標記 / Print the per-file result right away */
+		const mark = ch ? (writeMode ? '[MODIFIED]' : '[WOULD CHANGE]') : '[UNCHANGED]';
+		console.log(`\n[Processed] ${mark}  ${fp}  (skipped ${skipped.length})`);
+
+		/** 立即輸出該檔的跳過明細 / Stream this file's skip details */
+		if (skipped.length > 0)
+		{
+			printFileSkipDetail(fp, skipped);
+		}
+
+		if (showDiff && diff && diff.length > 0)
+		{
+			printDiff(fp, diff);
+		}
 
 		for (const s of skipped)
 		{
@@ -874,15 +975,9 @@ async function processAll(filesToProcess, writeMode, showDiff)
 			{
 				reviewCount++;
 			}
-			report.push({ file: fp, lineNo: s.lineNo, text: s.text, reason: s.reason });
-		}
-
-		if (showDiff && diff && diff.length > 0)
-		{
-			printDiff(fp, diff);
 		}
 	}
-	return { changed, retainedCount, reviewCount, fileReports, fileSkips, report };
+	return { changed, retainedCount, reviewCount, fileSkips };
 }
 
 /**
@@ -897,84 +992,33 @@ function printSummary(count, writeMode, changed, retainedCount, reviewCount, ski
 }
 
 /**
- * 輸出處理檔案清單（是否修改 + 跳過行數）
- * Print the processed-files report (changed flag + skipped line count)
+ * 輸出單一檔案的跳過明細（每個類別最多 MAX_REPORT_PER_FILE 筆，文字已於儲存時裁切）
+ * Print one file's skip details (at most MAX_REPORT_PER_FILE per category; text pre-clipped)
  */
-function printProcessedFiles(fileReports, writeMode)
+function printFileSkipDetail(file, items)
 {
-	console.log('\n[Processed files]');
-	for (const fr of fileReports)
-	{
-		const mark = fr.changed ? (writeMode ? '[MODIFIED]' : '[WOULD CHANGE]') : '[UNCHANGED]';
-		console.log(`  ${mark}  ${fr.file}  (skipped ${fr.skippedCount})`);
-	}
-}
+	console.log(`  ${file}`);
 
-/**
- * 輸出整檔被跳過的檔案；大檔案（過大）上限 MAX_REPORT_PER_FILE 筆
- * Print files skipped entirely; large files (too large) capped at MAX_REPORT_PER_FILE
- */
-function printFileSkips(fileSkips)
-{
-	if (fileSkips.length === 0) return;
-
-	console.log('\n[Skipped files (not processed)]');
-	const shown = Math.min(fileSkips.length, MAX_REPORT_PER_FILE);
-	for (let idx = 0; idx < shown; idx++)
+	const byCat = new Map();
+	for (const r of items)
 	{
-		const f = fileSkips[idx];
-		console.log(`  [SKIPPED]  ${f.file}  (${f.reason})`);
-	}
-	if (fileSkips.length > shown)
-	{
-		console.log(`  ... and ${fileSkips.length - shown} more file(s) (capped at ${MAX_REPORT_PER_FILE}).`);
-	}
-}
-
-/**
- * 輸出跳過明細（普通檔案：每個類別最多 MAX_REPORT_PER_FILE 筆）
- * 文字已在存入 skip 紀錄時裁切（clipAroundComment + MAX_REPORT_TEXT）
- *
- * Print skip details for normal files (at most MAX_REPORT_PER_FILE per category).
- * Text was already clipped when the skip record was stored.
- */
-function printSkipDetails(report)
-{
-	if (report.length === 0) return;
-
-	const byFile = new Map();
-	for (const r of report)
-	{
-		if (!byFile.has(r.file)) byFile.set(r.file, []);
-		byFile.get(r.file).push(r);
+		const cat = reasonCategory(r.reason);
+		if (!byCat.has(cat)) byCat.set(cat, []);
+		byCat.get(cat).push(r);
 	}
 
-	console.log('\n[Skip details]');
-	for (const [file, items] of byFile)
+	for (const [cat, catItems] of byCat)
 	{
-		console.log(`\n  ${file}`);
-
-		const byCat = new Map();
-		for (const r of items)
+		const shown = Math.min(catItems.length, MAX_REPORT_PER_FILE);
+		for (let idx = 0; idx < shown; idx++)
 		{
-			const cat = reasonCategory(r.reason);
-			if (!byCat.has(cat)) byCat.set(cat, []);
-			byCat.get(cat).push(r);
+			const r = catItems[idx];
+			console.log(`    [${cat}] L${r.lineNo}  (${r.reason})`);
+			console.log(`        ${r.text}`);
 		}
-
-		for (const [cat, catItems] of byCat)
+		if (catItems.length > shown)
 		{
-			const shown = Math.min(catItems.length, MAX_REPORT_PER_FILE);
-			for (let idx = 0; idx < shown; idx++)
-			{
-				const r = catItems[idx];
-				console.log(`    [${cat}] L${r.lineNo}  (${r.reason})`);
-				console.log(`        ${r.text}`);
-			}
-			if (catItems.length > shown)
-			{
-				console.log(`    ... ${catItems.length - shown} more ${cat} issue(s) (capped at ${MAX_REPORT_PER_FILE} per category).`);
-			}
+			console.log(`    ... ${catItems.length - shown} more ${cat} issue(s) (capped at ${MAX_REPORT_PER_FILE} per category).`);
 		}
 	}
 }
@@ -985,12 +1029,47 @@ function printSkipDetails(report)
  */
 async function main()
 {
-	const { writeMode, showDiff, recursive, targets } = parseArgs(process.argv.slice(2));
+	/** 輸出目前工作目錄（除錯／診斷用） / Print the current working directory */
+	console.log(`\n[CWD] ${process.cwd()}`);
+
+	const { writeMode, showDiff, recursive, maxFiles, targets } = parseArgs(process.argv.slice(2));
+
+	/** 輸出目前的目標路徑（診斷用） / Print the current target paths */
+	printTargets(targets);
+
+	/**
+	 * 未提供任何目標路徑：顯示用法並結束
+	 * No target path: print usage and exit
+	 */
+	if (targets.length === 0)
+	{
+		const selfName = path.basename(__filename);
+
+		console.error('\n[ERROR] No target path provided.');
+		console.error(`[script] ${__filename}`);
+
+		console.error('');
+
+		console.error(`Usage: node ${selfName} [options] <path> [<path> ...]`);
+		console.error('');
+		console.error('Options:');
+		console.error('  --write           edit files (default: dry-run, no changes are written)');
+		console.error('  --diff            show a preview of the changes');
+		console.error('  --no-recursive    only scan the given directory itself (no subdirectories)');
+		console.error('  --max-files <N>   raise the per-run file count limit (default: 20)');
+		console.error('');
+		console.error('<path> can be a file (any extension) or a directory of .ts/.tsx files.');
+		process.exitCode = 1;
+		return;
+	}
 
 	const filesToProcess = [];
 
 	/** 因檔名大小寫不符而被跳過的目標檔案 / Target files skipped due to filename case mismatch */
 	const caseMismatch = [];
+
+	/** 無法找到或存取的目標路徑 / Target paths that could not be found or accessed */
+	const missingTargets = [];
 
 	/** 目錄掃描時因檔名含 `$` 而被拒絕的檔案 / Files rejected during scans because their name contains `$` */
 	const walkDollarSkips = [];
@@ -1013,7 +1092,7 @@ async function main()
 	}
 
 	/** 2. 收集所有符合條件的檔案 / Collect all matching files */
-	await collectFiles(targets, filesToProcess, caseMismatch, recursive, walkDollarSkips);
+	await collectFiles(targets, filesToProcess, caseMismatch, recursive, walkDollarSkips, missingTargets);
 
 	/** 大小寫不符警告 / Case-mismatch warnings */
 	await printCaseMismatch(caseMismatch);
@@ -1038,13 +1117,46 @@ async function main()
 	filesToProcess.push(...uniqueFiles);
 
 	/**
-	 * 3. 安全檢查：檔案總數過多時警告並終止
-	 * 3. Safety check: warn and stop when too many files
+	 * 提供了路徑但完全沒有收集到檔案：逐項說明原因
+	 * Targets given but nothing collected: explain per-target status
 	 */
-	if (filesToProcess.length > MAX_FILES)
+	if (filesToProcess.length === 0)
 	{
-		console.error(`\n[WARNING] Found ${filesToProcess.length} file(s) to process, exceeding the safety limit (${MAX_FILES})!`);
-		console.error(`Task aborted for safety. Specify a more precise subdirectory or adjust MAX_FILES in the script.\n`);
+		console.warn('\n[WARNING] No files were collected from the specified target(s):');
+		for (const t of targets)
+		{
+			const missing = missingTargets.indexOf(t) !== -1;
+			const badCase = caseMismatch.indexOf(t) !== -1;
+			let status = '  (no matching .ts/.tsx files)';
+			if (missing) status = '  (not found or inaccessible)';
+			else if (badCase) status = '  (filename case mismatch)';
+			console.warn(`  - ${t}${status}`);
+		}
+		console.warn('\nPossible causes: path missing, no .ts/.tsx files under a directory, filename case mismatch, or all files rejected by safety rules.');
+		if (missingTargets.length > 0)
+		{
+			process.exitCode = 1;
+		}
+		return;
+	}
+
+	/**
+	 * 3. 安全檢查：檔案總數過多時警告並終止（可 --max-files 放寬）
+	 * 3. Safety check: warn and stop when too many files (relaxable via --max-files)
+	 */
+	const fileLimit = maxFiles === null ? MAX_FILES : maxFiles;
+	if (filesToProcess.length > fileLimit)
+	{
+		console.error(`\n[WARNING] Found ${filesToProcess.length} file(s) to process, exceeding the safety limit (${fileLimit})!`);
+		console.error(`Task aborted for safety. Use --max-files <N> to raise the limit, or specify a more precise subdirectory.`);
+
+		/** 顯示前 5 個檔案 / Show the first 5 files */
+		console.error('\nFirst 5 file(s):');
+		for (let k = 0; k < Math.min(filesToProcess.length, 5); k++)
+		{
+			console.error(`  - ${filesToProcess[k]}`);
+		}
+		console.error('');
 		process.exitCode = 1;
 		return;
 	}
@@ -1053,11 +1165,9 @@ async function main()
 	 * 4. 開始轉換處理並收集報告資料
 	 * 4. Process files and collect report data
 	 */
-	const { changed, retainedCount, reviewCount, fileReports, fileSkips, report } = await processAll(filesToProcess, writeMode, showDiff);
+	const { changed, retainedCount, reviewCount, fileSkips } = await processAll(filesToProcess, writeMode, showDiff);
 
 	printSummary(filesToProcess.length, writeMode, changed, retainedCount, reviewCount, fileSkips.length);
-	printProcessedFiles(fileReports, writeMode);
-	printFileSkips(fileSkips);
 
 	/**
 	 * dry-run 提示：檔案未被修改，需 --write 才套用
@@ -1067,8 +1177,6 @@ async function main()
 	{
 		console.log('\n(Dry-run: no files were modified. Run again with --write to apply changes.)');
 	}
-
-	printSkipDetails(report);
 }
 
 main().catch((err) =>
