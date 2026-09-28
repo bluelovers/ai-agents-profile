@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 安全的 `//` → 區塊註解轉換器 (v36)
+ * 安全的 `//` → 區塊註解轉換器 (v37)
  *
  * 功能特性:
  *  - 預設為 dry-run（不編輯），需加上 `--write` 才會實際寫入檔案；`--diff` 顯示變更對照
@@ -21,6 +21,7 @@
  *  - 檔案過多警告時列出前 5 個檔案；可用 `--max-files <N>` 放寬上限
  *  - 每個檔案處理完成時立即輸出該檔報告（不等待全部處理完才輸出）
  *  - 可用 `--no-details` 隱藏單檔明細（適合檔案被修改或檔案數量很多時）
+ *  - 沒有明細的檔案預設隱藏；`--show-all` 可顯示
  *  - 可用 `--report <file>` 將報告輸出同時寫入指定檔案（tee 模式）
  */
 
@@ -695,6 +696,9 @@ function parseArgs(rawArgs)
 	let recursive = true;
 	let showDetails = true;
 
+	/** 顯示沒有明細的檔案（--show-all） / show files without details (--show-all) */
+	let showAll = false;
+
 	/** 放寬後的上限（未指定時使用 MAX_FILES）/ overridden file limit (null → MAX_FILES) */
 	let maxFiles = null;
 
@@ -720,6 +724,10 @@ function parseArgs(rawArgs)
 		else if (a === '--no-details')
 		{
 			showDetails = false;
+		}
+		else if (a === '--show-all')
+		{
+			showAll = true;
 		}
 		else if (a === '--report')
 		{
@@ -749,7 +757,7 @@ function parseArgs(rawArgs)
 			targets.push(a);
 		}
 	}
-	return { writeMode, showDiff, recursive, maxFiles, showDetails, reportFile, targets };
+	return { writeMode, showDiff, recursive, maxFiles, showDetails, showAll, reportFile, targets };
 }
 
 /**
@@ -950,7 +958,7 @@ function printTargets(targets)
  * 處理所有檔案，並在每個檔案處理完成時立即輸出其報告（不等待全部處理完）
  * Process all files, streaming each file's report as it completes
  */
-async function processAll(filesToProcess, writeMode, showDiff, showDetails)
+async function processAll(filesToProcess, writeMode, showDiff, showDetails, showAll)
 {
 	let changed = 0;
 	let retainedCount = 0;
@@ -971,14 +979,21 @@ async function processAll(filesToProcess, writeMode, showDiff, showDetails)
 
 		if (ch) changed++;
 
-		/** 每個檔案處理完立即輸出處理標記 / Print the per-file result right away */
-		const mark = ch ? (writeMode ? '[MODIFIED]' : '[WOULD CHANGE]') : '[UNCHANGED]';
-		console.log(`\n[Processed] ${mark}  ${fp}  (skipped ${skipped.length})`);
-
-		/** 立即輸出該檔的跳過明細（--no-details 時隱藏） / Stream skip details unless --no-details */
-		if (skipped.length > 0 && showDetails)
+		/**
+		 * 沒有任何明細的檔案預設隱藏；--show-all 時才顯示該檔的處理標記
+		 * Files without any details are hidden by default; --show-all reveals them
+		 */
+		if (skipped.length > 0 || showAll)
 		{
-			printFileSkipDetail(fp, skipped);
+			/** 每個檔案處理完立即輸出處理標記 / Print the per-file result right away */
+			const mark = ch ? (writeMode ? '[MODIFIED]' : '[WOULD CHANGE]') : '[UNCHANGED]';
+			console.log(`\n[Processed] ${mark}  ${fp}  (skipped ${skipped.length})`);
+
+			/** 立即輸出該檔的跳過明細（--no-details 時隱藏） / Stream skip details unless --no-details */
+			if (skipped.length > 0 && showDetails)
+			{
+				printFileSkipDetail(fp, skipped);
+			}
 		}
 
 		if (showDiff && diff && diff.length > 0)
@@ -1088,7 +1103,7 @@ async function writeReportFile()
  */
 async function main()
 {
-	const { writeMode, showDiff, recursive, maxFiles, showDetails, reportFile: reportFilePath, targets } = parseArgs(process.argv.slice(2));
+	const { writeMode, showDiff, recursive, maxFiles, showDetails, showAll, reportFile: reportFilePath, targets } = parseArgs(process.argv.slice(2));
 
 	/** 啟用報告檔輸出（終端照常，結束時寫入）/ Enable report file output (written at the end) */
 	if (reportFilePath)
@@ -1122,6 +1137,7 @@ async function main()
 		console.error('  --diff            show a preview of the changes');
 		console.error('  --no-recursive    only scan the given directory itself (no subdirectories)');
 		console.error('  --no-details      hide per-file skip details (useful for many files or modified files)');
+		console.error('  --show-all        show files without any details (hidden by default)');
 		console.error('  --report <file>   also write the report output to <file> (tee mode)');
 		console.error('  --max-files <N>   raise the per-run file count limit (default: 20)');
 		console.error('');
@@ -1232,7 +1248,7 @@ async function main()
 	 * 4. 開始轉換處理並收集報告資料
 	 * 4. Process files and collect report data
 	 */
-	const { changed, retainedCount, reviewCount, fileSkips } = await processAll(filesToProcess, writeMode, showDiff, showDetails);
+	const { changed, retainedCount, reviewCount, fileSkips } = await processAll(filesToProcess, writeMode, showDiff, showDetails, showAll);
 
 	printSummary(filesToProcess.length, writeMode, changed, retainedCount, reviewCount, fileSkips.length);
 
