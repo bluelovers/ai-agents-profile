@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * 安全的 `//` → 區塊註解轉換器 (v34)
+ * 安全的 `//` → 區塊註解轉換器 (v36)
  *
  * 功能特性:
  *  - 預設為 dry-run（不編輯），需加上 `--write` 才會實際寫入檔案；`--diff` 顯示變更對照
@@ -20,6 +20,8 @@
  *  - 未提供路徑時顯示用法與旗標說明；提供路徑但找不到檔案時逐項說明原因
  *  - 檔案過多警告時列出前 5 個檔案；可用 `--max-files <N>` 放寬上限
  *  - 每個檔案處理完成時立即輸出該檔報告（不等待全部處理完才輸出）
+ *  - 可用 `--no-details` 隱藏單檔明細（適合檔案被修改或檔案數量很多時）
+ *  - 可用 `--report <file>` 將報告輸出同時寫入指定檔案（tee 模式）
  */
 
 const fs = require('fs');
@@ -691,9 +693,13 @@ function parseArgs(rawArgs)
 	let writeMode = false;
 	let showDiff = false;
 	let recursive = true;
+	let showDetails = true;
 
 	/** 放寬後的上限（未指定時使用 MAX_FILES）/ overridden file limit (null → MAX_FILES) */
 	let maxFiles = null;
+
+	/** 報告輸出檔（--report，tee 模式）/ report output file (--report, tee mode) */
+	let reportFile = null;
 
 	const targets = [];
 	for (let idx = 0; idx < rawArgs.length; idx++)
@@ -710,6 +716,21 @@ function parseArgs(rawArgs)
 		else if (a === '--no-recursive')
 		{
 			recursive = false;
+		}
+		else if (a === '--no-details')
+		{
+			showDetails = false;
+		}
+		else if (a === '--report')
+		{
+			/** --report 需接檔案路徑 / requires a file path */
+			const next = rawArgs[idx + 1];
+			if (next === undefined)
+			{
+				throw new Error('--report requires a file path');
+			}
+			reportFile = next;
+			idx++; // 消耗該值 / consume the value
 		}
 		else if (a === '--max-files')
 		{
@@ -728,7 +749,7 @@ function parseArgs(rawArgs)
 			targets.push(a);
 		}
 	}
-	return { writeMode, showDiff, recursive, maxFiles, targets };
+	return { writeMode, showDiff, recursive, maxFiles, showDetails, reportFile, targets };
 }
 
 /**
@@ -929,7 +950,7 @@ function printTargets(targets)
  * 處理所有檔案，並在每個檔案處理完成時立即輸出其報告（不等待全部處理完）
  * Process all files, streaming each file's report as it completes
  */
-async function processAll(filesToProcess, writeMode, showDiff)
+async function processAll(filesToProcess, writeMode, showDiff, showDetails)
 {
 	let changed = 0;
 	let retainedCount = 0;
@@ -954,8 +975,8 @@ async function processAll(filesToProcess, writeMode, showDiff)
 		const mark = ch ? (writeMode ? '[MODIFIED]' : '[WOULD CHANGE]') : '[UNCHANGED]';
 		console.log(`\n[Processed] ${mark}  ${fp}  (skipped ${skipped.length})`);
 
-		/** 立即輸出該檔的跳過明細 / Stream this file's skip details */
-		if (skipped.length > 0)
+		/** 立即輸出該檔的跳過明細（--no-details 時隱藏） / Stream skip details unless --no-details */
+		if (skipped.length > 0 && showDetails)
 		{
 			printFileSkipDetail(fp, skipped);
 		}
@@ -1023,16 +1044,60 @@ function printFileSkipDetail(file, items)
 	}
 }
 
+/** 報告輸出檔路徑（--report）/ report output file path (--report) */
+let reportFile = null;
+
+/** 報告輸出緩衝行（--report）/ buffered report lines (--report) */
+const reportLines = [];
+
+/**
+ * 啟用報告檔輸出：將 console 輸出同時收集（終端仍照常顯示，結束時再寫入檔案）
+ * Enable report output: also collect console output (terminal output unchanged; file written at the end)
+ *
+ * @param {string} filePath - 報告輸出檔路徑 / report output file path
+ */
+function enableReportFile(filePath)
+{
+	reportFile = filePath;
+
+	const tee = (orig) => (...args) =>
+	{
+		orig(...args);
+		reportLines.push(args.map(String).join(' '));
+	};
+
+	console.log = tee(console.log);
+	console.warn = tee(console.warn);
+	console.error = tee(console.error);
+}
+
+/**
+ * 將緩衝的報告寫入指定檔案（在 main 完成後呼叫）
+ * Write the buffered report to the file (call after main completes)
+ */
+async function writeReportFile()
+{
+	if (reportFile === null) return;
+	await fs.promises.writeFile(reportFile, reportLines.join('\n') + '\n', 'utf8');
+	console.log(`\n[Report saved to] ${reportFile}`);
+}
+
 /**
  * 主程式進入點：組合各步驟
  * Main entry point: orchestrate the steps
  */
 async function main()
 {
+	const { writeMode, showDiff, recursive, maxFiles, showDetails, reportFile: reportFilePath, targets } = parseArgs(process.argv.slice(2));
+
+	/** 啟用報告檔輸出（終端照常，結束時寫入）/ Enable report file output (written at the end) */
+	if (reportFilePath)
+	{
+		enableReportFile(reportFilePath);
+	}
+
 	/** 輸出目前工作目錄（除錯／診斷用） / Print the current working directory */
 	console.log(`\n[CWD] ${process.cwd()}`);
-
-	const { writeMode, showDiff, recursive, maxFiles, targets } = parseArgs(process.argv.slice(2));
 
 	/** 輸出目前的目標路徑（診斷用） / Print the current target paths */
 	printTargets(targets);
@@ -1056,6 +1121,8 @@ async function main()
 		console.error('  --write           edit files (default: dry-run, no changes are written)');
 		console.error('  --diff            show a preview of the changes');
 		console.error('  --no-recursive    only scan the given directory itself (no subdirectories)');
+		console.error('  --no-details      hide per-file skip details (useful for many files or modified files)');
+		console.error('  --report <file>   also write the report output to <file> (tee mode)');
 		console.error('  --max-files <N>   raise the per-run file count limit (default: 20)');
 		console.error('');
 		console.error('<path> can be a file (any extension) or a directory of .ts/.tsx files.');
@@ -1165,7 +1232,7 @@ async function main()
 	 * 4. 開始轉換處理並收集報告資料
 	 * 4. Process files and collect report data
 	 */
-	const { changed, retainedCount, reviewCount, fileSkips } = await processAll(filesToProcess, writeMode, showDiff);
+	const { changed, retainedCount, reviewCount, fileSkips } = await processAll(filesToProcess, writeMode, showDiff, showDetails);
 
 	printSummary(filesToProcess.length, writeMode, changed, retainedCount, reviewCount, fileSkips.length);
 
@@ -1179,8 +1246,12 @@ async function main()
 	}
 }
 
-main().catch((err) =>
+main().then(async () =>
+{
+	await writeReportFile();
+}).catch(async (err) =>
 {
 	console.error(`\n[ERROR] ${err && err.message ? err.message : err}`);
 	process.exitCode = 1;
+	await writeReportFile();
 });
