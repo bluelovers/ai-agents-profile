@@ -463,6 +463,7 @@ export class UserProfileEntity implements IUserProfile {
 |--------|------|
 | 是否在進行設計、實作或重構？ | **將 SSoT 置於最優先原則**，檢查所有型別與邏輯是否具備單一權威來源 |
 | 是否為同領域或有重複屬性群組？ | **優先採用繼承 (`interface ... extends ...`)**，或建立巢狀組合，杜絕各自獨立定義 |
+| 是否需要在多個型別中新增/變更同一組成員？ | **將共享成員抽離為基礎介面**（`extends`/組合）——重複的跨型別修改是 SSoT 的警報鐘聲，而非單純雜務 |
 | Class 與 Interface 之間存在重複結構或契約？ | **在 Class 上使用 `implements Interface` 約束**，杜絕各自獨立宣告導致靜默型別漂移 |
 | 是否定義了有限的業務狀態、分類或數字標記（如 0/1）？ | **優先採用 Enum 設計**而非字串或數字聯合，避免日後需求擴展時再次耗費精力重構為 Enum |
 | 是否具有位置語義的 Tuple/陣列（如 `[phys, mag]`）？ | **為槽位索引定義 Enum 作為單一事實來源、抽離具名 Tuple 型別、並透過 Enum 索引**——絕不可僅以註解連結的內聯 Tuple |
@@ -581,6 +582,109 @@ const mFlat = stats.def?.[EnumDefSlot.MAG_FLAT];
 - **可複用而不漂移**——其他模組直接 `import IAttackTuple`，而非重新宣告內聯 Tuple。
 
 > 💡 **當位置本身不穩定時的替代方案：** 若槽位順序本身就是維護隱患（頻繁調序、消費端眾多），優先採用 Primitive Obsession 指導中的**物件形式**（`{ physical, magic }` / `{ physPct, physFlat, magPct, magFlat }`），徹底消除位置脆弱性。唯有當陣列形狀是由合約強制要求（例如固定的傳輸/序列化格式）時，才使用 Enum 錨定的 Tuple。
+
+---
+
+#### 規範 G：偵測跨型別的成員重複定義 —— 在第 N 次複製前先抽離
+
+重複的修改本身就是一種維護訊號，而不只是繁瑣的雜務：**當你發現需要在多個型別中「同時新增或變更同一組成員」時，那正是 SSoT 的警報鐘聲**——這些型別共享同一個形狀，不應各自保留獨立副本。
+
+**規則：**
+1. 將「我得在 N 個型別裡改同一組欄位」視為必須停下抽離的強烈觸發條件，而非只是完成第 N 次貼上。
+2. 把共享成員抽離成**基礎介面**（或可複用的組合型別），讓每個型別以 `extends` / 組合方式繼承。
+3. 對照它要預防的三個壞味道驗證抽離結果：`Data Clumps`、`Type Drift`、`Shotgun Surgery`。
+
+##### ❌ 反模式：在多個型別中重複同一組成員區塊
+
+```typescript
+// 稽核欄位被逐個手動複製到每個實體——新增第 5 個欄位就得改遍所有實體：
+export interface IUser {
+    id: string;
+    name: string;
+    createdAt: string;   // 重複
+    updatedAt: string;   // 重複
+    createdBy: string;   // 重複
+    version: number;     // 重複
+}
+
+export interface IOrder {
+    orderId: string;
+    amount: number;
+    createdAt: string;   // 再次重複
+    updatedAt: string;   // 再次重複
+    createdBy: string;   // 再次重複
+    version: number;     // 再次重複
+}
+
+// 分頁欄位也在每個查詢 DTO 中重複：
+export interface IUserQuery {
+    keyword: string;
+    page: number;     // 重複
+    pageSize: number; // 重複
+    sort: string;     // 重複
+}
+export interface IOrderQuery {
+    status: string;
+    page: number;     // 再次重複
+    pageSize: number; // 再次重複
+    sort: string;     // 再次重複
+}
+```
+
+**為什麼是壞味道：**
+- 同一個變更（例如新增 `deletedAt`）會強制修改每一個型別——典型的**霰彈式修改 (Shotgun Surgery)**。
+- 副本會漂移：某個型別把 `updatedAt` 改名為 `lastModified`，另一個忘了改，形狀便靜默地分岔（**型別漂移 Type Drift**）。
+- 這組重複欄位正是一個值得擁有自己命名歸宿的**資料泥團 (Data Clump)**。
+
+##### ✅ 正確：將共享成員抽離為基礎/組合型別
+
+```typescript
+/**
+ * 稽核後設資料 - 建立/更新追蹤欄位的單一事實來源
+ * Audit metadata — single source of truth for create/update tracking fields.
+ */
+export interface IAuditable {
+    createdAt: string;
+    updatedAt: string;
+    createdBy: string;
+    version: number;
+}
+
+/**
+ * 分頁請求 - 分頁查詢欄位的單一事實來源
+ * Pagination request — single source of truth for paged query fields.
+ */
+export interface IPaginatedQuery {
+    page: number;
+    pageSize: number;
+    sort: string;
+}
+
+export interface IUser extends IAuditable {
+    id: string;
+    name: string;
+}
+
+export interface IOrder extends IAuditable {
+    orderId: string;
+    amount: number;
+}
+
+export interface IUserQuery extends IPaginatedQuery {
+    keyword: string;
+}
+
+export interface IOrderQuery extends IPaginatedQuery {
+    status: string;
+}
+```
+
+**為什麼對 SSoT 至關重要：**
+- **一次修改全體適用**——在 `IAuditable` 新增 `deletedAt`，所有實體立即同步；無散落補丁、無遺漏副本。
+- **杜絕靜默漂移**——所有消費端共享完全相同的成員形狀，編譯器會攔截任何分歧。
+- **意圖顯式化**——`extends IAuditable` 清楚表達「此實體具備稽核能力」，將複製貼上的區塊轉化為有意義的契約。
+
+> 💡 **偵測啟發式：** 若同一組 2+ 欄位出現在 3+ 個型別中，或你下意識「從上一個介面複製這塊」，請立即抽離。第一次抽離的成本，會在這組欄位需要變更時立即回本。
 
 ---
 

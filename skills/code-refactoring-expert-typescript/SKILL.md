@@ -462,6 +462,7 @@ export class UserProfileEntity implements IUserProfile {
 |-------|--------|
 | Designing, implementing, or refactoring? | **Treat SSoT as top priority**; verify all types and logic have a single authoritative source |
 | Same-domain or duplicate property groups? | **Prioritize inheritance (`interface ... extends ...`)** or composition; avoid separate definitions |
+| Need to add/change the same members in several types? | **Extract the shared members into a base interface** (`extends`/composition) — a repeated multi-type edit is the SSoT alarm bell, not just a chore |
 | Duplicate structure or contract between Class and Interface? | **Use `implements Interface` on the Class** to eliminate isolated declarations and silent type drift |
 | Finite business states, categories, or numeric flags (e.g., 0/1)? | **Prioritize Enum design** over string or numeric unions to avoid secondary refactoring later |
 | Tuple/array with positional meaning (e.g., `[phys, mag]`)? | **Define an Enum for slot indices as SSoT, extract a named tuple type, and index via the Enum** — never inline a tuple with only a comment link |
@@ -578,6 +579,107 @@ const mFlat = stats.def?.[EnumDefSlot.MAG_FLAT];
 - **Reusable without drift** — other modules import `IAttackTuple` instead of re-declaring an inline tuple.
 
 > 💡 **Alternative when positions are unstable:** If the slot order is itself a maintenance hazard (frequent reordering, many consumers), prefer the **object form** (`{ physical, magic }` / `{ physPct, physFlat, magPct, magFlat }`) from the Primitive Obsession guidance — it removes positional fragility entirely. Use the Enum-anchored tuple when the array shape is required by a contract (e.g., a fixed wire/serialization format).
+
+---
+
+#### Guideline G: Detect Shared Member Definitions Across Types — Extract Before the Nth Duplication
+
+A recurring edit is a maintenance signal, not just a chore: **when you find yourself adding or changing the *same set of members* in several types at once, that is the SSoT alarm bell** — those types share a common shape and should not keep their own independent copies.
+
+**Rule:**
+1. Treat "I had to edit the same fields in N types" as a hard trigger to stop and extract, not to finish the Nth paste.
+2. Pull the shared members into a **base interface** (or a reusable composition type) and let each type `extends` it / compose it.
+3. Verify the extraction against the three smells it prevents: `Data Clumps`, `Type Drift`, `Shotgun Surgery`.
+
+##### ❌ Anti-pattern: Repeating the same member block across multiple types
+
+```typescript
+// Audit fields copied into every entity by hand — adding a 5th field means editing all of them:
+export interface IUser {
+    id: string;
+    name: string;
+    createdAt: string;   // Repeated
+    updatedAt: string;   // Repeated
+    createdBy: string;   // Repeated
+    version: number;     // Repeated
+}
+
+export interface IOrder {
+    orderId: string;
+    amount: number;
+    createdAt: string;   // Repeated again
+    updatedAt: string;   // Repeated again
+    createdBy: string;   // Repeated again
+    version: number;     // Repeated again
+}
+
+// Pagination fields also repeated across every query DTO:
+export interface IUserQuery {
+    keyword: string;
+    page: number;     // Repeated
+    pageSize: number; // Repeated
+    sort: string;     // Repeated
+}
+export interface IOrderQuery {
+    status: string;
+    page: number;     // Repeated again
+    pageSize: number; // Repeated again
+    sort: string;     // Repeated again
+}
+```
+
+**Why it smells:**
+- The same change (e.g., add `deletedAt`) forces an edit in every type — classic **Shotgun Surgery**.
+- The copies drift: one type renames `updatedAt` → `lastModified`, another forgets, and the shapes silently diverge (**Type Drift**).
+- The repeated field group is a **Data Clump** that deserves its own named home.
+
+##### ✅ Correct: Extract the shared members into a base/composed type
+
+```typescript
+/**
+ * Audit metadata — single source of truth for create/update tracking fields.
+ */
+export interface IAuditable {
+    createdAt: string;
+    updatedAt: string;
+    createdBy: string;
+    version: number;
+}
+
+/**
+ * Pagination request — single source of truth for paged query fields.
+ */
+export interface IPaginatedQuery {
+    page: number;
+    pageSize: number;
+    sort: string;
+}
+
+export interface IUser extends IAuditable {
+    id: string;
+    name: string;
+}
+
+export interface IOrder extends IAuditable {
+    orderId: string;
+    amount: number;
+}
+
+export interface IUserQuery extends IPaginatedQuery {
+    keyword: string;
+}
+
+export interface IOrderQuery extends IPaginatedQuery {
+    status: string;
+}
+```
+
+**Why this is crucial for SSoT:**
+- **One edit propagates to all** — adding `deletedAt` to `IAuditable` updates every entity at once; no scattered patches, no missed copies.
+- **No silent drift** — all consumers share the exact same member shapes; the compiler catches any divergence.
+- **Intent is explicit** — `extends IAuditable` documents that "this entity is audited", turning a copy-paste block into a meaningful contract.
+
+> 💡 **Detection heuristic:** If the same 2+ fields recur in 3+ types, or you reach for "copy the block from the last interface", extract immediately. The cost of the first extraction is paid back the moment the group must change.
 
 ---
 
