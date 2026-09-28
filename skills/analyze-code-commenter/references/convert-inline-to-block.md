@@ -8,18 +8,18 @@ rule. It is **dry-run by default** — nothing is written unless you pass `--wri
 
 | File | Purpose |
 |------|---------|
-| `inline-to-block.cjs` | The converter script (Node.js, CommonJS). |
-| `inline-to-block.bat` | Windows launcher. Uses `%~dp0` to locate the sibling `.cjs` and forwards all arguments via `%*`. |
-| `inline-to-block.md` | This document. |
+| `convert-inline-to-block.cjs` | The converter script (Node.js, CommonJS). |
+| `convert-inline-to-block.bat` | Windows launcher. Uses `%~dp0` to locate the sibling `.cjs` and forwards all arguments via `%*`. |
+| `convert-inline-to-block.md` | This document. |
 
 ## Quick start
 
 ```bat
 REM Windows (batch launcher)
-inline-to-block.bat ./src --write --diff
+convert-inline-to-block.bat ./src --write --diff
 
 REM Or call node directly
-node "path/to/inline-to-block.cjs" ./src --write --diff
+node "path/to/convert-inline-to-block.cjs" ./src --write --diff
 ```
 
 ## Flags
@@ -57,13 +57,13 @@ The script deliberately stops or warns in risky situations:
 
 ```bat
 REM Preview changes for one file (dry-run)
-inline-to-block.bat src/utils/format.ts
+convert-inline-to-block.bat src/utils/format.ts
 
 REM Apply changes to a directory and show a diff
-inline-to-block.bat src --write --diff
+convert-inline-to-block.bat src --write --diff
 
 REM One level only, no recursion
-inline-to-block.bat src/components --no-recursive --write
+convert-inline-to-block.bat src/components --no-recursive --write
 ```
 
 ## Exit codes

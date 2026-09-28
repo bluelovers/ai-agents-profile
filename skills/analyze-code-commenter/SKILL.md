@@ -1233,14 +1233,14 @@ const cwd = process.cwd();
 
 This skill ships with a safe inline-comment (`//`) → block-comment converter that batch-converts existing inline comments into block comments (dry-run by default; add `--write` to actually write):
 
-- Script: [references/inline-to-block.cjs](references/inline-to-block.cjs)
-- Batch launcher (uses `%~dp0` to locate the sibling script and forwards parameters): [references/inline-to-block.bat](references/inline-to-block.bat)
-- Usage & feature reference: [references/inline-to-block.md](references/inline-to-block.md)
+- Script: [references/convert-inline-to-block.cjs](references/convert-inline-to-block.cjs)
+- Batch launcher (uses `%~dp0` to locate the sibling script and forwards parameters): [references/convert-inline-to-block.bat](references/convert-inline-to-block.bat)
+- Usage & feature reference: [references/convert-inline-to-block.md](references/convert-inline-to-block.md)
 
 ```bat
 REM Usage:
-REM   inline-to-block.bat <target> [--write] [--diff] [--no-recursive]
-inline-to-block.bat ./src --write --diff
+REM   convert-inline-to-block.bat <target> [--write] [--diff] [--no-recursive]
+convert-inline-to-block.bat ./src --write --diff
 ```
 
 > Note: the batch file forwards all arguments to the `.cjs` script via `%*`, so flags like `--write`, `--diff`, `--no-recursive` are supported.
