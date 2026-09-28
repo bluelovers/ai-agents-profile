@@ -464,6 +464,7 @@ export class UserProfileEntity implements IUserProfile {
 | Same-domain or duplicate property groups? | **Prioritize inheritance (`interface ... extends ...`)** or composition; avoid separate definitions |
 | Duplicate structure or contract between Class and Interface? | **Use `implements Interface` on the Class** to eliminate isolated declarations and silent type drift |
 | Finite business states, categories, or numeric flags (e.g., 0/1)? | **Prioritize Enum design** over string or numeric unions to avoid secondary refactoring later |
+| Tuple/array with positional meaning (e.g., `[phys, mag]`)? | **Define an Enum for slot indices as SSoT, extract a named tuple type, and index via the Enum** — never inline a tuple with only a comment link |
 | Duplicate calculation, validation, or transformation logic? | **Extract into shared pure functions/utilities**; eliminate multi-place maintenance |
 | Implementation hinders testing or reuse? | **Decompose and refine (Extract & Refine)** into pure/isolated units; **never duplicate logic for tests** |
 | Are there fields based on another type? | Use `OriginalType['fieldName']` or `Pick<OriginalType, ...>` to preserve traceability |
@@ -490,6 +491,93 @@ export type IGeoPointTupleLatLng = [
 - IDE shows semantics for each position (hover shows `lat: number` instead of `number`)
 - Prevents order confusion between `[lng, lat]` and `[lat, lng]` at syntax level
 - Compared to object form `{ lng, lat }`, retains array's lightweight nature while improving readability
+
+---
+
+#### Guideline F: Anchor Tuple Position Semantics to an Enum — Never Inline
+
+A tuple whose positions carry business meaning (e.g., `[physical, magic]` attack, `[phys %, phys flat, mag %, mag flat]` reduction) must **not** be defined as an inline type with a comment like "index semantics follow EnumX". Inline tuples scatter the position contract across call sites, and a comment-only link is not enforced — call sites still drift toward raw `tuple[0]` / `tuple[1]` indexing that silently breaks when the order changes.
+
+**Rule:**
+1. Define an **Enum for the slot indices** (`EnumAtkSlot`, `EnumDefSlot`, …) as the single source of truth for what each position means.
+2. Extract the tuple into a **named type alias** that is never inlined at the call site.
+3. **Index the tuple through the Enum member** at every access site — never a raw numeric literal.
+
+##### ❌ Anti-pattern: Inline tuple + comment-only link to an Enum
+
+```typescript
+interface IBaseStats {
+    /**
+     * base attack 2-tuple [physical, magic]
+     * index semantics follow EnumAtkSlot.
+     */
+    atk?: [phys: number, mag: number];
+
+    /**
+     * base reduction 4-tuple [phys %, phys flat, mag %, mag flat]
+     * index semantics follow EnumDefSlot.
+     */
+    def?: [physPct: number, physFlat: number, magPct: number, magFlat: number];
+}
+
+// Call sites silently use raw indices — the link to EnumAtkSlot/EnumDefSlot is lost:
+const phys = stats.atk?.[0];   // Which slot? Only the comment knows.
+const mFlat = stats.def?.[3];  // Magic flat? A 0-by-comment contract.
+```
+
+**Why it smells:**
+- The position contract is duplicated as prose; if `EnumAtkSlot` is reordered, the inline comment and every raw index silently disagree.
+- No shared named type — any other module taking the same shape must re-declare the inline tuple, breeding `Type Drift`.
+
+##### ✅ Correct: Enum as SSoT for slot indices + named tuple + enum-indexed access
+
+```typescript
+/**
+ * Attack slot indices — single source of truth for tuple position semantics.
+ */
+export enum EnumAtkSlot {
+    /** Physical attack / 物理攻擊 */
+    PHYSICAL = 0,
+    /** Magic attack / 魔法攻擊 */
+    MAGIC = 1,
+}
+
+/**
+ * Reduction slot indices — single source of truth for tuple position semantics.
+ */
+export enum EnumDefSlot {
+    /** Physical reduction percentage / 物理減傷百分比 */
+    PHYS_PCT = 0,
+    /** Physical flat reduction / 物理固定減傷 */
+    PHYS_FLAT = 1,
+    /** Magic reduction percentage / 魔法減傷百分比 */
+    MAG_PCT = 2,
+    /** Magic flat reduction / 魔法固定減傷 */
+    MAG_FLAT = 3,
+}
+
+/** Base attack tuple — order strictly follows EnumAtkSlot. */
+export type IAttackTuple = [phys: number, mag: number];
+
+/** Base reduction tuple — order strictly follows EnumDefSlot. */
+export type IDefenseTuple = [physPct: number, physFlat: number, magPct: number, magFlat: number];
+
+interface IBaseStats {
+    atk?: IAttackTuple;
+    def?: IDefenseTuple;
+}
+
+// Access sites reference the Enum — renaming/reordering the slot stays in sync:
+const phys = stats.atk?.[EnumAtkSlot.PHYSICAL];
+const mFlat = stats.def?.[EnumDefSlot.MAG_FLAT];
+```
+
+**Why this is crucial for SSoT:**
+- **Position contract lives in one place** — the Enum. The named tuple type and every access site share it; reordering `EnumAtkSlot` is a compile-time-safe, IDE-navigable change, not a hunt through comments.
+- **Eliminates magic indices** — `atk[0]` becomes `atk[EnumAtkSlot.PHYSICAL]`, self-documenting and typo-safe.
+- **Reusable without drift** — other modules import `IAttackTuple` instead of re-declaring an inline tuple.
+
+> 💡 **Alternative when positions are unstable:** If the slot order is itself a maintenance hazard (frequent reordering, many consumers), prefer the **object form** (`{ physical, magic }` / `{ physPct, physFlat, magPct, magFlat }`) from the Primitive Obsession guidance — it removes positional fragility entirely. Use the Enum-anchored tuple when the array shape is required by a contract (e.g., a fixed wire/serialization format).
 
 ---
 

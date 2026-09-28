@@ -465,6 +465,7 @@ export class UserProfileEntity implements IUserProfile {
 | 是否為同領域或有重複屬性群組？ | **優先採用繼承 (`interface ... extends ...`)**，或建立巢狀組合，杜絕各自獨立定義 |
 | Class 與 Interface 之間存在重複結構或契約？ | **在 Class 上使用 `implements Interface` 約束**，杜絕各自獨立宣告導致靜默型別漂移 |
 | 是否定義了有限的業務狀態、分類或數字標記（如 0/1）？ | **優先採用 Enum 設計**而非字串或數字聯合，避免日後需求擴展時再次耗費精力重構為 Enum |
+| 是否具有位置語義的 Tuple/陣列（如 `[phys, mag]`）？ | **為槽位索引定義 Enum 作為單一事實來源、抽離具名 Tuple 型別、並透過 Enum 索引**——絕不可僅以註解連結的內聯 Tuple |
 | 是否存在重複的計算、校驗或轉換邏輯？ | **抽離為共用純函式/工具**，杜絕邏輯重複散落導致各處各自維護與更新遺漏 |
 | 現有實作阻礙測試或難以複用？ | **進行抽離細化 (Decompose & Refine)**，將核心邏輯抽離為獨立純函式；**嚴禁為測試複製邏輯**而脫離 SSoT |
 | 是否有基於另一型別的欄位？ | 使用 `OriginalType['fieldName']` 或 `Pick<OriginalType, ...>` 保留可追溯性 |
@@ -491,6 +492,95 @@ export type IGeoPointTupleLatLng = [
 - IDE 會顯示每個位置的語義（滑鼠懸停時可見 `lat: number` 而非 `number`）
 - 從語法層面防止 `[lng, lat]` 與 `[lat, lng]` 的順序混淆
 - 與物件形式 `{ lng, lat }` 相比，保留了陣列的輕量特性，同時增加了可讀性
+
+---
+
+#### 規範 F：Tuple 順序語義應以 Enum 作為單一事實來源，禁止 inline
+
+對於「每個位置都承載特定業務語義」的陣列（例如攻擊 `[physical, magic]`、減傷 `[phys %, phys flat, mag %, mag flat]`），**絕不能**設計成內聯 (inline) 型別並僅以註解寫著「index semantics follow EnumX」。內聯 Tuple 會把「位置契約」散落在各個使用端，而僅靠註解的連結並不被編譯器強制——使用端仍會退化為裸索引 `tuple[0]` / `tuple[1]`，一旦順序調整便靜默出錯。
+
+**規則：**
+1. 為「槽位索引」定義一個 **Enum**（`EnumAtkSlot`、`EnumDefSlot` …），作為「每個位置代表什麼」的單一事實來源。
+2. 將 Tuple **抽離為具名型別別名**，在使用端絕不再內聯展開。
+3. 在**每個存取點都透過 Enum 成員索引**，而非裸數字字面值。
+
+##### ❌ 反模式：內聯 Tuple + 只靠註解連結 Enum
+
+```typescript
+interface IBaseStats {
+    /**
+     * base attack 2-tuple [physical, magic]
+     * index semantics follow EnumAtkSlot.
+     */
+    atk?: [phys: number, mag: number];
+
+    /**
+     * base reduction 4-tuple [phys %, phys flat, mag %, mag flat]
+     * index semantics follow EnumDefSlot.
+     */
+    def?: [physPct: number, physFlat: number, magPct: number, magFlat: number];
+}
+
+// 使用端靜默地用裸索引——與 EnumAtkSlot/EnumDefSlot 的連結已斷開：
+const phys = stats.atk?.[0];   // 第 0 槽是什麼？只有註解知道
+const mFlat = stats.def?.[3];  // 魔法固定減傷？一紙註解契約
+```
+
+**為什麼是壞味道：**
+- 位置契約被複製成散文；一旦 `EnumAtkSlot` 重新排序，內聯註解與每個裸索引都會靜默地與之脫節。
+- 缺乏共用具名型別——任何採用相同形狀的其他模組都必須再次宣告內聯 Tuple，滋生「型別漂移 (Type Drift)」。
+
+##### ✅ 正確：以 Enum 作為槽位索引的單一事實來源 + 具名 Tuple + 透過 Enum 索引
+
+```typescript
+/**
+ * 攻擊槽位索引 - Tuple 位置語義的單一事實來源
+ * Attack slot indices — single source of truth for tuple position semantics.
+ */
+export enum EnumAtkSlot {
+    /** 物理攻擊 / Physical attack */
+    PHYSICAL = 0,
+    /** 魔法攻擊 / Magic attack */
+    MAGIC = 1,
+}
+
+/**
+ * 減傷槽位索引 - Tuple 位置語義的單一事實來源
+ * Reduction slot indices — single source of truth for tuple position semantics.
+ */
+export enum EnumDefSlot {
+    /** 物理減傷百分比 / Physical reduction percentage */
+    PHYS_PCT = 0,
+    /** 物理固定減傷 / Physical flat reduction */
+    PHYS_FLAT = 1,
+    /** 魔法減傷百分比 / Magic reduction percentage */
+    MAG_PCT = 2,
+    /** 魔法固定減傷 / Magic flat reduction */
+    MAG_FLAT = 3,
+}
+
+/** 基礎攻擊 Tuple - 順序嚴格遵循 EnumAtkSlot */
+export type IAttackTuple = [phys: number, mag: number];
+
+/** 基礎減傷 Tuple - 順序嚴格遵循 EnumDefSlot */
+export type IDefenseTuple = [physPct: number, physFlat: number, magPct: number, magFlat: number];
+
+interface IBaseStats {
+    atk?: IAttackTuple;
+    def?: IDefenseTuple;
+}
+
+// 存取點引用 Enum —— 槽位重新命名/排序都會自動同步：
+const phys = stats.atk?.[EnumAtkSlot.PHYSICAL];
+const mFlat = stats.def?.[EnumDefSlot.MAG_FLAT];
+```
+
+**為什麼對 SSoT 至關重要：**
+- **位置契約集中於一處**——即 Enum。具名 Tuple 型別與每個存取點都共享它；重新排序 `EnumAtkSlot` 是編譯期安全、可由 IDE 導航的變更，而非翻找註解的人肉作業。
+- **消除魔術索引**——`atk[0]` 變成 `atk[EnumAtkSlot.PHYSICAL]`，自我說明且防拼寫錯誤。
+- **可複用而不漂移**——其他模組直接 `import IAttackTuple`，而非重新宣告內聯 Tuple。
+
+> 💡 **當位置本身不穩定時的替代方案：** 若槽位順序本身就是維護隱患（頻繁調序、消費端眾多），優先採用 Primitive Obsession 指導中的**物件形式**（`{ physical, magic }` / `{ physPct, physFlat, magPct, magFlat }`），徹底消除位置脆弱性。唯有當陣列形狀是由合約強制要求（例如固定的傳輸/序列化格式）時，才使用 Enum 錨定的 Tuple。
 
 ---
 
