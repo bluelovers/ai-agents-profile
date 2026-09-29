@@ -1170,6 +1170,63 @@ tmp/
 
 ---
 
+### 10. 避免無意義的測試 / Avoid Meaningless Tests
+
+**不應撰寫僅斷言常數字面值的測試（tautological tests）。** 此類測試只是重複原始碼中的常數定義，無法捕捉行為錯誤，且每次調整常數都需同步修改，徒增維護成本。
+
+#### 不良範例
+
+```typescript
+// ❌ 無意義的測試：僅斷言常數等於其字面定義
+describe('game constants', () => {
+	it('exposes documented values', () => {
+		expect(MAX_TIME).toBe(1000);
+		expect(START_TIME).toBe(900);
+		expect(MAX_LEVEL).toBe(50);
+		expect(MAX_STATUS).toBe(250);
+		// ... 其餘常數逐項斷言
+	});
+
+	it('EnumTeamSide has numeric values', () => {
+		expect(EnumTeamSide.Team0).toBe(0);
+		expect(EnumTeamSide.Team1).toBe(1);
+	});
+});
+```
+
+此類測試存在以下問題：
+
+- **無行為覆蓋**：`expect(MAX_TIME).toBe(1000)` 只是把 `MAX_TIME = 1000` 再寫一次，未驗證任何邏輯
+- **脆弱且無回饋**：當設計上需要調整常數（如平衡性改動），測試必然失敗，但失敗不代表程式有 bug
+- **維護雜訊**：常數越多，無意義的斷言越多，稀釋了真正有意義的測試
+
+#### 良好範例
+
+改為測試**依賴該常數的行為**，而非常數本身：
+
+```typescript
+// ✅ 有意義的測試：驗證常數在業務邏輯中的行為
+describe('battle time limit', () => {
+	it('should stop the battle when reaching MAX_TIME', () => {
+		const battle = createBattle({ elapsed: MAX_TIME + 1 });
+		expect(battle.isOver).toBe(true);
+	});
+
+	it('should allow one extra turn within TURN_EXTENDS window', () => {
+		const battle = createBattle({ turns: BATTLE_MAX_TURNS });
+		expect(battle.canExtend).toBe(true);
+	});
+});
+```
+
+#### 判斷準則
+
+- 若斷言只是 `expect(CONSTANT).toBe(<該常數的字面值>)` → 多半為無意義測試
+- 常數的值是否正確，應由「使用該常數的函式/模組行為」間接驗證
+- 若常數來自外部設定或協定（如 API contract），可針對該**邊界**寫一筆契約測試，而非逐個字面斷言
+
+---
+
 ## 決策流程 / Decision Flow
 
 ```
