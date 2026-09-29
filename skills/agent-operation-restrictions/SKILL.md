@@ -118,3 +118,4 @@ tags:
 
 - ⚙️ **指令執行規則與正確/錯誤範例**：[command-execution-rules.md](./references/command-execution-rules.md)
 - 🚫 **禁止操作清單與授權判斷準則**：[forbidden-operations.md](./references/forbidden-operations.md)
+- 🧭 **行為與範圍紀律（WHY/HOW）**：[agent-behavior-standardization](../agent-behavior-standardization/SKILL.md) — 本技能中的「避免非必要行為」「禁止濫用或頻繁執行測試」等規則，其背後的思考原則與 scope drift 案例，請參閱該技能第 8 節「任務範圍紀律」。

@@ -298,6 +298,69 @@ Agent 的最終報告必須建立在**成功驗證的工具結果**上。
 **核心原則：工具錯誤不是檔案不存在的證據；錯誤參數造成的失敗，更不能被轉換成虛假的任務狀態。**
 
 
+---
+
+## 8. 任務範圍紀律：避免 Scope Drift 與非必要探索
+
+目的：標準化 Agent 在「重構 / 結構分析 / 註解」等**以原始檔案為事實來源**的工作中的思考方式，避免將純程式任務擴張成「倉庫狀態與測試行為調查」。
+
+### 8.1 以當前檔案內容為事實基準
+
+- 重構、註解、結構分析類任務，其 **Source of Truth 就是 Agent 被給定的檔案內容**，而非 Git 狀態。
+- `git diff` 只能說明 working tree 與 HEAD 的差異；`git log` 回答「這段 code 如何演變而來」。
+- 兩者都**無法幫助判斷「哪些邏輯重複」「哪些是共同 domain fact」**，故不應作為前置調查。
+
+### 8.2 區分「必要」與「可能有用」的動作
+
+| 動作 | 判定 | 說明 |
+|------|------|------|
+| 閱讀 source code | 必要 | 直接分析被指定檔案 |
+| 比較兩個 implementation | 必要 | 找出重複事實 |
+| 設計 shared abstraction | 必要 | 抽離共同 domain fact |
+| 保留 intentional divergence | 必要 | 在 caller / 配置層保留刻意差異 |
+| `git diff` | 非必要 | 只描述 working tree 與 HEAD 差異 |
+| `git log` | 非必要 | 回答「如何演變」，不改變當下 SSoT 重複的事實 |
+| 為猜 user 意圖而查 Git | 不應該 | 自行擴張問題定義 |
+| refactor **前**先查 tests | 通常非必要 | 除非使用者明確要求「確保測試通過」 |
+| refactor **後**跑 test 驗證 | 合理 | 整體成果驗證 |
+
+### 8.3 SSoT 重構不因「假設的例外」而停止
+
+- **SSoT ≠ 強迫兩份檔案完全一樣。** 正確目標是抽出「共同 domain fact 成單一來源」，並在 caller / 配置層保留 intentional divergence（`Shared 80%` → 單一來源；`Different 20%` → 各自保留）。
+- 即便懷疑某檔是 baseline 或歷史遺留，也應**先用 code structure 判斷是否為相同事實**，而非透過 Git history 猜使用者意圖。
+- **範圍由「檔案內容」決定，不由「猜測」收縮**：使用者指出兩檔違反 SSoT，就應全面找 violation（含其他明確相同事實），不該自行把 scope 縮小。
+
+### 8.4 理想 reasoning 流程（以 SSoT 重構為例）
+
+```text
+1. 閱讀指定檔案
+2. 識別重複概念（型別 / 計算流程 / helper / 執行流）
+3. 對每個重複部分，判斷是否代表相同 domain fact
+4. 抽出共用事實為單一實作
+5. 在 caller / 配置層保留刻意差異
+6. 更新兩檔使用共用實作，且依賴方向不產生循環依賴
+7. 僅在重構完成後、若有驗證需求，才執行相關 test / build
+```
+
+注意最後才是 `test`，而非「先查 test → 因為 test 可能告訴我能不能 refactor」。
+
+### 8.5 與操作限制技能的關係
+
+本節定義**思考與範圍紀律（WHY / HOW）**；具體禁止事項（WHAT）收錄於 `agent-operation-restrictions` 的「避免非必要行為」「禁止濫用或頻繁執行測試」等規則。兩者互補：行為準則解釋「為什麼」，操作限制列出「禁止什麼」。
+
+> 參照：[agent-operation-restrictions](../agent-operation-restrictions/SKILL.md)
+
+### 8.6 重構時應參考的相關技能
+
+實作 SSoT 抽離與重構時，除了遵循本節的範圍紀律外，應進一步參考專門的重構技能，以確保重構的安全、可回溯與類型安全：
+
+- **`skills/code-refactoring-expert`**：通用安全重構指引（設計模式、回溯相容、增量變更）。
+- **`skills/code-refactoring-expert-typescript`**：TypeScript / Node.js 專屬重構與設計指引（型別安全、精確型別、Single Source of Truth、非同步流程優化）。
+
+> 備註：上述兩個重構技能提供「如何正確重構」的具體方法；本節（第 8 節）則負責約束「重構時不該做的多餘探索」，兩者相輔相成。
+
+---
+
 ## 推薦使用的相關技能
 
 為確保行為的準確性與安全性，可使用以下技能來協助任務執行：
@@ -306,3 +369,5 @@ Agent 的最終報告必須建立在**成功驗證的工具結果**上。
 - **`skills/agent-script-execution`**: 可使用此技能來了解如何防止指令構建錯誤。
 - **`skills/agent-operation-restrictions`**: 可使用此技能來了解 Agent 在執行任務時必須遵守的嚴格操作限制。
 - **`skills/factual-accuracy-guard`**: 可使用此技能來了解如何確保事實準確性，避免過度依賴假設。
+- **`skills/code-refactoring-expert`**: 可使用此技能了解安全重構的通用原則（設計模式、回溯相容、增量變更）。
+- **`skills/code-refactoring-expert-typescript`**: 可使用此技能了解 TypeScript / Node.js 專屬重構與設計指引（型別安全、精確型別、SSoT、非同步流程優化）。
