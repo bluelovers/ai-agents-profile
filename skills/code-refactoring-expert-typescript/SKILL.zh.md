@@ -1436,5 +1436,5 @@ if (user.isActive && subscription.status === 'active' &&
 - [comment-format-rules](../../rules/comment-format-rules.md) - 註解格式規範（雙語、區塊註解、JSDoc）
 - [typescript-naming-convention](../typescript-naming-convention/SKILL.md) - TypeScript 命名慣例（Enum、Interface、Type）
 - [unimplemented-code-handling-rules](../../rules/unimplemented-code-handling-rules.md) - 無法實現代碼處理規則
-- [test-file-best-practices](../../rules/test-file-best-practices.md) - 測試檔案最佳實踐
+- [test-file-best-practices](../test-file-best-practices/SKILL.md) - 測試檔案最佳實踐
 

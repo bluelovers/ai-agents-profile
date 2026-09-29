@@ -4,8 +4,8 @@ description: |-
   建立與更新符合專案最新規範（如 description 換行與觸發詞語法、title 欄位使用時機、標籤正規化及 references 目錄規劃）的高品質技能之微調版指南。
 
   當使用者提及以下關鍵字或情境時觸發：
-  - "建立新技能" 或 "建立技能"
-  - "微調技能" 或 "微調技能指南"
+  - "建立新技能" 或 "建立技能" 或 "轉換為技能"
+  - "微調技能" 或 "微調技能指南" 或 "更新技能參照"
   - "新增技能 / create skill"
   - "技能 Frontmatter 規範 / skill frontmatter"
   - "技能觸發詞 / skill triggers"
