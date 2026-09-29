@@ -443,4 +443,4 @@ jest.mock('os', () => require('os'));
 
 - [Jest Manual Mocks](https://jestjs.io/docs/manual-mocks)
 - [memfs-extra](https://www.npmjs.com/package/memfs-extra)
-- [test-file-best-practices](../rules/test-file-best-practices.md) - 測試檔案最佳實踐
+- [test-file-best-practices](../test-file-best-practices/SKILL.md) - 測試檔案最佳實踐

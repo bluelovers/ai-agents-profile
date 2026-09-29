@@ -1,7 +1,7 @@
 ---
 name: test-file-best-practices-extension
 description: |-
-  擴充 `rules/test-file-best-practices.md` 的測試規則技能，處理測試語意、已知缺陷、非阻塞失敗與框架差異。
+  擴充 `skills/test-file-best-practices/SKILL.md` 的測試規則技能，處理測試語意、已知缺陷、非阻塞失敗與框架差異。
 
   當使用者提及以下關鍵字或情境時觸發：
   - test-file-best-practices
@@ -25,7 +25,7 @@ tags:
 
 ## 目的
 
-擴充 `rules/test-file-best-practices.md`，讓測試能正確表達「尚未實作」、「已知缺陷」、「可能失敗但不應阻擋流程」與「預期一定拋錯」等不同語意，避免把現有 bug 改寫成正常行為。
+擴充 `skills/test-file-best-practices/SKILL.md`，讓測試能正確表達「尚未實作」、「已知缺陷」、「可能失敗但不應阻擋流程」與「預期一定拋錯」等不同語意，避免把現有 bug 改寫成正常行為。
 
 ## 工作流程
 
@@ -34,7 +34,7 @@ tags:
 3. 查閱 [測試語意參考](./references/test-semantics.md)，選擇符合框架實際 API 的表示方式。
 4. 在目標規則的「核心原則」後新增「測試語意與已知缺陷」章節，並補充決策流程與範例。
 5. 確認新增規則不會把 `todo`、`skip`、`maybe` 與預期失敗混為一談，也不會隱藏基礎設施錯誤。
-6. 以最小差異更新 `rules/test-file-best-practices.md`，並保留既有章節、連結與格式。
+6. 以最小差異更新 `skills/test-file-best-practices/SKILL.md`，並保留既有章節、連結與格式。
 
 ## 核心規則
 
@@ -76,4 +76,4 @@ tags:
 ## 參考資源
 
 - [測試語意、框架差異與 `maybe` 規範](./references/test-semantics.md)
-- [`rules/test-file-best-practices.md`](../../rules/test-file-best-practices.md)
+- [`test-file-best-practices`](../test-file-best-practices/SKILL.md)

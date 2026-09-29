@@ -1,10 +1,11 @@
 ---
 name: test-file-best-practices
-description: 測試檔案最佳實踐規範。Use when users request (1) Testing best practices, (2) Test file organization, (3) "測試檔案規範", (4) "測試最佳實踐", (5) "測試檔案組織", (6) "測試資料管理", (7) "臨時檔案管理", (8) "重構測試", (9) "優化測試", (10) "整合測試". Defines guidelines for writing and organizing test files, including test location patterns, naming conventions, snapshot testing, fixtures management, and temporary file handling.
+description: >-
+  測試檔案最佳實踐規範。Use when users request (1) Testing best practices, (2) Test file organization, (3) "測試檔案規範", (4) "測試最佳實踐", (5) "測試檔案組織", (6) "測試資料管理", (7) "臨時檔案管理", (8) "重構測試", (9) "優化測試", (10) "整合測試". Defines guidelines for writing and organizing test files, including test location patterns, naming conventions, snapshot testing, fixtures management, and temporary file handling.
 tags:
-  - agents/rules
-  - testing
+  - agents/skills
   - agents/guidelines
+  - testing
   - testing/jest
   - testing/snapshot
 ---
@@ -317,7 +318,7 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 - 避免過度使用 snapshot，簡單的值比對仍使用傳統 matcher
 - 重要欄位應使用 property matchers 明確驗證，而非完全依賴 snapshot
 - 發生錯誤時應能輕鬆比對錯誤的值與鍵值，了解是哪一個鍵值不正確。
-- 更多 API 重構範例請參閱 [測試框架 API 重構範例](./test-file-best-practices/examples.md)
+- 更多 API 重構範例請參閱 [測試框架 API 重構範例](./references/examples.md)
 
 ### 4. 測試組織結構
 
@@ -789,7 +790,7 @@ const configData = fs.readFileSync(
 
 3. **主動接管 fs 方法** - Mock 應採用能主動接管 fs 方法的方式（如 `jest.mock('fs')`），而非直接操作 mock fs 物件。因為 fs 操作可能存在於原始邏輯或第三方模組中，需要讓這些操作自動被 mock 攔截
 
-4. **Mock 隔離** - 使用 memfs-extra 在記憶體中模擬檔案系統操作，避免影響真實檔案系統。詳細使用方式請參考 [skills/test-js-mock](../skills/test-js-mock/SKILL.md)
+4. **Mock 隔離** - 使用 memfs-extra 在記憶體中模擬檔案系統操作，避免影響真實檔案系統。詳細使用方式請參考 [skills/test-js-mock](../test-js-mock/SKILL.md)
 
 ##### 安全檢查流程
 
@@ -1560,7 +1561,7 @@ export const testGroups: ITestGroup[] = [
 
 - **非臨時目錄禁止寫入**：絕對不要讓測試寫入 `/etc/`、`/usr/`、`C:\Windows\` 等系統目錄，或專案根目錄下的固定路徑
 - **僅限專案內臨時目錄**：測試產生的臨時檔案**只能**寫入專案下的臨時目錄（如專案根目錄下的 `tmp/` 或 `.tmp/`），禁止寫入系統級臨時目錄（如 `/tmp`、`os.tmpdir()`）
-- ⚠️ 即使有 mock 檔案系統，仍須確保路徑不超過臨時目錄範圍，詳細說明請參考 [skills/test-js-mock - 禁止使用的路徑模式](../skills/test-js-mock/SKILL.md#路徑安全原則)
+- ⚠️ 即使有 mock 檔案系統，仍須確保路徑不超過臨時目錄範圍，詳細說明請參考 [skills/test-js-mock - 禁止使用的路徑模式](../test-js-mock/SKILL.md#路徑安全原則)
 - **優先使用框架 Mock**：當 Jest/Bun 提供的 `jest.mock()`、`spyOn()`、`useFakeTimers()`, `memfs-extra` 能滿足需求時，**不要**自行實作複雜的 mock 機制
 - **自訂 Mock 作為最後手段**：僅當框架提供的 API 無法滿足特殊需求時，才考慮自行設計 mock 實作，且應妥善封裝並充分測試
 
@@ -1568,7 +1569,7 @@ export const testGroups: ITestGroup[] = [
 
 **完整的系統依賴處理範例請參閱：**
 
-- [測試框架 API 重構範例 - 系統依賴謹慎處理原則](./test-file-best-practices/examples.md#12-系統依賴謹慎處理原則)
+- [測試框架 API 重構範例 - 系統依賴謹慎處理原則](./references/examples.md#12-系統依賴謹慎處理原則)
 
 詳細範例包含：
 - 檔案系統 Mock 與臨時目錄使用方式
@@ -1610,7 +1611,7 @@ export const testGroups: ITestGroup[] = [
 - [Jest Timer Mocks](https://jestjs.io/docs/timer-mocks)
 - [Bun MockTimers](https://bun.com/reference/node/test/default/MockTimers)
 - [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
-- [測試框架 API 重構範例](./test-file-best-practices/examples.md) - 補充 Jest 與 Bun 測試相容的 API 重構範例
+- [測試框架 API 重構範例](./references/examples.md) - 補充 Jest 與 Bun 測試相容的 API 重構範例
 - [test-snapshot-documentation skill](../skills/test-snapshot-documentation/SKILL.md) - 利用測試快照進行文件化的非常規使用方式
-- [skills/test-js-mock - 使用 Jest + memfs-extra Mock 模組](../skills/test-js-mock/SKILL.md)
+- [skills/test-js-mock - 使用 Jest + memfs-extra Mock 模組](../test-js-mock/SKILL.md)
 

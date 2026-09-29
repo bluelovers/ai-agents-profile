@@ -7,10 +7,9 @@ tags:
   - API
 ---
 
-# 測試框架 API 重構範例
-# Test Framework API Refactoring Examples
+# 測試框架 API 重構範例 / Test Framework API Refactoring Examples
 
-本文件提供 Jest 與 Bun 測試相容的 API 重構範例，補充 `test-file-best-practices.md` 中未涵蓋的模式，同時收錄主文件中已提及的重構概念以便完整參照。
+本文件提供 Jest 與 Bun 測試相容的 API 重構範例，補充 `SKILL.md` 中未涵蓋的模式，同時收錄主文件中已提及的重構概念以便完整參照。
 
 ---
 
@@ -696,18 +695,18 @@ jest.mock('fs', () => require('memfs-extra/fs-extra'));
 
 it('should write config file', () => {
     const fs = require('fs');
-    
+
     // 驗證 mock 是否成功
     const vol = getVolumeFromFs(fs);
     expect(vol).toBeDefined();
-    
+
     // 設定測試資料
     vol.fromJSON({
         '/config.json': JSON.stringify(config),
     });
-    
+
     saveConfig(config);
-    
+
     // 驗證檔案被寫入虛擬檔案系統
     expect(fs.existsSync('/config.json')).toBe(true);
 });
@@ -723,7 +722,7 @@ import { join } from 'path';
 it('should process data file', () => {
     const tempDir = mkdtempSync(join(tmpdir(), 'test-'));
     const testPath = join(tempDir, 'data.txt');
-    
+
     try {
         writeFileSync(testPath, 'test data');
         const result = processFile(testPath);
@@ -758,9 +757,9 @@ jest.mock('some-config-lib', () => ({
 it('should save config', () => {
     const { saveConfig } = require('some-config-lib');
     const config = { key: 'value' };
-    
+
     saveConfig('/app/config.json', config);
-    
+
     // 驗證函式被正確呼叫，而非實際檔案操作
     expect(saveConfig).toHaveBeenCalledWith('/app/config.json', config);
 });
@@ -772,12 +771,12 @@ it('should read config without file system', () => {
     const mockLoad = jest.spyOn(configLib, 'loadConfig').mockReturnValue({
         key: 'mocked-value',
     });
-    
+
     const result = app.readConfiguration();
-    
+
     expect(mockLoad).toHaveBeenCalled();
     expect(result.key).toBe('mocked-value');
-    
+
     mockLoad.mockRestore();
 });
 ```
@@ -886,9 +885,9 @@ beforeAll(() => {
 
 it('should fetch user data', async () => {
     fetchMock.mockResponseOnce(JSON.stringify({ id: 123, name: 'John' }));
-    
+
     const result = await fetchUser(123);
-    
+
     expect(result).toEqual({ id: 123, name: 'John' });
     expect(fetchMock).toHaveBeenCalledWith('https://api.example.com/users/123');
 });
@@ -917,9 +916,9 @@ it('should fetch user data', async () => {
 ```
 
 **重要提醒**：
-- ⚠️ **即使有 mock 檔案系統，仍須遵守路徑安全原則**：即使使用 memfs-extra 模擬了 fs 模組，仍應確保所有檔案操作都限制在測試臨時目錄內。詳細說明請參考 [skills/test-js-mock - 安全性考量](../skills/test-js-mock/SKILL.md#安全性考量)
+- ⚠️ **即使有 mock 檔案系統，仍須遵守路徑安全原則**：即使使用 memfs-extra 模擬了 fs 模組，仍應確保所有檔案操作都限制在測試臨時目錄內。詳細說明請參考 [skills/test-js-mock - 安全性考量](../../test-js-mock/SKILL.md#安全性考量)
 - **非臨時目錄禁止寫入**：絕對不要讓測試寫入 `/etc/`、`/usr/`、`C:\Windows\` 等系統目錄，或專案根目錄下的固定路徑
-  - ⚠️ 即使有 mock 檔案系統，仍須確保路徑不超過臨時目錄範圍，詳細說明請參考 [skills/test-js-mock - 禁止使用的路徑模式](../skills/test-js-mock/SKILL.md#路徑安全原則)
+  - ⚠️ 即使有 mock 檔案系統，仍須確保路徑不超過臨時目錄範圍，詳細說明請參考 [skills/test-js-mock - 禁止使用的路徑模式](../../test-js-mock/SKILL.md#路徑安全原則)
 - **僅限專案內臨時目錄**：測試產生的臨時檔案**只能**寫入專案下的臨時目錄（如專案根目錄下的 `tmp/` 或 `.tmp/`），禁止寫入系統級臨時目錄（如 `/tmp`、`os.tmpdir()`）
 - **優先使用框架 Mock**：當 Jest/Bun 提供的 `jest.mock()`、`spyOn()`、`useFakeTimers()` 能滿足需求時，**不要**自行實作複雜的 mock 機制
 - **自訂 Mock 作為最後手段**：僅當框架提供的 API 無法滿足特殊需求時，才考慮自行設計 mock 實作，且應妥善封裝並充分測試
@@ -1028,4 +1027,4 @@ it('should fetch user data', async () => {
 - [Jest Expect API](https://jestjs.io/docs/expect)
 - [Bun Test API](https://bun.sh/docs/runtime/test)
 - [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
-- [test-file-best-practices.md](test-file-best-practices.md)
+- [SKILL.md](../SKILL.md)

@@ -309,5 +309,5 @@ it('should deeply merge nested objects', () => {
 ## 相關資源
 
 - [Jest Snapshot Testing](https://jestjs.io/docs/snapshot-testing)
-- [測試檔案最佳實踐規範](../../rules/test-file-best-practices.md)
-- [測試框架 API 重構範例](../../rules/test-file-best-practices/examples.md)
+- [測試檔案最佳實踐規範](../test-file-best-practices/SKILL.md)
+- [測試框架 API 重構範例](../test-file-best-practices/references/examples.md)

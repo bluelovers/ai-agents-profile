@@ -323,6 +323,6 @@ Explain the learning value, future implementation possibilities, and alternative
 ## 相關資源
 
 - [comment-format-rules.md](comment-format-rules.md) - 註解格式規範
-- [test-file-best-practices.md](test-file-best-practices.md) - 測試檔案最佳實踐
+- [test-file-best-practices](../../skills/test-file-best-practices/SKILL.md) - 測試檔案最佳實踐
 - [typescript-unimplemented-handler skill](../skills/typescript-unimplemented-handler/SKILL.md) - TypeScript 特定處理器
 - [unimplemented-code-handling-references/](unimplemented-code-handling-references/) - 過長無法實現代碼參考檔案

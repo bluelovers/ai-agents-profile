@@ -132,7 +132,7 @@ await test.maybe("legacy normalization may still fail", async () => {
             └─ 是 → 使用 skip 並記錄原因
 ```
 
-## 寫入 `rules/test-file-best-practices.md` 的建議位置
+## 寫入 `skills/test-file-best-practices/SKILL.md` 的建議位置
 
 1. 在「核心原則」後新增「測試語意與已知缺陷」章節。
 2. 在決策流程中加入「尚未實作 → todo」「已知缺陷 → maybe」「一定拋錯 → 預期失敗」分支。
