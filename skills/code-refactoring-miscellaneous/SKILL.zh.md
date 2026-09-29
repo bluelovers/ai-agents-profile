@@ -32,6 +32,8 @@ tags:
 
 [code-refactoring-expert-typescript](../code-refactoring-expert-typescript/SKILL.md) - 核心重構原則
 
+- **數值/計算邏輯的 SSOT**：請見核心指南中的 **規範 B-2：在計算密集型專案中，連「瑣碎」運算也要抽離為公用邏輯** —— 將 SSOT 原則應用於數值密集型專案的共用運算工具，並附 `percent.ts` 具體案例。
+
 ---
 
 ## Async/Await 與 生成器 (Generator) 邊緣案例
@@ -1479,6 +1481,7 @@ return new Blob(body as any).arrayBuffer();
 ### 相關技能
 
 - [code-refactoring-expert-typescript](../code-refactoring-expert-typescript/SKILL.md) - 核心重構原則
+- **數值/計算邏輯的 SSOT**：在計算密集型專案中將瑣碎運算抽離為共用工具，請見核心指南的 **規範 B-2**（`percent.ts` 模式）。
 - [typescript-unimplemented-handler](../typescript-unimplemented-handler/SKILL.md) - 處理 TypeScript 限制
 
 ### 延伸閱讀

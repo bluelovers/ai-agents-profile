@@ -34,6 +34,8 @@ This guide supplements the core refactoring principles, providing additional cas
 
 [code-refactoring-expert-typescript](../code-refactoring-expert-typescript/SKILL.md) - Core refactoring principles
 
+- **SSOT for numeric/calculation logic**: See **Guideline B-2: Extract Even "Trivial" Arithmetic in Calculation-Heavy Projects** in the core guide — applies the SSoT principle to shared math utilities in number-critical projects, with a concrete `percent.ts` case.
+
 ---
 
 ## Async/Await Edge Cases
@@ -1242,6 +1244,7 @@ Do not manually type `req`/`res`. Instead, add `"node"` to `compilerOptions.type
 ## Related Skills
 
 - [code-refactoring-expert-typescript](../code-refactoring-expert-typescript/SKILL.md) - Core refactoring principles
+- **Numeric/calculation SSOT**: For extracting trivial arithmetic into shared utilities in calculation-heavy projects, see **Guideline B-2** in the core guide (the `percent.ts` pattern).
 - [typescript-unimplemented-handler](../typescript-unimplemented-handler/SKILL.md) - Handling TypeScript limitations
 
 ## Further Reading

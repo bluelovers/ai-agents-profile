@@ -242,6 +242,65 @@ export function calculateOrderPricing(
 }
 ```
 
+#### Guideline B-2: Extract Even "Trivial" Arithmetic in Calculation-Heavy Projects
+
+> 💡 **Counter-intuitive rule**: In projects where calculations and numeric correctness are critical, **even "obvious" one-liners like `(a / 100)`, `(100 + x) / 100`, or `b * (1 - f)` must be extracted into a named shared utility** — not left inline just because "it's too simple to warrant a function".
+
+The objective is **not** to express domain intent (that is only a side benefit); it is **readability, debuggability, and preventing silent errors** that are notoriously hard to catch when arithmetic is duplicated across files.
+
+**Why "trivial" math is the most dangerous duplication:**
+
+1. **Silent typos are invisible** — `bePoison * (1 - PoisonResist/100)` written as `1 + PoisonResist/100` flips resistance into vulnerability; the compiler won't complain and a missing test won't catch it. Centralized into `minusPercent(...)`, the `1 - f` structure lives in exactly one place.
+2. **One breakpoint debugs everything** — when an HP/SP percent or a recovery value is wrong, a single breakpoint/log/assert inside the shared utility covers every call site, instead of grepping 12 files.
+3. **Prevents semantic drift** — the same formula gets rewritten as `pct/100`, `pct*0.01`, `pct/100.0` by different authors over time. One function = one spelling.
+4. **Edge cases / defaults live once** — NaN guards (`max > 0 ? ... : 0`), `?? fallback` defaults, and sign conventions are defined once, never re-implemented (and forgotten) at each call site.
+
+**Concrete pattern — a shared numeric module (`percent.ts`):**
+
+```typescript
+/**
+ * 百分比基準：滿額＝100 / Percentage base = 100
+ */
+export const PERCENT_BASE = 100;
+/** 無百分比效果＝0% / No percentage effect = 0% */
+export const PERCENT_NONE = 0;
+
+/** 百分比 → 係數：(value ?? fallback ?? PERCENT_BASE) / 100 */
+export function percentFactor(value: number | undefined, fallback?: number): number {
+    return (value ?? fallback ?? PERCENT_BASE) / 100;
+}
+/** 加 p%：value × (1 + pct%) */
+export function plusPercent(value: number, pct: number | undefined, fallback?: number): number {
+    return value * (1 + percentFactor(pct, fallback));
+}
+/** 減 p%：value × (1 − pct%) */
+export function minusPercent(value: number, pct: number | undefined, fallback?: number): number {
+    return value * (1 - percentFactor(pct, fallback));
+}
+/** 取 p%：value × pct% */
+export function takePercent(value: number, pct: number | undefined, fallback?: number): number {
+    return value * percentFactor(pct, fallback);
+}
+```
+
+Call sites become self-documenting and error-resistant:
+
+```typescript
+// Before: fragile, scattered, easy to mistype
+strength *= (100 + this.SPECIAL.Summon) / 100;
+const chance = bePoison * (1 - char.SPECIAL.PoisonResist / 100);
+target.HP = Math.round(spRate / 100 * target.MAXHP);
+
+// After: single source of truth, one place to verify
+strength = plusPercent(strength, this.SPECIAL.Summon);
+const chance = minusPercent(bePoison, char.SPECIAL.PoisonResist);
+target.HP = Math.round(takePercent(target.MAXHP, spRate));
+```
+
+**Key refinement — push defaults down to the SSOT layer:** When several wrapper functions all repeated the same `fallback = 100` default, that default was itself duplicated. Collapse it into the lowest primitive (`percentFactor`'s `?? PERCENT_BASE`) and let wrappers forward `fallback?` untouched. Extraction only reduces the error surface if the *defaults and edge-case semantics* travel with the formula into the shared layer — otherwise you merely relocated the duplication.
+
+**When NOT to extract:** a one-off, side-effect-free `a + b` with no domain meaning and no repetition does not need a wrapper; over-extracting adds indirection. Apply this guideline when the expression (a) recurs, and (b) carries domain meaning or hidden edge cases (default value, NaN guard, sign flip).
+
 ---
 
 #### Guideline C: Prioritize Enum Design for Business States to Prevent Secondary Refactoring from String/Numeric Unions

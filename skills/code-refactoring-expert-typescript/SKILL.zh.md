@@ -241,6 +241,65 @@ export function calculateOrderPricing(
 }
 ```
 
+#### 規範 B-2：在計算密集型專案中，連「瑣碎」運算也要抽離為公用邏輯
+
+> 💡 **反直覺準則**：在依賴大量計算、數值正確性攸關的專案裡，**即便 `(a / 100)`、`(100 + x) / 100`、`b * (1 - f)` 這種「一眼看懂」的小算式，也應抽離成具名公用函式**——不要因為「太簡單了，不值得包一層」就留在內聯處。
+
+重點**不在**表達領域意圖（那只是附帶好處）；重點是**可讀性、可除錯性，以及「不會在某處手滑寫錯卻難以發現」**。
+
+**為什麼「瑣碎」運算是最危險的重複：**
+
+1. **手誤極難發現** —— `bePoison * (1 - PoisonResist/100)` 若誤寫成 `1 + PoisonResist/100`，抗性瞬間翻成增感；編譯器不報錯、單測未覆蓋也抓不到。抽成 `minusPercent(...)` 後，這個 `1 - f` 結構只存在一處。
+2. **一個中斷點除錯全部** —— 某天發現 HP/SP 百分比或回復量算錯，只要在共用函式內下一個中斷點 / 日誌 / 斷言，就能涵蓋所有呼叫點，不必去 12 個檔案逐一搜尋。
+3. **防止語意漂移** —— 同一個公式會隨時間被寫成 `pct/100`、`pct*0.01`、`pct/100.0`；函式只有一個，拼法也只會有一種。
+4. **邊界與預設值只定義一次** —— NaN 防呆（`max > 0 ? ... : 0`）、`?? fallback` 預設值、正負號約定都只在單點定義，不會在各呼叫點被重寫（然後忘記）。
+
+**具體模式 —— 共用數值模組（`percent.ts`）：**
+
+```typescript
+/**
+ * 百分比基準：滿額＝100 / Percentage base = 100
+ */
+export const PERCENT_BASE = 100;
+/** 無百分比效果＝0% / No percentage effect = 0% */
+export const PERCENT_NONE = 0;
+
+/** 百分比 → 係數：(value ?? fallback ?? PERCENT_BASE) / 100 */
+export function percentFactor(value: number | undefined, fallback?: number): number {
+    return (value ?? fallback ?? PERCENT_BASE) / 100;
+}
+/** 加 p%：value × (1 + pct%) */
+export function plusPercent(value: number, pct: number | undefined, fallback?: number): number {
+    return value * (1 + percentFactor(pct, fallback));
+}
+/** 減 p%：value × (1 − pct%) */
+export function minusPercent(value: number, pct: number | undefined, fallback?: number): number {
+    return value * (1 - percentFactor(pct, fallback));
+}
+/** 取 p%：value × pct% */
+export function takePercent(value: number, pct: number | undefined, fallback?: number): number {
+    return value * percentFactor(pct, fallback);
+}
+```
+
+呼叫點變得自解釋且不易出錯：
+
+```typescript
+// Before: 脆弱、散落、容易打錯
+strength *= (100 + this.SPECIAL.Summon) / 100;
+const chance = bePoison * (1 - char.SPECIAL.PoisonResist / 100);
+target.HP = Math.round(spRate / 100 * target.MAXHP);
+
+// After: 單一事實來源，只需在一處驗證
+strength = plusPercent(strength, this.SPECIAL.Summon);
+const chance = minusPercent(bePoison, char.SPECIAL.PoisonResist);
+target.HP = Math.round(takePercent(target.MAXHP, spRate));
+```
+
+**關鍵收口 —— 預設值也要下沉到 SSOT 層**：當多個 wrapper 都重複寫著同一個 `fallback = 100` 預設，那個預設本身就是重複。把它收斂到最底層原語（`percentFactor` 的 `?? PERCENT_BASE`），讓 wrapper 只轉發 `fallback?` 即可。抽離算式時，只有當**預設值與邊界語意**也跟著公式進入共用層，才能真正縮小出錯面；否則只是把重複從「算式」搬到了「預設值」。
+
+**何時不該抽離**：一次性的、無副作用的 `a + b`，且無領域含義、不重複出現，就不需要包裝；過度抽離只會增加間接層。套用本準則的條件是：該算式 (a) 會重複出現，且 (b) 帶有領域含義或隱含邊界（預設值、NaN 防呆、正負號翻轉）。
+
 ---
 
 #### 規範 C：業務狀態優先採用 Enum 設計，避免字串/數字聯合引發二次重構
