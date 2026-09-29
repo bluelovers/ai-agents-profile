@@ -303,6 +303,14 @@ target.HP = Math.round(takePercent(target.MAXHP, spRate));
 
 ---
 
+#### Guideline B-3: Eliminate Redundant Aliases When Consolidating to a Single Source
+
+When refactoring toward a Single Source of Truth, the goal is **one source, one name**. Two recurring anti-patterns defeat this: (1) masking a name collision by importing `A1 as B` and then re-binding the original name `const A2 = B`, and (2) the "lazy replacement method" where old local names are merely re-pointed at the new source (`A2 = A1`, `A3 = A1`) instead of being deleted and having call sites use the single source directly. Both leave multiple names for one value, obscuring which is authoritative and reintroducing drift risk.
+
+> 📚 **Full case study (Problems 1–4, incl. the `type IA = EnumA` lazy-replacement variant)**: [SSOT Refactoring Anti-Patterns: Redundant Aliasing & Lazy Replacement](./references/ssot-refactoring-anti-patterns.md)
+
+---
+
 #### Guideline C: Prioritize Enum Design for Business States to Prevent Secondary Refactoring from String/Numeric Unions
 
 ##### ❌ Anti-pattern 1: String Unions Leading to Inevitable Secondary Refactoring
