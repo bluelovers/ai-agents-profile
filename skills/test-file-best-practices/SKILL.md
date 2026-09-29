@@ -34,7 +34,7 @@ tags:
 
 ## 核心原則
 
-### 0. 測試檔案位置規範
+### 1. 測試檔案位置規範
 
 **測試檔案的擺放位置應根據專案規模與測試特性選擇適當的模式。**
 
@@ -99,15 +99,15 @@ project/
 
 **無論選擇何種模式，皆須遵守以下章節的規則：**
 
-- [測試檔案分割原則](#1-測試檔案分割原則) - 避免單一檔案過大
-- [通用測試檔案 Header](#4-測試組織結構) - 正確引入類型定義
-- [Fixtures 與測試資料管理](#6-fixtures-與測試資料管理) - 集中管理測試資料
-- [測試資料集規範](#9-測試資料集規範) - 測試資料應包含輸入與預期輸出
-- [共用邏輯提取原則](#5-共用邏輯提取原則) - 提取共用測試邏輯（包括函式參數設計）
+- [測試檔案分割原則](#2-測試檔案分割原則) - 避免單一檔案過大
+- [通用測試檔案 Header](#5-測試組織結構) - 正確引入類型定義
+- [Fixtures 與測試資料管理](#fixtures-與測試資料管理) - 集中管理測試資料
+- [測試資料集規範](#測試資料集規範) - 測試資料應包含輸入與預期輸出
+- [共用邏輯提取原則](#6-共用邏輯提取原則) - 提取共用測試邏輯（包括函式參數設計）
 
 ---
 
-### 1. 測試檔案分割原則
+### 2. 測試檔案分割原則 / Test File Splitting
 
 **避免在單一測試檔案中放置過多測試案例。**
 
@@ -150,7 +150,9 @@ describe('UserService.create', () => { /* 相關測試 */ });
 describe('UserService.update', () => { /* 相關測試 */ });
 ```
 
-### 2. 測試檔案命名規範
+---
+
+### 3. 測試檔案命名規範 / Test File Naming
 
 **根據測試框架使用不同的檔案副檔名，以便未來同時使用多個測試工具時能夠區分。**
 
@@ -189,7 +191,9 @@ test/
 - 若專案僅使用單一測試框架，仍建議遵循此規範以便未來擴展
 - TypeScript 專案亦可使用 `.spec.tsx` 或 `.test.tsx` 測試 React 組件
 
-### 3. Snapshot 測試優先原則
+---
+
+### 4. Snapshot 測試優先原則 / Snapshot Testing Priority
 
 **在結果可控的情況下，優先使用 snapshot 測試。**
 
@@ -255,11 +259,11 @@ expect(result).toMatchSnapshot({
 
 這樣 snapshot 會比對完整物件結構，同時確保 `name` 和 `subSpec.name`、`subSpec.rawSpec` 的值正確。
 
-對於動態資料（如時間戳、隨機 ID），可使用 Asymmetric matchers 例如:
+對於動態資料（如時間戳、隨機 ID），可使用 Asymmetric matchers 例如：
 - `expect.any(constructor)`
 - `expect.arrayContaining(array)`
 
-參閱:
+參閱：
 - [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
 
 #### 單一屬性驗證
@@ -333,10 +337,12 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 - 對於動態資料（如時間戳、隨機 ID），應先處理再比對
 - 避免過度使用 snapshot，簡單的值比對仍使用傳統 matcher
 - 重要欄位應使用 property matchers 明確驗證，而非完全依賴 snapshot
-- 發生錯誤時應能輕鬆比對錯誤的值與鍵值，了解是哪一個鍵值不正確。
-- 更多 API 重構範例請參閱 [測試框架 API 重構範例](./references/examples.md)
+- 發生錯誤時應能輕鬆比對錯誤的值與鍵值，了解是哪一個鍵值不正確
+- 更多 API 重構範例（數值、布林、字串、陣列、型別、Promise、Mock 等）請參閱 [references/examples.md](./references/examples.md)
 
-### 4. 測試組織結構
+---
+
+### 5. 測試組織結構 / Test Organization
 
 #### 通用測試檔案 Header
 
@@ -470,7 +476,9 @@ describe('UserService', () => {
 });
 ```
 
-### 5. 共用邏輯提取原則
+---
+
+### 6. 共用邏輯提取原則 / Shared Logic Extraction
 
 **當多個測試有共通邏輯時，應建立共用的工具函數，方便日後更新擴充時能夠輕鬆維護。**
 
@@ -661,16 +669,20 @@ export function _createAndValidateSnapshot(
 
 ---
 
-### 6. Fixtures 與測試資料管理
+### 7. 測試資料管理 / Test Data Management
 
-#### 適用場景
+測試資料相關的主題集中於此章節，包含 Fixtures 檔案管理、資料集結構規範，以及用於產生/整理測試資料的輔助腳本，避免測試資料邏輯散落各處。
+
+#### Fixtures 與測試資料管理
+
+##### 適用場景
 
 - 多個測試檔案共用的測試資料
 - 大型資料結構（如 JSON、CSV）
 - 靜態配置檔案
 - 模擬檔案或圖片等資源
 
-#### 目錄結構建議
+##### 目錄結構建議
 
 ```
 test/
@@ -688,7 +700,7 @@ test/
 └── scripts/                     # 測試輔助腳本（可選）
 ```
 
-#### 使用範例
+##### 使用範例
 
 ```typescript
 // ✅ 從 fixtures 目錄載入測試資料
@@ -708,18 +720,192 @@ describe('UserService', () => {
 });
 ```
 
-#### 注意事項
+##### 注意事項
 
 - Fixtures 應按功能模組分類，避免全部放在同一層目錄
 - 大型 fixture 檔案建議使用 `.json`、`.csv` 等標準格式
 - 若 fixture 需要動態生成或更新，可考慮使用測試腳本（見下方說明）
 - 避免在 fixtures 中放置敏感資訊，如需使用敏感資料應建立 mock 資料
 
-### 7. 測試輔助腳本
+#### 測試資料集規範
+
+**測試資料應獨立於測試邏輯，使用專門的 fixture 文件定義，每個測試用例應包含完整的測試資料，包括輸入、預期輸出和描述。**
+
+##### 分離測試資料與測試邏輯
+
+**規則：** 測試資料應獨立於測試邏輯，使用專門的 fixture 文件定義。
+
+```
+test/
+├── fixtures/                    # 測試資料集中管理
+│   └── <module>-test-cases.ts   # 各模組測試資料集
+└── <module>/
+    └── <feature>.test.ts        # 測試邏輯（引用 fixture）
+```
+
+##### 測試資料集結構
+
+**規則：** 每個測試用例應包含完整的測試資料，包括輸入、預期輸出和描述。
+
+```typescript
+/**
+ * 測試用例結構
+ * Test case structure
+ */
+export interface ITestCase
+{
+	/** 測試用例名稱 / Test case name */
+	name: string;
+	/** 輸入資料（測試目標）/ Input data (test target) */
+	input: any;
+	/** 預期結果 / Expected result */
+	expected: any;
+	/** 備註（可選）/ Note (optional) */
+	note?: string;
+}
+
+/**
+ * 測試群組結構
+ * Test group structure
+ */
+export interface ITestGroup
+{
+	/** 測試群組名稱 / Test group name */
+	name: string;
+	/** 測試用例陣列 / Test cases array */
+	testCases: ITestCase[];
+}
+```
+
+##### 測試資料集格式
+
+**規則：** 使用單一陣列導出所有測試群組，便於自動產生測試。
+
+```typescript
+/**
+ * 完整測試資料集
+ * Complete test dataset
+ *
+ * 所有測試群組的集合
+ */
+export const testGroups: ITestGroup[] = [
+	{
+		name: "基本類型",
+		testCases: [
+			{
+				name: "stringWithDefault",
+				input: z.string().default("hello"),
+				expected: "hello",
+			},
+			// ... 更多測試用例
+		],
+	},
+	// ... 更多測試群組
+];
+```
+
+##### 測試腳本自動產生
+
+**規則：** 測試腳本應自動遍歷測試資料集，無需手動定義每個測試。
+
+```typescript
+import { testGroups } from "../fixtures/zod-defaults-test-cases";
+
+/**
+ * 自動產生所有測試群組
+ * Automatically generate all test groups
+ */
+for (const group of testGroups)
+{
+	describe(group.name, () =>
+	{
+		for (const testCase of group.testCases)
+		{
+			it(testCase.name, () =>
+			{
+				// 執行測試邏輯
+				runTestCase(testCase);
+			});
+		}
+	});
+}
+```
+
+##### 測試資料集命名規範
+
+**規則：** 測試資料集文件應與被測模組對應。
+
+| 模組 | 測試資料集 | 測試文件 |
+|------|-----------|---------|
+| `src/config/schema.ts` | `test/fixtures/config-test-cases.ts` | `test/issues/config-all.test.ts` |
+| `src/utils/helper.ts` | `test/fixtures/helper-test-cases.ts` | `test/issues/helper-all.test.ts` |
+
+##### 測試資料集組織
+
+###### 按功能分組
+
+```typescript
+export const testGroups: ITestGroup[] = [
+	{
+		name: "基本類型",
+		testCases: [
+			// 基本類型測試用例
+		],
+	},
+	{
+		name: "巢狀結構",
+		testCases: [
+			// 巢狀結構測試用例
+		],
+	},
+	{
+		name: "邊界情況",
+		testCases: [
+			// 邊界情況測試用例
+		],
+	},
+];
+```
+
+###### 按輸入類型分組
+
+```typescript
+export const testGroups: ITestGroup[] = [
+	{
+		name: "字串輸入",
+		testCases: [
+			// 字串輸入測試用例
+		],
+	},
+	{
+		name: "數字輸入",
+		testCases: [
+			// 數字輸入測試用例
+		],
+	},
+	{
+		name: "物件輸入",
+		testCases: [
+			// 物件輸入測試用例
+		],
+	},
+];
+```
+
+##### 注意事項
+
+1. **避免硬編碼** - 測試資料不應直接寫在測試邏輯中
+2. **資料集獨立** - 測試資料集文件應可獨立維護
+3. **自動產生** - 測試腳本應自動遍歷資料集，無需手動定義
+4. **類型安全** - 使用 `ITestCase` 和 `ITestGroup` 接口確保類型安全
+5. **雙語註解** - 測試資料集的註解應包含中英文
+6. **完整資料** - 每個測試用例應同時包含輸入（測試目標）與預期輸出（expected）
+
+#### 測試輔助腳本
 
 **若有需要額外建立腳本用於抓取更新資料、整理歸納等，可放置於 `test/scripts` 資料夾。**
 
-#### 適用場景
+##### 適用場景
 
 - 從遠端 API 抓取測試資料並儲存為 fixtures
 - 自動化更新測試用的模擬資料
@@ -727,7 +913,7 @@ describe('UserService', () => {
 - 生成測試用的隨機資料
 - 清理或重置測試資料庫
 
-#### 目錄結構建議
+##### 目錄結構建議
 
 ```
 test/
@@ -740,7 +926,7 @@ test/
     └── feature-a.spec.ts
 ```
 
-#### 執行方式
+##### 執行方式
 
 ```bash
 # 直接使用 tsx 執行測試腳本
@@ -751,7 +937,7 @@ tsx test/scripts/update-mock-data.ts
 ts-node test/scripts/generate-fixtures.ts
 ```
 
-#### 注意事項
+##### 注意事項
 
 - 測試腳本通常只需要執行一次，用於準備測試環境
 - 建議在腳本開頭加入說明文件註解，說明腳本用途與執行方式
@@ -760,7 +946,7 @@ ts-node test/scripts/generate-fixtures.ts
 
 ---
 
-### 8. 臨時檔案管理原則
+### 8. 臨時檔案管理原則 / Temporary File Management
 
 **當測試需要創建臨時檔案或臨時目錄時，應在專案內建立專用的臨時目錄來操作，而非直接在根目錄或 src 目錄下創建。**
 
@@ -791,276 +977,7 @@ const configData = fs.readFileSync(
 );  // ✅ 允許：僅讀取
 ```
 
-#### Mock 環境安全規則
-
-**對於有可能涉及檔案寫入/刪除的模組或測試，應使用 mock 環境防止 fs 操作臨時目錄 (test/temp) 以外任何路徑。**
-
-##### 核心原則
-
-1. **白名單路徑** - 僅允許操作以下路徑：
-   - `test/temp/` - 測試臨時目錄（可讀寫）
-   - `test/fixtures/` - 測試資料目錄（唯讀）
-   - 專案根目錄（可讀取）
-
-2. **讀取權限** - 對臨時目錄以外的路徑，僅允許讀取操作，不得進行寫入、更改、刪除、建立等操作
-
-3. **主動接管 fs 方法** - Mock 應採用能主動接管 fs 方法的方式（如 `jest.mock('fs')`），而非直接操作 mock fs 物件。因為 fs 操作可能存在於原始邏輯或第三方模組中，需要讓這些操作自動被 mock 攔截
-
-4. **Mock 隔離** - 使用 memfs-extra 在記憶體中模擬檔案系統操作，避免影響真實檔案系統。詳細使用方式請參考 [skills/test-js-mock](../test-js-mock/SKILL.md)
-
-##### 安全檢查流程
-
-```
-1. 相對路徑檢查
-   └── 如果是相對路徑且未允許 → ❌ REJECTED
-
-2. 白名單檢查
-   ├── test/temp/        → ✅ ALLOWED（可讀寫）
-   ├── test/fixtures/    → ✅ ALLOWED（唯讀）
-   └── 專案根目錄         → ✅ ALLOWED（可讀取）
-
-3. 危險關鍵詞檢查
-   ├── Windows: \Windows\, \System32\, \Program Files\  → ❌ REJECTED
-   ├── Unix: /etc/, /usr/bin/, /sys/, /boot/           → ❌ REJECTED
-   └── 其他系統目錄                                      → ❌ REJECTED
-
-4. 範圍檢查
-   └── 是否在專案根目錄內  → ❌ REJECTED（若在外）
-```
-
-##### 使用範例
-
-```typescript
-// ✅ 正確：使用 jest.mock() 主動接管 fs 模組
-// 讓原始邏輯或第三方模組中的 fs 操作自動被 mock 攔截
-jest.mock('fs', () => {
-    const mockFs = {
-        readFileSync: jest.fn(),
-        writeFileSync: jest.fn(),
-        unlinkSync: jest.fn(),
-        mkdirSync: jest.fn(),
-        existsSync: jest.fn(),
-    };
-    return mockFs;
-});
-
-describe('Config Tests', () => {
-    const fs = require('fs');
-
-    beforeEach(() => {
-        // 重置所有 mock
-        jest.clearAllMocks();
-    });
-
-    it('should mock config file', () => {
-        // 設定 mock 行為
-        fs.readFileSync.mockReturnValue(JSON.stringify({
-            show_banner: true,
-            agents: { monarch: { poll_interval: 5000 } }
-        }));
-
-        // 執行原始邏輯（會自動使用 mock 的 fs）
-        const config = loadConfig();
-
-        // 驗證
-        expect(fs.readFileSync).toHaveBeenCalled();
-        expect(config.show_banner).toBe(true);
-    });
-});
-
-// ✅ 正確：使用 MockEnv 進行安全的檔案操作
-import { MockEnv } from "./test/lib/mock-env";
-
-describe('File Processing', () => {
-    const env = new MockEnv();
-
-    beforeEach(() => env.reset());
-    afterEach(() => env.cleanup());
-
-    it('should process files safely', () => {
-        // 使用安全的 fs 包裝
-        env.safeFs.writeFileSync(`${__TEST_TEMP}/output.txt`, 'result');
-
-        // 驗證檔案存在
-        expect(env.safeFs.existsSync(`${__TEST_TEMP}/output.txt`)).toBe(true);
-    });
-});
-
-// ❌ 錯誤：直接操作臨時目錄外的路徑
-it('should NOT modify files outside temp', () => {
-    const configPath = path.join(process.cwd(), 'config', 'settings.json');
-    fs.writeFileSync(configPath, '{}');  // ❌ 禁止：寫入
-    fs.unlinkSync(configPath);            // ❌ 禁止：刪除
-    fs.mkdirSync(path.join(process.cwd(), 'some-new-dir'));  // ❌ 禁止：新增
-});
-
-// ✅ 正確：僅讀取臨時目錄外的路徑
-it('should read files outside temp', () => {
-    const configPath = path.join(process.cwd(), 'src', 'config.json');
-    const configData = fs.readFileSync(configPath, 'utf-8');  // ✅ 允許：僅讀取
-});
-```
-
-##### 路徑控管模組
-
-**可使用 upath2、path-is-same、path-in-dir、micromatch 或其他等模組搭配組合控管路徑。**
-
-###### 推薦模組
-
-| 模組 | 用途 | 範例 |
-|------|------|------|
-| `upath2` | 跨平台路徑處理（統一正斜線 `/`） | `normalize("D:\\path\\to\\file")` → `"D:/path/to/file"` |
-| `path-in-dir` | 檢查路徑是否在指定目錄內 | `pathInsideDirectory(path, rootDir)` |
-| `path-is-same` | 比較路徑是否相同（解析符號連結） | `pathIsSame(path1, path2)` |
-| `micromatch` | Glob pattern 匹配（用於過濾路徑） | `isMatch("**/*.ts", pattern)` |
-
-###### 使用範例
-
-```typescript
-import { normalize } from "upath2";
-import { pathInsideDirectory } from "path-in-dir";
-import { pathIsSame } from "path-is-same";
-import { isMatch } from "micromatch";
-
-// 跨平台路徑處理
-const normalizedPath = normalize("D:\\Users\\project\\src\\config.json");
-// → "D:/Users/project/src/config.json"
-
-// 檢查路徑是否在白名單目錄內
-const isInTemp = pathInsideDirectory(
-    normalizedPath,
-    normalize(path.join(process.cwd(), 'test', 'temp'))
-);
-
-// 比較路徑是否相同
-const isSame = pathIsSame(
-    normalize(path1),
-    normalize(path2)
-);
-
-// 使用 Glob pattern 過濾路徑
-const isTsFile = isMatch(normalizedPath, "**/*.ts");
-const isTestFile = isMatch(normalizedPath, "**/*.test.ts");
-```
-
-###### 安全檢查實作
-
-```typescript
-import { normalize } from "upath2";
-import { pathInsideDirectory } from "path-in-dir";
-
-/**
- * 檢查路徑是否安全（在白名單目錄內）
- * Check if path is safe (inside whitelist directories)
- *
- * @param targetPath - 目標路徑 / Target path
- * @returns 是否安全 / Whether safe
- */
-function isPathSafe(targetPath: string): boolean {
-    const normalizedPath = normalize(targetPath);
-    const projectRoot = normalize(process.cwd());
-
-    // 白名單目錄
-    const whitelistDirs = [
-        normalize(path.join(projectRoot, 'test', 'temp')),
-        normalize(path.join(projectRoot, 'test', 'fixtures')),
-        projectRoot,
-    ];
-
-    // 檢查是否在白名單目錄內
-    for (const dir of whitelistDirs) {
-        if (pathInsideDirectory(normalizedPath, dir)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-```
-
-##### 共享路徑定義檔案
-
-**可使用共享的路徑定義檔案來避免使用相對路徑造成的非預期狀況。**
-
-###### 為什麼需要共享路徑定義
-
-使用相對路徑（如 `../`、`../../`）可能導致以下問題：
-- 路徑層級混亂，難以維護
-- 檔案移動後路徑失效
-- 不同環境下路徑不一致
-- 難以統一管理專案路徑
-
-###### 建議實作方式
-
-建立中央化的路徑定義檔案（如 `__root.ts`），統一管理專案路徑：
-
-```typescript
-/**
- * 專案根路徑定義 / Project Root Path Definitions
- *
- * 使用中央化路徑管理，避免相對路徑 ../ 地獄
- * Centralized path management to avoid relative path ../../.. hell
- */
-/// <reference types="node" />
-
-import { join } from "path";
-
-/** 專案根目錄 / Project root directory */
-export const __ROOT = join(__dirname);
-
-/** 作業系統判斷 / Operating system detection */
-export const isWin = process.platform === "win32";
-
-// 測試路徑架構 / Test Path Structure
-// test/
-// ├── fixtures/              ← 測試資料夾（唯讀）
-// └── temp/                 ← 臨時檔案（可寫，永遠建立子資料夾）
-//     ├── fake-bun/
-//     └── temp-paths/
-
-/** 測試根目錄 / Test root directory */
-export const __TEST_ROOT = join(__ROOT, "test");
-
-/** 測試資料目錄（唯讀）/ Test fixtures directory (read-only) */
-export const __TEST_FIXTURES = join(__TEST_ROOT, "fixtures");
-
-/** 測試臨時目錄（可寫）/ Test temp directory (writable) */
-export const __TEST_TEMP = join(__TEST_ROOT, "temp");
-
-/** 建置輸出目錄 / Build output directory */
-export const __DIST = join(__ROOT, "dist");
-```
-
-###### 使用範例
-
-```typescript
-// ✅ 正確：使用共享路徑定義
-import { __TEST_TEMP, __TEST_FIXTURES } from "../__root";
-
-// 建立臨時檔案路徑
-const tempFile = join(__TEST_TEMP, "temp-paths", "output.json");
-
-// 建立 fixtures 檔案路徑
-const fixtureFile = join(__TEST_FIXTURES, "mock-data.json");
-
-// ❌ 錯誤：使用相對路徑
-const tempFile = join("../../../test/temp/output.json");  // 容易出錯
-```
-
-###### 優點
-
-1. **路徑一致性** - 所有路徑都從專案根目錄計算，確保一致性
-2. **易於維護** - 路徑定義集中管理，修改時只需更改一處
-3. **避免錯誤** - 不需要記憶相對路徑層級，減少錯誤
-4. **跨環境相容** - 使用 `join()` 確保跨平台路徑格式正確
-
-##### 注意事項
-
-- **預設啟用安全檢查** - memfs-extra 配合 Jest mock 機制，應確保路徑限制在測試臨時目錄內
-- **記憶體隔離** - memfs-extra 在記憶體中模擬檔案系統，不會影響真實檔案系統
-- **跨平台路徑處理** - 使用 `upath2` 統一處理 Windows/Unix 路徑格式
-- **並行測試安全** - 每個測試應確保獨立的路徑隔離，避免狀態洩漏
-- **Audit Mode** - 如需保留測試輸出供審閱，可使用 memfs-extra 的 Volume 物件進行操作
+> 涉及檔案寫入/刪除的模組或測試，應使用 Mock 環境防止 fs 操作臨時目錄以外的路徑。詳細的 Mock 安全規則、路徑控管模組用法與共享路徑定義，請參閱 [references/temp-file-management.md](./references/temp-file-management.md)。
 
 #### 為什麼需要專用臨時目錄
 
@@ -1135,190 +1052,33 @@ const getTempDir = (subDir: string) => {
 // 取得共用臨時目錄路徑（可覆寫，無需唯一性 ID）
 const getSharedTempDir = (subDir: string) => {
     const tempDir = path.join(process.cwd(), 'test', 'temp', subDir);
-
-    // 確保目錄存在
     if (!fs.existsSync(tempDir)) {
         fs.mkdirSync(tempDir, { recursive: true });
     }
-
     return tempDir;
 };
 
 // 在具有唯一性 ID 的臨時目錄下創建檔案
 it('should generate output file', async () => {
-    const outputDir = getTempDir('test-output');  // ✅ 使用具有唯一性 ID 的子目錄
+    const outputDir = getTempDir('test-output');
     const outputFile = path.join(outputDir, 'result.json');
 
     const result = await processData(inputData);
-    fs.writeFileSync(outputFile, JSON.stringify(result));  // ✅ 在臨時目錄內操作
+    fs.writeFileSync(outputFile, JSON.stringify(result));
 
     expect(fs.existsSync(outputFile)).toBe(true);
-});
-
-// 使用共用臨時目錄（可覆寫）
-it('should use shared temp cache', async () => {
-    const cacheDir = getSharedTempDir('mock-cache');  // ✅ 共用目錄，無需唯一性 ID
-    // ... 測試邏輯
-});
-
-// ❌ 錯誤：直接在根目錄或 src 目錄下創建臨時檔案
-it('should NOT create temp file in root', async () => {
-    const tempFile = path.join(process.cwd(), 'temp-result.json');  // ❌ 禁止
-    fs.writeFileSync(tempFile, 'data');
-});
-
-// ❌ 錯誤：禁止直接建立在臨時主目錄下
-it('should NOT create in temp root', async () => {
-    const tempDir = path.join(process.cwd(), 'temp');  // ❌ 禁止：應使用 temp/xxx/
-});
-
-// ❌ 錯誤：未使用唯一性 ID 的臨時目錄可能導致並行測試衝突
-it('should NOT use non-unique temp dir', async () => {
-    // 當多個測試並行執行時，這種方式可能導致衝突
-    const tempDir = path.join(process.cwd(), 'test', 'temp', 'test-output');
-});
-
-// ❌ 錯誤：禁止對臨時目錄外的路徑進行寫入/刪除
-it('should NOT modify files outside temp', async () => {
-    const configPath = path.join(process.cwd(), 'config', 'settings.json');
-    fs.writeFileSync(configPath, '{}');  // ❌ 禁止：寫入
-    fs.unlinkSync(configPath);            // ❌ 禁止：刪除
-    fs.mkdirSync(path.join(process.cwd(), 'some-new-dir'));  // ❌ 禁止：新增
-});
-
-// ✅ 正確：需要測試時使用 mock/sandbox 環境
-it('should handle file operations safely', async () => {
-    // 使用 mock 模擬檔案系統操作
-    const mockFs = {
-        readFileSync: jest.fn(),
-        writeFileSync: jest.fn(),
-    };
-
-    // 測試邏輯使用 mock 的檔案系統（使用 memfs-extra）
-    const result = await processWithMockFs(inputData, mockFs);
-    expect(result).toBeDefined();
 });
 ```
 
 #### 清理策略
 
-##### 自動清理（推薦）
-
-```typescript
-import * as fs from 'fs';
-import * as path from 'path';
-
-// 使用 afterEach 自動清理
-// ⚠️ 重要：除非必要否則不應主動廣域性清除
-// 而是只限定於本次操作的臨時子目錄，防止同時有其他測試正在操作臨時目錄
-describe('File Processing', () => {
-    const tempDirs: string[] = [];
-
-    // 取得具有唯一性 ID 的臨時目錄
-    const getTempDir = (subDir: string) => {
-        const timestamp = Date.now();
-        const tempDir = path.join(process.cwd(), 'test', 'temp', `${subDir}-${timestamp}`);
-        if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir, { recursive: true });
-        }
-        tempDirs.push(tempDir);
-        return tempDir;
-    };
-
-    afterEach(() => {
-        // ✅ 正確：只清理本次測試创建的臨時目錄
-        // 防止同時有其他測試正在操作臨時目錄
-        tempDirs.forEach(dir => {
-            if (fs.existsSync(dir)) {
-                fs.rmSync(dir, { recursive: true });
-            }
-        });
-        tempDirs.length = 0;
-    });
-
-    it('should process files', () => {
-        const tempDir = getTempDir('test-output');
-        // ... 測試邏輯
-    });
-});
-```
+使用 `afterEach` 僅清理**本次測試**創建的臨時子目錄，避免廣域性清除影響並行測試。完整的自動清理範例、需要審閱時的保留策略與輔助資訊類型，請參閱 [references/temp-file-management.md](./references/temp-file-management.md#清理策略--cleanup-strategy)。
 
 ```typescript
 // ❌ 錯誤：廣域性清除會影響其他正在運行的測試
 afterEach(() => {
-    // 這種方式會刪除整個臨時目錄，可能影響並行測試
     fs.rmSync(path.join(process.cwd(), 'test', 'temp'), { recursive: true });
 });
-```
-
-##### 需要審閱時的保留策略
-
-**如果臨時檔案有需要被審閱，可以暫時不刪除。** 這種情況適用於：
-
-- 需要檢查測試輸出的格式是否正確
-- 需要分析錯誤發生時的資料狀態
-- 需要人工確認測試結果
-- **實作失敗但有參考價值的邏輯意圖** - 例如演算法嘗試、參數組合探索等過程記錄
-- **錯誤訊息與堆疊追蹤** - 有助於後續開發者理解問題根源
-- **效能分析或診斷報告** - 可幫助優化方向的判斷
-- **模擬資料的多種變體** - 記錄不同輸入條件下的輸出結果
-
-```typescript
-// ✅ 需要審閱時：不執行自動清理
-describe('File Processing (Manual Review)', () => {
-    // 取得具有唯一性 ID 的臨時目錄，方便追蹤
-    const getTempDir = (subDir: string) => {
-        const timestamp = Date.now();
-        const tempDir = path.join(process.cwd(), 'test', 'temp', `${subDir}-${timestamp}`);
-        if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir, { recursive: true });
-        }
-        return tempDir;
-    };
-
-    // 不使用 afterEach 清理，讓臨時檔案保留供人工審閱
-    it('should generate output file for review', async () => {
-        const outputDir = getTempDir('test-output');
-        const outputFile = path.join(outputDir, 'result.json');
-
-        const result = await processData(inputData);
-        fs.writeFileSync(outputFile, JSON.stringify(result));
-
-        // 測試通過，但保留檔案供人工審閱
-        expect(result).toBeDefined();
-    });
-});
-```
-
-##### 審閱時保留的輔助資訊類型
-
-當決定保留臨時檔案供審閱時，建議一併保留以下輔助資訊：
-
-```typescript
-// ✅ 建議的審閱檔案結構
-test/temp/review/
-├── review-session-2024-01-15-10-30-00/     # 以日期時間命名審閱回合
-│   ├── algorithm-attempts.md               # 演算法嘗試記錄
-│   └── notes.md                            # 開發者備註（記錄問題與解決思路）
-```
-
-**備註檔案範例（`notes.md`）：**
-
-```markdown
-# 審閱筆記
-
-## 問題描述
-- 處理大型檔案時效能低落
-- 記憶體使用量異常飆升
-
-## 觀察分析
-- 演算法嘗試 A：耗時 3.2s，記憶體峰值 512MB
-- 演算法嘗試 B：耗時 1.8s，記憶體峰值 380MB
-- 建議採用嘗試 B 的分頁策略
-
-## 參考價值
-- 為未來優化提供方向
-- 記錄了參數調校的過程
 ```
 
 #### 版本控制配置
@@ -1355,187 +1115,7 @@ tmp/
 
 ---
 
-### 9. 測試資料集規範
-
-**測試資料應獨立於測試邏輯，使用專門的 fixture 文件定義，每個測試用例應包含完整的測試資料，包括輸入、預期輸出和描述。**
-
-#### 核心原則
-
-##### 分離測試資料與測試邏輯
-
-**規則：** 測試資料應獨立於測試邏輯，使用專門的 fixture 文件定義。
-
-```
-test/
-├── fixtures/                    # 測試資料集中管理
-│   └── <module>-test-cases.ts   # 各模組測試資料集
-└── <module>/
-    └── <feature>.test.ts        # 測試邏輯（引用 fixture）
-```
-
-#### 測試資料集結構
-
-**規則：** 每個測試用例應包含完整的測試資料，包括輸入、預期輸出和描述。
-
-```typescript
-/**
- * 測試用例結構
- * Test case structure
- */
-export interface ITestCase
-{
-	/** 測試用例名稱 / Test case name */
-	name: string;
-	/** 輸入資料（測試目標）/ Input data (test target) */
-	input: any;
-	/** 預期結果 / Expected result */
-	expected: any;
-	/** 備註（可選）/ Note (optional) */
-	note?: string;
-}
-
-/**
- * 測試群組結構
- * Test group structure
- */
-export interface ITestGroup
-{
-	/** 測試群組名稱 / Test group name */
-	name: string;
-	/** 測試用例陣列 / Test cases array */
-	testCases: ITestCase[];
-}
-```
-
-#### 測試資料集格式
-
-**規則：** 使用單一陣列導出所有測試群組，便於自動產生測試。
-
-```typescript
-/**
- * 完整測試資料集
- * Complete test dataset
- *
- * 所有測試群組的集合
- */
-export const testGroups: ITestGroup[] = [
-	{
-		name: "基本類型",
-		testCases: [
-			{
-				name: "stringWithDefault",
-				input: z.string().default("hello"),
-				expected: "hello",
-			},
-			// ... 更多測試用例
-		],
-	},
-	// ... 更多測試群組
-];
-```
-
-#### 測試腳本自動產生
-
-**規則：** 測試腳本應自動遍歷測試資料集，無需手動定義每個測試。
-
-```typescript
-import { testGroups } from "../fixtures/zod-defaults-test-cases";
-
-/**
- * 自動產生所有測試群組
- * Automatically generate all test groups
- */
-for (const group of testGroups)
-{
-	describe(group.name, () =>
-	{
-		for (const testCase of group.testCases)
-		{
-			it(testCase.name, () =>
-			{
-				// 執行測試邏輯
-				runTestCase(testCase);
-			});
-		}
-	});
-}
-```
-
-#### 測試資料集命名規範
-
-**規則：** 測試資料集文件應與被測模組對應。
-
-| 模組 | 測試資料集 | 測試文件 |
-|------|-----------|---------|
-| `src/config/schema.ts` | `test/fixtures/config-test-cases.ts` | `test/issues/config-all.test.ts` |
-| `src/utils/helper.ts` | `test/fixtures/helper-test-cases.ts` | `test/issues/helper-all.test.ts` |
-
-#### 測試資料集組織
-
-##### 按功能分組
-
-```typescript
-export const testGroups: ITestGroup[] = [
-	{
-		name: "基本類型",
-		testCases: [
-			// 基本類型測試用例
-		],
-	},
-	{
-		name: "巢狀結構",
-		testCases: [
-			// 巢狀結構測試用例
-		],
-	},
-	{
-		name: "邊界情況",
-		testCases: [
-			// 邊界情況測試用例
-		],
-	},
-];
-```
-
-##### 按輸入類型分組
-
-```typescript
-export const testGroups: ITestGroup[] = [
-	{
-		name: "字串輸入",
-		testCases: [
-			// 字串輸入測試用例
-		],
-	},
-	{
-		name: "數字輸入",
-		testCases: [
-			// 數字輸入測試用例
-		],
-	},
-	{
-		name: "物件輸入",
-		testCases: [
-			// 物件輸入測試用例
-		],
-	},
-];
-```
-
-#### 注意事項
-
-1. **避免硬編碼** - 測試資料不應直接寫在測試邏輯中
-2. **資料集獨立** - 測試資料集文件應可獨立維護
-3. **自動產生** - 測試腳本應自動遍歷資料集，無需手動定義
-4. **類型安全** - 使用 `ITestCase` 和 `ITestGroup` 接口確保類型安全
-5. **雙語註解** - 測試資料集的註解應包含中英文
-6. **完整資料** - 每個測試用例應同時包含輸入（測試目標）與預期輸出（expected）
-
----
-
-## 系統依賴與 Mock 規範
-
-### Mock 處理摘要
+### 9. 系統依賴與 Mock 規範 / System Dependencies & Mock
 
 **測試中涉及系統資源（檔案系統、日期時間、環境變數、網路請求）時，應遵循以下處理原則：**
 
@@ -1550,7 +1130,7 @@ export const testGroups: ITestGroup[] = [
 - [Jest Timer Mocks](https://jestjs.io/docs/timer-mocks)
 - [Bun MockTimers](https://bun.com/reference/node/test/default/MockTimers)
 
-### 系統依賴處理流程圖
+#### 系統依賴處理流程圖
 
 ```
 需要使用系統資源?
@@ -1573,7 +1153,7 @@ export const testGroups: ITestGroup[] = [
         一律使用 fetchMock / nock / msw
 ```
 
-### 重要提醒
+#### 重要提醒
 
 - **非臨時目錄禁止寫入**：絕對不要讓測試寫入 `/etc/`、`/usr/`、`C:\Windows\` 等系統目錄，或專案根目錄下的固定路徑
 - **僅限專案內臨時目錄**：測試產生的臨時檔案**只能**寫入專案下的臨時目錄（如專案根目錄下的 `tmp/` 或 `.tmp/`），禁止寫入系統級臨時目錄（如 `/tmp`、`os.tmpdir()`）
@@ -1581,20 +1161,16 @@ export const testGroups: ITestGroup[] = [
 - **優先使用框架 Mock**：當 Jest/Bun 提供的 `jest.mock()`、`spyOn()`、`useFakeTimers()`, `memfs-extra` 能滿足需求時，**不要**自行實作複雜的 mock 機制
 - **自訂 Mock 作為最後手段**：僅當框架提供的 API 無法滿足特殊需求時，才考慮自行設計 mock 實作，且應妥善封裝並充分測試
 
-### 詳細範例與實作
+#### 詳細範例與實作
 
-**完整的系統依賴處理範例請參閱：**
+**完整的系統依賴處理範例（檔案系統 Mock、依賴模組內部 fs 的 Mock 策略、日期時間 fake timers、環境變數備份與恢復、網路請求 Mock）請參閱：**
 
-- [測試框架 API 重構範例 - 系統依賴謹慎處理原則](./references/examples.md#12-系統依賴謹慎處理原則)
+- [測試框架 API 重構範例 - 系統依賴謹慎處理原則](./references/examples.md#系統依賴謹慎處理原則)
+- [references/temp-file-management.md](./references/temp-file-management.md)（Mock 安全規則與路徑控管）
 
-詳細範例包含：
-- 檔案系統 Mock 與臨時目錄使用方式
-- 依賴模組內部使用 fs 時的 Mock 策略
-- 日期時間的 fake timers 與 spyOn 技巧
-- 環境變數備份與恢復機制
-- 網路請求 Mock 實作
+---
 
-## 決策流程
+## 決策流程 / Decision Flow
 
 ```
 開始撰寫測試
@@ -1607,27 +1183,31 @@ export const testGroups: ITestGroup[] = [
     └─ 否 → 繼續在同一檔案
               │
               ▼
-         輸出是否複雜且穩定？
+          輸出是否複雜且穩定？
               │
               ├─ 是 → 使用 toMatchSnapshot()
               │
               └─ 否 → 使用傳統 matcher
                         │
                         ▼
-                   是否測試錯誤拋出？
+                    是否測試錯誤拋出？
                         │
-                        ├─ 是 → 使用 toThrowErrorMatchingSnapshot()
+                        ├─ 是 → 使用 toThrow() / toThrowErrorMatchingSnapshot()
                         │
-                        └─ 否 → 使用適當的 matcher
+                        └─ 否 → 使用適當的斷言 matcher
+                                  │
+                                  ▼
+                          是否涉及系統資源（fs / Date / env / 網路）？
+                              │
+                              ├─ 是 → 使用框架 Mock 或專案內臨時目錄
+                              │
+                              └─ 否 → 完成測試
 ```
 
-## 相關資源
+---
 
-- [Jest Snapshot Testing](https://jestjs.io/docs/snapshot-testing)
-- [Jest Timer Mocks](https://jestjs.io/docs/timer-mocks)
-- [Bun MockTimers](https://bun.com/reference/node/test/default/MockTimers)
-- [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
-- [測試框架 API 重構範例](./references/examples.md) - 補充 Jest 與 Bun 測試相容的 API 重構範例
-- [test-snapshot-documentation skill](../skills/test-snapshot-documentation/SKILL.md) - 利用測試快照進行文件化的非常規使用方式
-- [skills/test-js-mock - 使用 Jest + memfs-extra Mock 模組](../test-js-mock/SKILL.md)
+## 相關資源 / Related Resources
 
+- [測試框架 API 重構範例](./references/examples.md)
+- [臨時檔案管理：Mock 安全規則與清理策略](./references/temp-file-management.md)
+- [skills/test-js-mock](../test-js-mock/SKILL.md)
