@@ -307,7 +307,7 @@ target.HP = Math.round(takePercent(target.MAXHP, spRate));
 
 When refactoring toward a Single Source of Truth, the goal is **one source, one name**. Two recurring anti-patterns defeat this: (1) masking a name collision by importing `A1 as B` and then re-binding the original name `const A2 = B`, and (2) the "lazy replacement method" where old local names are merely re-pointed at the new source (`A2 = A1`, `A3 = A1`) instead of being deleted and having call sites use the single source directly. Both leave multiple names for one value, obscuring which is authoritative and reintroducing drift risk.
 
-> 📚 **Full case study (Cases A–C: import-alias masking, `A2=A1` / `type IA=EnumA` lazy replacement, Barrel Index re-export)**: [SSOT Refactoring Anti-Patterns: Redundant Aliasing & Lazy Replacement](./references/ssot-refactoring-anti-patterns.md)
+> 📚 **Full case study (Cases A–D: import-alias masking, `A2=A1` / `type IA=EnumA` lazy replacement, Barrel Index re-export, comment-pollution during refactor)**: [SSOT Refactoring Anti-Patterns: Redundant Aliasing & Lazy Replacement](./references/ssot-refactoring-anti-patterns.md)
 
 ---
 
@@ -1433,7 +1433,7 @@ When proposing refactoring suggestions:
 - [typescript-unimplemented-handler](../typescript-unimplemented-handler/SKILL.md) - Handling unimplementable code patterns
 
 ### Memory Rules (System Level)
-- [comment-format-rules](../../rules/comment-format-rules.md) - Comment format rules (bilingual, block comments, JSDoc)
+- [comment-format-rules-js](../comment-format-rules-js/SKILL.md) - Comment format rules (bilingual, block comments, JSDoc)
 - [typescript-naming-convention](../typescript-naming-convention/SKILL.md) - TypeScript naming conventions (Enum, Interface, Type)
 - [unimplemented-code-handling-rules](../../rules/unimplemented-code-handling-rules.md) - Unimplementable code handling rules
 - [test-file-best-practices](../test-file-best-practices/SKILL.md) - Test file best practices

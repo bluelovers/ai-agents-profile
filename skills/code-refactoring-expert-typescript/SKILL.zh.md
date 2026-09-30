@@ -306,7 +306,7 @@ target.HP = Math.round(takePercent(target.MAXHP, spRate));
 
 重構邁向單一事實來源 (SSOT) 的目標是**一個來源、一個名字**。兩類常見反模式會破壞它：(1) 用 `import { A1 as B }` 匯入別名遮掩同名碰撞，再 `const A2 = B` 把原名重新繫結；(2) 「偷懶取代法」——只把舊名字重新指向新來源（`A2 = A1, A3 = A1`），而非刪除舊名字、讓消費點直接用單源。兩者都讓同一個值留下多個名字，掩蓋權威來源並重新引入漂移風險。
 
-> 📚 **完整案例（Case A–C：匯入別名遮掩、`A2=A1` / `type IA=EnumA` 偷懶取代法、Barrel Index re-export）**：[SSOT 重構的反模式：冗餘別名與偷懶取代法](./references/ssot-refactoring-anti-patterns.md)
+> 📚 **完整案例（Case A–D：匯入別名遮掩、`A2=A1` / `type IA=EnumA` 偷懶取代法、Barrel Index re-export、重構註解污染）**：[SSOT 重構的反模式：冗餘別名與偷懶取代法](./references/ssot-refactoring-anti-patterns.md)
 
 ---
 
@@ -1433,7 +1433,7 @@ if (user.isActive && subscription.status === 'active' &&
 - [typescript-unimplemented-handler](../typescript-unimplemented-handler/SKILL.md) - 處理無法實現的代碼模式
 
 ### 記憶規則（系統層級）
-- [comment-format-rules](../../rules/comment-format-rules.md) - 註解格式規範（雙語、區塊註解、JSDoc）
+- [comment-format-rules-js](../comment-format-rules-js/SKILL.md) - 註解格式規範（雙語、區塊註解、JSDoc）
 - [typescript-naming-convention](../typescript-naming-convention/SKILL.md) - TypeScript 命名慣例（Enum、Interface、Type）
 - [unimplemented-code-handling-rules](../../rules/unimplemented-code-handling-rules.md) - 無法實現代碼處理規則
 - [test-file-best-practices](../test-file-best-practices/SKILL.md) - 測試檔案最佳實踐
