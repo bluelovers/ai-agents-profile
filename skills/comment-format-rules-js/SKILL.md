@@ -70,6 +70,7 @@ const MAX_CHARS = 2000;
 ## 單行區塊註解 (Single-line Block)
 
 對於能夠被編輯器標記，但內容較短的說明，使用單行的區塊註解格式。
+僅限於單行的簡單邏輯說明或暫時性標記。否則請使用多行區塊註解格式。
 
 對於使用 TypeScript 的變數或屬性，若程式碼中已明確標註型別（例如 `protected ideList: IIDEInfo[]`），則無需在 JSDoc 中再次使用 `@type` 標註。當新增簡短說明時，可直接使用單行區塊註解（`/** 註解內容 */`）以保持簡潔與一致性。
 
@@ -89,6 +90,18 @@ let userCache = new Map();
 ```typescript
 /** IDE 列表：存儲成功偵測到的可用 IDE */
 protected ideList: IIDEInfo[] = [];
+```
+
+- **適用場景：** 簡單的邏輯分段、TODO 標記。
+
+範例：
+
+```js
+/** 如果快取存在則直接回傳 */
+if (cache.has(key)) return cache.get(key);
+
+/** TODO: 優化大數據量下的迴圈效能 */
+processData(data);
 ```
 
 ---
@@ -116,21 +129,15 @@ protected ideList: IIDEInfo[] = [];
 
 ---
 
-## 短註解 (Inline/Short Comments)
-
-僅限於兩行（含）以內的簡單邏輯說明或暫時性標記。否則請使用多行區塊註解格式。
+## 短註解代碼 (Inline Comments)
 
 - **格式：** `//`
-- **適用場景：** 簡單的邏輯分段、TODO 標記、臨時排除代碼。
+- **適用場景：** 排除代碼。
 
 範例：
 
 ```js
-// 如果快取存在則直接回傳
-if (cache.has(key)) return cache.get(key);
-
-// TODO: 優化大數據量下的迴圈效能
-processData(data);
+// processData(data);
 ```
 
 ---
@@ -241,10 +248,8 @@ function process(result) {
 function getLegacyPluginNamesFromResult(result) {
     /**
      * 條件判斷：確保新舊插件名稱確實不同
-     * Condition check: ensure legacy and current plugin names are actually different
      *
      * 使用 `as any` 繞過 TypeScript 推導
-     * Uses `as any` to bypass TypeScript inference
      *
      * 短路運算實現：(condition && value) || default
      * Short-circuit evaluation implementation
@@ -263,23 +268,23 @@ function getLegacyPluginNamesFromResult(result) {
  * 檢查使用者是否有權存取資源
  * Check if user has permission to access resource
  *
- * 權限判斷條件 / Permission check conditions:
- * 1. 使用者必須處於啟用狀態 / User must be active
- * 2. 必須有專業版訂閱 / Must have Pro subscription
- * 3. 資源為本人建立 或 資源為公開 / Resource created by user OR resource is public
+ * 權限判斷條件:
+ * 1. 使用者必須處於啟用狀態
+ * 2. 必須有專業版訂閱
+ * 3. 資源為本人建立 或 資源為公開
  *
- * @param user - 使用者物件 / User object
- * @param resource - 資源物件 / Resource object
- * @returns 是否允許存取 / Whether access is allowed
+ * @param user - 使用者物件
+ * @param resource - 資源物件
+ * @returns 是否允許存取
  */
 function canAccess(user, resource) {
     /**
      * 執行權限檢查 / Perform permission check
      *
-     * 判斷邏輯：/ Logic:
+     * 判斷邏輯:
      * - 使用者狀態是否啟用 / Check if user is active
      * - 訂閱類型是否為 Pro / Check if subscription is Pro
-     * - 資源是否為本人建立或是公開資源 / Check if resource is created by user or public
+     * - 資源是否為本人建立或是公開資源
      */
     return user.isActive && user.subscription === 'pro' &&
         (resource.createdBy === user.id || resource.isPublic);
@@ -289,9 +294,7 @@ function canAccess(user, resource) {
 ### 檢查清單 (Checklist)
 
 - [ ] JSDoc 中是否包含「如何實現」的語法細節？（如短路運算、`as any`）
-      Does JSDoc contain "how to implement" syntax details? (e.g., short-circuit evaluation, `as any`)
 - [ ] 邏輯區塊內的註解是否僅描述「實作」，而非包含「設計意圖」？
-      Do logic block comments only describe "implementation", not include "design intent"?
 
 ### JSDoc 避免冗餘描述
 
@@ -310,7 +313,6 @@ function canAccess(user, resource) {
 // ✅ 正確：只保留一組完整的描述
 /**
  * 此函數用於處理資料
- * This function is used to process data
  */
 ```
 
@@ -332,9 +334,13 @@ function canAccess(user, resource) {
  */
 ```
 
-### 無意義註解（僅重複宣告關鍵字）
+### 無意義註解（重複宣告、羅列結構）
 
-僅重複宣告關鍵字本身（如 `/** 介面 */` + `interface`）、不含語義資訊的註解屬**無意義註解**：不得新增，遇到既有者直接刪除。
+屬**無意義註解**的三類情形（不得新增，遇到既有者直接刪除）：
+
+1. 僅重複宣告關鍵字本身（如 `/** 介面 */` + `interface`）
+2. 僅重複宣告語意（如 `/** 型別守衛 */` + `function isX(v): v is X`）
+3. 羅列應由代碼管理的宣告、描述檔案「長什麼樣」而非「為什麼存在」的檔頭註解（what 而非 why）
 
 > **Reference**: [無意義註解](./references/meaningless-comments.md) - 錯誤案例、正確處理與改寫指引.
 
@@ -411,7 +417,7 @@ else if (m = (w1.p & w2.p))
 - [註解位置規範](./references/comment-placement.md) — 陣列元素、物件屬性、Interface/Type 成員、`@example` 行內註解例外
 - [重要約束](./references/critical-constraints.md) — 區塊註解強制、分隔線、特殊指令放置、保留技術術語
 - [註解更新規則](./references/comment-update-rules.md) — 保留原始錯誤資訊、Issue 驗證、多語言註解保留、更新前檢查清單
-- [無意義註解](./references/meaningless-comments.md) — 僅重複宣告關鍵字的註解判定，不得新增、遇到直接刪除
+- [無意義註解](./references/meaningless-comments.md) — 重複宣告關鍵字／語意、羅列代碼管理的宣告（what 而非 why）的註解判定，不得新增、遇到直接刪除
 - [行內註解轉換工具](./references/convert-inline-to-block.md) — 將行內註解 (`//`) 批次轉為區塊註解 (`/** ... */`)，預設 dry-run，加 `--write` 才寫入
 
 ---
