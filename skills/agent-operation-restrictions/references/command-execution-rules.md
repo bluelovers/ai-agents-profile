@@ -31,6 +31,39 @@ jest --testPathPattern=foo.spec.ts   # script 僅跑全部，需個別指定時�
 > [!NOTE]
 > 「不符合需求」的判斷標準：當 `package.json` 中的 script 與當前任務所需的參數、範圍或行為不一致時（例如 script 永遠跑全部測試，但此次只需針對單一檔案），才允許直接呼叫工具。
 
+> [!WARNING]
+> **注意 `pre*` / `post*` hooks（如 `pretest`）— 型別檢查與測試「二選一」。** 部分專案會在執行測試時同時進行型別檢查：
+> ```json
+> "scripts": {
+>   "pretest": "node --run test:tsc",
+>   "test": "node --run test:vitest:unit"
+> }
+> ```
+> 只需要型別檢查時跑 `tsc` / `pretest`；需要測試時跑 `test`（`pretest` 自動帶出 tsc）。
+> `test` 只在**工作收尾時**一次性執行；執行過 tsc/pretest 後不得緊接執行 `test`。
+>
+> ```bash
+> # ✅ 正確：只需要型別檢查
+> pnpm run test:tsc                  # 或 pnpm run pretest
+>
+> # ✅ 正確：工作收尾時一次性執行（pretest 自動帶出 tsc → vitest）
+> pnpm run test
+>
+> # ❌ 錯誤：緊接鏈結執行（跑完型別檢查，宣告「tsc passes. Now run unit tests.」後隨即跑 test）
+> pnpm run test:tsc
+> pnpm run test
+>
+> # ❌ 錯誤：同質任務間反覆交替（（型別檢查 and/or 測試）→ 同質性後續任務 → 再檢查/測試），屬濫用測試
+> pnpm run test:tsc
+> pnpm run test
+> # ... 同質性後續任務（同一工作的延續）...
+> pnpm run test:tsc
+> pnpm run test
+> ```
+>
+> 模式：工作中執行過 tsc/pretest 後**繼續工作**，`test` 保留到工作收尾時再一次執行。
+> **例外**：後續任務若為**不同階段的非同質性任務**（嶄新的工作階段），可再次執行型別檢查與測試。
+
 ---
 
 ## 1. 嚴禁使用 `npx` 執行指令
