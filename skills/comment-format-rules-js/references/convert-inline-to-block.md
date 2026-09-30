@@ -1,3 +1,14 @@
+---
+description: >-
+  行內註解 (//) 轉區塊註解 (/** ... */) 的批次轉換工具：檔案清單、快速開始、
+  旗標說明、轉換行為與安全限制。
+tags:
+  - comments/format
+  - documentation/references
+  - comments
+  - tools/convert
+---
+
 # Inline → Block Comment Converter
 
 A small, safety-first helper that converts inline (`//`) comments into block comments

@@ -7,6 +7,7 @@ description: |-
   - "JSDoc 格式", "JSDoc 規範", "文件註解格式"
   - "雙語註解格式", "中英雙語註解", "bilingual comment format"
   - "區塊註解規範", "註解位置規範", "註解格式規範"
+  - "行內註解轉換", "inline to block comment converter"
   - "comment format rules", "JSDoc comment format", "block comment rules"
   Apply when writing, updating, or reviewing code comments in JS/TS projects.
 tags:
@@ -194,6 +195,20 @@ const validated = validateOrder(order);
 const validated = validateOrder(order);
 ```
 
+### 連續邏輯區塊的合併
+
+對 **3 個以上連續的邏輯區塊**加上註解時，使用單一多行區塊註解統整，避免零碎的連續註解：
+
+```typescript
+/**
+ * 邏輯說明一 / Logic description one
+ *
+ * 邏輯說明二 / Logic description two
+ *
+ * 邏輯說明三 / Logic description three
+ */
+```
+
 ---
 
 ## JSDoc 與邏輯區塊職責分離 (Responsibility Separation)
@@ -237,6 +252,46 @@ function getLegacyPluginNamesFromResult(result) {
 }
 ```
 
+### 影響 API 合約的邏輯
+
+當邏輯**影響 API 合約**（如權限判斷條件、驗證規則）時，應**同時**在 JSDoc 中說明，讓呼叫者了解行為；
+若邏輯僅是內部實現細節（如效能優化、內部演算法），則只需在程式碼區塊內說明：
+
+```typescript
+/**
+ * 檢查使用者是否有權存取資源
+ * Check if user has permission to access resource
+ *
+ * 權限判斷條件 / Permission check conditions:
+ * 1. 使用者必須處於啟用狀態 / User must be active
+ * 2. 必須有專業版訂閱 / Must have Pro subscription
+ * 3. 資源為本人建立 或 資源為公開 / Resource created by user OR resource is public
+ *
+ * @param user - 使用者物件 / User object
+ * @param resource - 資源物件 / Resource object
+ * @returns 是否允許存取 / Whether access is allowed
+ */
+function canAccess(user, resource) {
+    /**
+     * 執行權限檢查 / Perform permission check
+     *
+     * 判斷邏輯：/ Logic:
+     * - 使用者狀態是否啟用 / Check if user is active
+     * - 訂閱類型是否為 Pro / Check if subscription is Pro
+     * - 資源是否為本人建立或是公開資源 / Check if resource is created by user or public
+     */
+    return user.isActive && user.subscription === 'pro' &&
+        (resource.createdBy === user.id || resource.isPublic);
+}
+```
+
+### 檢查清單 (Checklist)
+
+- [ ] JSDoc 中是否包含「如何實現」的語法細節？（如短路運算、`as any`）
+      Does JSDoc contain "how to implement" syntax details? (e.g., short-circuit evaluation, `as any`)
+- [ ] 邏輯區塊內的註解是否僅描述「實作」，而非包含「設計意圖」？
+      Do logic block comments only describe "implementation", not include "design intent"?
+
 ### JSDoc 避免冗餘描述
 
 不需要「標題 + 與標題相同意思的描述」，兩段意思相同的註解只保留一組完整的描述即可。
@@ -255,6 +310,24 @@ function getLegacyPluginNamesFromResult(result) {
 /**
  * 此函數用於處理資料
  * This function is used to process data
+ */
+```
+
+**例外：多個獨立說明區塊可使用簡短標題。**
+當 JSDoc 需要包含多個獨立說明區塊時，可以使用簡短標題：
+
+```typescript
+/**
+ * 工具函式集合
+ * Utility functions collection
+ *
+ * 錯誤處理工具：
+ * Error handling utilities:
+ * ...
+ *
+ * 資料轉換工具：
+ * Data transformation utilities:
+ * ...
  */
 ```
 
@@ -327,16 +400,17 @@ else if (m = (w1.p & w2.p))
 
 按需載入以下參考文件：
 
-- [雙語註解格式規範](./references/bilingual-comment-format.md) — 格式選擇、語言順序、JSDoc 標籤雙語格式
+- [雙語註解格式規範](./references/bilingual-comment-format.md) — 格式選擇、語言順序、彈性捨棄雙語、JSDoc 標籤雙語格式
 - [註解位置規範](./references/comment-placement.md) — 陣列元素、物件屬性、Interface/Type 成員、`@example` 行內註解例外
 - [重要約束](./references/critical-constraints.md) — 區塊註解強制、分隔線、特殊指令放置、保留技術術語
-- [註解更新規則](./references/comment-update-rules.md) — 保留原始錯誤資訊、Issue 驗證、更新前檢查清單
+- [註解更新規則](./references/comment-update-rules.md) — 保留原始錯誤資訊、Issue 驗證、多語言註解保留、更新前檢查清單
+- [行內註解轉換工具](./references/convert-inline-to-block.md) — 將行內註解 (`//`) 批次轉為區塊註解 (`/** ... */`)，預設 dry-run，加 `--write` 才寫入
 
 ---
 
 ## 相關技能 (Related Skills)
 
-- [analyze-code-commenter](../analyze-code-commenter/SKILL.md) — 分析程式碼並自動加入雙語註解的實作技能，包含雙語註解模板與多種範例。
+- [analyze-code-commenter](../analyze-code-commenter/SKILL.md) — 分析程式碼並自動加入雙語註解的實作技能，包含邏輯區塊分析規範與多種範例；格式規範由本技能定義。
 
 ---
 
