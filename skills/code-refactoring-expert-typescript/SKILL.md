@@ -1439,6 +1439,7 @@ When proposing refactoring suggestions:
 - [js-git-friendly-coding-style](../js-git-friendly-coding-style/SKILL.md) - Git-friendly code style and merge strategies
 - [test-snapshot-documentation](../test-snapshot-documentation/SKILL.md) - Using snapshot tests for documentation
 - [typescript-unimplemented-handler](../typescript-unimplemented-handler/SKILL.md) - Handling unimplementable code patterns
+- [typescript-types-segment](../typescript-types-segment/SKILL.md) - Semantic Type Aliases to replace unconstrained primitives (string/number) with meaningful, business-expressive types
 
 ### Memory Rules (System Level)
 - [comment-format-rules-js](../comment-format-rules-js/SKILL.md) - Comment format rules (bilingual, block comments, JSDoc)

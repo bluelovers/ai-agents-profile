@@ -1439,6 +1439,7 @@ if (user.isActive && subscription.status === 'active' &&
 - [js-git-friendly-coding-style](../js-git-friendly-coding-style/SKILL.md) - Git 友好的代碼風格與合併策略
 - [test-snapshot-documentation](../test-snapshot-documentation/SKILL.md) - 利用快照測試進行文件化
 - [typescript-unimplemented-handler](../typescript-unimplemented-handler/SKILL.md) - 處理無法實現的代碼模式
+- [typescript-types-segment](../typescript-types-segment/SKILL.md) - 語意化型別別名（Semantic Type Aliases），用以取代未受約束的原始型別（string/number），建立具業務表達力的型別
 
 ### 記憶規則（系統層級）
 - [comment-format-rules-js](../comment-format-rules-js/SKILL.md) - 註解格式規範（雙語、區塊註解、JSDoc）
