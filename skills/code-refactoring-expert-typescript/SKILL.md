@@ -311,6 +311,14 @@ When refactoring toward a Single Source of Truth, the goal is **one source, one 
 
 ---
 
+#### Guideline B-4: Recognize Variants as the Same Definition (Don't Split One Concept via Incomplete Refactors)
+
+Incomplete refactoring or naming/spelling variants often make **one underlying concept** look like **several different definitions**. Before introducing a parallel type or leaving a "raw" duplicate beside the canonical one, verify whether they are actually the same source and should be unified (via derivation, rename, or normalization) rather than treated as distinct.
+
+> 📚 **Full case study**: [Incomplete Refactoring & Variants: Recognizing Same-Source Definitions](./references/incomplete-refactor-variant-same-definition.md) — raw `string` vs `Enum`, optional vs required, and `maxsp` vs `maxSp` spelling variants.
+
+---
+
 #### Guideline C: Prioritize Enum Design for Business States to Prevent Secondary Refactoring from String/Numeric Unions
 
 ##### ❌ Anti-pattern 1: String Unions Leading to Inevitable Secondary Refactoring

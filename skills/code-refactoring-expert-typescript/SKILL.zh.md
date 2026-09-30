@@ -310,6 +310,14 @@ target.HP = Math.round(takePercent(target.MAXHP, spRate));
 
 ---
 
+#### 規範 B-4：將變體辨識為同一個定義（勿因重構不完整而拆分同一概念）
+
+重構不完整或命名/拼寫變體，常讓**同一個底層概念**看起來像**數個不同定義**。在引入平行型別、或把「原始」副本留在正規定義旁之前，應先確認它們是否其實同源、應統一（透過衍生、更名或正規化），而非視為相異。
+
+> 📚 **完整案例**：[重構不完整與變體：辨識「同源」定義](./references/incomplete-refactor-variant-same-definition.md) — 原始 `string` 與 `Enum`、optional 與 required、`maxsp` 與 `maxSp` 拼寫變體。
+
+---
+
 #### 規範 C：業務狀態優先採用 Enum 設計，避免字串/數字聯合引發二次重構
 
 ##### ❌ 反模式 1：使用字串聯合導致後續被迫二次重構
