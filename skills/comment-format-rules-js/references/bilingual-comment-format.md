@@ -118,7 +118,7 @@ const isEnabled = true;
 
 // ✅ 同理，保留雙語以利理解與雙向搜尋
 /** 增益 / Gain */
-/** 前綴 / Prefix */
+/** 增益 / Up */
 ```
 
 ## JSDoc 標籤雙語格式
