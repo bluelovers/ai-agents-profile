@@ -7,6 +7,7 @@ description: |-
   - "JSDoc 格式", "JSDoc 規範", "文件註解格式"
   - "雙語註解格式", "中英雙語註解", "bilingual comment format"
   - "區塊註解規範", "註解位置規範", "註解格式規範"
+  - "無意義註解", "無意義註解刪除", "meaningless comment"
   - "行內註解轉換", "inline to block comment converter"
   - "comment format rules", "JSDoc comment format", "block comment rules"
   Apply when writing, updating, or reviewing code comments in JS/TS projects.
@@ -331,6 +332,12 @@ function canAccess(user, resource) {
  */
 ```
 
+### 無意義註解（僅重複宣告關鍵字）
+
+僅重複宣告關鍵字本身（如 `/** 介面 */` + `interface`）、不含語義資訊的註解屬**無意義註解**：不得新增，遇到既有者直接刪除。
+
+> **Reference**: [無意義註解](./references/meaningless-comments.md) - 錯誤案例、正確處理與改寫指引.
+
 ---
 
 ## 重要約束 (Critical Constraints)
@@ -404,6 +411,7 @@ else if (m = (w1.p & w2.p))
 - [註解位置規範](./references/comment-placement.md) — 陣列元素、物件屬性、Interface/Type 成員、`@example` 行內註解例外
 - [重要約束](./references/critical-constraints.md) — 區塊註解強制、分隔線、特殊指令放置、保留技術術語
 - [註解更新規則](./references/comment-update-rules.md) — 保留原始錯誤資訊、Issue 驗證、多語言註解保留、更新前檢查清單
+- [無意義註解](./references/meaningless-comments.md) — 僅重複宣告關鍵字的註解判定，不得新增、遇到直接刪除
 - [行內註解轉換工具](./references/convert-inline-to-block.md) — 將行內註解 (`//`) 批次轉為區塊註解 (`/** ... */`)，預設 dry-run，加 `--write` 才寫入
 
 ---
