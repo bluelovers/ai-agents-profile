@@ -16,8 +16,8 @@ Detailed before/after examples for bilingual comment patterns (Traditional Chine
 
 ```typescript
 class DataProcessor {
-    private cache: Map<string, any>;
-    private maxCacheSize: number = 100;
+    protected cache: Map<string, any>;
+    protected maxCacheSize: number = 100;
 
     constructor(maxSize?: number) {
         this.cache = new Map();
@@ -52,10 +52,8 @@ class DataProcessor
 	 *
 	 * Uses Map structure to store processed data, managed as key-value pairs.
 	 * Avoids reprocessing the same data to improve performance.
-	 *
-	 * @private
 	 */
-	private cache: Map<string, any>;
+	protected cache: Map<string, any>;
 
 	/**
 	 * 快取大小上限
@@ -66,10 +64,8 @@ class DataProcessor
 	 *
 	 * Controls the maximum number of entries the cache can store.
 	 * When exceeding this limit, the least recently used item is automatically removed.
-	 *
-	 * @private
 	 */
-	private maxCacheSize: number = 100;
+	protected maxCacheSize: number = 100;
 
 	/**
 	 * 建構函式

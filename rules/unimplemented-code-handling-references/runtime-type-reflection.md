@@ -77,7 +77,7 @@ function validateType<T>(value: unknown, schema: T): boolean {
 // 完整的類型反射實現嘗試
 // Complete type reflection implementation attempt
 class TypeReflector<T> {
-    private _typeInfo: T;
+    protected _typeInfo: T;
 
     constructor(typeInfo: T) {
         this._typeInfo = typeInfo;

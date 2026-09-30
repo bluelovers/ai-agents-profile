@@ -1078,7 +1078,7 @@ class DataProcessor extends EventEmitter {
 
 // ✅ Correct: Ensure resource release
 class DataProcessor extends EventEmitter {
-    private listeners: Array<() => void> = [];
+    protected listeners: Array<() => void> = [];
 
     setup(): void {
         const handler = this.handleData.bind(this);

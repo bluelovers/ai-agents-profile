@@ -71,7 +71,7 @@ const MAX_CHARS = 2000;
 
 對於能夠被編輯器標記，但內容較短的說明，使用單行的區塊註解格式。
 
-對於使用 TypeScript 的變數或屬性，若程式碼中已明確標註型別（例如 `private ideList: IIDEInfo[]`），則無需在 JSDoc 中再次使用 `@type` 標註。當新增簡短說明時，可直接使用單行區塊註解（`/** 註解內容 */`）以保持簡潔與一致性。
+對於使用 TypeScript 的變數或屬性，若程式碼中已明確標註型別（例如 `protected ideList: IIDEInfo[]`），則無需在 JSDoc 中再次使用 `@type` 標註。當新增簡短說明時，可直接使用單行區塊註解（`/** 註解內容 */`）以保持簡潔與一致性。
 
 - **格式：** `/** 註解內容 */`
 - **適用場景：** 變數聲明、配置項、常數說明。
@@ -88,7 +88,7 @@ let userCache = new Map();
 
 ```typescript
 /** IDE 列表：存儲成功偵測到的可用 IDE */
-private ideList: IIDEInfo[] = [];
+protected ideList: IIDEInfo[] = [];
 ```
 
 ---

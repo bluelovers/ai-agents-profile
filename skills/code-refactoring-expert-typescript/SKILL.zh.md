@@ -1080,7 +1080,7 @@ class DataProcessor extends EventEmitter {
 
 // ✅ 正確：確保資源釋放
 class DataProcessor extends EventEmitter {
-    private listeners: Array<() => void> = [];
+    protected listeners: Array<() => void> = [];
 
     setup(): void {
         const handler = this.handleData.bind(this);
