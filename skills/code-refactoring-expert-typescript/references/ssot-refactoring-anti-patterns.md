@@ -163,12 +163,62 @@ Core principle (same as Case B): **use only the single source from the start** �
 
 ---
 
+## Case C — 重構後建立 Barrel Index re-export（偷懶取代法的模組層版本）
+
+### 背景
+
+「偷懶取代法」不只發生在值/型別別名，也發生在**模組路徑層**。收斂為單一事實來源時（例如把定義搬進共用模組），正確做法是更新所有內部消費點、直接引用新來源路徑。但常見的偷懶做法是：在舊位置建立一個 **Barrel Index re-export**（`export * from './realModule'` 或 `export { X } from './realModule'`），讓舊的 import 路徑繼續通過——等於把舊路徑當作別名保留下來。
+
+### 程式碼
+
+```typescript
+// ✅ 重構後：定義搬到唯一來源 src/core/keys.ts
+// src/core/keys.ts
+export const SKILL_EXTRA_NUMERIC_KEYS = [...];
+
+// ❌ 偷懶取代法：在舊位置建立 barrel re-export，讓舊 import 路徑繼續通過
+// src/skill/keys.ts（舊檔，本應刪除）
+export * from '../core/keys';                 // barrel re-export
+// 或 export { SKILL_EXTRA_NUMERIC_KEYS } from '../core/keys';
+```
+
+### 問題點
+
+內部消費點仍從 `src/skill/keys` 匯入（舊路徑），而非 `src/core/keys`（單一來源）。兩個路徑指向同一個模組——舊路徑以 re-export 的形式存活，正是 Case B 的 `A2 = A1` 在**模組層**的版本。
+
+這會：
+- 抵消 SSOT 的可讀性/可除錯性：讀者不知道哪條路徑才是權威；Find References、rename、tree-shaking、循環依賴偵測等工具效力下降（詳見 `code-refactoring-miscellaneous` 的 **Barrel Index Avoidance Rule**）。
+- 埋下漂移風險：有人改動 re-export 檔以為是來源，或在新路徑與舊路徑之間來回，再次引入不一致。
+- 讓「單一事實來源」淪為口號：名義上兩個入口，只是其中一個轉手給另一個。
+
+### 正確做法 / Correct fix
+
+```typescript
+// ✅ 刪除舊位置的 barrel re-export 檔（src/skill/keys.ts）
+// ✅ 所有內部消費點直接引用單一來源路徑
+import { SKILL_EXTRA_NUMERIC_KEYS } from '../core/keys';
+```
+
+**內部專案引用一律使用直接路徑**；Barrel Index re-export 在原則上**禁止**於重構後建立。
+
+### 可接受例外 / Acceptable exceptions
+
+下列情況可保留 re-export（否則仍應避免）：
+1. **使用者明確要求指示**（explicit user instruction）。
+2. **重構期間暫時 re-export**：為了先專心處理重構或單一事實來源本身，可暫時保留 re-export 作為過渡；**重構完成後必須刪除 re-export，並讓消費點改為直接引用直接路徑**。
+3. **對外模組入口點**：該檔案是提供給**外部專案**使用的模組入口點，且**原本就有 export**（即既有的公開 API 介面，而非重構時偷懶新增的內部 barrel）。
+
+> 📚 進一步規範參見 [Barrel Index Avoidance Rule](../../code-refactoring-miscellaneous/SKILL.md#barrel-index-avoidance-rule)（位於 `code-refactoring-miscellaneous`）。
+
+---
+
 ## 總結檢查清單 / Summary Checklist
 
 - [ ] 本檔匯入某符號時，是否仍存在與其原名同名的本地定義？（問題 1）
 - [ ] 是否用 `import { X as Y }` 在匯入邊閃避碰撞，而非在源頭改名？（問題 2）
 - [ ] 是否在 `X as Y` 之後又 `const X = Y` 重建原名？（問題 3）
 - [ ] SSOT 重構時，是否只是把舊名字重新指向新來源（`A2 = A1, A3 = A1`），而非刪除舊名字、讓消費點直接用單源？（問題 4）
+- [ ] 重構後是否建立了 Barrel Index re-export 來讓舊 import 路徑繼續通過，而非讓內部消費點直接引用單一來源路徑？（Case C）
 - [ ] 最終是否達成「一個來源、一個名字、零轉手」？
 
 > 這四個問題本質都是「重複/冗餘命名」，正是本技能 **規範 B（重複邏輯抽離共用）** 與 **規範 B-2（計算密集型專案連瑣碎運算也要抽離）** 的對立面：收斂為 SSOT 時，必須連「名字」也收斂成唯一，否則只是把重複從值搬到了名字。
