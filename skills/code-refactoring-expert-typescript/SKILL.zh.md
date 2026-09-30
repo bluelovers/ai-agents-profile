@@ -541,7 +541,7 @@ export class UserProfileEntity implements IUserProfile {
 | 是否需要在多個型別中新增/變更同一組成員？ | **將共享成員抽離為基礎介面**（`extends`/組合）——重複的跨型別修改是 SSoT 的警報鐘聲，而非單純雜務 |
 | Class 與 Interface 之間存在重複結構或契約？ | **在 Class 上使用 `implements Interface` 約束**，杜絕各自獨立宣告導致靜默型別漂移 |
 | 是否定義了有限的業務狀態、分類或數字標記（如 0/1）？ | **優先採用 Enum 設計**而非字串或數字聯合，避免日後需求擴展時再次耗費精力重構為 Enum |
-| 是否具有位置語義的 Tuple/陣列（如 `[phys, mag]`）？ | **為槽位索引定義 Enum 作為單一事實來源、抽離具名 Tuple 型別、並透過 Enum 索引**——絕不可僅以註解連結的內聯 Tuple |
+| 是否具有位置語義的 Tuple/陣列（如 `[phys, mag]`）？ | **為槽位索引定義 Enum 作為單一事實來源、抽離具名 Tuple 型別、並透過 Enum 索引**——絕不可內聯 Tuple，即便帶有名稱元素（`[a: T, b: T]`）也不行 |
 | 是否存在重複的計算、校驗或轉換邏輯？ | **抽離為共用純函式/工具**，杜絕邏輯重複散落導致各處各自維護與更新遺漏 |
 | 現有實作阻礙測試或難以複用？ | **進行抽離細化 (Decompose & Refine)**，將核心邏輯抽離為獨立純函式；**嚴禁為測試複製邏輯**而脫離 SSoT |
 | 是否有基於另一型別的欄位？ | 使用 `OriginalType['fieldName']` 或 `Pick<OriginalType, ...>` 保留可追溯性 |
@@ -579,6 +579,17 @@ export type IGeoPointTupleLatLng = [
 1. 為「槽位索引」定義一個 **Enum**（`EnumAtkSlot`、`EnumDefSlot` …），作為「每個位置代表什麼」的單一事實來源。
 2. 將 Tuple **抽離為具名型別別名**，在使用端絕不再內聯展開。
 3. 在**每個存取點都透過 Enum 成員索引**，而非裸數字字面值。
+
+> ⚠️ **帶有名稱元素的 Tuple 並不豁免抽離。** 即使你為每個位置寫上名稱（例如 `charge?: [castTime: number, stiff: number]`），它**依然是內聯型別**——名稱元素語法只是「看起來」像自我說明而已。它依舊把形狀散落、無法被其他模組共用，且一旦插入、移除或調整某個位置仍會靜默漂移。**務必抽離為具名型別別名**；名稱元素應歸屬於抽離出來的型別，絕不可寫在屬性上：
+>
+> ```typescript
+> // ❌ 絕不可：在屬性上內聯具名 Tuple
+> charge?: [castTime: number, stiff: number];
+>
+> // ✅ 務必：抽離為具名型別後再引用
+> export type IChargeTuple = [castTime: number, stiff: number];
+> interface ISkill { charge?: IChargeTuple; }
+> ```
 
 ##### ❌ 反模式：內聯 Tuple + 只靠註解連結 Enum
 

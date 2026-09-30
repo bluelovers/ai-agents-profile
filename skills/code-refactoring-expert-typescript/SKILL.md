@@ -540,7 +540,7 @@ export class UserProfileEntity implements IUserProfile {
 | Need to add/change the same members in several types? | **Extract the shared members into a base interface** (`extends`/composition) — a repeated multi-type edit is the SSoT alarm bell, not just a chore |
 | Duplicate structure or contract between Class and Interface? | **Use `implements Interface` on the Class** to eliminate isolated declarations and silent type drift |
 | Finite business states, categories, or numeric flags (e.g., 0/1)? | **Prioritize Enum design** over string or numeric unions to avoid secondary refactoring later |
-| Tuple/array with positional meaning (e.g., `[phys, mag]`)? | **Define an Enum for slot indices as SSoT, extract a named tuple type, and index via the Enum** — never inline a tuple with only a comment link |
+| Tuple/array with positional meaning (e.g., `[phys, mag]`)? | **Define an Enum for slot indices as SSoT, extract a named tuple type, and index via the Enum** — never inline the tuple, not even with named elements (`[a: T, b: T]`) |
 | Duplicate calculation, validation, or transformation logic? | **Extract into shared pure functions/utilities**; eliminate multi-place maintenance |
 | Implementation hinders testing or reuse? | **Decompose and refine (Extract & Refine)** into pure/isolated units; **never duplicate logic for tests** |
 | Are there fields based on another type? | Use `OriginalType['fieldName']` or `Pick<OriginalType, ...>` to preserve traceability |
@@ -578,6 +578,17 @@ A tuple whose positions carry business meaning (e.g., `[physical, magic]` attack
 1. Define an **Enum for the slot indices** (`EnumAtkSlot`, `EnumDefSlot`, …) as the single source of truth for what each position means.
 2. Extract the tuple into a **named type alias** that is never inlined at the call site.
 3. **Index the tuple through the Enum member** at every access site — never a raw numeric literal.
+
+> ⚠️ **Named tuple elements do NOT exempt you from extraction.** Writing a tuple with named positions inline (e.g., `charge?: [castTime: number, stiff: number]`) is still an **inline type** — the named-element syntax only *looks* self-documenting. It still scatters the shape, cannot be shared by other modules, and still drifts silently when a position is inserted, removed, or reordered. **Always extract it to a named type alias**; the named elements belong on the extracted type, never on the property:
+>
+> ```typescript
+> // ❌ NEVER: inline named tuple on the property
+> charge?: [castTime: number, stiff: number];
+>
+> // ✅ ALWAYS: extract to a named type, then reference it
+> export type IChargeTuple = [castTime: number, stiff: number];
+> interface ISkill { charge?: IChargeTuple; }
+> ```
 
 ##### ❌ Anti-pattern: Inline tuple + comment-only link to an Enum
 
