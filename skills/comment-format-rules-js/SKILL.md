@@ -413,7 +413,7 @@ else if (m = (w1.p & w2.p))
 
 按需載入以下參考文件：
 
-- [雙語註解格式規範](./references/bilingual-comment-format.md) — 格式選擇、語言順序、彈性捨棄雙語、JSDoc 標籤雙語格式
+- [雙語註解格式規範](./references/bilingual-comment-format.md) — 格式選擇、語言順序、彈性捨棄雙語（判定基準、無意義雙語／特殊意圖子項目）與一體兩面的變體「彈性保留雙語」、JSDoc 標籤雙語格式
 - [註解位置規範](./references/comment-placement.md) — 陣列元素、物件屬性、Interface/Type 成員、`@example` 行內註解例外
 - [重要約束](./references/critical-constraints.md) — 區塊註解強制、分隔線、特殊指令放置、保留技術術語
 - [註解更新規則](./references/comment-update-rules.md) — 保留原始錯誤資訊、Issue 驗證、多語言註解保留、更新前檢查清單
