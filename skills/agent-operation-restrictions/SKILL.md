@@ -11,6 +11,7 @@ description: |-
   - "不要自行安裝" 或 依賴
   - 伺服器
   - 工具呼叫錯誤或失敗 或 無權限 或 deny
+  - 非必要 git 查詢（git status / git log / git diff）
   - "operation restrictions" 或 "agent rules"
   - "forbidden operations"
   - pretest / pre hook（型別檢查與測試二選一、避免反覆交替執行）
@@ -71,8 +72,10 @@ tags:
 
 **請避免執行非必要行為。** 即使某項操作本身未被禁止，若與當前任務無關，仍不應執行，以免產生多餘的副作用、雜訊或資源浪費。
 
-- **避免非必要的 git 查詢** — 雖然唯讀 git 指令（如 `git status`、`git log`、`git diff`）未被禁止，但請勿執行與任務無關的 git 查詢。
+- **避免非必要的 git 查詢** — 雖然唯讀 git 指令（包含但不限於如 `git status`、`git log`、`git diff`）未被禁止，但請勿執行與任務無關的 git 查詢。
   - 例如：使用者要求執行一項與 git 或歷史紀錄無關的任務，卻試圖查詢 `git log` 的行為，即屬非必要。
+  - **編輯 / 重構類任務是基於「檔案現有狀態」來進行的任務** — 此類任務以當前檔案內容為依據即可完成；包含但不限於 `git status`、`git log`、`git diff` 等查詢若對任務本身**沒有決定性關聯**，即不應執行。
+  - **僅在具有明確需求與理由時才允許執行** — 例如：使用者要求比對狀態（修改前後差異、工作區與 HEAD 的差異）時。
 - **避免非必要的依賴/指令位置查詢** — 企圖執行某指令（如 `tsx`、`tsc`）時，若該指令可直接呼叫，就不需要先進行不必要的依賴查詢或試圖查詢指令的安裝位置。
   - 例如：準備執行 `tsx` 卻先去 `which tsx` / `find node_modules` / `glob node_modules` 查詢其安裝路徑，而該路徑對完成任務並非必要。
 
