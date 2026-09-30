@@ -644,6 +644,6 @@ await question({
 
 - [agent-task-execution-rules.md](../../rules/agent-task-execution-rules.md) - Original case reference
 - [unimplemented-code-handling-rules.md](../../rules/unimplemented-code-handling-rules.md) - Unimplemented code handling rules
-- [comment-format-rules.md](../../rules/comment-format-rules.md) - Comment format specifications
+- [comment-format-rules-js](../comment-format-rules-js/SKILL.md) - Comment format specifications
 - [references/github-url-resolution.md](./references/github-url-resolution.md) - Complete GitHub URL resolution rules
 - [references/git-commit-issues.md](./references/git-commit-issues.md) - Git commit process issues documentation (Cases 5 & 6)

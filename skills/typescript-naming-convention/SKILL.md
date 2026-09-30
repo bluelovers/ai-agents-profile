@@ -57,7 +57,7 @@ tags:
 - 物件型別 Type Alias 的屬性建議使用單行區塊註解。
 - 函式型別參數與回傳值建議使用 JSDoc 標註。
 
-詳細格式遵循 [註解格式規範](../../rules/comment-format-rules.md)。
+詳細格式遵循 [註解格式規範](../comment-format-rules-js/SKILL.md)。
 
 ---
 

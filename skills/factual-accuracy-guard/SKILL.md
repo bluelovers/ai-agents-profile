@@ -644,6 +644,6 @@ await question({
 ## 相關資源 / Related Resources
 
 - [unimplemented-code-handling-rules.md](../../rules/unimplemented-code-handling-rules.md) - 無法實現代碼處理規則
-- [comment-format-rules.md](../../rules/comment-format-rules.md) - 註解格式規範
+- [comment-format-rules-js](../comment-format-rules-js/SKILL.md) - 註解格式規範
 - [references/github-url-resolution.md](./references/github-url-resolution.md) - GitHub URL 解析規則完整說明
 - [references/git-commit-issues.md](./references/git-commit-issues.md) - Git 提交過程問題記錄（案例 5 & 6）

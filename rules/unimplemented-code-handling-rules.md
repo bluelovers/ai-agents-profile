@@ -277,7 +277,7 @@ Explain the learning value, future implementation possibilities, and alternative
 
 ### 與註解格式規範的整合
 
-本規則應與 [comment-format-rules.md](comment-format-rules.md) 配合使用：
+本規則應與 [comment-format-rules-js](../skills/comment-format-rules-js/SKILL.md) 配合使用：
 
 - 使用結構化文檔註解 (`/** ... */`) 進行說明
 - 使用單行區塊註解 (`/** ... */`) 進行簡短說明
@@ -322,7 +322,7 @@ Explain the learning value, future implementation possibilities, and alternative
 
 ## 相關資源
 
-- [comment-format-rules.md](comment-format-rules.md) - 註解格式規範
+- [comment-format-rules-js](../skills/comment-format-rules-js/SKILL.md) - 註解格式規範
 - [test-file-best-practices](../../skills/test-file-best-practices/SKILL.md) - 測試檔案最佳實踐
 - [typescript-unimplemented-handler skill](../skills/typescript-unimplemented-handler/SKILL.md) - TypeScript 特定處理器
 - [unimplemented-code-handling-references/](unimplemented-code-handling-references/) - 過長無法實現代碼參考檔案

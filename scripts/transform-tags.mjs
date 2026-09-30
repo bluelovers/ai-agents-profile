@@ -25,6 +25,7 @@ const SKILL_NAMES = new Set([
   "code-refactoring-expert-typescript",
   "code-refactoring-miscellaneous",
   "comment-format-rules-css",
+  "comment-format-rules-js",
   "context7-mcp",
   "doc-refactor-doc-optimization",
   "factual-accuracy-guard",
