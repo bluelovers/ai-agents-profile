@@ -1,8 +1,19 @@
 ---
 name: agent-behavior-standardization
-description: >-
+description: |-
   Provides guidelines to standardize agent behaviors,
   avoid common mistakes, and prevent unnecessary actions during task execution.
+  Use when agents need to:
+  (1) Read or write files/directories with built-in tools instead of hand-built CLI commands,
+  (2) Edit files without pre-reading the whole file or overwriting others' changes,
+  (3) Handle CJK/non-English encoding conflicts (terminal mojibake, UTF-8 vs Big5),
+  (4) Apply Single Source of Truth (SSoT) to deduplicate shared logic, types, or docs,
+  (5) Batch grep/glob searches in a single call for efficiency,
+  (6) Diagnose failed tool calls and validate workspace-relative vs absolute paths,
+  (7) Keep refactoring/annotation/analysis tasks from scope drift (skip unnecessary git/test exploration).
+  Triggers when user mentions: "行為標準化", "agent behavior standardization",
+  "避免非必要操作", "覆蓋檔案/檔案被更動", "亂碼/編碼問題", "單一事實來源/SSoT",
+  "重複邏輯", "批次搜尋", "工具呼叫失敗", "路徑錯誤", "scope drift", "避免多餘探索".
 tags:
   - agents/behavior
   - agents/guidelines
