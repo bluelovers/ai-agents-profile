@@ -538,7 +538,7 @@ export default {
 
 ## 相關資源 (Related)
 
-- [Main Skill](../../../SKILL.md) - 核心重構指引
+- [skills/code-refactoring-miscellaneous](../../../SKILL.md) - 核心重構指引
 - [CSS 重構指南](../../css/css-refactoring-guide.md) - 抽離共用樣式值、`var()` 靜默失效陷阱（本指南第 1、3 節的樣式基礎）
 - [comment-format-rules-css](../../../../comment-format-rules-css/SKILL.md) - CSS/SCSS 註解格式規範
 - [Storybook Docs: Decorators](https://storybook.js.org/docs/writing-stories/decorators)
