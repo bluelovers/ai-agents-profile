@@ -17,6 +17,7 @@ tags:
   - nodejs
   - edge-cases
   - React
+  - Storybook
   - CSS
 ---
 
@@ -632,6 +633,17 @@ class ExtendedDataProcessor extends DataProcessor {
 
 ---
 
+## Storybook 重構模式
+
+📚 **完整指南**：[Storybook 重構指南 - 公用 Decorator、同源根 Decorator、共用樣式載入與 fixture 資料抽離](./references/react/storybook/storybook-decorator-fixture-refactoring.md)
+
+- **抽離公用 Decorator 與同源根 Decorator**：將重複的故事包裝抽離為公用 Decorator；推薦建立（或以工廠繼承）單一同源的根 Decorator，讓所有 Decorator／Story 從同一個樣式入口、同一個根 class 起算
+- **在根 Decorator 引用公用樣式**：token／全域樣式／story 工具類統一由根 Decorator 檔案載入——避免「定義了卻沒效果」（Storybook 不渲染 `App.tsx`）與「效果不完整」（包裝節點破壞佈局條件）
+- **fixture 分類抽離**：展示資料**優先採用共同的 fixtures 路徑**（`src/stories/fixtures/`）作為預設位置——查找統一、跨組件共用；僅組件專屬資料放本地 `stories/fixtures/`；依領域分檔、依情境命名 export，以 `args` 引用；Decorator 只管環境，story 不內聯資料
+- **多級 `meta.title` 分類**：以顯式且統一的多級架構（領域／分類／組件...，**深度 5 級以內**）整理側邊欄——避免 title 缺省或不一致導致難以找尋組件，也避免層級過深、單項資料夾造成過度碎片化；story 案例由 export 表達、檔案路徑與 title 對齊
+
+---
+
 ## CSS 重構模式
 
 📚 **完整指南**：[CSS 重構指南 - 抽離共用樣式值、作用域覆寫、共用 class/mixin 組合等實用模式](./references/css/css-refactoring-guide.md)
@@ -1039,3 +1051,4 @@ return new Blob(body as any).arrayBuffer();
 - [外部 API 類型安全封裝模式](./references/external-api-type-safe-wrapper.md) - 將鬆散類型的外部 API（如 VS Code Memento）封裝為嚴格類型的內部接口
 - [DOM Selector Enum Pattern - 完整參考](./references/dom-selector-enum-pattern.md) - 詳細的 HTML/JSX 整合範例與進階應用
 - [CSS 重構指南](./references/css/css-refactoring-guide.md) - 將共用樣式值抽離為 CSS 自訂屬性，讓跨選擇器樣式保持同步 (SSoT)
+- [Storybook 重構指南](./references/react/storybook/storybook-decorator-fixture-refactoring.md) - 公用 Decorator、同源根 Decorator 與共用樣式載入、fixture 展示資料分類抽離、多級 meta.title 分類整理

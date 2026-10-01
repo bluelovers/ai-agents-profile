@@ -17,6 +17,7 @@ tags:
   - nodejs
   - edge-cases
   - React
+  - Storybook
   - CSS
   - agents/skills
   - single-source-of-truth
@@ -678,6 +679,17 @@ Covers: component extraction & abstraction, conditional rendering refactoring, p
 
 ---
 
+## Storybook Refactoring Patterns
+
+📚 **Full guide**: [Storybook Refactoring Guide - shared decorators, same-origin root decorator, shared style loading, fixture data extraction](./references/react/storybook/storybook-decorator-fixture-refactoring.md)
+
+- **Shared & root decorators**: extract repeated story wrappers into shared decorators; recommend establishing (or inheriting via factory) a single same-origin root decorator so every decorator/story starts from one style entry and one root class
+- **Shared styles in the root decorator**: load tokens / global styles / story utility classes in the root decorator file — avoids "defined but no effect" (Storybook never renders `App.tsx`) and "incomplete effect" (wrapper breaking layout conditions)
+- **Fixtures**: prefer the shared `src/stories/fixtures/` path as the default location (single place to find display data, shared across components); only component-specific data goes to local `stories/fixtures/` — categorized by domain/scenario and consumed via `args`; decorators handle environment only, stories never inline data
+- **Multi-level `meta.title` organization**: explicit unified sidebar hierarchy of up to 5 levels (domain/category/component...) — avoids missing or inconsistent titles (hard to find components) and over-fragmented deep trees; story cases stay as story exports, file paths align with titles
+
+---
+
 ## CSS Refactoring Patterns
 
 📚 **Full guide**: [CSS Refactoring Guide - Extract shared style values, scope overrides, shared class/mixin composition and other practical patterns](./references/css/css-refactoring-guide.md)
@@ -999,3 +1011,4 @@ Do not manually type `req`/`res`. Instead, add `"node"` to `compilerOptions.type
 - [DOM Selector Enum Pattern - Full Reference](./references/dom-selector-enum-pattern.md) - Detailed HTML/JSX integration examples and advanced applications
 - [React Component Refactoring Patterns](./references/react/react-component-refactoring-patterns.md) - React component extraction, conditional rendering, parameter passing optimization and other practical tips
 - [CSS Refactoring Guide](./references/css/css-refactoring-guide.md) - Extract shared style values into CSS custom properties to keep cross-selector styles in sync (SSoT)
+- [Storybook Refactoring Guide](./references/react/storybook/storybook-decorator-fixture-refactoring.md) - Shared decorators, same-origin root decorator with shared style loading, categorized fixture data extraction, multi-level meta.title organization
