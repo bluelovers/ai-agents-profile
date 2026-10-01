@@ -8,7 +8,7 @@ description: >-
   (2) Solving code smells not covered by standard guides,
   (3) Advanced TypeScript patterns,
   (4) Node.js specific considerations,
-  (5) React/JSX/HTML/DOM specific considerations,
+  (5) React/JSX/HTML/DOM/CSS specific considerations,
   and (6) Cross-domain concerns.
   Use this Skill when users ask about "miscellaneous refactoring", "edge cases", "advanced patterns", or when the core guide needs supplementation.
 tags:
@@ -17,6 +17,7 @@ tags:
   - nodejs
   - edge-cases
   - React
+  - CSS
   - agents/skills
   - single-source-of-truth
 ---
@@ -677,6 +678,15 @@ Covers: component extraction & abstraction, conditional rendering refactoring, p
 
 ---
 
+## CSS Refactoring Patterns
+
+📚 **Full guide**: [CSS Refactoring Guide - Extract shared style values, scope overrides, shared class/mixin composition and other practical patterns](./references/css/css-refactoring-guide.md)
+
+- **Extract shared style values**: Refactor duplicated literal values (filters, shadows, colors...) across selectors into a single CSS custom property (or SCSS `$` variable), establishing SSoT at the style level — change once, sync everywhere; prevents missed sync updates when modifying styles or adding new effects
+- Covers: extraction criteria, naming conventions, base/effect layer splitting, scope overrides, SCSS `$` vs CSS `var()`, common pitfalls, and refactoring workflow
+
+---
+
 ## Data Validation Refactoring Patterns
 
 ### Concept
@@ -988,3 +998,4 @@ Do not manually type `req`/`res`. Instead, add `"node"` to `compilerOptions.type
 - [External API Type-Safe Wrapper Pattern](./references/external-api-type-safe-wrapper.md) - Wrapping loosely-typed external APIs (like VS Code Memento) into strictly-typed internal interfaces
 - [DOM Selector Enum Pattern - Full Reference](./references/dom-selector-enum-pattern.md) - Detailed HTML/JSX integration examples and advanced applications
 - [React Component Refactoring Patterns](./references/react/react-component-refactoring-patterns.md) - React component extraction, conditional rendering, parameter passing optimization and other practical tips
+- [CSS Refactoring Guide](./references/css/css-refactoring-guide.md) - Extract shared style values into CSS custom properties to keep cross-selector styles in sync (SSoT)

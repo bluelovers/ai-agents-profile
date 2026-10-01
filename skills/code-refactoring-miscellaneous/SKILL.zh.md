@@ -8,7 +8,7 @@ description: >-
   (2) 解決標準指南未涵蓋的程式碼異味，
   (3) 進階 TypeScript 模式，
   (4) Node.js 特定考量，
-  (5) React/JSX/HTML/DOM 特定考量，
+  (5) React/JSX/HTML/DOM/CSS 特定考量，
   以及 (6) 跨領域關注點。
   當使用者詢問「雜項重構」、「邊緣案例」、「進階模式」或核心指南需要補充時使用此 Skill。
 tags:
@@ -17,6 +17,7 @@ tags:
   - nodejs
   - edge-cases
   - React
+  - CSS
 ---
 
 # TypeScript/Node.js 重構 - 雜項案例與概念
@@ -631,6 +632,15 @@ class ExtendedDataProcessor extends DataProcessor {
 
 ---
 
+## CSS 重構模式
+
+📚 **完整指南**：[CSS 重構指南 - 抽離共用樣式值、作用域覆寫、共用 class/mixin 組合等實用模式](./references/css/css-refactoring-guide.md)
+
+- **抽離共用樣式值**：將多個選擇器重複的字面值（濾鏡、陰影、顏色...）重構為單一 CSS 自訂屬性（或 SCSS `$` 變數），在樣式層級建立 SSoT——改一次、全域同步，避免修改樣式或追加新特效時缺漏同步更新
+- 涵蓋：抽離判斷準則、命名慣例、基礎層/特效層拆分、作用域覆寫、SCSS `$` vs CSS `var()`、常見陷阱與重構步驟
+
+---
+
 ## 錯誤處理與重構模式
 
 📚 **完整案例參考**：[React 組件重構模式 - 組件提取、條件渲染、參數傳遞優化等實用技巧](./references/react/react-component-refactoring-patterns.md)
@@ -1028,3 +1038,4 @@ return new Blob(body as any).arrayBuffer();
 
 - [外部 API 類型安全封裝模式](./references/external-api-type-safe-wrapper.md) - 將鬆散類型的外部 API（如 VS Code Memento）封裝為嚴格類型的內部接口
 - [DOM Selector Enum Pattern - 完整參考](./references/dom-selector-enum-pattern.md) - 詳細的 HTML/JSX 整合範例與進階應用
+- [CSS 重構指南](./references/css/css-refactoring-guide.md) - 將共用樣式值抽離為 CSS 自訂屬性，讓跨選擇器樣式保持同步 (SSoT)

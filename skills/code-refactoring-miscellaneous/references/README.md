@@ -15,6 +15,7 @@ This directory contains reference materials that supplement the main [code-refac
 
 ## Available References
 
+- [css/css-refactoring-guide.md](./css/css-refactoring-guide.md) - CSS refactoring guide: extracting shared style values into CSS custom properties or SCSS variables (SSoT) to prevent style drift when modifying styles or adding new effects
 - [dom-selector-enum-pattern.md](./dom-selector-enum-pattern.md) - Refactoring scattered hardcoded DOM IDs and CSS class selectors into unified Enum management
 - [react-state-ref-memo-decision-guide.md](./react/react-state-ref-memo-decision-guide.md) - Decision guide for choosing State / RefObject / `IRefObjectMaybe<T>` / useMemo during React refactoring, with decision matrix and refactoring workflow
 - [react-state-ref-memo-refactoring.md](./react/react-state-ref-memo-refactoring.md) - Complete case study of refactoring a React Hook from excessive useState to optimized State + RefObject + useMemo pattern
