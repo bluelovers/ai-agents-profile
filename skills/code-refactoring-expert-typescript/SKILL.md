@@ -589,6 +589,17 @@ A tuple whose positions carry business meaning (e.g., `[physical, magic]` attack
 > export type IChargeTuple = [castTime: number, stiff: number];
 > interface ISkill { charge?: IChargeTuple; }
 > ```
+>
+> **The same rule covers tuples/arrays with rest (variadic) elements — `[T, ...U[]]` and any array literal shape** — a rest element does not make inline definition acceptable either:
+>
+> ```typescript
+> // ❌ NEVER: inline tuple with a rest element on the property
+> tags?: [string, ...number[]];
+>
+> // ✅ ALWAYS: extract to a named type, then reference it
+> export type ITagTuple = [string, ...number[]];
+> interface IItem { tags?: ITagTuple; }
+> ```
 
 ##### ❌ Anti-pattern: Inline tuple + comment-only link to an Enum
 

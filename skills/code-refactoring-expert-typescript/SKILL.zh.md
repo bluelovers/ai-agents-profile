@@ -590,6 +590,17 @@ export type IGeoPointTupleLatLng = [
 > export type IChargeTuple = [castTime: number, stiff: number];
 > interface ISkill { charge?: IChargeTuple; }
 > ```
+>
+> **同樣的規則也涵蓋帶有其餘（變長）元素的 Tuple／陣列——`[T, ...U[]]` 以及任何陣列字面量形狀**——具備 rest 元素並不代表可以內聯定義：
+>
+> ```typescript
+> // ❌ 絕不可：在屬性上內聯帶 rest 元素的 Tuple
+> tags?: [string, ...number[]];
+>
+> // ✅ 務必：抽離為具名型別後再引用
+> export type ITagTuple = [string, ...number[]];
+> interface IItem { tags?: ITagTuple; }
+> ```
 
 ##### ❌ 反模式：內聯 Tuple + 只靠註解連結 Enum
 
