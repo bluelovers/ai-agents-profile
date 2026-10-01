@@ -62,8 +62,8 @@ const [user, profile] = await Promise.all([
 
 #### ✅ 容錯處理：Promise.allSettled 處理部分失敗
 ```typescript
-const results = await Promise.allSettled([fetchUser(id), fetchProfile(id)]);
-const user = results[0].status === 'fulfilled' ? results[0].value : null;
+const [userResult] = await Promise.allSettled([fetchUser(id), fetchProfile(id)]);
+const user = userResult.status === 'fulfilled' ? userResult.value : null;
 ```
 
 ### 非同步產生器重構
@@ -1167,68 +1167,27 @@ function createUser(userData: any) {
 ### 重構後：驗證器模式
 
 ```typescript
-// ✅ 可重用的驗證器模式
-interface IValidationRule<T> {
-    validate: (value: T) => string | null;
-    required?: boolean;
+// ✅ 可重用、可組合的驗證規則
+type IValidationRule<T> = (value: T) => string | null;
+
+// 選填欄位（undefined）直接略過驗證
+function validate<T>(value: T | undefined, rules: IValidationRule<T>[]): string[] {
+    if (value === undefined) return [];
+    return rules.flatMap(rule => {
+        const error = rule(value);
+        return error ? [error] : [];
+    });
 }
 
-interface IValidator<T> {
-    rules: IValidationRule<T>[];
-    validate: (value: T) => string[];
-}
+// 規則定義一次，處處重用
+const required = (message: string): IValidationRule<string> =>
+    value => (value ? null : message);
 
-// 創建驗證器工廠
-function createValidator<T>(rules: IValidationRule<T>[]): IValidator<T> {
-    return {
-        rules,
-        validate: (value: T): string[] => {
-            const errors: string[] = [];
+const email: IValidationRule<string> =
+    value => (value.includes('@') ? null : 'Invalid email format');
 
-            for (const rule of rules) {
-                if (!rule.required && (value === undefined || value === null)) {
-                    continue;
-                }
-
-                const error = rule.validate(value);
-                if (error) {
-                    errors.push(error);
-                }
-            }
-
-            return errors;
-        }
-    };
-}
-
-// 常用驗證規則
-const ValidationRules = {
-    required: (message: string): IValidationRule<string> => ({
-        validate: (value) => !value ? message : null,
-        required: true
-    }),
-
-    email: (): IValidationRule<string> => ({
-        validate: (value) => {
-            if (!value) return null;
-            return !value.includes('@') ? 'Invalid email format' : null;
-        }
-    }),
-
-    positiveNumber: (message: string): IValidationRule<number> => ({
-        validate: (value) => {
-            if (value === undefined) return null;
-            return typeof value !== 'number' || value < 0 ? message : null;
-        }
-    })
-};
-
-// 使用驗證器
-const userValidator = createValidator({
-    name: ValidationRules.required('Name is required'),
-    email: [ValidationRules.required('Email is required'), ValidationRules.email()],
-    age: ValidationRules.positiveNumber('Age must be positive')
-});
+const positiveNumber = (message: string): IValidationRule<number> =>
+    value => (value > 0 ? null : message);
 
 interface IUserData {
     name: string;
@@ -1238,9 +1197,9 @@ interface IUserData {
 
 function createUser(userData: IUserData) {
     const errors = [
-        ...userValidator.validate(userData.name),
-        ...userValidator.validate(userData.email),
-        ...userValidator.validate(userData.age)
+        ...validate(userData.name, [required('Name is required')]),
+        ...validate(userData.email, [required('Email is required'), email]),
+        ...validate(userData.age, [positiveNumber('Age must be positive')])
     ];
 
     if (errors.length > 0) {

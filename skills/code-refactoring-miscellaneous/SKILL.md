@@ -47,44 +47,38 @@ This guide supplements the core refactoring principles, providing additional cas
 #### Anti-pattern: Sequential execution of independent calls
 
 ```typescript
-async function processUserData(userId: string) {
-    const user = await fetchUser(userId);      // Wait for completion
-    const profile = await fetchProfile(userId); // Wait for completion
-    const settings = await fetchSettings(userId); // Wait for completion
-
-    return { user, profile, settings };
-}
+// Total: 3s (1s each)
+const user = await fetchUser(id);
+const profile = await fetchProfile(id);
+const settings = await fetchSettings(id);
 ```
 
 #### Solution: Use Promise.all for parallel execution
 
 ```typescript
-async function processUserData(userId: string) {
-    const [user, profile, settings] = await Promise.all([
-        fetchUser(userId),
-        fetchProfile(userId),
-        fetchSettings(userId)
-    ]);
-
-    return { user, profile, settings };
-}
+// Total: 1s (all in parallel)
+const [user, profile, settings] = await Promise.all([
+    fetchUser(id),
+    fetchProfile(id),
+    fetchSettings(id),
+]);
 ```
 
 #### Advanced: Use Promise.allSettled for partial failures
 
 ```typescript
-async function processUserDataSafe(userId: string) {
-    const results = await Promise.allSettled([
-        fetchUser(userId),
-        fetchProfile(userId),
-        fetchSettings(userId)
+async function processUserDataSafe(id: string) {
+    const [user, profile, settings] = await Promise.allSettled([
+        fetchUser(id),
+        fetchProfile(id),
+        fetchSettings(id),
     ]);
 
     return {
-        user: results[0].status === 'fulfilled' ? results[0].value : null,
-        profile: results[1].status === 'fulfilled' ? results[1].value : null,
-        settings: results[2].status === 'fulfilled' ? results[2].value : null,
-        errors: results.filter(r => r.status === 'rejected').map(r => r.reason)
+        user: user.status === 'fulfilled' ? user.value : null,
+        profile: profile.status === 'fulfilled' ? profile.value : null,
+        settings: settings.status === 'fulfilled' ? settings.value : null,
+        errors: [user, profile, settings].filter(r => r.status === 'rejected').map(r => r.reason),
     };
 }
 ```
@@ -472,32 +466,14 @@ Many developers only focus on refactoring JavaScript logic code, but overlook th
 ```jsx
 // Before - Hardcoded IDs
 <div id="sync" className="tab-content active">
-  <div className="section">
-    <h2>Search & Sync Settings</h2>
-    <div className="search-container">
-      <input type="text" className="search-input" id="searchInput" />
-    </div>
-    <div id="searchResults" className="results-container">
-      {/* Search results */}
-    </div>
-  </div>
+  <input type="text" className="search-input" id="searchInput" />
+  <div id="searchResults" className="results-container" />
 </div>
 
 // After - Using Enums
 <div id={EnumTabName.sync} className="tab-content active">
-  <div className="section">
-    <h2>Search & Sync Settings</h2>
-    <div className="search-container">
-      <input
-        type="text"
-        className="search-input"
-        id={EnumWebviewElemId.searchInput}
-      />
-    </div>
-    <div id={EnumWebviewElemId.searchResults} className="results-container">
-      {/* Search results */}
-    </div>
-  </div>
+  <input type="text" className="search-input" id={EnumWebviewElemId.searchInput} />
+  <div id={EnumWebviewElemId.searchResults} className="results-container" />
 </div>
 ```
 
@@ -915,68 +891,27 @@ function createUser(userData: any) {
 ### After: Validator Pattern
 
 ```typescript
-// ✅ Reusable validator pattern
-interface IValidationRule<T> {
-    validate: (value: T) => string | null;
-    required?: boolean;
+// ✅ Reusable, composable validation rules
+type IValidationRule<T> = (value: T) => string | null;
+
+// Optional field (undefined) skips validation entirely
+function validate<T>(value: T | undefined, rules: IValidationRule<T>[]): string[] {
+    if (value === undefined) return [];
+    return rules.flatMap(rule => {
+        const error = rule(value);
+        return error ? [error] : [];
+    });
 }
 
-interface IValidator<T> {
-    rules: IValidationRule<T>[];
-    validate: (value: T) => string[];
-}
+// Rules are defined once and reused everywhere
+const required = (message: string): IValidationRule<string> =>
+    value => (value ? null : message);
 
-// Create validator factory
-function createValidator<T>(rules: IValidationRule<T>[]): IValidator<T> {
-    return {
-        rules,
-        validate: (value: T): string[] => {
-            const errors: string[] = [];
+const email: IValidationRule<string> =
+    value => (value.includes('@') ? null : 'Invalid email format');
 
-            for (const rule of rules) {
-                if (!rule.required && (value === undefined || value === null)) {
-                    continue;
-                }
-
-                const error = rule.validate(value);
-                if (error) {
-                    errors.push(error);
-                }
-            }
-
-            return errors;
-        }
-    };
-}
-
-// Common validation rules
-const ValidationRules = {
-    required: (message: string): IValidationRule<string> => ({
-        validate: (value) => !value ? message : null,
-        required: true
-    }),
-
-    email: (): IValidationRule<string> => ({
-        validate: (value) => {
-            if (!value) return null;
-            return !value.includes('@') ? 'Invalid email format' : null;
-        }
-    }),
-
-    positiveNumber: (message: string): IValidationRule<number> => ({
-        validate: (value) => {
-            if (value === undefined) return null;
-            return typeof value !== 'number' || value < 0 ? message : null;
-        }
-    })
-};
-
-// Using validator
-const userValidator = createValidator({
-    name: ValidationRules.required('Name is required'),
-    email: [ValidationRules.required('Email is required'), ValidationRules.email()],
-    age: ValidationRules.positiveNumber('Age must be positive')
-});
+const positiveNumber = (message: string): IValidationRule<number> =>
+    value => (value > 0 ? null : message);
 
 interface IUserData {
     name: string;
@@ -986,9 +921,9 @@ interface IUserData {
 
 function createUser(userData: IUserData) {
     const errors = [
-        ...userValidator.validate(userData.name),
-        ...userValidator.validate(userData.email),
-        ...userValidator.validate(userData.age)
+        ...validate(userData.name, [required('Name is required')]),
+        ...validate(userData.email, [required('Email is required'), email]),
+        ...validate(userData.age, [positiveNumber('Age must be positive')])
     ];
 
     if (errors.length > 0) {

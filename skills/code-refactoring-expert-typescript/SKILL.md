@@ -479,15 +479,11 @@ export interface IUserProfile {
 // ❌ Smell: UserProfileEntity declares the exact same properties and methods, but omits `implements`!
 // Both are maintained in isolation; if IUserProfile changes property types or names, no compile error is raised here, causing "Silent Type Drift"
 export class UserProfileEntity {
-    id: string;
-    username: string;
-    email: string;
-
-    constructor(id: string, username: string, email: string) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-    }
+    constructor(
+        public id: string,
+        public username: string,
+        public email: string,
+    ) {}
 
     async updateEmail(newEmail: string): Promise<void> {
         this.email = newEmail;
@@ -810,7 +806,6 @@ export interface ITripDetailMapValue {
 ```typescript
 /**
  * Geographic coordinate - Single source of truth
- * Geographic coordinate - Single source of truth
  */
 export interface IGeoCoord {
     lng: number;
@@ -818,7 +813,6 @@ export interface IGeoCoord {
 }
 
 /**
- * Trip detail - Complete type definition
  * Trip detail - Complete type definition
  */
 export interface ITripDetail {
@@ -836,10 +830,7 @@ export interface ITripDetail {
 
 /**
  * Trip detail map value - Selects coordinate-related fields from ITripDetail
- * Trip detail map value - Selects coordinate-related fields from ITripDetail
- *
  * Using Pick preserves type traceability - auto-syncs when ITripDetail changes
- * Using Pick preserves type traceability, auto-syncs when ITripDetail changes
  */
 export interface ITripDetailMapValue extends Pick<ITripDetail, 'mapUrl' | 'message' | 'pickupCoords' | 'dropoffCoords' | 'cancelCoords' | 'unknownCoords'> {
     hero?: IRawHeroV2;
@@ -856,9 +847,7 @@ When referencing only a single field, use index access for readability:
 ```typescript
 // ✅ Single field using index access
 interface IUserRef {
-    /** User identifier / User identifier */
     id: IUser['id'];           // From IUser, auto-syncs if IUser.id type changes
-    /** User display name / User display name */
     displayName: IUser['name']; // From IUser, maintains type consistency
 }
 ```
@@ -908,11 +897,8 @@ function process(type: IDatasetType, damageType: ISkillDamageType) {
  * Dataset type enumeration
  */
 enum EnumDatasetType {
-    /** WiFi / WiFi */
     WIFI = "wifi",
-    /** Charging station / Charging station */
     CHARGING = "charging",
-    /** Parking / Parking */
     PARKING = "parking",
 }
 
@@ -930,11 +916,8 @@ enum EnumSkillDamageType {
  * Status enumeration
  */
 enum EnumStatus {
-    /** Active / Active */
     ACTIVE = 'active',
-    /** Inactive / Inactive */
     INACTIVE = 'inactive',
-    /** Pending / Pending */
     PENDING = 'pending',
 }
 ```
@@ -956,13 +939,9 @@ When migrating a string-based type to an Enum, **you must update every compariso
 ```typescript
 // ✅ Correct: Enum definition for target type
 enum EnumTargetType {
-    /** Enemy / Enemy */
     Enemy = 'enemy',
-    /** Friend / Friend */
     Friend = 'friend',
-    /** Self / Self */
     Self = 'self',
-    /** All / All */
     All = 'all',
 }
 
@@ -1047,29 +1026,17 @@ async function processUserData(userId: string) {
 #### ✅ Correct: Decompose into Independent Functions by "Temporal Boundaries"
 
 ```typescript
-/**
- * Fetch complete user information
- * Get complete user information
- */
 async function fetchUserWithProfile(userId: string): Promise<IUserWithProfile> {
     const user = await db.getUser(userId);
     const profile = await api.fetchProfile(user.id);
     return { ...user, profile };
 }
 
-/**
- * Calculate user order statistics
- * Calculate user order statistics
- */
 async function calculateUserOrderStats(userId: string): Promise<IOrderStats> {
     const orders = await db.getOrders(userId);
     return calcStats(orders);
 }
 
-/**
- * Process user data flow
- * Process user data flow
- */
 async function processUserData(userId: string): Promise<ICacheResult> {
     // Each step is clearly readable and independently testable
     const userWithProfile = await fetchUserWithProfile(userId);
@@ -1109,10 +1076,6 @@ class DataProcessor extends EventEmitter {
         this.listeners.push(() => this.off('data', handler));
     }
 
-    /**
-     * Clean up resources
-     * Clean up resources
-     */
     teardown(): void {
         this.listeners.forEach(remove => remove());
         this.listeners = [];
@@ -1147,20 +1110,11 @@ function createUser(
 ): IUser { /* ... */ }
 
 // After: Typed parameter object
-/**
- * Create user request parameters
- * Create user request parameters
- */
 interface ICreateUserRequest {
-    /** User name / User name */
     name: string;
-    /** Email address / Email address */
     email: string;
-    /** Age / Age */
     age: number;
-    /** Role / Role */
     role: EnumUserRole;
-    /** Department / Department */
     department: EnumDepartment;
 }
 
@@ -1183,10 +1137,6 @@ function processData(data: unknown): void {
     }
 }
 
-/**
- * Data validation type guard
- * Data validation type guard
- */
 function isValidData(data: unknown): data is IValidData {
     return (
         typeof data === 'object' &&
@@ -1281,18 +1231,6 @@ switch (mode) {
 }
 query = applyModifiers(query);  // Unified enhancement
 return finalize(query);         // Single exit point
-```
-
-```
-Before: Static pattern dispatch
-  case A: return calculateA();  // Independent calculation
-  case B: return calculateB();  // Independent calculation
-
-After: Flow accumulation
-  let state = initState();      // Establish baseline
-  if (condition1) state = applyStep1(state);  // Gradual enhancement
-  if (condition2) state = applyStep2(state);
-  return finalize(state);       // Final output
 ```
 
 **Core principles:**

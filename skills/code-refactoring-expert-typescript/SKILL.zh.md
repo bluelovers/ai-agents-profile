@@ -480,15 +480,11 @@ export interface IUserProfile {
 // ❌ 壞味道：UserProfileEntity 實現了完全相同的結構與方法，卻未宣告 implements！
 // 兩者各自獨立宣告，若 IUserProfile 的 email 更名或變更型別，此處不會觸發任何編譯期錯誤，造成「靜默型別漂移」
 export class UserProfileEntity {
-    id: string;
-    username: string;
-    email: string;
-
-    constructor(id: string, username: string, email: string) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-    }
+    constructor(
+        public id: string,
+        public username: string,
+        public email: string,
+    ) {}
 
     async updateEmail(newEmail: string): Promise<void> {
         this.email = newEmail;
@@ -1283,18 +1279,6 @@ switch (mode) {
 }
 query = applyModifiers(query);  // 統一增補
 return finalize(query);         // 單一輸出點
-```
-
-```
-Before: 靜態模式分派
-  case A: return calculateA();  // 獨立計算
-  case B: return calculateB();  // 獨立計算
-
-After: 流程累積
-  let state = initState();      // 確立基線
-  if (condition1) state = applyStep1(state);  // 逐步增補
-  if (condition2) state = applyStep2(state);
-  return finalize(state);       // 最終輸出
 ```
 
 **核心思想：**
