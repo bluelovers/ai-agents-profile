@@ -507,7 +507,7 @@ export default {
 | **單項分類合併** | 同層只有一個子項的分類與上層合併（`Forms/TextInput`，而非 `Web/Forms/Inputs/TextInputField`） |
 | **同層命名一致** | 組件層統一 PascalCase；分類層統一複數名詞（`Buttons`），不混用 `buttons` / `btn` / `Button` |
 | **段落不冗餘** | 每段資訊各司其職（`DesignSystem/Buttons/Button`）；`Components/Button/Button` 是重複段落 |
-| **檔案路徑對齊 title** | `src/components/buttons/` 對應 `DesignSystem/Buttons/`——檔案位置與側邊欄一致，認知落差最小 |
+| **檔案路徑對齊 title** | `src/components/buttons/` 對應 `DesignSystem/Buttons/`——檔案位置與側邊欄一致，認知落差最小（推薦，但非強制） |
 
 > **⚠️ 改 title 等同改 story id**：story id 由 `title + export 名稱` 計算，既有連結、書籤、視覺回歸測試基準都會失效——分類架構應在導入初期就定案，之後避免隨意更動；修改後 Storybook 也需重新整理才會反映。
 
@@ -534,7 +534,7 @@ export default {
 - [ ] Decorator 是否未混入業務資料？
 - [ ] `meta.title` 是否**顯式**採用統一的多級架構（領域／分類／組件...），無缺省、無冗餘段落？
 - [ ] 分類層級是否控制在 **5 級以內**，單項分類已合併（無過度碎片化）？
-- [ ] 檔案路徑是否與 `meta.title` 分類對齊？
+- [ ] 檔案路徑是否與 `meta.title` 分類對齊？（推薦，但非強制）
 
 ## 相關資源 (Related)
 
