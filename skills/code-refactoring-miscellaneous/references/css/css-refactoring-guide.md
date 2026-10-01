@@ -96,6 +96,7 @@ tags:
 - **漂移被預防**：日後調整陰影參數或追加第三層特效，只需編輯 `--sprite-drop-shadow` 一行
 - **註解只維護一份**：「兩層分別是什麼、為什麼這樣設定」寫在定義處，使用處不再重複說明
 - **可搜尋性**：全文搜尋 `--sprite-drop-shadow` 即可列出所有使用點，取代對長字面值的模糊搜尋
+- **可組合**：不同濾鏡效果能以 `var()` 串接在**同一條 `filter` 宣告內**一起使用——CSS 不存在濾鏡合併 (filter merging)，抽離片段正是自由組合的前提（見「組合不同濾鏡效果」）
 
 > **⚠️ 重構前先確認「差異是否為刻意」**：本例中 `.battle-sprite` 少一層光暈屬於**意外漂移**，所以統一是修復；若差異是**刻意設計**（例如某選擇器刻意不要光暈），則不可直接同化，應改用下方「變體 A：拆分基礎層與特效層」。
 
@@ -245,6 +246,58 @@ $sprite-drop-shadow: $sprite-shadow-base $sprite-shadow-glow;
 ```
 
 自訂屬性的值在**計算值時間 (computed-value time)** 才做 `var()` 替換，因此 `var()` 可以出現在自訂屬性值中並展開成完整的 token 序列，再交由 `filter` 解析——組合寫法是合法的。
+
+#### 組合不同濾鏡效果：CSS 沒有濾鏡合併 (Combining Different Filter Effects)
+
+抽離共用值的另一個重要用途：**讓不同的濾鏡效果一起使用**。**CSS 不存在濾鏡合併 (filter merging)**——同一元素上若有兩條 `filter` 宣告（例如分屬兩個 class），cascade 只會採用**勝出的那一整條**，效果**不會**互相合併：
+
+```css
+/* ❌ 濾鏡不會合併：同時套用這兩個 class 時，只有一個效果會生效 */
+.sprite-shadow
+{
+	filter: drop-shadow(2px 5px 1px rgba(0, 0, 0, 0.3));
+}
+
+.sprite-glow
+{
+	filter: drop-shadow(0 0 1px rgba(189, 200, 215, 0.15));
+}
+```
+
+因此要讓不同濾鏡效果**一起使用**，必須寫在**同一條 `filter` 宣告內**，以空白串接多個濾鏡函式。若沒有抽離共用值，每一種「效果組合」都得複製一份完整字面值——組合一多，字面值的排列組合爆炸，漏同步風險比單一效果時更高。
+
+抽離為自訂屬性後，組合變得可行且可維護——**片段只定義一次，組合自由拼裝**：
+
+```css
+:root
+{
+	/*
+	 * 可組合的濾鏡片段 (composable filter fragments)
+	 * 各片段只定義一次，使用處以 var() 空白串接成所需組合
+	 */
+	--sprite-shadow: drop-shadow(2px 5px 1px rgba(0, 0, 0, 0.3));
+	--sprite-glow: drop-shadow(0 0 1px rgba(189, 200, 215, 0.15));
+	--sprite-blur: blur(2px);
+}
+
+
+.character-sprite
+{
+	/* 投影 + 光暈：兩個效果串接在同一條 filter 宣告 (chained within one filter) */
+	filter: var(--sprite-shadow) var(--sprite-glow);
+}
+
+
+.magic-circle
+{
+	/* 投影 + 模糊：不同類型的濾鏡同樣直接串接 (mixed filter types chain directly) */
+	filter: var(--sprite-shadow) var(--sprite-blur);
+}
+```
+
+日後追加第三種效果（如 `brightness()`），只需在需要的組合處多加一個 `var()`——片段本身仍只有一份定義，不會產生新的字面值副本。
+
+> **小提醒**：`filter` 是**非繼承屬性 (non-inherited)**——父層的 `filter` 不會被子層繼承，效果無法從祖先「累加」過來；每個需要濾鏡的元素都必須自己宣告 `filter`，這正是組合必須集中在同一條宣告內的原因。
 
 #### 變體 B：依作用域覆寫（主題 / 情境）
 
