@@ -61,6 +61,7 @@ type Foo = [first: number, second?: string, ...rest: any[]];
 
 ### 在本技能中的應用
 
+- **重構規範**：規範 F 完整內容（Enum 錨定位置語義、❌/✅ 對照範例）、Named Tuple / rest 元素不豁免抽離、共享解構邏輯 → [Tuple 與 Named Tuple 重構規範](./named-tuple-refactoring.md)
 - **規範 F**：以 Enum 作為槽位索引的單一事實來源、抽離 Named Tuple、以 Enum 索引（見 [SKILL.zh.md](../SKILL.zh.md)）
 - **💡 進階技巧：Tuple 語義標註**——Named Tuple 搭配逐元素 JSDoc（`IGeoPointTupleLatLng`）
 - 案例：[座標處理重構案例](./geo-transform.md)
@@ -97,3 +98,4 @@ type StrStrNumNumBool = [...Strings, ...Numbers, boolean];
 - [主技能文件 code-refactoring-expert-typescript](../SKILL.zh.md)
 - [座標處理重構案例（Tuple 語義標註實戰）](./geo-transform.md)
 - [TypeScript 4.0 Release Notes](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-0.html)
+- [Coddy — TypeScript Tuple: Syntax, Named, Optional and Rest Elements](https://coddy.tech/docs/typescript/tuples) - Tuple 語法、Named / 選擇性 / rest 元素的補充教材
