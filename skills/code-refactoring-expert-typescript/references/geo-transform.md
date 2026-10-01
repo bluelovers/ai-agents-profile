@@ -144,7 +144,7 @@ export interface IGeoBounds {
 ```
 推薦層級：
 1. ✅ { lng, lat } - 具名屬性，無歧義
-2. ⚠️ [lat, number, lng: number] - Tuple 語義標註，IDE 支援
+2. ⚠️ [lat: number, lng: number] - Tuple 語義標註，IDE 支援
 3. ❌ [number, number] - 純陣列，語義全失
 ```
 

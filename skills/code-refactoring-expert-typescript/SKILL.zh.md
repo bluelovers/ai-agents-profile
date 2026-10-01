@@ -537,7 +537,7 @@ export class UserProfileEntity implements IUserProfile {
 | 是否需要在多個型別中新增/變更同一組成員？ | **將共享成員抽離為基礎介面**（`extends`/組合）——重複的跨型別修改是 SSoT 的警報鐘聲，而非單純雜務 |
 | Class 與 Interface 之間存在重複結構或契約？ | **在 Class 上使用 `implements Interface` 約束**，杜絕各自獨立宣告導致靜默型別漂移 |
 | 是否定義了有限的業務狀態、分類或數字標記（如 0/1）？ | **優先採用 Enum 設計**而非字串或數字聯合，避免日後需求擴展時再次耗費精力重構為 Enum |
-| 是否具有位置語義的 Tuple/陣列（如 `[phys, mag]`）？ | **為槽位索引定義 Enum 作為單一事實來源、抽離具名 Tuple 型別、並透過 Enum 索引**——絕不可內聯 Tuple，即便帶有名稱元素（`[a: T, b: T]`）也不行 |
+| 是否具有位置語義的 Tuple/陣列（如 `[phys, mag]`）？ | **為槽位索引定義 Enum 作為單一事實來源、抽離 Named Tuple 型別、並透過 Enum 索引**——絕不可內聯 Tuple，即便使用 Named Tuple（`[a: T, b: T]`）也不行 |
 | 是否存在重複的計算、校驗或轉換邏輯？ | **抽離為共用純函式/工具**，杜絕邏輯重複散落導致各處各自維護與更新遺漏 |
 | 現有實作阻礙測試或難以複用？ | **進行抽離細化 (Decompose & Refine)**，將核心邏輯抽離為獨立純函式；**嚴禁為測試複製邏輯**而脫離 SSoT |
 | 是否有基於另一型別的欄位？ | 使用 `OriginalType['fieldName']` 或 `Pick<OriginalType, ...>` 保留可追溯性 |
@@ -576,10 +576,10 @@ export type IGeoPointTupleLatLng = [
 2. 將 Tuple **抽離為具名型別別名**，在使用端絕不再內聯展開。
 3. 在**每個存取點都透過 Enum 成員索引**，而非裸數字字面值。
 
-> ⚠️ **帶有名稱元素的 Tuple 並不豁免抽離。** 即使你為每個位置寫上名稱（例如 `charge?: [castTime: number, stiff: number]`），它**依然是內聯型別**——名稱元素語法只是「看起來」像自我說明而已。它依舊把形狀散落、無法被其他模組共用，且一旦插入、移除或調整某個位置仍會靜默漂移。**務必抽離為具名型別別名**；名稱元素應歸屬於抽離出來的型別，絕不可寫在屬性上：
+> ⚠️ **Named Tuple 並不豁免抽離。** 即使你為每個位置加上 label（例如 `charge?: [castTime: number, stiff: number]`），它**依然是內聯型別**——Named Tuple 的 label 只是「看起來」像自我說明而已。它依舊把形狀散落、無法被其他模組共用，且一旦插入、移除或調整某個位置仍會靜默漂移。**務必抽離為具名型別別名**；label 應歸屬於抽離出來的型別，絕不可寫在屬性上：
 >
 > ```typescript
-> // ❌ 絕不可：在屬性上內聯具名 Tuple
+> // ❌ 絕不可：在屬性上內聯 Named Tuple
 > charge?: [castTime: number, stiff: number];
 >
 > // ✅ 務必：抽離為具名型別後再引用
@@ -624,7 +624,7 @@ const mFlat = stats.def?.[3];  // 魔法固定減傷？一紙註解契約
 - 位置契約被複製成散文；一旦 `EnumAtkSlot` 重新排序，內聯註解與每個裸索引都會靜默地與之脫節。
 - 缺乏共用具名型別——任何採用相同形狀的其他模組都必須再次宣告內聯 Tuple，滋生「型別漂移 (Type Drift)」。
 
-##### ✅ 正確：以 Enum 作為槽位索引的單一事實來源 + 具名 Tuple + 透過 Enum 索引
+##### ✅ 正確：以 Enum 作為槽位索引的單一事實來源 + Named Tuple + 透過 Enum 索引
 
 ```typescript
 /**
@@ -670,7 +670,7 @@ const mFlat = stats.def?.[EnumDefSlot.MAG_FLAT];
 ```
 
 **為什麼對 SSoT 至關重要：**
-- **位置契約集中於一處**——即 Enum。具名 Tuple 型別與每個存取點都共享它；重新排序 `EnumAtkSlot` 是編譯期安全、可由 IDE 導航的變更，而非翻找註解的人肉作業。
+- **位置契約集中於一處**——即 Enum。Named Tuple 型別與每個存取點都共享它；重新排序 `EnumAtkSlot` 是編譯期安全、可由 IDE 導航的變更，而非翻找註解的人肉作業。
 - **消除魔術索引**——`atk[0]` 變成 `atk[EnumAtkSlot.PHYSICAL]`，自我說明且防拼寫錯誤。
 - **可複用而不漂移**——其他模組直接 `import IAttackTuple`，而非重新宣告內聯 Tuple。
 
@@ -1439,6 +1439,7 @@ if (user.isActive && subscription.status === 'active' &&
 - [URL 重構案例](./references/url-impl.md) - 流程累積與意圖導向的實作範例
 - [座標處理案例](./references/geo-transform.md) - SSoT 原則與 Tuple 語義標註的最佳實踐
 - [狀態鍵 Enum 遷移案例](./references/status-key-enum-migration.md) - 完整 Enum 遷移：連同 `??` fallback 與樣板字串使用位置一併更新，而非只改型別簽名
+- [TypeScript 術語對照](./references/typescript-terminology.md) - 官方 Handbook 未收錄、僅見於版本紀錄的容易忘記術語：Named Tuple（Labeled Tuple Elements）的官方出處、規則與跨語言名稱對照
 
 ### 相關技能
 - [analyze-code-commenter](../analyze-code-commenter/SKILL.md) - 雙語註解添加與程式碼文件化

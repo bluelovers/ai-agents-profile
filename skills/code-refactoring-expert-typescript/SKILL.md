@@ -1393,6 +1393,7 @@ When proposing refactoring suggestions:
 - [URL Refactoring Case](./references/url-impl.md) - Flow accumulation and intent-oriented implementation example
 - [Coordinate Handling Case](./references/geo-transform.md) - SSoT principle and Tuple semantic annotation best practices
 - [Status Key Enum Migration Case](./references/status-key-enum-migration.md) - Complete Enum migration: update all `??` fallback and template-literal usage sites, not just the type signature
+- [TypeScript Terminology Reference](./references/typescript-terminology.md) - Easily forgotten TypeScript terminology: Named Tuple (a.k.a. Labeled Tuple Elements) — official source, rules, and cross-language name mapping
 
 ### Related Skills
 - [analyze-code-commenter](../analyze-code-commenter/SKILL.md) - Bilingual comment addition and code documentation
