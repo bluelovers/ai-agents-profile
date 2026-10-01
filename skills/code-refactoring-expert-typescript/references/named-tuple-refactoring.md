@@ -10,7 +10,7 @@ tags:
 
 # Tuple 與 Named Tuple 重構規範（規範 F 完整內容）
 
-> 本文自 SKILL **規範 F** 抽離，收納其**完整內容**（規則、❌/✅ 對照範例、SSoT 收益、替代方案、共享解構邏輯）與 Tuple 形態速查表。術語名稱與官方出處見 [TypeScript 術語對照](./typescript-terminology.md)。
+> 本文自 SKILL **規範 F** 抽離，收納其**完整內容**（規則、❌/✅ 對照範例、SSoT 收益、替代方案、共享解構邏輯）與 Tuple 形態速查表。
 
 ---
 
@@ -24,7 +24,7 @@ tags:
 | Named Tuple | `[castTime: number, stiff: number]` | **Labeled Tuple Elements**（TS 4.0 官方名稱） | 每個位置帶 label；僅存在於型別層，執行期擦除 |
 | 帶 rest 元素的 Tuple | `[string, ...number[]]` | **Rest element**（變長元素）；進階形態屬 Variadic Tuple Types | 尾部 `...T[]` 為變長，長度不固定 |
 
-> ⚠️ **三者都是 Tuple**：本文的抽離規範，以及「Enum 具名索引 / 共享解構邏輯」的取值規範，對三種形態**一體適用**。只認得 named 與 rest、卻放過 `[boolean, number, any]` 這種最普通的內聯形態，正是位置語義漂移的開頭。（術語出處見 [TypeScript 術語對照](./typescript-terminology.md)）
+> ⚠️ **三者都是 Tuple**：本文的抽離規範，以及「Enum 具名索引 / 共享解構邏輯」的取值規範，對三種形態**一體適用**。只認得 named 與 rest、卻放過 `[boolean, number, any]` 這種最普通的內聯形態，正是位置語義漂移的開頭。
 
 ---
 
@@ -160,6 +160,5 @@ const { physical } = destructureAttack(stats.atk);
 
 ## 相關資源
 
-- [TypeScript 術語對照](./typescript-terminology.md) - Named Tuple 的術語名稱、官方出處與跨語言名稱對照
 - [主技能文件 code-refactoring-expert-typescript](../SKILL.zh.md) - 重構指導與其餘規範（A–E、G）
 - [座標處理重構案例](./geo-transform.md) - Tuple 語義標註實戰
