@@ -1,6 +1,14 @@
 ---
 name: readme-updater
-description: Analyze monorepo or single projects, check and update README documentation. Use when users request (1) Update README, (2) Check README completeness, (3) "更新 README", (4) "檢查說明文件", (5) Documentation review. Supports docs directory references and sub-package README checks.
+description: |-
+  Analyze monorepo or single projects, check and update README documentation.
+  Use when users request
+  (1) Update README,
+  (2) Check README completeness,
+  (3) "更新 README",
+  (4) "檢查說明文件",
+  (5) Documentation review.
+  Supports docs directory references and sub-package README checks.
 tags:
   - documentation/README
   - documentation
@@ -15,10 +23,10 @@ Analyze project structure, check README completeness, and provide updates.
 
 ## Workflow
 
-1. **Analyze project structure** - Determine if monorepo or single project
-2. **Collect project info** - Read configs, docs, and code structure
-3. **Analyze existing README** - Check against standard sections
-4. **Check sub-packages** - For monorepos, verify each package's README
+1. **Analyze project structure** - Determine if monorepo or single project (read `lerna.json` → `pnpm-workspace.yaml` → `package.json`, **stop at first hit**)
+2. **Collect paths only** - Record file/directory paths and existence-derived info; **no content reads**; then build the **todo path list** and re-remind: **one by one**
+3. **Check sub-packages** - For monorepos, process packages **one by one**; user's extra per-package tasks run in that package's turn (see Monorepo Handling). Sub-task/sub-agent groups: ONE BY ONE (分析 → 更新), 回報僅在組結束/停止時
+4. **Root README phase** - 分析／更新 root README（必備：專案主要功能/負責內容、主套件介紹；其餘皆選填）— **永遠在所有路徑結束後執行**，除非使用者要求提前
 5. **Generate report** - List missing/outdated sections
 6. **Apply updates** - After user confirmation
 
@@ -26,21 +34,47 @@ Analyze project structure, check README completeness, and provide updates.
 
 ### Detect Monorepo
 
-Check for:
-- `packages/` or `apps/` directories
-- `workspaces` field in package.json
-- `lerna.json` or `pnpm-workspace.yaml`
+Prefer path existence checks (`packages/`, `apps/` directories) first.
+If config confirmation is needed, read **in this order, stopping at the
+first hit**:
 
-### Collect Information
+```
+lerna.json → pnpm-workspace.yaml → package.json
+```
 
-| Source | Extract |
-|--------|---------|
-| package.json / pyproject.toml | Name, description, version |
-| docs/ directory | Architecture, API docs, guides |
-| Code structure | Main directories, core modules, entry points |
-| Sub-packages | Names, purposes, dependencies, README status |
+- Stop as soon as monorepo path information (workspace globs/paths) is
+  obtained — do **not** read all three files.
+- `package.json` is only read if the first two did not yield the answer
+  (e.g. `workspaces` field).
+- Once detected, record only the workspace path patterns; do not carry
+  other file contents forward.
+
+### Collect Paths
+
+Collection stage records **paths and existence-derived info only**.
+Do not open, read, or scan file contents at this stage.
+
+> Exception: the earlier **Detect Monorepo** stage may read config files,
+> but only following its stop-at-first-hit rule above.
+
+| Source | Extract (path-level only) |
+|--------|---------------------------|
+| Root config files | Paths exist: `package.json`, `pyproject.toml`, lockfiles |
+| `docs/` directory | Path exists; list file paths under it (names only) |
+| Code structure | Top-level directory paths only |
+| Sub-packages | Directory paths + package name from each dir path/manifest path (queue for one-by-one processing) |
+
+Note: **README existence is NOT checked here.** Whether a package has a
+README is determined later, inside that package's own processing turn.
+
+All content reads (config values, README text, docs contents, code
+internals) happen later, inside the turn where that item is processed.
 
 ## README Standard Sections
+
+> **適用範圍說明：** 以下 Required/Recommended 清單適用於**子套件 README**。
+> **Root README 的必備項目不同** — 僅「專案主要功能／負責內容」與「主套件介紹」
+> 兩項必備，其餘（含下列 Required 項目）皆為選填，見 Root README 一節。
 
 ### Required
 
@@ -62,12 +96,184 @@ Check for:
 
 ## Monorepo Handling
 
+### Sequential Package Processing (One by One)
+
+After scanning and listing all packages, process each package individually
+in sequence. Do **not** pre-read or pre-detect whether a package needs
+updates/fixes before starting its cycle.
+
+```
+Scan & list all packages → queue: [pkg-A, pkg-B, pkg-C, ...]
+    │
+    ▼ (one by one, no pre-reading)
+Process pkg-A completely (analyze → package.json → README → report → update)
+    │
+    ▼
+Process pkg-B completely
+    │
+    ▼
+...
+```
+
+#### Todo Path List (建立於收集階段完成後)
+
+When the path collection stage finishes, immediately write a **todo list
+of paths** before doing anything else:
+
+```markdown
+## TODO (one by one — 僅路徑，尚未讀取內容)
+
+- [ ] packages/core
+- [ ] packages/utils
+- [ ] packages/cli
+- [ ] README.md (root, 全域階段)
+```
+
+Self-reminder to repeat before starting:
+
+> **ONE BY ONE. Do not pre-read. Do not batch-analyze.**
+> Finish the current path's turn completely before touching the next path.
+
+- Tick an item only when that path's own turn is fully finished.
+- The todo list is a work queue, **not** an analysis result — listing a
+  path here says nothing about whether it needs updates.
+
+Rules:
+
+- **Collection = paths only** - The scan/list phase only records paths
+  (directories, file locations) and what is directly known from their
+  existence (e.g. "this package directory is empty"). No file contents
+  are read during collection, and **README existence is not checked** —
+  that is determined in the package's own processing turn.
+- **No pre-detection** - Do not open a package's README or files in advance
+  to decide if it "probably needs updating". Detection (including whether
+  its README exists at all) happens only inside that package's own
+  processing turn.
+- **Complete one before the next** - Finish the full turn (analyze →
+  package.json `description`/`keywords` → README → report → update) for
+  the current package before moving to the next one.
+- **User's extra instructions wait for their package's turn** - If the
+  user gave additional per-package tasks (e.g. "rename X in utils",
+  "add badges to cli"), do not execute them early or batch them elsewhere.
+  Execute them **only inside that package's own processing turn**, after
+  its analysis — as part of the same turn cycle (package.json → README →
+  report → update).
+  Instructions that target the root README or the whole repo follow the
+  root/global phase instead.
+- **Shallow cross-package reads only** - When a package references another
+  package, read only the necessary content (e.g. package name, version,
+  exported API surface). Do **not** dig into that package's internals,
+  history, or full README; the referenced package will be processed on its
+  own turn anyway.
+
+#### Per-package Turn Order (套件輪次內的順序)
+
+Each package's own turn runs in this fixed order:
+
+```
+1. Analyze        - Read this package's files (first time it is read)
+2. package.json   - Check / update `description` and `keywords`
+3. README         - Check / update README sections  ← 排在 package.json 之後
+4. Report         - List findings for this package
+5. Update         - Apply changes after user confirmation
+```
+
+- **`description` / `keywords` 檢查與更新是套件任務的一部分** - Verify they
+  exist, are non-empty, match the package's actual purpose, and stay
+  consistent with the README intro (same terminology, same one-line pitch).
+- **README 更新順序排在 package.json 之後** - Do not touch the README
+  before `description` / `keywords` are checked; the README intro should
+  be aligned with the final package.json wording, not the other way around.
+- Both steps live in the same turn — no separate pre-pass over package.json
+  files, and no deferring the README to a later batch.
+- Root-level `package.json` fields follow the root/global phase, same as
+  the root README.
+
+### Grouped Dispatch (10+ packages / sub-tasks / sub-agents)
+
+When the todo path list has **10 or more packages**, or when you plan to
+hand work to **sub-tasks / sub-agents**, split the path list into groups
+instead of dispatching everything at once.
+
+Grouping rules:
+
+- **Group size: 1~5 paths per group** - Paths only; no pre-read contents.
+- **Max 3 groups per dispatch round** - Dispatch at most 3 groups at a
+  time; wait for their results before dispatching the next round.
+- **Still one by one inside each group** - Every group repeats the same
+  self-reminder and processes its paths sequentially, never in parallel
+  within the group.
+
+#### Sub-task / Sub-agent Turn Cycle (子任務／子代理的輪次循環)
+
+A group dispatched to a **sub-task / sub-agent** uses a different cycle
+than the main task:
+
+```
+Main task (direct execution):  ONE BY ONE (分析 → 更新 → 回報)
+Sub-task / Sub-agent group:    ONE BY ONE (分析 → 更新)  →  回報僅在組結束/停止時
+```
+
+- Inside the group, each path runs **analyze → update only** — no
+  per-package reporting between paths.
+- The group **reports once** when it either:
+  - **finishes** all its paths, or
+  - **stops** (abandon rule triggered).
+- Report content: results of every path processed + the list of abandoned
+  (unprocessed) paths.
+
+Abandon-and-report rule:
+
+- If, during a group's sequential processing, a path turns out to need
+  **large-scale or complex handling**, that group **automatically abandons
+  its remaining paths** (do not attempt them) and **stops**.
+- The group then reports **once**: what it completed + the list of
+  abandoned paths.
+- The main task collects all abandoned paths and **re-dispatches** them
+  in a later round (again max 3 groups, 1~5 paths each).
+
+```
+todo: 12 paths
+  ├─ Round 1 → Group A [1-5] + Group B [6-10] + Group C [11-12]   (max 3 groups)
+  │     └─ Group B hits a complex pkg at path 8
+  │           → abandon 9, 10 → report: [9, 10] unprocessed
+  ├─ Round 2 → main task re-dispatches abandoned paths (grouped again)
+  └─ ... until todo list is fully ticked (or user is consulted)
+```
+
+- Abandoned ≠ skipped: every path must eventually be either processed or
+  explicitly reported as unprocessed to the user.
+
 ### Root README
 
-- Explain overall project architecture
-- List all sub-packages with purposes
-- Provide monorepo development guide
-- Describe package dependencies
+**主要責任（核心，必備）：**
+
+- **介紹本專案的主要功能／負責內容** - What this project does, its main
+  features and scope
+- **介紹主套件** - List the main sub-packages with purposes
+
+**其餘內容皆為選填（非必寫）：**
+
+以下項目**不一定要撰寫**，僅在有需要時才補充：
+
+- Overall project architecture
+- Monorepo development guide
+- Package dependency relationships
+- 以及 README Standard Sections 中 Required 以外的所有項目
+
+```
+Root README 責任範圍：
+    ├─ 必備 → 專案主要功能/負責內容、主套件介紹
+    └─ 選填 → 架構說明、開發指南、相依關係、其餘章節（按需撰寫）
+```
+
+#### 執行時機（永遠最後）
+
+- **Root README 的分析／更新任務永遠排在所有路徑（todo list 全部套件）
+  結束之後才執行** — 包括其 `package.json` 的 root 層欄位。
+- **例外：使用者明確要求提前執行**時，才可提前。
+- 收集階段建立 todo 時，root README 就放在清單**最末端**（標記
+  `root, 全域階段`），以視覺化此順序。
 
 ### Sub-package README
 
@@ -107,25 +313,32 @@ Generate analysis report:
 
 ## Root README Status
 
-### ✓ Complete
-- Title & Introduction
-- Features
+### Required（必備）
+#### ✓ Complete
+- 專案主要功能／負責內容
+- 主套件介紹
 
-### ✗ Missing or Outdated
+#### ✗ Missing or Outdated
+- 主套件介紹（missing）
+
+### Optional（選填 — 僅列出已存在且過時者；不存在不算缺失）
 - Installation (version outdated)
-- Sub-packages list (missing)
+- Architecture（未撰寫 → 不列為缺失）
 
 ## Sub-Packages Status
 
-| Package | README Exists | Completeness | Issues |
-|---------|---------------|--------------|--------|
-| @scope/core | ✓ | 90% | Missing config section |
-| @scope/utils | ✓ | 60% | Missing usage examples |
-| @scope/cli | ✗ | 0% | README not found |
+| Package | package.json (description/keywords) | README Exists | Completeness | Issues |
+|---------|--------------------------------------|---------------|--------------|--------|
+| @scope/core | ✓ / ✓ | ✓ | 90% | Missing config section |
+| @scope/utils | ✗ / outdated | ✓ | 60% | description empty; keywords missing |
+| @scope/cli | ✓ / ✗ | ✗ | 0% | README not found |
 
 ## Suggested Updates
 
-### 1. Add Project Architecture Section
+### 1. Add Sub-packages Introduction（必備）
+[Example content...]
+
+### 2.（選填，僅在使用者要求時）Add Architecture Section
 [Example content...]
 
 ## docs Directory
@@ -197,15 +410,69 @@ ISC License
 - 不添加上述通用章節，除非明確要求
 ```
 
+## Negative Examples (不該進行的行為)
+
+以下行為**違反 one by one / 不預讀原則**，即使看似「提高效率」也不得執行。
+
+### 並行預讀 / 先掃描再確認
+
+> **錯誤示範：**
+> 「單一專案分析成本高（xx 個子套件），我先並行收集各套件的 README 與原始檔狀態，彙整成報告後再向您確認更新範圍。」
+
+問題所在：
+
+- **並行收集** = 預先讀取所有套件內容，跳過 one by one 逐輪處理
+- **彙整成報告後再確認** = 在收集階段就做了分析判定，違反「收集僅路徑」
+- 結果會把整批套件的內容一次讀完，本輪變成預讀 + 批次分析
+
+正確做法：
+
+```markdown
+1. 收集階段 → 只記路徑，todo 列表 + 自我提醒 ONE BY ONE
+2. 依序處理第一個套件 → 分析 → 報告（可先向使用者確認此套件範圍）
+3. 完成後才換下一個套件
+4. （10+ 套件時）分組派遣，每輪最多 3 組、每組 1~5 路徑，組內仍 one by one
+```
+
+### 其他禁止行為
+
+- ❌ **批量預讀** - 一次打開多個套件的 README/原始檔做狀態比較
+- ❌ **收集階段做判定** - 在路徑清單上標註「此套件過時／需更新」
+- ❌ **提前執行使用者的額外指示** - 在套件輪次開始前就動手
+- ❌ **跨套件深挖** - 讀取被引用套件的完整 README、git 歷史或內部實作
+- ❌ **組內平行處理** - 分組派遣時，在單一組內同時處理多個路徑
+- ❌ **靜默略過** - 放棄的路徑不回報，讓它消失在清單中
+- ❌ **提前處理 root README** - 在所有套件路徑尚未結束前就分析／更新 root README（除非使用者要求提前）
+- ❌ **子任務逐套件回報** - 子任務／子代理組在組內每個套件後都回報（應在組結束或停止時才回報一次）
+
 ## Example Workflow
 
 ```
-User: Update README
+User: Update README, and in utils add a bencharks section, in cli fix the version badge
 
 1. Analyze structure → Monorepo detected (packages/ exists)
-2. Collect info → Read package.json, scan docs/, list packages
-3. Analyze root README → Missing architecture section, outdated installation
-4. Check sub-packages → core: complete, utils: missing examples, cli: no README
-5. Provide suggestions → List needed content with examples
-6. Execute updates → After user confirmation
+2. Collect paths only → record paths of configs, docs/, package dirs → queue: [core, utils, cli]
+   (no file contents read; README existence NOT checked yet; extra user tasks held, not started)
+3. Process core → read files now → check package.json description/keywords ✓ → README ✓ → next
+4. Process utils → package.json: description empty, keywords outdated → update (after confirmation)
+   → then README (排在 package.json 之後): missing usage examples → report + update
+   → then execute user's extra task for utils (add bencharks section)
+5. Process cli → package.json: keywords missing → update
+   → then README: path missing → report + create (after confirmation)
+   → then execute user's extra task for cli (fix version badge)
+   (cross-package references read shallowly only, e.g. names/versions)
+6. Root README phase（**所有路徑結束後才執行**）→ Analyze root README →
+   專案功能介紹不足、主套件介紹缺失（必備）；架構章節僅選填、不列為缺失
+7. Generate combined report → Root + per-package status table
+8. Execute updates → After user confirmation
+```
+
+Sub-agent group variant (same run, groups dispatched):
+
+```
+Group B (sub-agent): ONE BY ONE (分析 → 更新) for [utils, cli]
+  → 組內不逐套件回報
+  → 組結束時 回報一次：已完成結果 + 被放棄的路徑列表
+  → 若中途遇到複雜套件 → 放棄其餘路徑並停止 → 回報
+Root README phase → 仍排在所有路徑（含重新分發的路徑）全部結束之後
 ```
