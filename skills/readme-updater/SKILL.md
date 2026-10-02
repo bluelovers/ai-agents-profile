@@ -214,6 +214,63 @@ Each package's own turn runs in this fixed order:
 - Root-level `package.json` fields follow the root/global phase, same as
   the root README.
 
+#### Keywords Update Policy (keywords 更新策略)
+
+**永不刪除既有標籤** - Existing keywords are only ever added to, never
+removed.
+
+**重寫／移除既有標籤的例外條件** - The never-delete / never-rewrite rule
+holds **unless** the tag meets one of these:
+
+1. **你在執行任務過程中加入的標籤** - A tag you added yourself during
+   this very task (it is not "既有" yet, so you may revise or drop it in
+   the same run), or
+2. **使用者許可的** - The user explicitly permitted rewriting/removing it.
+
+No other case allows touching an existing tag.
+
+Merge procedure (when an update is warranted):
+
+```
+1. 假設 keywords 都不存在 → 先擬出你認為最能代表此套件的標籤清單 mine
+2. 合併 → final = mine（放前方） + 原始 existing
+3. 去重（保留在首次出現位置）→ 不需依文字排序
+```
+
+```
+existing: ["create-by-tsdx", "parser", "cli"]
+mine:     ["markdown", "parser"]
+
+final = ["markdown", "parser", "create-by-tsdx", "cli"]
+         └─ mine 在前 ─┘ └── 去重後的原有標籤 ──┘
+```
+
+**特殊建立標籤（絕不刪除）** - Scaffolding-tool markers written when the
+package was created must be preserved verbatim, e.g.:
+
+- `"create-by-yarn-tool"`
+- `"create-by-tsdx"`
+
+Treat this list as non-exhaustive: any `create-by-*` or similar
+generator/scaffold marker gets the same protection.
+
+**更新時機（不需每次都更新）** - Prefer leaving `keywords` untouched,
+but adding is still allowed:
+
+- 既有標籤已不足以表示套件特點（too few / too vague / missing the
+  package's actual purpose），或
+- 本次輪次正在更新 `description` — 順帶一併更新 keywords
+- 其餘情況：**想到更好的標籤可以加入**（append via the merge procedure
+  above），但**不主動重寫或移除既有標籤**（例外見上方例外條件）
+
+- **不需要按文字排序** - Order is not meaningful; keep `mine` first as
+  defined above.
+- **新加入的標籤限英文** - Any tag you introduce must be in English
+  (e.g. `markdown`, `cli`). The only exception: a non-English tag may stay
+  **if it already exists in `keywords`** — those are preserved as-is under
+  the never-delete rule, never re-added by you.
+- 標籤需與 description/README 的英文用詞一致（新增標籤時）。
+
 ### Grouped Dispatch (10+ packages / sub-tasks / sub-agents)
 
 When the todo path list has **10 or more packages**, or when you plan to
@@ -506,6 +563,8 @@ ISC License
 - ❌ **提前處理 root README** - 在所有套件路徑尚未結束前就分析／更新 root README（除非使用者要求提前）
 - ❌ **子任務逐套件回報** - 子任務／子代理組在組內每個套件後都回報（應在組結束或停止時才回報一次）
 - ❌ **為分組而讀檔／深度思考** - 分組策略只看路徑字串做粗略猜測；不得為此讀取檔案內容或做依賴分析
+- ❌ **刪除既有 keywords** - keywords 只增不減；尤其 `create-by-yarn-tool`、`create-by-tsdx` 等建立時的特殊標誌絕不可刪。例外僅兩種：該標籤是本次任務中由你加入的、或使用者明確許可
+- ❌ **每次輪次都改寫 keywords** - 不需每次都更新；但有更好標籤時可「加入」（僅限英文），不得重寫或移除既有標籤
 
 ## Example Workflow
 

@@ -165,6 +165,23 @@ find node_modules -name some-cmd
 # （回報錯誤，讓使用者決定）
 ```
 
+### 案例 I：以 `node -e` 探針預先確認框架 API / 依賴可用性
+
+```bash
+# ❌ 非必要查詢：動手寫測試前，先用探針確認 node:test 是否支援 assert.snapshot
+node -e "const {test}=require('node:test');test('probe',t=>{console.log('node',process.version);console.log('assert.snapshot:',typeof t.assert?.snapshot);});"
+# ... 確認「可用」後才開始撰寫測試
+```
+
+```bash
+# ✅ 正確：直接撰寫真正使用 assert.snapshot 的測試並執行；
+#        若 Node 版本過舊不支援，運行當下就會報錯（snapshot is not a function），
+#        再根據錯誤訊息處理（提示升級 Node 或改用替代方案）
+# （直接動手，遇錯再查）
+```
+
+**補充**：此探針想得知的「框架 API 是否可用 / 依賴是否可解析」資訊，直接撰寫並執行真正的程式碼就會自然顯現，故屬「現有代碼本就可以完成任務」的非必要查詢；不應作為動手前的前置確認步驟。
+
 ---
 
 ## 正面模式（應該這樣做）
