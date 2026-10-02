@@ -138,6 +138,31 @@ Self-reminder to repeat before starting:
 - The todo list is a work queue, **not** an analysis result — listing a
   path here says nothing about whether it needs updates.
 
+#### Ordering (處理順序的決定)
+
+The queue order can be decided by either approach — pick one, no deep
+analysis needed:
+
+- **由上往下** - Root/outer paths first, then deeper levels
+  (`packages/*` → `packages/core/*`)
+- **由下往上（bottom-up）** - Start from the deepest / innermost
+  sub-folder packages, work up toward the outer level
+  (`packages/core/*` → `packages/*`)
+
+```
+paths: [packages, packages/core, packages/core/deep, apps]
+
+由下往上 → packages/core/deep → packages/core → packages → apps
+由上往下 → packages → packages/core → packages/core/deep → apps
+```
+
+- Bottom-up is a valid default when inner packages are the building
+  blocks that outer levels depend on.
+- Order only defines **sequence** — it does not imply analysis, and no
+  path may be read just to decide the order.
+- Root README stays last regardless of the chosen direction (unless the
+  user asks to run it earlier).
+
 Rules:
 
 - **Collection = paths only** - The scan/list phase only records paths
@@ -218,22 +243,27 @@ Signals usable from paths only (path strings are already collected):
 - Obvious keyword in the name — `auth`, `cli`, `docs`
 
 ```
-paths: [packages/auth-core, packages/auth-jwt, packages/ui, packages/cli, libs/parser]
+paths: [packages/auth-core, packages/auth-jwt, packages/ui, packages/cli,
+        libs/parser, packages/auth/core/deep]
 
 粗略分組（僅看路徑字串，不深入思考）：
-  Group A [packages/auth-core, packages/auth-jwt]   ← auth 關鍵字
-  Group B [packages/ui, packages/cli]               ← 同為 packages/ 前段
-  Group C [libs/parser]                             ← libs/ 區域
+  Group A [packages/auth-core, packages/auth-jwt, packages/auth/core/deep]  ← auth 關鍵字（跨層級）
+  Group B [packages/ui, packages/cli]                                       ← 同為 packages/ 前段
+  Group C [libs/parser]                                                     ← libs/ 區域
 ```
 
 Rules:
 
+- **跨層級分組允許（cross-level grouping）** - A group does **not** have to
+  keep paths at the same hierarchy level; paths from different depths or
+  different parent directories may share a group if they associate roughly
+  (e.g. `packages/auth` + `packages/auth/core/deep` + `libs/auth-utils`).
 - **粗略即可** - The guess only needs to be plausible; wrong grouping is
   harmless (it does not change correctness, only batching convenience).
 - **絕不為分組讀檔** - Grouping must never trigger content reads; it
   happens right after path collection, before any package turn.
 - Fallback: if paths give no signal, group sequentially in todo order
-  (1~5 per group).
+  (1~5 per group), regardless of level.
 
 #### Sub-task / Sub-agent Turn Cycle (子任務／子代理的輪次循環)
 
