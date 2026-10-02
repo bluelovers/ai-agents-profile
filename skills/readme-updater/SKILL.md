@@ -204,6 +204,37 @@ Grouping rules:
   self-reminder and processes its paths sequentially, never in parallel
   within the group.
 
+#### Grouping Strategy (分組策略)
+
+Preferred: group by **rough path-based association** — a simple, low-effort
+guess based on the path strings alone. **No deep thinking, no file reads,
+no dependency analysis.**
+
+Signals usable from paths only (path strings are already collected):
+
+- Shared parent directory — `packages/core-a`, `packages/core-b`
+- Name prefix / scope — `@scope/utils-*`, `*-adapter`
+- Directory area — `apps/*` vs `packages/*`, `plugins/*` vs `libs/*`
+- Obvious keyword in the name — `auth`, `cli`, `docs`
+
+```
+paths: [packages/auth-core, packages/auth-jwt, packages/ui, packages/cli, libs/parser]
+
+粗略分組（僅看路徑字串，不深入思考）：
+  Group A [packages/auth-core, packages/auth-jwt]   ← auth 關鍵字
+  Group B [packages/ui, packages/cli]               ← 同為 packages/ 前段
+  Group C [libs/parser]                             ← libs/ 區域
+```
+
+Rules:
+
+- **粗略即可** - The guess only needs to be plausible; wrong grouping is
+  harmless (it does not change correctness, only batching convenience).
+- **絕不為分組讀檔** - Grouping must never trigger content reads; it
+  happens right after path collection, before any package turn.
+- Fallback: if paths give no signal, group sequentially in todo order
+  (1~5 per group).
+
 #### Sub-task / Sub-agent Turn Cycle (子任務／子代理的輪次循環)
 
 A group dispatched to a **sub-task / sub-agent** uses a different cycle
@@ -444,6 +475,7 @@ ISC License
 - ❌ **靜默略過** - 放棄的路徑不回報，讓它消失在清單中
 - ❌ **提前處理 root README** - 在所有套件路徑尚未結束前就分析／更新 root README（除非使用者要求提前）
 - ❌ **子任務逐套件回報** - 子任務／子代理組在組內每個套件後都回報（應在組結束或停止時才回報一次）
+- ❌ **為分組而讀檔／深度思考** - 分組策略只看路徑字串做粗略猜測；不得為此讀取檔案內容或做依賴分析
 
 ## Example Workflow
 
