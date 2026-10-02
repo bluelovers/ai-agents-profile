@@ -74,15 +74,11 @@ tags:
 
 **請避免執行非必要行為。** 即使某項操作本身未被禁止，若與當前任務無關，仍不應執行，以免產生多餘的副作用、雜訊或資源浪費。
 
-- **避免非必要的 git 查詢** — 雖然唯讀 git 指令（包含但不限於如 `git status`、`git log`、`git diff`）未被禁止，但請勿執行與任務無關的 git 查詢。
-  - 例如：使用者要求執行一項與 git 或歷史紀錄無關的任務，卻試圖查詢 `git log` 的行為，即屬非必要。
-  - **編輯 / 重構類任務是基於「檔案現有狀態」來進行的任務** — 此類任務以當前檔案內容為依據即可完成；包含但不限於 `git status`、`git log`、`git diff` 等查詢若對任務本身**沒有決定性關聯**，即不應執行。
-  - **僅在具有明確需求與理由時才允許執行** — 例如：使用者要求比對狀態（修改前後差異、工作區與 HEAD 的差異）時。
-- **避免非必要的依賴/指令位置查詢** — 企圖執行某指令（如 `tsx`、`tsc`）時，**應先直接執行**；僅在該指令確實無法呼叫（如 command not found）時，才考慮進行查詢路徑的行為。
-  - 例如：準備執行 `tsx` 卻先去 `which tsx` / `find node_modules` / `glob node_modules` 查詢其安裝路徑，而該路徑對完成任務並非必要。
-  - **若指令已定義於 `package.json` scripts 內卻無法執行** — 應先**報告使用者**錯誤訊息與狀況，**不得**嘗試自行安裝缺失依賴，也不得進行一系列查詢行為。
+**核心原則：只做完成任務「確實需要」的事；任何查詢或預備動作若與達成目標無關，即應省略，並且按照先後優先順序來進行。**
 
-> 原則：只做完成任務「確實需要」的事；任何查詢或預備動作若與達成目標無關，即應省略。
+涵蓋的非必要查詢包含但不限於：與任務無關的 git 查詢（`git status` / `git log` / `git diff`）、依賴 / 指令位置查詢（如 `which tsx`）、常見基本模組 / 框架 API 查詢，以及測試情境下的框架設定（如 `jest.config.js`）與 snapshot 預讀。這些資訊在直接呼叫現有代碼 / 工具時會自然顯現，故不應預先查詢；僅在實際遇到錯誤（如 command not found、模組缺失）時才處理。
+
+> 詳細原則、負面案例（執行路徑、依賴是否存在、框架 API、測試框架設定 / snapshot 等非必要查詢）與「行為時機」章節 → [avoid-unnecessary-queries.md](./references/avoid-unnecessary-queries.md)
 
 ---
 
@@ -144,4 +140,5 @@ tags:
 
 - ⚙️ **指令執行規則與正確/錯誤範例**：[command-execution-rules.md](./references/command-execution-rules.md)
 - 🚫 **禁止操作清單與授權判斷準則**：[forbidden-operations.md](./references/forbidden-operations.md)
+- 🔍 **避免非必要查詢行為（負面案例）**：[avoid-unnecessary-queries.md](./references/avoid-unnecessary-queries.md)
 - 🧭 **行為與範圍紀律（WHY/HOW）**：[agent-behavior-standardization](../agent-behavior-standardization/SKILL.md) — 本技能中的「避免非必要行為」「禁止濫用或頻繁執行測試」等規則，其背後的思考原則與 scope drift 案例，請參閱該技能第 8 節「任務範圍紀律」。

@@ -361,6 +361,7 @@ Agent 的最終報告必須建立在**成功驗證的工具結果**上。
 本節定義**思考與範圍紀律（WHY / HOW）**；具體禁止事項（WHAT）收錄於 `agent-operation-restrictions` 的「避免非必要行為」「禁止濫用或頻繁執行測試」等規則。兩者互補：行為準則解釋「為什麼」，操作限制列出「禁止什麼」。
 
 > 參照：[agent-operation-restrictions](../agent-operation-restrictions/SKILL.md)
+> 細化參照（非必要查詢行為的負面案例、執行路徑 / 依賴 / 框架 API / 測試設定與 snapshot 等，以及「行為時機」章節）：[avoid-unnecessary-queries.md](../agent-operation-restrictions/references/avoid-unnecessary-queries.md)
 
 ### 8.6 重構時應參考的相關技能
 
