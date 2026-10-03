@@ -223,6 +223,21 @@ node -e "const {test}=require('node:test');test('probe',t=>{console.log('node',p
    - **否則** → 應詢問使用者，或請求安裝 / 補齊該套件；不得自行把套件邏輯複製進本專案。
    - **唯一例外**：實際使用時因相容性 / 環境問題**不得已**必須複製邏輯（例如無法安裝、環境限制），才被動採取複製，但仍應先讓使用者知情。
 
+### 案例 L：讀取 pnpm-lock.yaml 或其他 lock 檔案
+
+```text
+# ❌ 非必要查詢：為了「確認使用哪種套件管理」或「確認依賴版本」而去讀取
+#    pnpm-lock.yaml / package-lock.json / yarn.lock / bun.lockb 等 lock 檔
+```
+
+```text
+# ✅ 正確：從檔案名稱即可得知現有環境使用哪種套件管理
+#        （pnpm-lock.yaml → pnpm；package-lock.json → npm；yarn.lock → yarn）；
+#        無須開啟 / 閱讀 lock 檔內容。lock 檔幾乎從不需要被讀取閱讀。
+```
+
+**補充**：lock 檔唯一有意義的推論是「現有環境使用哪種套件管理器」，但這從檔案名稱（pnpm-lock.yaml、yarn.lock、package-lock.json…）就能直接得知，完全不需要也不該去讀取其內容。其餘資訊（解析後的依賴樹、版本 pinning）會在「直接呼叫現有工具 / 套件管理器指令」時自然顯現，故不應主動開啟 lock 檔查詢。
+
 ---
 
 ## 正面模式（應該這樣做）
