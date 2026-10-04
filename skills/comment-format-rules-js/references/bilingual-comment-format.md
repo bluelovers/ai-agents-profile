@@ -80,6 +80,23 @@ getKey?(item: T, index: number, arr: T[]): any
 > 或僅核心詞 `行動後硬直 (stiff)`。
 > 判定入口都是同一個：看英文部分，不懂英文、只理解簡單單字的人是不是也知道？
 
+**❌ 負面案例 (Bad Example)：**
+
+```text
+Krea 2 Pixel Art LoRA 使用陷阱 / Krea 2 Pixel Art LoRA Pitfalls   ← ❌ 錯誤
+```
+
+`Krea 2 Pixel Art LoRA` 在 `/` 兩側**完全相同**——它不是翻譯，只是被複述了一遍：
+真正有差異的只有 `使用陷阱 / Pitfalls`，卻讓整行長度翻倍。
+這違反**最小必要範圍**：共用且不需翻譯的部分只應出現一次。
+
+✅ 只讓**有差異的部分**雙語，共用專有名詞只寫一次：
+
+```text
+Krea 2 Pixel Art LoRA 使用陷阱              ← 如果 Pitfalls 經判定基準屬無價值：直接單語
+Krea 2 Pixel Art LoRA 使用陷阱 (Pitfalls)   ← 如果需要英文對照：僅差異詞局部雙語（`中文 (Term)` 格式）
+```
+
 > ⚠️ 例外：「有特殊意圖的雙語」（見子項目二，如 `增益 / Up`）不受此基準影響——
 > 即使英文是簡單單字，只要中英彼此不對應、捨棄任一方即失去雙向搜尋，仍須保留。
 
