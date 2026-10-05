@@ -24,7 +24,7 @@ Analyze project structure, check README completeness, and provide updates.
 ## Workflow
 
 1. **Analyze project structure** - Determine if monorepo or single project (read `lerna.json` → `pnpm-workspace.yaml` → `package.json`, **stop at first hit**)
-2. **Collect paths only** - Record file/directory paths and existence-derived info; **no content reads**; then build the **todo path list** and re-remind: **one by one**
+2. **Collect paths only** - Record file/directory paths and existence-derived info; **no content reads**; first try `pnpm -r ls --depth -1` (出錯 → fallback 原有路徑掃描); then build the **todo path list** and re-remind: **one by one**
 3. **Check sub-packages** - For monorepos, process packages **one by one**; user's extra per-package tasks run in that package's turn (see Monorepo Handling). Sub-task/sub-agent groups: ONE BY ONE (分析 → 更新), 回報僅在組結束/停止時
 4. **Root README phase** - 分析／更新 root README（必備：專案主要功能/負責內容、主套件介紹；其餘皆選填）— **永遠在所有路徑結束後執行**，除非使用者要求提前
 5. **Generate report** - List missing/outdated sections
@@ -57,12 +57,33 @@ Do not open, read, or scan file contents at this stage.
 > Exception: the earlier **Detect Monorepo** stage may read config files,
 > but only following its stop-at-first-hit rule above.
 
+#### Fast path: pnpm 套件列表指令
+
+先直接嘗試以指令收集套件列表：
+
+```bash
+pnpm -r ls --depth -1
+```
+
+- **成功** → 從輸出取得各套件的名稱與路徑，直接填入 todo path list。
+- **出錯** → 可能不是 pnpm 專案（或未安裝 pnpm），**改用原有方案**：
+  依 `packages/`、`apps/` 等目錄結構逐一列出路徑。
+
+```
+pnpm -r ls --depth -1
+    ├─ 成功 → 套件列表（名稱 + 路徑）→ todo 列表
+    └─ 出錯 → fallback：原有路徑掃描方案（僅目錄路徑，不讀內容）
+```
+
+- 此指令只為**列出套件清單**；其輸出不得用來判斷「哪個套件需要更新」。
+- 無論走哪條路，收集階段結束時的產物都相同：**純路徑 todo 列表**。
+
 | Source | Extract (path-level only) |
 |--------|---------------------------|
 | Root config files | Paths exist: `package.json`, `pyproject.toml`, lockfiles |
 | `docs/` directory | Path exists; list file paths under it (names only) |
 | Code structure | Top-level directory paths only |
-| Sub-packages | Directory paths + package name from each dir path/manifest path (queue for one-by-one processing) |
+| Sub-packages | Directory paths + package name from each dir path/manifest path, **or via `pnpm -r ls --depth -1`** (queue for one-by-one processing) |
 
 Note: **README existence is NOT checked here.** Whether a package has a
 README is determined later, inside that package's own processing turn.
@@ -572,8 +593,8 @@ ISC License
 User: Update README, and in utils add a bencharks section, in cli fix the version badge
 
 1. Analyze structure → Monorepo detected (packages/ exists)
-2. Collect paths only → record paths of configs, docs/, package dirs → queue: [core, utils, cli]
-   (no file contents read; README existence NOT checked yet; extra user tasks held, not started)
+2. Collect paths only → try `pnpm -r ls --depth -1` → queue: [core, utils, cli]
+   (出錯 → fallback: record paths of configs, docs/, package dirs; no file contents read; README existence NOT checked yet; extra user tasks held, not started)
 3. Process core → read files now → check package.json description/keywords ✓ → README ✓ → next
 4. Process utils → package.json: description empty, keywords outdated → update (after confirmation)
    → then README (排在 package.json 之後): missing usage examples → report + update
