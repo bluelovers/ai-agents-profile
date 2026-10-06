@@ -893,5 +893,6 @@ it('should fetch user data', async () => {
 - [Vitest expect API](https://vitest.dev/api/expect)
 - [Bun Test API](https://bun.sh/docs/runtime/test)
 - [Node.js Test Runner](https://nodejs.org/api/test.html)
+- [Node.js assert Module](https://nodejs.org/api/assert.html)
 - [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
 - [SKILL.md](../SKILL.md)

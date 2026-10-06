@@ -1,7 +1,7 @@
 ---
 description: >-
   無意義測試的判定與改寫：
-  僅重複原始碼常數定義（tautological tests）、或把同一個字面值逐行寫死的斷言，
+  僅重複原始碼常數定義（tautological tests，重言式/同義反覆）、或把同一個字面值逐行寫死的斷言，
   無法捕捉行為錯誤，且常數調整時必然失敗；
   預期值應引用常數（單一事實來源），改為驗證「依賴該常數的行為」，
   僅外部協定／API contract 的邊界值才寫契約測試。
@@ -14,7 +14,7 @@ tags:
 
 # 避免無意義的測試 (Avoid Meaningless Tests)
 
-**不應撰寫僅斷言常數字面值的測試（tautological tests）。** 此類測試只是重複原始碼中的常數定義，無法捕捉行為錯誤，且每次調整常數都需同步修改，徒增維護成本。
+**不應撰寫僅斷言常數字面值的測試（tautological tests，重言式/同義反覆）。** 此類測試只是重複原始碼中的常數定義，無法捕捉行為錯誤，且每次調整常數都需同步修改，徒增維護成本。
 
 主文件僅保留原則摘要與判斷準則，完整錯誤／正確案例與改寫對照集中於此。
 
@@ -107,7 +107,7 @@ it('getWorkspaceProtocol: default and swappable', () =>
 
 **問題解析：**
 
-1. `assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:')` — 直接斷言常數等於其字面定義，屬 **tautology（案例一）**，未驗證任何行為
+1. `assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:')` — 直接斷言常數等於其字面定義，屬 **tautology（重言式/同義反覆，案例一）**，未驗證任何行為
 2. 兩處 `getWorkspaceProtocol()` / `getWorkspaceProtocol({})` 的預期值 `'workspace:'` — 與常數宣告**重複寫死同一個字面值**，預設值一旦調整需逐行同步，測試失敗只代表常數改了，不代表程式有 bug
 3. 斷言彼此獨立寫死字面值 — 常數與函式回傳值沒有任何關聯，**沒有驗證到「函式回傳的就是那個預設常數」**
 
@@ -127,7 +127,7 @@ it('getWorkspaceProtocol: default and swappable', () =>
 
 | 原斷言 | 處理 | 理由 |
 |--------|------|------|
-| `assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:')` | **刪除** | 重複常數定義，屬 tautology |
+| `assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:')` | **刪除** | 重複常數定義，屬 tautology（重言式/同義反覆） |
 | `getWorkspaceProtocol()` 預期值 `'workspace:'` | → `DEFAULT_WORKSPACE_PROTOCOL` | 引用單一事實來源；驗證「函式回傳預設常數」的行為 |
 | `getWorkspaceProtocol({})` 預期值 `'workspace:'` | → `DEFAULT_WORKSPACE_PROTOCOL` | 同上；同時驗證「傳入空選項不改變預設值」 |
 | `getWorkspaceProtocol({ protocol: 'custom:' })` 預期值 `'custom:'` | **保留** | 驗證「protocol 可覆寫」的行為；`'custom:'` 是測試輸入的一部分，非重複宣告 |
