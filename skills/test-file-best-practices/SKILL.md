@@ -100,7 +100,7 @@ project/
 **無論選擇何種模式，皆須遵守以下章節的規則：**
 
 - [測試檔案分割原則](#2-測試檔案分割原則) - 避免單一檔案過大
-- [通用測試檔案 Header](#5-測試組織結構) - 正確引入類型定義
+- [測試檔命名與 Header](./references/framework-compatibility.md) - 依框架選用檔名與正確引入類型定義
 - [Fixtures 與測試資料管理](#fixtures-與測試資料管理) - 集中管理測試資料
 - [測試資料集規範](#測試資料集規範) - 測試資料應包含輸入與預期輸出
 - [共用邏輯提取原則](#6-共用邏輯提取原則) - 提取共用測試邏輯（包括函式參數設計）
@@ -156,41 +156,12 @@ describe('UserService.update', () => { /* 相關測試 */ });
 
 **根據測試框架使用不同的檔案副檔名，以便未來同時使用多個測試工具時能夠區分。**
 
-#### 命名規則
+- Jest / Vitest → `*.spec.ts`
+- Bun / Mocha / Node.js 原生測試 → `*.test.ts`
 
-| 測試框架 | 推薦檔名格式 | 範例 |
-|---------|------------|------|
-| **Jest** | `*.spec.ts` | `user-service.spec.ts` |
-| **Mocha** | `*.test.ts` | `user-service.test.ts` |
-| **Node.js 內建測試** | `*.test.ts` | `user-service.test.ts` |
-| **Vitest** | `*.spec.ts` | `user-service.spec.ts` |
+採用不同命名慣例的優點：**框架識別**、**並行使用**、**設定隔離**（各框架於設定檔限定匹配模式）。
 
-#### 命名範例
-
-```
-test/
-├── module/
-│   ├── feature-a.spec.ts      # Jest 或 Vitest 測試檔案
-│   ├── feature-b.spec.ts      # Jest 或 Vitest 測試檔案
-│   └── integration.test.ts    # Mocha 或 Node.js 測試檔案
-```
-
-#### 設計理念
-
-採用不同的檔案命名慣例有以下優點：
-
-1. **框架識別** - 一眼即可辨識該測試檔案所使用的測試框架
-2. **並行使用** - 當專案需要同時使用多個測試工具（如 Jest 單元測試 + Mocha 整合測試）時，可透過檔名模式輕鬆區分
-3. **設定隔離** - 便於在測試設定檔中針對不同框架設定不同的匹配模式：
-   - Jest: `testMatch: ["**/*.spec.ts"]`
-   - Mocha: `"test/**/*.test.ts"`
-   - Node.js 內建測試: `"test/**/*.node-test.ts"`
-
-#### 注意事項
-
-- 在同一專案中應保持命名慣例的一致性
-- 若專案僅使用單一測試框架，仍建議遵循此規範以便未來擴展
-- TypeScript 專案亦可使用 `.spec.tsx` 或 `.test.tsx` 測試 React 組件
+> **Reference**: [測試框架相容性與 API 對應](./references/framework-compatibility.md) - 五框架命名規則表、預設檔名匹配模式、設計理念與注意事項。
 
 ---
 
@@ -268,49 +239,11 @@ expect(result).toMatchSnapshot({
 
 ### 5. 測試組織結構 / Test Organization
 
-#### 通用測試檔案 Header
+#### 測試檔案 Header
 
-**應在檔案開頭加入 TypeScript 三斜線參考指令，以確保正確引入類型定義。**
+**測試檔案開頭應加入 TypeScript 三斜線參考指令（並依框架匯入測試函數），以確保正確引入類型定義。**
 
-```typescript
-// @allowUnusedLabels:true
-// @noImplicitAny:false
-// @noPropertyAccessFromIndexSignature:false
-// @noUnusedLocals:false
-//@noUnusedParameters:false
-/// <reference types="node" />
-```
-
-- https://github.com/microsoft/TypeScript-Website/tree/v2/packages/tsconfig-reference/copy/en/options
-
-#### Jest 測試檔案 Header
-
-以下為 Node.js 環境下的測試檔案 Header (請勿用於 PHP 或 Python 等環境)：
-
-**若為 Jest 測試檔案，應在檔案開頭加入 TypeScript 三斜線參考指令，以確保正確引入 Jest 與 Node.js 的類型定義。**
-
-```typescript
-//@noUnusedParameters:false
-/// <reference types="node" />
-/// <reference types="jest" />
-```
-
-##### Jest v30+ 注意事項
-
-> 自 Jest v30 起，`toThrowError` 已被移除，請改用 `toThrow`。
-
-- 錯誤拋出測試請使用 `toThrow()` 而非 `toThrowError()`
-- Snapshot 錯誤比對請使用 `toThrowErrorMatchingSnapshot()`（仍支援）
-
-#### Bun 測試檔案 Header
-
-**若為 Bun 測試檔案，應在檔案開頭加入 TypeScript 三斜線參考指令，並從 `bun:test` 匯入所需的測試函數，以確保正確引入 Bun 的類型定義。**
-
-```typescript
-/// <reference types="bun" />
-/// <reference types="bun-types" />
-import { describe, expect, it, test, beforeEach, afterEach, mock } from "bun:test";
-```
+> **Reference**: [測試框架相容性與 API 對應](./references/framework-compatibility.md) - 通用／Jest／Vitest／Bun／Node.js 原生測試的 Header 範例、框架注意事項（如 Jest v30 移除 `toThrowError`）與 matcher API 對應表。
 
 #### 建議的測試檔案結構
 
@@ -1157,6 +1090,7 @@ assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
 ## 相關資源 / Related Resources
 
 - [測試框架 API 重構範例](./references/examples.md)
+- [測試框架相容性與 API 對應（Jest / Vitest / Bun / Node.js）](./references/framework-compatibility.md)
 - [斷言語法優化：可讀性 matcher 與物件比對](./references/assertion-syntax.md)
 - [避免無意義的測試：判定與改寫](./references/meaningless-tests.md)
 - [臨時檔案管理：Mock 安全規則與清理策略](./references/temp-file-management.md)

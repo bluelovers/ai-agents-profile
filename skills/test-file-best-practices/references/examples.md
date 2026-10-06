@@ -13,6 +13,8 @@ tags:
 
 > 📚 與 Snapshot 無關的斷言寫法優化（API 可讀性原則、`toHaveProperty`、`toHaveLength`、物件比對 `toMatchObject` / `objectContaining`）已移至 [斷言語法優化](./assertion-syntax.md)，避免與主文件重複。
 
+> 📚 Jest / Bun 相容性速查表已擴充為四框架對照（Jest / Vitest / Bun / Node.js），並整合檔名命名與測試檔 Header，見 [測試框架相容性與 API 對應](./framework-compatibility.md)。
+
 ---
 
 ## Snapshot 測試優先原則
@@ -815,35 +817,6 @@ it('should fetch user data', async () => {
 
 ---
 
-## Jest / Bun 相容性速查表
-
-| Matcher | Jest | Bun | 備註 |
-|---------|:----:|:---:|------|
-| `toBeGreaterThan` | ✅ | ✅ | |
-| `toBeGreaterThanOrEqual` | ✅ | ✅ | |
-| `toBeLessThan` | ✅ | ✅ | |
-| `toBeLessThanOrEqual` | ✅ | ✅ | |
-| `toBeCloseTo` | ✅ | ✅ | 浮點數精度 |
-| `toContain` | ✅ | ⚠️ | Bun 建議用 `toEqual(expect.arrayContaining())` |
-| `toContainEqual` | ✅ | ⚠️ | Bun 需配合 `expect.arrayContaining()` |
-| `toMatch` | ✅ | ✅ | |
-| `toMatchObject` | ✅ | ✅ | |
-| `toHaveProperty` | ✅ | ✅ | |
-| `toHaveLength` | ✅ | ✅ | |
-| `toBeNull` | ✅ | ✅ | |
-| `toBeUndefined` | ✅ | ✅ | |
-| `toBeDefined` | ✅ | ✅ | |
-| `toBeTruthy` | ✅ | ✅ | |
-| `toBeFalsy` | ✅ | ✅ | |
-| `toBeInstanceOf` | ✅ | ✅ | |
-| `toHaveBeenCalled` | ✅ | ✅ | |
-| `toHaveBeenCalledTimes` | ✅ | ✅ | |
-| `toHaveBeenCalledWith` | ✅ | ✅ | |
-| `.resolves` | ✅ | ✅ | |
-| `.rejects` | ✅ | ✅ | |
-
----
-
 ## 決策流程圖
 
 ```
@@ -914,7 +887,11 @@ it('should fetch user data', async () => {
 
 ## 相關資源
 
+- [測試框架相容性與 API 對應（Jest / Vitest / Bun / Node.js）](./framework-compatibility.md)
+- [斷言語法優化：可讀性 matcher 與物件比對](./assertion-syntax.md)
 - [Jest Expect API](https://jestjs.io/docs/expect)
+- [Vitest expect API](https://vitest.dev/api/expect)
 - [Bun Test API](https://bun.sh/docs/runtime/test)
+- [Node.js Test Runner](https://nodejs.org/api/test.html)
 - [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
 - [SKILL.md](../SKILL.md)
