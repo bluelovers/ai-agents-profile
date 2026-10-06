@@ -184,6 +184,7 @@ test/
 3. **設定隔離** - 便於在測試設定檔中針對不同框架設定不同的匹配模式：
    - Jest: `testMatch: ["**/*.spec.ts"]`
    - Mocha: `"test/**/*.test.ts"`
+   - Node.js 內建測試: `"test/**/*.node-test.ts"`
 
 #### 注意事項
 
@@ -196,20 +197,6 @@ test/
 ### 4. Snapshot 測試優先原則 / Snapshot Testing Priority
 
 **在結果可控的情況下，優先使用 snapshot 測試。**
-
-#### API 可讀性原則
-
-**編寫測試時，應盡量使用具有可讀性/識別性的 API，使錯誤訊息更容易理解。**
-
-```typescript
-// ❌ 不良範例：使用不易識別的 API，錯誤訊息模糊
-expect(result.enableGlobalCache).toBe(false);
-expect(items.length).toBe(0);
-
-// ✅ 良好範例：使用具有可讀性的 API，錯誤訊息清晰
-expect(result).toHaveProperty('enableGlobalCache', false);
-expect(items).toHaveLength(0);
-```
 
 #### 適用場景
 
@@ -266,71 +253,6 @@ expect(result).toMatchSnapshot({
 參閱：
 - [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
 
-#### 單一屬性驗證
-
-**單一屬性的測試，且沒有使用快照或物件比對的狀況下，應使用 `toHaveProperty()`。**
-
-```typescript
-// ❌ 不良範例：直接存取屬性，錯誤時不易識別是哪個屬性問題
-expect(result.enableGlobalCache).toBe(false);
-
-// ✅ 良好範例：使用 toHaveProperty，錯誤訊息更清晰
-expect(result).toHaveProperty('enableGlobalCache', false);
-```
-
-#### 陣列長度驗證
-
-**測試陣列長度時，應使用 `toHaveLength()` 而非 `expect(array.length).toBe()`。**
-
-```typescript
-// ❌ 不良範例：使用 .length.toBe()
-expect(ALL_ARISE_TOOLS.length).toBe(enumValues.length);
-
-// ✅ 良好範例：使用 toHaveLength
-expect(ALL_ARISE_TOOLS).toHaveLength(enumValues.length);
-```
-
-`toHaveLength()` 提供更清晰的錯誤訊息，當測試失敗時可以更容易識別問題。
-
-#### 其他比對已知屬性的範例
-
-```typescript
-// ❌ 不良範例 發生錯誤時不易閱讀
-it('should throw error for invalid input', () => {
-	expect(result.versionOld).toBe('1.2.3');
-	expect(result.versionNew).toBe('2.0.0');
-});
-```
-
-```typescript
-// ✅ 良好範例 包含 snapshot 和 指定值
-it('should throw error for invalid input', () => {
-  // actual = ...
-	expect(actual).toMatchSnapshot({
-    versionOld: '1.2.3',
-    versionNew: '2.0.0',
-  });
-});
-
-// ✅ 在不需要 snapshot 時，只要 actual 包含這些 Key 且 Value 相等即通過。
-test('檢查版本號並允許其他屬性', () => {
-  expect(actual).toMatchObject({
-    versionOld: '1.2.3',
-    versionNew: '2.0.0',
-  });
-});
-
-// ✅ 在不需要 snapshot 時，使用 objectContaining 進行非嚴格匹配，可以巢狀嵌套在 toEqual 或 toHaveBeenCalledWith 中。
-test('使用 objectContaining 進行非嚴格匹配', () => {
-  expect(actual).toEqual(
-    expect.objectContaining({
-      versionOld: '1.2.3',
-      versionNew: '2.0.0',
-    })
-  );
-});
-```
-
 #### 注意事項
 
 - Snapshot 應定期審查，避免過時或錯誤的 snapshot 被接受
@@ -339,6 +261,8 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 - 重要欄位應使用 property matchers 明確驗證，而非完全依賴 snapshot
 - 發生錯誤時應能輕鬆比對錯誤的值與鍵值，了解是哪一個鍵值不正確
 - 更多 API 重構範例（數值、布林、字串、陣列、型別、Promise、Mock 等）請參閱 [references/examples.md](./references/examples.md)
+
+> **Reference**: [斷言語法優化](./references/assertion-syntax.md) - API 可讀性原則、`toHaveProperty`、`toHaveLength` 與物件比對（`toMatchObject` / `objectContaining`）等與 Snapshot 無關的斷言寫法優化。
 
 ---
 
@@ -1233,6 +1157,7 @@ assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
 ## 相關資源 / Related Resources
 
 - [測試框架 API 重構範例](./references/examples.md)
+- [斷言語法優化：可讀性 matcher 與物件比對](./references/assertion-syntax.md)
 - [避免無意義的測試：判定與改寫](./references/meaningless-tests.md)
 - [臨時檔案管理：Mock 安全規則與清理策略](./references/temp-file-management.md)
 - [skills/test-js-mock](../test-js-mock/SKILL.md)

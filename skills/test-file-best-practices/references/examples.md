@@ -11,21 +11,7 @@ tags:
 
 本文件提供 Jest 與 Bun 測試相容的 API 重構範例，補充 `SKILL.md` 中未涵蓋的模式，同時收錄主文件中已提及的重構概念以便完整參照。
 
----
-
-## API 可讀性原則
-
-**編寫測試時，應盡量使用具有可讀性/識別性的 API，使錯誤訊息更容易理解。**
-
-```typescript
-// ❌ 不良範例：使用不易識別的 API，錯誤訊息模糊
-expect(result.enableGlobalCache).toBe(false);
-expect(items.length).toBe(0);
-
-// ✅ 良好範例：使用具有可讀性的 API，錯誤訊息清晰
-expect(result).toHaveProperty('enableGlobalCache', false);
-expect(items).toHaveLength(0);
-```
+> 📚 與 Snapshot 無關的斷言寫法優化（API 可讀性原則、`toHaveProperty`、`toHaveLength`、物件比對 `toMatchObject` / `objectContaining`）已移至 [斷言語法優化](./assertion-syntax.md)，避免與主文件重複。
 
 ---
 
@@ -88,102 +74,6 @@ expect(result).toMatchSnapshot({
 expect(result.items).toMatchSnapshot({
     items: expect.arrayContaining([expect.anything()]),
 });
-```
-
----
-
-## 單一屬性驗證
-
-**單一屬性的測試，且沒有使用快照或物件比對的狀況下，應使用 `toHaveProperty()`。**
-
-```typescript
-// ❌ 不良範例：直接存取屬性，錯誤時不易識別是哪個屬性問題
-expect(result.enableGlobalCache).toBe(false);
-expect(result.timeout).toBe(3000);
-
-// ✅ 良好範例：使用 toHaveProperty，錯誤訊息更清晰
-expect(result).toHaveProperty('enableGlobalCache', false);
-expect(result).toHaveProperty('timeout', 3000);
-```
-
----
-
-## 陣列長度驗證
-
-**測試陣列長度時，應使用 `toHaveLength()` 而非 `expect(array.length).toBe()`。**
-
-```typescript
-// ❌ 不良範例：使用 .length.toBe()
-expect(ALL_ARISE_TOOLS.length).toBe(enumValues.length);
-expect(items.length > 0).toBe(true);
-
-// ✅ 良好範例：使用 toHaveLength
-expect(ALL_ARISE_TOOLS).toHaveLength(enumValues.length);
-expect(items).toHaveLength(3);
-expect(tags.length).toBeGreaterThan(0);
-```
-
-`toHaveLength()` 提供更清晰的錯誤訊息，當測試失敗時可以更容易識別問題。
-
----
-
-## 物件屬性重構（進階）
-
-### toMatchObject 與 toEqual 比較
-
-```typescript
-// ❌ 不良範例：使用 toEqual 驗證部分屬性
-it('should validate version numbers', () => {
-    expect(actual).toEqual({
-        versionOld: '1.2.3',
-        versionNew: '2.0.0',
-    });
-});
-
-// ✅ 良好範例：使用 toMatchObject 允許其他屬性
-expect(actual).toMatchObject({
-    versionOld: '1.2.3',
-    versionNew: '2.0.0',
-});
-```
-
-### expect.objectContaining 巢狀使用
-
-```typescript
-// ✅ 使用 objectContaining 進行非嚴格匹配，可以巢狀嵌套在 toEqual 或 toHaveBeenCalledWith 中
-test('使用 objectContaining 進行非嚴格匹配', () => {
-    expect(actual).toEqual(
-        expect.objectContaining({
-            versionOld: '1.2.3',
-            versionNew: '2.0.0',
-        })
-    );
-});
-
-// ✅ 在 toHaveBeenCalledWith 中使用
-test('驗證函式被正確調用', () => {
-    expect(handler).toHaveBeenCalledWith(
-        expect.objectContaining({ type: 'UPDATE' })
-    );
-});
-```
-
-### toHaveProperty 鏈式使用
-
-```typescript
-// ❌ 不良範例：多次斷言難以維護
-expect(result.id).toBe(123);
-expect(result.name).toBe('Test');
-expect(result.status).toBe('active');
-expect(result.timestamp).toBeDefined();
-
-// ✅ 良好範例：使用 toMatchObject 搭配特定值
-expect(result).toMatchObject({
-    id: 123,
-    name: 'Test',
-    status: 'active',
-});
-expect(result.timestamp).toBeDefined();
 ```
 
 ---

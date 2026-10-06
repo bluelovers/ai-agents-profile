@@ -163,5 +163,6 @@ it('workspace protocol matches the Yarn protocol contract', () =>
 ## 相關資源 (Related Resources)
 
 - [SKILL.md](../SKILL.md)
+- [斷言語法優化：可讀性 matcher 與物件比對](./assertion-syntax.md)
 - [測試框架 API 重構範例](./examples.md)
 - [臨時檔案管理：Mock 安全規則與清理策略](./temp-file-management.md)
