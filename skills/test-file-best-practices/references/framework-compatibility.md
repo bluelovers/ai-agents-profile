@@ -245,6 +245,8 @@ import assert from 'node:assert/strict';
 
 **Node 沒有 property matcher 參數，Jest 的 `toMatchSnapshot({ 指定欄位 })` 需以「全值快照」＋「部分比對」兩者並用近似。**
 
+> ⚠️ `t.assert.snapshot()` 不支援 circular structure，會拋出 `TypeError: Converting circular structure to JSON`。
+
 ```typescript
 // ✅ Jest / Vitest：全值快照，同時鎖定指定欄位的值
 test('version output', () =>

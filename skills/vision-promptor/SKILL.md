@@ -9,6 +9,7 @@ description: |-
   - "Krea" / "Krea 2" / "turbo model"
   - "vision promptor" / "vision prompting"
   - "AI art prompt" / "generate art with prompts"
+  - "layered prompt" / "圖層式提示詞" / "structured composition prompting"
 tags:
   - agents/skills/prompts
   - agents/skills/image-generation
@@ -27,14 +28,17 @@ tags:
 
 ## What I Do
 
-- Guide users on writing natural-language prompts for text-to-image models (e.g. Krea turbo model, Z-Image, Illustrious, ... etc.)
+- Guide users on writing natural-language prompts for text-to-image models (e.g. Krea2, Krea turbo model, Z-Image, Illustrious, ... etc.)
 - Expand short or vague prompts into longer, detailed, production-ready prompts
 - Provide prompting best practices and real-world examples
+- Guide the spatial-layer-structured method (圖層式提示詞 / Structured Composition Prompting) for precise spatial control in concept art and scene design
 
 ## Resources
 
 - [references/prompting.md](references/prompting.md) — Prompting guidelines, best practices, and 20 example prompts with sample outputs
 - [references/expansion.txt](references/expansion.txt) — System prompt for LLM-assisted prompt expansion
+- [references/np-spatial-layer-structured.md](references/np-spatial-layer-structured.md) — 圖層式提示詞 (Spatial-Layer-Structured Prompting) full specification: template, mandatory rules, pitfalls, applicability, and checklist
+- [references/prompts/np-spatial-layer-structured-example.md](references/prompts/np-spatial-layer-structured-example.md) — 15 classified example prompts for the layer-based method (depth axis / floors / functional zones / mixed / uncategorized)
 
 ## Workflow
 
@@ -48,7 +52,7 @@ Read [references/prompting.md](references/prompting.md) for:
 
 ### 2. Expand User Prompts
 
-If the user wants to enhance a short prompt, use [references/expansion.txt](references/expansion.txt) as a system prompt for an LLM. This expansion follows these rules:
+If the user wants to enhance a short prompt, use [references/expansion.txt](references/expansion.txt) as a system prompt for an LLM. For scenes that need precise spatial control, also apply the structured method in step 4. This expansion follows these rules:
 
 - **Faithfulness First** — Preserve all original subjects, actions, colors, and spatial relationships
 - **Practical T2I Structure** — Group subjects with attributes; use grounded phrasing
@@ -62,3 +66,18 @@ If the user wants to enhance a short prompt, use [references/expansion.txt](refe
 ### 3. Output Format
 
 After expansion, return a single cohesive prompt paragraph (no bullets, JSON, or markdown formatting).
+
+### 4. Spatial-Layer-Structured Scene Prompts (圖層式提示詞)
+
+When a request needs **precise spatial control** — multi-layer architecture, interior layouts, game scene concept art, or scenes with many objects that must stay in specific zones — apply the layer-based method instead of (or on top of) plain expansion.
+
+Read [references/np-spatial-layer-structured.md](references/np-spatial-layer-structured.md) for the detailed specification:
+
+- **Core idea** — Global Context & View Angle → layered blocks → Atmosphere closing
+- **Standard template** — the four-part structure with fill-in slots
+- **Three mandatory rules** — lens locking in the prefix; layout & negative space inside every layer (never a bare object list); standardized block tags with at least two anchors
+- **Layer dimensions** — Where / What / How for each layer
+- **Common pitfall & fix** — object-list-only layers vs. compositional guidance, with before/after examples
+- **Applicability & checklist** — when to use it, plus a pre-send review checklist
+
+Then browse [references/prompts/np-spatial-layer-structured-example.md](references/prompts/np-spatial-layer-structured-example.md) for 15 classified examples (depth axis / floors / functional zones / mixed / uncategorized), each with a short Chinese description.
