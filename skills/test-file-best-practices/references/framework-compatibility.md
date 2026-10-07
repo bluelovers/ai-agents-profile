@@ -354,6 +354,10 @@ export { toMatchSnapshot, toThrowErrorMatchingSnapshot } from './snapshot';
 - **違反的後果**：各檔的 serializer 格式、欄位檢查有無不一致，**同一段斷言在不同檔案得到不同結果**；日後修正 helper 無法同步，測試可信度崩塌
 - **抽離時機**：相似的邏輯**重複出現第 2 次**就抽離到共用模組（以邏輯重複次數為準，而非出現的檔案數）
 
+### 相關實作框架
+
+- [node-test-expect](https://github.com/fracabu/node-test-expect) - Jest-like expect assertions for Node.js native test runner `import { expect } from 'node-test-expect';`
+
 ---
 
 ## 各框架注意事項 (Framework Notes)
