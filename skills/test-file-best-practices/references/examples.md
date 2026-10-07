@@ -23,7 +23,7 @@ tags:
 
 ```typescript
 // ❌ 不良範例：手動驗證多個欄位
-it('should parse configuration correctly', () => {
+test('should parse configuration correctly', () => {
     const result = parseConfig(rawConfig);
     expect(result.name).toBe('config');
     expect(result.version).toBe('1.0.0');
@@ -31,13 +31,13 @@ it('should parse configuration correctly', () => {
 });
 
 // ✅ 良好範例：使用 toMatchSnapshot 驗證複雜輸出
-it('should parse configuration correctly', () => {
+test('should parse configuration correctly', () => {
     const result = parseConfig(rawConfig);
     expect(result).toMatchSnapshot();
 });
 
 // ✅ 使用 toThrowErrorMatchingSnapshot 驗證錯誤
-it('should throw error for invalid input', () => {
+test('should throw error for invalid input', () => {
     expect(() => validateInput(invalidInput)).toThrowErrorMatchingSnapshot();
 });
 ```
@@ -564,14 +564,14 @@ expect(copy).toMatchObject({ id: 1 });    // ✅ 通過 (包含該屬性)
 
 ```typescript
 // ❌ 不良範例：直接操作真實檔案系統，可能污染開發環境
-it('should write config file', () => {
+test('should write config file', () => {
     fs.writeFileSync('/etc/myapp/config.json', JSON.stringify(config));
     const result = fs.readFileSync('/etc/myapp/config.json', 'utf-8');
     expect(result).toBe(JSON.stringify(config));
 });
 
 // ❌ 不良範例：在非臨時目錄中建立測試檔案
-it('should process data file', () => {
+test('should process data file', () => {
     const testPath = './test-data.txt';
     fs.writeFileSync(testPath, 'test data');
     const result = processFile(testPath);
@@ -585,7 +585,7 @@ import { getVolumeFromFs } from 'memfs-extra';
 
 jest.mock('fs', () => require('memfs-extra/fs-extra'));
 
-it('should write config file', () => {
+test('should write config file', () => {
     const fs = require('fs');
 
     // 驗證 mock 是否成功
@@ -611,7 +611,7 @@ import { tmpdir } from 'os';
 import { mkdtempSync, writeFileSync, readFileSync, rmSync } from 'fs';
 import { join } from 'path';
 
-it('should process data file', () => {
+test('should process data file', () => {
     const tempDir = mkdtempSync(join(tmpdir(), 'test-'));
     const testPath = join(tempDir, 'data.txt');
 
@@ -634,7 +634,7 @@ it('should process data file', () => {
 // ❌ 不良範例：直接使用內部操作檔案系統的模組
 import { saveConfig } from 'some-config-lib'; // 內部使用 fs.writeFileSync
 
-it('should save config', () => {
+test('should save config', () => {
     // 無法控制 saveConfig 內部的檔案寫入行為
     saveConfig('/etc/app/config.json', { key: 'value' });
     // 可能寫入真實系統目錄，且難以驗證
@@ -646,7 +646,7 @@ jest.mock('some-config-lib', () => ({
     loadConfig: jest.fn(),
 }));
 
-it('should save config', () => {
+test('should save config', () => {
     const { saveConfig } = require('some-config-lib');
     const config = { key: 'value' };
 
@@ -659,7 +659,7 @@ it('should save config', () => {
 // ✅ 良好範例：使用 spyOn 部分 Mock 模組方法
 import * as configLib from 'some-config-lib';
 
-it('should read config without file system', () => {
+test('should read config without file system', () => {
     const mockLoad = jest.spyOn(configLib, 'loadConfig').mockReturnValue({
         key: 'mocked-value',
     });
@@ -684,13 +684,13 @@ it('should read config without file system', () => {
 
 ```typescript
 // ❌ 不良範例：依賴當前真實時間，測試結果不穩定
-it('should return current timestamp', () => {
+test('should return current timestamp', () => {
     const result = getCurrentTimestamp();
     expect(result).toBeGreaterThan(1700000000000); // 隨時間失效
 });
 
 // ❌ 不良範例：直接比較動態產生的時間字串
-it('should format date', () => {
+test('should format date', () => {
     const result = formatDate(new Date());
     expect(result).toBe('2024-01-15'); // 每天都在變
 });
@@ -705,12 +705,12 @@ afterAll(() => {
     jest.useRealTimers();
 });
 
-it('should return current timestamp', () => {
+test('should return current timestamp', () => {
     const result = getCurrentTimestamp();
     expect(result).toBe(1705312800000); // 固定時間戳
 });
 
-it('should format date', () => {
+test('should format date', () => {
     const result = formatDate(new Date());
     expect(result).toBe('2024-01-15');
 });
@@ -732,7 +732,7 @@ beforeEach(() => {
 
 ```typescript
 // ❌ 不良範例：未恢復環境變數，影響後續測試
-it('should read API URL from env', () => {
+test('should read API URL from env', () => {
     process.env.API_URL = 'https://test.example.com';
     const result = getApiUrl();
     expect(result).toBe('https://test.example.com');
@@ -750,7 +750,7 @@ afterAll(() => {
     process.env = originalEnv;
 });
 
-it('should read API URL from env', () => {
+test('should read API URL from env', () => {
     process.env.API_URL = 'https://test.example.com';
     const result = getApiUrl();
     expect(result).toBe('https://test.example.com');
@@ -763,7 +763,7 @@ it('should read API URL from env', () => {
 
 ```typescript
 // ❌ 不良範例：發送真實網路請求
-it('should fetch user data', async () => {
+test('should fetch user data', async () => {
     const result = await fetchUser(123);
     expect(result.name).toBe('John'); // 依賴外部 API
 });
@@ -775,7 +775,7 @@ beforeAll(() => {
     enableFetchMocks();
 });
 
-it('should fetch user data', async () => {
+test('should fetch user data', async () => {
     fetchMock.mockResponseOnce(JSON.stringify({ id: 123, name: 'John' }));
 
     const result = await fetchUser(123);
@@ -893,6 +893,6 @@ it('should fetch user data', async () => {
 - [Vitest expect API](https://vitest.dev/api/expect)
 - [Bun Test API](https://bun.sh/docs/runtime/test)
 - [Node.js Test Runner](https://nodejs.org/api/test.html)
-- [Node.js assert Module](https://nodejs.org/api/assert.html)
+- [Node.js assert Module](https://nodejs.org/api/t.assert.html)
 - [Asymmetric matchers - Expect · Jest](https://jestjs.io/docs/expect#asymmetric-matchers)
 - [SKILL.md](../SKILL.md)

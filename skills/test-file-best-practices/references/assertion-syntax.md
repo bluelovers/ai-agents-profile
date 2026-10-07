@@ -78,7 +78,7 @@ expect(tags.length).toBeGreaterThan(0);
 
 ```typescript
 // ❌ 不良範例 發生錯誤時不易閱讀
-it('should throw error for invalid input', () => {
+test('should throw error for invalid input', () => {
 	expect(result.versionOld).toBe('1.2.3');
 	expect(result.versionNew).toBe('2.0.0');
 });
@@ -86,7 +86,7 @@ it('should throw error for invalid input', () => {
 
 ```typescript
 // ✅ 良好範例 包含 snapshot 和 指定值
-it('should throw error for invalid input', () => {
+test('should throw error for invalid input', () => {
   // actual = ...
 	expect(actual).toMatchSnapshot({
     versionOld: '1.2.3',
@@ -117,7 +117,7 @@ test('使用 objectContaining 進行非嚴格匹配', () => {
 
 ```typescript
 // ❌ 不良範例：使用 toEqual 驗證部分屬性
-it('should validate version numbers', () => {
+test('should validate version numbers', () => {
     expect(actual).toEqual({
         versionOld: '1.2.3',
         versionNew: '2.0.0',

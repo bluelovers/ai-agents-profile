@@ -33,7 +33,7 @@ tags:
 |------|------|------------|---------|
 | **重複常數定義** | `expect(MAX_TIME).toBe(1000)` | 把 `MAX_TIME = 1000` 再寫一次，未驗證任何邏輯 | 測試依賴該常數的行為 |
 | **枚舉值逐項斷言** | `expect(EnumTeamSide.Team0).toBe(0)` | 重複 enum 宣告的內容 | 測試使用該枚舉的分支邏輯 |
-| **預期值寫死字面值** | `assert.strictEqual(getWorkspaceProtocol(), 'workspace:')` | 預期值與常數宣告重複，常數調整時需逐行同步 | 引用常數 `DEFAULT_WORKSPACE_PROTOCOL` |
+| **預期值寫死字面值** | `t.assert.strictEqual(getWorkspaceProtocol(), 'workspace:')` | 預期值與常數宣告重複，常數調整時需逐行同步 | 引用常數 `DEFAULT_WORKSPACE_PROTOCOL` |
 
 ---
 
@@ -44,7 +44,7 @@ tags:
 ```typescript
 // ❌ 無意義的測試：僅斷言常數等於其字面定義
 describe('game constants', () => {
-	it('exposes documented values', () => {
+	test('exposes documented values', () => {
 		expect(MAX_TIME).toBe(1000);
 		expect(START_TIME).toBe(900);
 		expect(MAX_LEVEL).toBe(50);
@@ -52,7 +52,7 @@ describe('game constants', () => {
 		// ... 其餘常數逐項斷言
 	});
 
-	it('EnumTeamSide has numeric values', () => {
+	test('EnumTeamSide has numeric values', () => {
 		expect(EnumTeamSide.Team0).toBe(0);
 		expect(EnumTeamSide.Team1).toBe(1);
 	});
@@ -74,12 +74,12 @@ describe('game constants', () => {
 ```typescript
 // ✅ 有意義的測試：驗證常數在業務邏輯中的行為
 describe('battle time limit', () => {
-	it('should stop the battle when reaching MAX_TIME', () => {
+	test('should stop the battle when reaching MAX_TIME', () => {
 		const battle = createBattle({ elapsed: MAX_TIME + 1 });
 		expect(battle.isOver).toBe(true);
 	});
 
-	it('should allow one extra turn within TURN_EXTENDS window', () => {
+	test('should allow one extra turn within TURN_EXTENDS window', () => {
 		const battle = createBattle({ turns: BATTLE_MAX_TURNS });
 		expect(battle.canExtend).toBe(true);
 	});
@@ -96,18 +96,18 @@ describe('battle time limit', () => {
 
 ```typescript
 // ❌ 三處問題：重複常數定義、預期值與常數宣告重複
-it('getWorkspaceProtocol: default and swappable', () =>
+test('getWorkspaceProtocol: default and swappable', (t: test.TestContext) =>
 	{
-		assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:');
-		assert.strictEqual(getWorkspaceProtocol(), 'workspace:');
-		assert.strictEqual(getWorkspaceProtocol({}), 'workspace:');
-		assert.strictEqual(getWorkspaceProtocol({ protocol: 'custom:' }), 'custom:');
+		t.assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:');
+		t.assert.strictEqual(getWorkspaceProtocol(), 'workspace:');
+		t.assert.strictEqual(getWorkspaceProtocol({}), 'workspace:');
+		t.assert.strictEqual(getWorkspaceProtocol({ protocol: 'custom:' }), 'custom:');
 	});
 ```
 
 **問題解析：**
 
-1. `assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:')` — 直接斷言常數等於其字面定義，屬 **tautology（重言式/同義反覆，案例一）**，未驗證任何行為
+1. `t.assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:')` — 直接斷言常數等於其字面定義，屬 **tautology（重言式/同義反覆，案例一）**，未驗證任何行為
 2. 兩處 `getWorkspaceProtocol()` / `getWorkspaceProtocol({})` 的預期值 `'workspace:'` — 與常數宣告**重複寫死同一個字面值**，預設值一旦調整需逐行同步，測試失敗只代表常數改了，不代表程式有 bug
 3. 斷言彼此獨立寫死字面值 — 常數與函式回傳值沒有任何關聯，**沒有驗證到「函式回傳的就是那個預設常數」**
 
@@ -115,11 +115,11 @@ it('getWorkspaceProtocol: default and swappable', () =>
 
 ```typescript
 // ✅ 刪除常數定義斷言；預期值引用常數；保留驗證「可覆寫」的行為斷言
-it('getWorkspaceProtocol: default and swappable', () =>
+test('getWorkspaceProtocol: default and swappable', (t: test.TestContext) =>
 	{
-		assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
-		assert.strictEqual(getWorkspaceProtocol({}), DEFAULT_WORKSPACE_PROTOCOL);
-		assert.strictEqual(getWorkspaceProtocol({ protocol: 'custom:' }), 'custom:');
+		t.assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
+		t.assert.strictEqual(getWorkspaceProtocol({}), DEFAULT_WORKSPACE_PROTOCOL);
+		t.assert.strictEqual(getWorkspaceProtocol({ protocol: 'custom:' }), 'custom:');
 	});
 ```
 
@@ -127,7 +127,7 @@ it('getWorkspaceProtocol: default and swappable', () =>
 
 | 原斷言 | 處理 | 理由 |
 |--------|------|------|
-| `assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:')` | **刪除** | 重複常數定義，屬 tautology（重言式/同義反覆） |
+| `t.assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:')` | **刪除** | 重複常數定義，屬 tautology（重言式/同義反覆） |
 | `getWorkspaceProtocol()` 預期值 `'workspace:'` | → `DEFAULT_WORKSPACE_PROTOCOL` | 引用單一事實來源；驗證「函式回傳預設常數」的行為 |
 | `getWorkspaceProtocol({})` 預期值 `'workspace:'` | → `DEFAULT_WORKSPACE_PROTOCOL` | 同上；同時驗證「傳入空選項不改變預設值」 |
 | `getWorkspaceProtocol({ protocol: 'custom:' })` 預期值 `'custom:'` | **保留** | 驗證「protocol 可覆寫」的行為；`'custom:'` 是測試輸入的一部分，非重複宣告 |
@@ -152,9 +152,9 @@ it('getWorkspaceProtocol: default and swappable', () =>
 
 ```typescript
 // ✅ 外部協定邊界：只需一筆契約測試，而非逐個常數字面斷言
-it('workspace protocol matches the Yarn protocol contract', () =>
+test('workspace protocol matches the Yarn protocol contract', (t: test.TestContext) =>
 	{
-		assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:');
+		t.assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:');
 	});
 ```
 

@@ -11,7 +11,7 @@ description: >-
   (5) "測試檔案組織",
   (6) "測試資料管理",
   (7) "臨時檔案管理",
-  (8) "重構測試",
+  (8) "重構/轉換/改寫/修正/更新測試",
   (9) "優化測試",
   (10) "整合測試".
 
@@ -31,6 +31,9 @@ tags:
 ## 概述
 
 本規則定義了撰寫或重構測試檔案時的最佳實踐，確保測試程式碼的可維護性和可讀性。
+
+> 📌 **版本前提**：執行相關任務時，除非已經得知版本資訊，否則一律**假設處於最新版環境**；
+> **不主動進行環境偵測與版本查詢**；如果不相容，會被動地從錯誤訊息中得知，無需主動查詢。
 
 ## 核心原則
 
@@ -185,13 +188,13 @@ describe('UserService.update', () => { /* 相關測試 */ });
 
 ```typescript
 // ✅ 使用 toMatchSnapshot 驗證複雜輸出
-it('should parse configuration correctly', () => {
+test('should parse configuration correctly', () => {
 	const result = parseConfig(rawConfig);
 	expect(result).toMatchSnapshot();
 });
 
 // ✅ 使用 toThrowErrorMatchingSnapshot 驗證錯誤
-it('should throw error for invalid input', () => {
+test('should throw error for invalid input', () => {
 	expect(() => validateInput(invalidInput)).toThrowErrorMatchingSnapshot();
 });
 ```
@@ -260,19 +263,19 @@ const TEST_FIXTURES = {
 // 測試套件
 describe('functionToTest', () => {
   describe('正常案例', () => {
-    it('should handle valid input', () => {
+    test('should handle valid input', () => {
       // ...
     });
   });
 
   describe('邊界案例', () => {
-    it('should handle edge case', () => {
+    test('should handle edge case', () => {
       // ...
     });
   });
 
   describe('錯誤處理', () => {
-    it('should throw error for invalid input', () => {
+    test('should throw error for invalid input', () => {
       expect(() => functionToTest(invalidInput)).toThrowErrorMatchingSnapshot();
     });
   });
@@ -291,7 +294,7 @@ describe('functionToTest', () => {
  * 測試 12：deep 巢狀物件
  * Test 12: Deep nested object
  */
-it('should correctly validate deeply nested structures', () => {
+test('should correctly validate deeply nested structures', () => {
     // ...
 });
 
@@ -300,7 +303,7 @@ it('should correctly validate deeply nested structures', () => {
  * 測試：deep 巢狀物件
  * Test: Deep nested object
  */
-it('should correctly validate deeply nested structures', () => {
+test('should correctly validate deeply nested structures', () => {
     // ...
 });
 ```
@@ -314,21 +317,21 @@ it('should correctly validate deeply nested structures', () => {
 ```typescript
 // ✅ 良好範例：使用描述性標題區分測試
 describe('validation', () => {
-    it('should handle valid input', () => { /* ... */ });
-    it('should handle invalid input', () => { /* ... */ });
-    it('should handle empty input', () => { /* ... */ });
+    test('should handle valid input', () => { /* ... */ });
+    test('should handle invalid input', () => { /* ... */ });
+    test('should handle empty input', () => { /* ... */ });
 });
 
 // ✅ 良好範例：使用 describe 區塊分組
 describe('UserService', () => {
     describe('create', () => {
-        it('should create user with valid data', () => { /* ... */ });
-        it('should reject duplicate email', () => { /* ... */ });
+        test('should create user with valid data', () => { /* ... */ });
+        test('should reject duplicate email', () => { /* ... */ });
     });
 
     describe('update', () => {
-        it('should update user info', () => { /* ... */ });
-        it('should handle not found error', () => { /* ... */ });
+        test('should update user info', () => { /* ... */ });
+        test('should handle not found error', () => { /* ... */ });
     });
 });
 ```
@@ -350,7 +353,7 @@ describe('UserService', () => {
 ```typescript
 // ❌ 邏輯重複，維護困難
 describe('UserService', () => {
-  it('should create user', () => {
+  test('should create user', () => {
     const user = {
       id: generateId(),
       name: 'Test User',
@@ -361,7 +364,7 @@ describe('UserService', () => {
     // ...測試邏輯
   });
 
-  it('should update user', () => {
+  test('should update user', () => {
     const user = {
       id: generateId(),
       name: 'Test User',
@@ -394,12 +397,12 @@ export function _createTestUser(overrides?: Partial<IUser>) {
 import { _createTestUser } from './lib/helpers/user-factory';
 
 describe('UserService', () => {
-  it('should create user', () => {
+  test('should create user', () => {
     const user = _createTestUser();
     // ...測試邏輯
   });
 
-  it('should update user', () => {
+  test('should update user', () => {
     const user = _createTestUser({ name: 'Updated Name' });
     // ...測試邏輯
   });
@@ -565,12 +568,12 @@ import validUser from '../fixtures/users/valid-user.json';
 import mockApiResponse from '../fixtures/api-responses/mock-api-response.json';
 
 describe('UserService', () => {
-  it('should create user with valid data', () => {
+  test('should create user with valid data', () => {
     const result = createUser(validUser);
     expect(result).toBeDefined();
   });
 
-  it('should handle API response correctly', () => {
+  test('should handle API response correctly', () => {
     const result = processResponse(mockApiResponse);
     expect(result).toMatchSnapshot();
   });
@@ -678,7 +681,7 @@ for (const group of testGroups)
 	{
 		for (const testCase of group.testCases)
 		{
-			it(testCase.name, () =>
+			test(testCase.name, () =>
 			{
 				// 執行測試邏輯
 				runTestCase(testCase);
@@ -916,7 +919,7 @@ const getSharedTempDir = (subDir: string) => {
 };
 
 // 在具有唯一性 ID 的臨時目錄下創建檔案
-it('should generate output file', async () => {
+test('should generate output file', async () => {
     const outputDir = getTempDir('test-output');
     const outputFile = path.join(outputDir, 'result.json');
 
@@ -1040,11 +1043,11 @@ tmp/
 
 ```typescript
 // ❌ 無意義：重複常數定義，且預期值寫死字面值
-assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:');
-assert.strictEqual(getWorkspaceProtocol(), 'workspace:');
+t.assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:');
+t.assert.strictEqual(getWorkspaceProtocol(), 'workspace:');
 
 // ✅ 良好：刪除常數定義斷言，預期值引用常數
-assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
+t.assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
 ```
 
 > **Reference**: [避免無意義的測試](./references/meaningless-tests.md) - 無意義斷言類型速查、常數字面值與重複字面值的錯誤／正確案例，以及允許字面值斷言的例外情境。

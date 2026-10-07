@@ -73,7 +73,7 @@ describe('Config Tests', () => {
         jest.clearAllMocks();
     });
 
-    it('should mock config file', () => {
+    test('should mock config file', () => {
         // 設定 mock 行為
         fs.readFileSync.mockReturnValue(JSON.stringify({
             show_banner: true,
@@ -98,7 +98,7 @@ describe('File Processing', () => {
     beforeEach(() => env.reset());
     afterEach(() => env.cleanup());
 
-    it('should process files safely', () => {
+    test('should process files safely', () => {
         // 使用安全的 fs 包裝
         env.safeFs.writeFileSync(`${__TEST_TEMP}/output.txt`, 'result');
 
@@ -108,7 +108,7 @@ describe('File Processing', () => {
 });
 
 // ❌ 錯誤：直接操作臨時目錄外的路徑
-it('should NOT modify files outside temp', () => {
+test('should NOT modify files outside temp', () => {
     const configPath = path.join(process.cwd(), 'config', 'settings.json');
     fs.writeFileSync(configPath, '{}');  // ❌ 禁止：寫入
     fs.unlinkSync(configPath);            // ❌ 禁止：刪除
@@ -116,7 +116,7 @@ it('should NOT modify files outside temp', () => {
 });
 
 // ✅ 正確：僅讀取臨時目錄外的路徑
-it('should read files outside temp', () => {
+test('should read files outside temp', () => {
     const configPath = path.join(process.cwd(), 'src', 'config.json');
     const configData = fs.readFileSync(configPath, 'utf-8');  // ✅ 允許：僅讀取
 });
@@ -321,7 +321,7 @@ describe('File Processing', () => {
         tempDirs.length = 0;
     });
 
-    it('should process files', () => {
+    test('should process files', () => {
         const tempDir = getTempDir('test-output');
         // ... 測試邏輯
     });
@@ -362,7 +362,7 @@ describe('File Processing (Manual Review)', () => {
     };
 
     // 不使用 afterEach 清理，讓臨時檔案保留供人工審閱
-    it('should generate output file for review', async () => {
+    test('should generate output file for review', async () => {
         const outputDir = getTempDir('test-output');
         const outputFile = path.join(outputDir, 'result.json');
 
