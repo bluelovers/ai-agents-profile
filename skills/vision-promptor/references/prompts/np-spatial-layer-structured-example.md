@@ -26,23 +26,23 @@ tags:
 **編號為固定識別碼**，依分類分節排列，不隨分類順序變動。
 變體版可收入於原範例後方，並以「-變體」標註，不需要為其分配新編號（但具有指標性意義的可賦予編號作為方便定位使用）。
 
-> **計數與下一編號：** 新增範例的**下一則編號由 0016 開始**——一律接續全局最大編號，**空號不補**。
+> **計數與下一編號：** 新增範例的**下一則編號由 L0016 開始**——一律接續全局最大編號，**空號不補**。
 
 - **景深軸（前／中／後）**
-  - 奇幻：0001 龍骨圓形旅館
-  - 古典建築：0010、0014、0015 光輝浴場系列（原版／緊湊單段變體／外望內視角變體）
+  - 奇幻：L0001 龍骨圓形旅館
+  - 古典建築：L0010、L0014、L0015 光輝浴場系列（原版／緊湊單段變體／外望內視角變體）
 - **垂直樓層軸（上／中／下）**
-  - 寫實：0004 改車工廠
-  - 後啟示科幻：0005、0013 輻射避難所
-  - 賽博龐克：0007 賽博朋克巷道
-  - 奇幻：0008 巨樹旅館與藥水店
-  - 機甲科幻：0011 科幻機甲機庫
+  - 寫實：L0004 改車工廠
+  - 後啟示科幻：L0005、L0013 輻射避難所
+  - 賽博龐克：L0007 賽博朋克巷道
+  - 奇幻：L0008 巨樹旅館與藥水店
+  - 機甲科幻：L0011 科幻機甲機庫
 - **水平／功能分區軸（前中後／左中右）**
-  - 寫實：0003 學校保健室
-  - 科幻剖面：0006、0012 星艦艦橋剖面（初版／含人員版）
+  - 寫實：L0003 學校保健室
+  - 科幻剖面：L0006、L0012 星艦艦橋剖面（初版／含人員版）
 - **混合軸（複合軸別／自然語言位置句）**
-  - 自然景觀：0002 熱帶海灘
-  - 寫實：0009 雨夜居酒屋
+  - 自然景觀：L0002 熱帶海灘
+  - 寫實：L0009 雨夜居酒屋
 - **未分類**
   - 暫無
 
@@ -50,7 +50,7 @@ tags:
 
 ## 一、景深軸（前／中／後：Foreground／Midground／Background）
 
-### 0001. 龍骨圓形旅館（前中後景標準型）
+### L0001. 龍骨圓形旅館（前中後景標準型）
 
 > 寬景微俯視鏡頭下的圓形奇幻旅館：前景弧形排桌留空中央地面，中景為環形石地，背景龍肋骨彎成拱頂，暖橘燭光對比頂部冷色天光。
 
@@ -68,7 +68,7 @@ Atmosphere: Dramatic, warm yet solemn, legendary fantasy mood; soft orange candl
 
 ---
 
-### 0010. 光輝浴場・原版（前中後景＋Atmosphere 分行標籤）
+### L0010. 光輝浴場・原版（前中後景＋Atmosphere 分行標籤）
 
 > 由白大理石浴場內望外：前景金色池與馬賽克地磚、中景凹槽柱、背景雲海，象牙白與暖青色調。
 
@@ -81,9 +81,9 @@ Atmosphere: serene timeless proportions, ivory pale aqua and warm bronze tones, 
 
 ---
 
-### 0014. 光輝浴場・以水池作為主體的變體（前中後景內嵌單段）
+### L0014. 光輝浴場・以水池作為主體的變體（前中後景內嵌單段）
 
-> 範例 0010 的緊湊寫法：前中後景與 Atmosphere 全部壓進單一段落，語句連貫，細節較原版精簡。
+> 範例 L0010 的緊湊寫法：前中後景與 Atmosphere 全部壓進單一段落，語句連貫，細節較原版精簡。
 
 ```
 the Baths of Radiance, interior vantage point looking outward from within the vaulted white marble bath hall. Foreground: steaming golden pools shimmering with ivory pale aqua reflections, shell-shaped niches and bronze swan-neck faucets releasing streams into the water. Midground: restrained fluted columns framing broad openings, mist drifting upward from the pools. Background: the cloud sea beyond, glowing under warm daylight, laurel planters silhouetted against the horizon. Atmosphere: serene timeless proportions, filmic color grading, deep focus.
@@ -91,9 +91,9 @@ the Baths of Radiance, interior vantage point looking outward from within the va
 
 ---
 
-### 0015. 光輝浴場・外望內視角變體（前中後景・視角反轉）
+### L0015. 光輝浴場・外望內視角變體（前中後景・視角反轉）
 
-> 範例 0010 的鏡像構圖：改由雲海露台由外望內，前景石階與月桂盆栽、中景柱廊拱門框景、背景為室內金色浴池。
+> 範例 L0010 的鏡像構圖：改由雲海露台由外望內，前景石階與月桂盆栽、中景柱廊拱門框景、背景為室內金色浴池。
 
 ```
 the Baths of Radiance, exterior vantage point looking inward from the cloud sea terrace. Foreground: broad marble steps and laurel planters leading toward the openings. Midground: restrained fluted columns and vaulted arches framing the interior view. Background: steaming golden pools shimmering beneath drifting mist, shell-shaped niches and bronze swan-neck faucets, intricate abstract mosaic floor glowing under warm daylight. Atmosphere: serene timeless proportions, ivory pale aqua and warm bronze tones, filmic color grading, deep focus.
@@ -103,7 +103,7 @@ the Baths of Radiance, exterior vantage point looking inward from the cloud sea 
 
 ## 二、垂直樓層軸（上／中／下：Top／Middle／Bottom floors）
 
-### 0004. 改車工廠（樓層分層：上／中／下）
+### L0004. 改車工廠（樓層分層：上／中／下）
 
 > 深夜多層改車工廠：上層夾層辦公室、中層液壓舉升的改裝跑車、下層維修坑，艙門外是工業港區。
 
@@ -119,7 +119,7 @@ The workshop layout spans three distinct functional levels:
 
 ---
 
-### 0005. 輻射避難所（樓層分層：上／中／下＋左側遠景）
+### L0005. 輻射避難所（樓層分層：上／中／下＋左側遠景）
 
 > 三層地下避難所：上層大廳、中層居住區、下層水耕溫室，左側艙門外是黃色輻射天空的廢土。
 
@@ -134,7 +134,7 @@ The Vault interior is split into three functional floors:
 
 ---
 
-### 0007. 賽博朋克巷道（垂直分層：上／中／下）
+### L0007. 賽博朋克巷道（垂直分層：上／中／下）
 
 > 雨夜多層賽博朋克巷道：上層黑客工作站、中層拉麵攤、下層未來摩托車與機器狗，背景是霓虹摩天樓。
 
@@ -148,7 +148,7 @@ On the bottom street level, a sleek black futuristic motorcycle with glowing blu
 
 ---
 
-### 0008. 巨樹旅館與藥水店（樓層分層：上／中／下）
+### L0008. 巨樹旅館與藥水店（樓層分層：上／中／下）
 
 > 中空巨樹內的三層奇幻旅館兼藥水店：頂層臥房、中層藥水商店、底層酒館，樹外是新月暮色。
 
@@ -162,7 +162,7 @@ The ground floor features a lively tavern area with a stone fireplace on the far
 
 ---
 
-### 0011. 科幻機甲機庫（雙層工作區：上走道／下地面）
+### L0011. 科幻機甲機庫（雙層工作區：上走道／下地面）
 
 > 多層科幻機庫檢修藍灰色機甲：上層走道女技師監工、下層機甲主體、焊接技師與工具區分佈左右。
 
@@ -179,7 +179,7 @@ On the lower floor level, the central focus is the eight-foot-tall mech standing
 
 ## 三、水平／功能分區軸（Front-Middle-Rear／Left-Center-Right）
 
-### 0003. 學校保健室（功能分區：前／中／後）
+### L0003. 學校保健室（功能分區：前／中／後）
 
 > 深夜的日本學校保健室，分前三區：前區導師桌、中區兩張床位、後區醫療儲物，窗外是靛藍色校園。
 
@@ -197,7 +197,7 @@ The room is divided into three functional zones:
 
 ---
 
-### 0006. 星艦艦橋剖面・初版（功能分區：左／中／右）
+### L0006. 星艦艦橋剖面・初版（功能分區：左／中／右）
 
 > 星艦艦橋與相鄰艙室剖面：左側主艦橋、中側醫療艙、右側傳送室，主艙外為紫色星雲深空。（未含人員的初版）
 
@@ -214,9 +214,9 @@ The interior layout spans three distinct operational areas:,
 
 ---
 
-### 0012. 星艦艦橋剖面・含人員版（功能分區：左／中／右）
+### L0012. 星艦艦橋剖面・含人員版（功能分區：左／中／右）
 
-> 範例 0006 的修訂版：相同的左中右三艙剖面，加入指揮椅上的軍官與感應器操作員等角色細節。
+> 範例 L0006 的修訂版：相同的左中右三艙剖面，加入指揮椅上的軍官與感應器操作員等角色細節。
 
 ```
 a cross-section of a Starfleet Constitution-class starship bridge and adjacent rooms, set in the Star Trek universe. The background outside the large viewscreen shows deep space with a colorful purple stellar nursery and warp speed star-streaks.
@@ -232,7 +232,7 @@ The interior layout spans three distinct operational areas:
 
 ## 四、混合軸（複合軸別與自然語言位置句）
 
-### 0002. 熱帶海灘（自然語言位置句：前／左／中／右）
+### L0002. 熱帶海灘（自然語言位置句：前／左／中／右）
 
 > 正午熱帶海灘：背景綠松石海面與太陽，前景像素感沙岸，左側飲料、中央沙灘球、右側紅陽傘。
 
@@ -248,7 +248,7 @@ On the right, a large red beach umbrella casts a shadow over a small cooler and 
 
 ---
 
-### 0009. 雨夜居酒屋（單層主區＋左右定位＋背景街道）
+### L0009. 雨夜居酒屋（單層主區＋左右定位＋背景街道）
 
 > 雨夜日式居酒屋：底層廚房與吧台，左側師傅烤串、長桌顧客，紅燈籠暖光籠罩，背景是雨中街道。
 
