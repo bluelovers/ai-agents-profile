@@ -50,7 +50,8 @@ tags:
 
 ## Resources
 
-- [references/prompting.md](references/prompting.md) — Prompting guidelines, best practices, and 20 example prompts with sample outputs
+- [references/prompts/README.md](references/prompts/README.md) — **Prompt examples index (範例索引)**: all example files, ID schemes (`L` / `P` / `T`), and next-number rules for adding new examples
+- [references/prompts/np-prompting.md](references/prompts/np-prompting.md) — Prompting guidelines, best practices, and 20 example prompts with sample outputs
 - [references/expansion.txt](references/expansion.txt) — System prompt for LLM-assisted prompt expansion
 - [references/np-spatial-layer-structured.md](references/np-spatial-layer-structured.md) — 圖層式提示詞 (Spatial-Layer-Structured Prompting) full specification: template, mandatory rules, pitfalls, applicability, and checklist
 - [references/prompts/np-spatial-layer-structured-example.md](references/prompts/np-spatial-layer-structured-example.md) — 15 classified example prompts for the layer-based method (depth axis / floors / functional zones / mixed / uncategorized)
@@ -74,9 +75,13 @@ tags:
 
 ## Workflow
 
+### 0. Browse the Examples Index (可選)
+
+Need a starting point or a pattern to imitate? Scan [references/prompts/README.md](references/prompts/README.md) — the examples index lists every example file by form (layered / narrative / tags / style mix) with its ID scheme and next available number.
+
 ### 1. Consult the Prompting Guidelines
 
-Read [references/prompting.md](references/prompting.md) for:
+Read [references/prompts/np-prompting.md](references/prompts/np-prompting.md) for:
 
 - Best practices for natural-language image prompts
 - Resolution and model considerations (turbo model supports up to 2k resolution)
