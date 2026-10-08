@@ -268,3 +268,23 @@ Red hanging lanterns line the ceiling, casting a warm orange and yellow glow thr
 > 新增範例若無法符合上述任一軸別，請置於本節。
 
 ---
+
+```
+sheltercutawaymale, aged up
+Caption: The cutaway contains exactly 6 visible rooms: an upper-left greenhouse, an upper-right map room, a middle-left kitchen, a middle-right clinic, a lower-left bunk room, and a lower-right heater plant.
+
+A narrow stair along the far left is circulation and is excluded from the room count.
+This is a semi-realistic illustrated cross-section of an ice-station bunker under blue pack ice, with a red parka hung by the outer door and a pale arctic sky.
+
+In the greenhouse, an adult Inuit man aged 24 with a broad face and black hair in a low tie mists lettuce under white lamps. Grow trays, a blue tank and coiled hose fill the warm room.
+In the map room, an adult white man aged 23 with a red beard and a square jaw pins a paper coastal chart to a cork wall. A drafting table, rolled maps, a brass ruler and a mug sit under a lamp.
+In the kitchen, an adult East Asian man aged 24 with a flat-top haircut and a scar on his chin ladles soup into three enamel bowls. A stove, a bread box and drying mittens hang nearby.
+In the clinic, an adult Black man aged 23 with a short afro and glasses sorts glass vials in a cabinet. A cot, a wool blanket and a steel sink occupy the room.
+In the bunk room, an adult South Asian man aged 22 with a side part and a narrow mustache pulls a wool blanket up on the lower bunk. Parkas hang on hooks beside a boot rack.
+In the heater plant, an adult Southeast Asian man aged 24 with a wide jaw and a crew cut shovels coal into a black stove. A heat duct, a coal bin and a thermometer fill the corner.
+
+Every person has a different face.
+Riveted gray steel frames the rooms, with crisp ink outlines and painterly shading.
+```
+
+---

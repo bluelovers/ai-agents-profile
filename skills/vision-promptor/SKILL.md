@@ -73,6 +73,22 @@ tags:
 - **Not mutually exclusive (非互斥)** — the three forms are on the same spectrum and can be mixed: a tag list with a narrative atmosphere closing; layered blocks filled with tags; a narrative opening followed by layered blocks …
 - **Segmentation & line breaks (分段與分行)** — in practice, **no matter which form (layered / narrative / tags), prompts need paragraph breaks and line breaks**: group content by theme, break over-long logical lines at sentence/theme boundaries, and keep each section readable. Details in each guide's layout rules (use `#` to preserve blank lines if an editor swallows them; `# ---` as a separator when needed).
 
+## People Versions Rule (人物三版本規則)
+
+**When the user gives a prompt that may contain people/characters, or when the request may directly or indirectly generate a prompt containing people** (使用者給予的提示詞可能包含人物，或要求可能直接／間接生成包含人物的提示詞時), deliver **all three versions at once** (同時給予以下三個版本)：
+
+1. **無人物版本 (No-people version)** — remove characters entirely; keep the scene readable via **positive state description** (e.g. `empty tables and drifting smoke emphasize calm after activity`), never via negative phrasing
+2. **有人物版本 (With-people version)** — characters present but composed as part of the scene, not the focal point; follow *Respect the Human Form* (assume clothing coverage, depict with dignity)
+3. **人物為焦點／主體版本 (People-as-focus version)** — characters as the clear subject of the composition, with the scene, framing, and lighting arranged around them
+
+**Notes:**
+
+- The three versions share the same scene skeleton — only the **presence and weight of people** changes
+- All versions still obey the shared rules above (no negative phrasing, segmentation & line breaks, Faithfulness First, Respect the Human Form)
+- **Original-version notice (同版提醒)** — if a delivered version is the same as the user's original prompt, **explicitly remind the user that this version is the original version** (提醒該版本為原始版本).
+  - 判定標準：僅調整排版（分行、分段、空白）而**未更動／增減內容** → **視為等同原始版本**，同樣須提醒
+  - 符號修正與錯字修正**允許**，不影響此判定（仍視為等同原始版本）
+
 ## Workflow
 
 ### 0. Browse the Examples Index (可選)
@@ -89,7 +105,7 @@ Read [references/prompts/np-prompting.md](references/prompts/np-prompting.md) fo
 
 ### 2. Expand User Prompts
 
-If the user wants to enhance a short prompt, use [references/expansion.txt](references/expansion.txt) as a system prompt for an LLM. For scenes that need precise spatial control, also apply the structured method in step 4. This expansion follows these rules:
+If the user wants to enhance a short prompt, use [references/expansion.txt](references/expansion.txt) as a system prompt for an LLM. For scenes that need precise spatial control, also apply the structured method in step 4. **If people/characters may be involved (directly or indirectly), also deliver all three people versions — see People Versions Rule above.** This expansion follows these rules:
 
 - **Faithfulness First** — Preserve all original subjects, actions, colors, and spatial relationships
 - **Practical T2I Structure** — Group subjects with attributes; use grounded phrasing
