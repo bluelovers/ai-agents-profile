@@ -25,7 +25,8 @@ tags:
 > 而不是把「這段 code 已經明確告訴我的事情」重新念一遍，也不是替整個 type system 寫使用說明書。
 
 > 📚 重構時把「SSOT 標籤、移動/抽離紀錄」等操作日誌寫進註解，同屬無意義註解，
-> 判定與正確做法見 [Case D — 重構時於註解內標示非必要內容](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md)（位於 `code-refactoring-expert-typescript`）。
+> 判定與正確做法見 [Case D — 重構時於註解內標示非必要內容](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md)（位於 `code-refactoring-expert-typescript`），
+> 錯例與改寫彙整見 [錯誤註解案例 — 案例五](./bad-comment-examples.md)。
 
 ## 錯誤案例 (Bad Examples)
 

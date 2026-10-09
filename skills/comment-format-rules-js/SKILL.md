@@ -30,6 +30,7 @@ IDE 及 AI 在處理程式碼時，會優先解析 **語義化標籤**（如 JSD
 - **一律使用區塊註解 `/** ... */`**（含分隔線註解），例外僅限 JSDoc `@example` 區塊內與特殊指令（`// @ts-ignore` 等）。詳見 [重要約束](#重要約束-critical-constraints)。
 - **解釋 WHY（為什麼），而非僅解釋 WHAT（做什麼）**：複雜條件需說明理由，邊界情況必須記錄。
 - **註解放置於代碼上方**，避免代碼後方的行內註解。詳見 [註解位置規範](./references/comment-placement.md)。
+- **註解必須緊鄰其所描述的宣告**（中間不得隔著 `import`、常數或其他陳述式）；**描述宣告的註解不得寫成檔頭註解**。詳見 [錯誤註解案例](./references/bad-comment-examples.md)。
 - **雙語註解：中文在前、英文在後**，禁止「英文＋英文」的假雙語。詳見 [雙語註解格式](./references/bilingual-comment-format.md)。
 - **職責分離：JSDoc 描述合約與意圖，邏輯區塊描述實作細節。**
 - **更新既有註解時保留原始技術資訊**（錯誤碼、術語、檔案路徑）。詳見 [註解更新規則](./references/comment-update-rules.md)。
@@ -418,6 +419,7 @@ else if (m = (w1.p & w2.p))
 - [重要約束](./references/critical-constraints.md) — 區塊註解強制、分隔線、特殊指令放置、保留技術術語
 - [註解更新規則](./references/comment-update-rules.md) — 保留原始錯誤資訊、Issue 驗證、多語言註解保留、更新前檢查清單
 - [無意義註解](./references/meaningless-comments.md) — 重複宣告關鍵字／語意、羅列代碼管理的宣告（what 而非 why）的註解判定，不得新增、遇到直接刪除
+- [錯誤註解案例](./references/bad-comment-examples.md) — 註解錯置（把宣告註解誤寫成檔頭註解、與目標被陳述式分隔、放進宣告內部、重構後殘留）、重構操作日誌（SSOT 標籤、移動／抽離紀錄），與其餘錯誤類型的分流索引
 - [行內註解轉換工具](./references/convert-inline-to-block.md) — 將行內註解 (`//`) 批次轉為區塊註解 (`/** ... */`)，預設 dry-run，加 `--write` 才寫入
 
 ---

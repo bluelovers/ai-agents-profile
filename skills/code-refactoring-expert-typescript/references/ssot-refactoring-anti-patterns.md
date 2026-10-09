@@ -242,7 +242,8 @@ import { SKILL_EXTRA_NUMERIC_KEYS } from '../core/keys';
 
 這與規範 B / B-2 / B-3 是同一紀律的兩面：B 系列要求**程式結構**收斂為 SSOT；Case D 要求**註解**也不要反向膨脹成「重構履歷」——否則表面 SSOT、實則註解裡塞滿重複的移動紀錄。
 
-> 📚 註解層面的完整判定（重複宣告、what 而非 why、正確改寫範本）參見 [無意義註解](../../comment-format-rules-js/references/meaningless-comments.md)（位於 `comment-format-rules-js`）。
+> 📚 註解層面的完整判定（重複宣告、what 而非 why、正確改寫範本）參見 [無意義註解](../../comment-format-rules-js/references/meaningless-comments.md)（位於 `comment-format-rules-js`）；
+> 本 Case 的錯例與改寫彙整亦收錄於 [錯誤註解案例 — 案例五](../../comment-format-rules-js/references/bad-comment-examples.md)（位於 `comment-format-rules-js`）。
 
 ---
 
