@@ -72,6 +72,7 @@ tags:
 
 - **Not mutually exclusive (非互斥)** — the three forms are on the same spectrum and can be mixed: a tag list with a narrative atmosphere closing; layered blocks filled with tags; a narrative opening followed by layered blocks …
 - **Segmentation & line breaks (分段與分行)** — in practice, **no matter which form (layered / narrative / tags), prompts need paragraph breaks and line breaks**: group content by theme, break over-long logical lines at sentence/theme boundaries, and keep each section readable. Details in each guide's layout rules (use `#` to preserve blank lines if an editor swallows them; `# ---` as a separator when needed).
+  **Impact note:** whether a prompt is line-broken has **little effect on the generated image itself** — its value is for **humans: readability (閱讀性) and replaceability (可替換性)**; line breaks and blank lines mark module boundaries, making structure scannable and whole-block replacement easy.
 
 ## People Versions Rule (人物三版本規則)
 
