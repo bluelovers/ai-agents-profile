@@ -12,6 +12,23 @@ tags:
 
 ---
 
+## 避免非必要的檔案讀寫 / Avoid Unnecessary File I/O
+
+**若實作或測試僅需驗證「檔案內容」，不應真的執行 寫入 → 讀回 → 清理。** 除非有必要性的意圖與理由（例如驗證寫入副作用、換行符、權限），否則應建立不需實際寫入檔案也能取得內容的 API（如 `stringify()`）或 helper 邏輯，避免非必要的讀寫行為與臨時檔案的建立/清除。
+
+```typescript
+// ❌ 非必要 I/O：寫入後讀回，只為取得內容
+optimized.save();
+t.assert.deepStrictEqual(readFileSync(optimized.path, 'utf8'), expected);
+
+// ✅ 直接斷言不落盤的內容產生 API
+t.assert.deepStrictEqual(optimized.stringify(), expected);
+```
+
+完整的設計原則（內容產生與持久化職責分離）與例外情境，請參閱 [SKILL.md - 驗證檔案內容應優先使用非 I/O API](../SKILL.md#驗證檔案內容應優先使用非-io-api--prefer-in-memory-api-for-content-verification)。
+
+---
+
 ## Mock 環境安全規則 / Mock Environment Safety Rules
 
 **對於有可能涉及檔案寫入/刪除的模組或測試，應使用 mock 環境防止 fs 操作臨時目錄 (test/temp) 以外任何路徑。**

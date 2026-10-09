@@ -13,11 +13,13 @@ description: >-
   (7) "臨時檔案管理",
   (8) "重構/轉換/改寫/修正/更新測試",
   (9) "優化測試",
-  (10) "整合測試".
+  (10) "整合測試",
+  (11) "檔案內容驗證" / 避免非必要的檔案讀寫.
 
   Defines guidelines for writing and organizing test files, including test
   location patterns, naming conventions, snapshot testing, fixtures management,
-  and temporary file handling.
+  temporary file handling, and in-memory content verification (avoiding
+  unnecessary file I/O).
 tags:
   - agents/skills
   - agents/guidelines
@@ -810,6 +812,71 @@ ts-node test/scripts/generate-fixtures.ts
 
 **當測試需要創建臨時檔案或臨時目錄時，應在專案內建立專用的臨時目錄來操作，而非直接在根目錄或 src 目錄下創建。**
 
+#### 驗證檔案內容應優先使用非 I/O API / Prefer In-Memory API for Content Verification
+
+**當實作或測試需要驗證「檔案內容」時，除非有必要性的意圖與理由，否則應建立不需實際寫入檔案也能取得內容的 API 或 helper 邏輯，避免不必要的讀寫行為，甚至還得額外建立臨時檔案並且清除。**
+
+##### 不良範例：寫入 → 讀回 → 清理
+
+```typescript
+// ❌ 只為了取得內容，付出 寫入 → 讀回 → 清理 的代價
+const optimized = new IgnoreFile(path.join(__TEMP_DIR, 'finalized.gitignore'), raw.join('\n'));
+optimized.save();
+
+t.assert.deepStrictEqual(readFileSync(optimized.path, 'utf8'), [
+	'# note',
+	'*.log',
+	'',
+	'',
+	'',
+].join('\n'));
+```
+
+##### 良好範例：分離「產生內容」與「寫入檔案」
+
+```typescript
+// ✅ 生產程式碼：stringify() 產生內容，save() 只負責持久化
+stringify(opts?: IIgnoreFileOptions): string
+{
+	// do something
+
+	return this.content;
+}
+
+save(opts?: IIgnoreFileOptions): this
+{
+	outputFileSync(this.path, this.stringify(opts), {
+		encoding: ENCODING,
+	});
+
+	return this;
+}
+
+// ✅ 測試：path 僅為路徑宣告，不會實際建立檔案
+const optimized = new IgnoreFile(path.join(__TEMP_DIR, 'finalized.gitignore'), raw.join('\n'));
+
+t.assert.deepStrictEqual(optimized.stringify(), [
+	'# note',
+	'*.log',
+	'',
+	'',
+	'',
+].join('\n'));
+```
+
+##### 設計原則
+
+- **職責分離**：內容產生（`stringify()` / `render()` / `serialize()` / `toJSON()`）與檔案持久化（`save()` / `write()`）應拆為兩個方法，且 `save()` 內部應呼叫 `stringify()`，確保兩者行為一致
+- **驗證內容時優先斷言回傳值**：以純函式 API 取得內容後直接斷言，省去 write → read → assert → cleanup 流程與臨時檔案的建立/清除
+- **無法修改被測 API 時，建立測試端 helper**：例如 mock fs 的記憶體讀取、或封裝 `_serialize()` 等 helper，同樣以不落盤的方式取得內容
+- **必要性的意圖與理由**：只有當測試目標本身就是「實際讀寫行為」時，才可真的寫入並讀回驗證，且應在測試標題或註解說明理由
+
+##### 允許實際讀寫的情境（例外）
+
+- 驗證寫入副作用本身：檔案是否存在、路徑是否正確、換行符（`\n` / `\r\n`）、編碼、檔案權限
+- 與第三方函式庫 / CLI 的整合行為，且其 API 無法拆分出純內容產生方法
+- 模組匯出時即以副作用寫檔（無可呼叫的內容產生 API），此時應建立最小可行的臨時檔案流程並於測試後清理
+
 #### 安全原則
 
 **禁止對臨時目錄以外的路徑進行讀取以外的行為（包含但不限於 寫入/更改/刪除/建立）。**
@@ -963,6 +1030,7 @@ tmp/
 #### 注意事項
 
 - **禁止直接建立在臨時主目錄下** - 必須使用子目錄（如 `temp/test-output/` 而非 `temp/`）
+- **驗證檔案內容優先使用非 I/O API** - 除非有必要性的意圖與理由（驗證實際讀寫副作用），否則應以 `stringify()` 等回傳內容的 API 取得內容後斷言，避免非必要的讀寫與臨時檔案建立/清除
 - **臨時子目錄名稱應具有唯一性 ID** - 例如使用 timestamp，避免並行測試衝突
 - **清理臨時目錄時不得直接清理 temp 目錄** - 應清理 `temp/xxxx/` 底下的檔案或目錄，而非刪除 temp 目錄本身
 - 除非必要否則不應主動廣域性清除 - 應只清理本次測試創建的臨時目錄，防止影響其他並行測試
@@ -1083,7 +1151,9 @@ t.assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
                                   ▼
                           是否涉及系統資源（fs / Date / env / 網路）？
                               │
-                              ├─ 是 → 使用框架 Mock 或專案內臨時目錄
+                              ├─ 是 → 是否只需驗證檔案內容？
+                              │         ├─ 是 → 以非 I/O API（stringify 等）取得內容後斷言
+                              │         └─ 否 → 使用框架 Mock 或專案內臨時目錄 + 清理
                               │
                               └─ 否 → 完成測試
 ```
