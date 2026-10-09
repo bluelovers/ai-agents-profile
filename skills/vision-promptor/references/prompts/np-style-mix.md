@@ -1,10 +1,10 @@
 ---
 description: >-
-  「風格混合 (Style Mix)」提示詞範例集。目前收錄「虛實混合」基礎範例——
-  同一畫面中照片寫實與 2D 動畫兩種風格的角色並置，以高對比視覺動態
-  產生虛實交錯的效果；結構為左角色（風格 A）＋右角色（風格 B）＋
-  互動姿勢＋背景＋對比句＋技術尾句，可基於此產生各種變體
-  （替換風格、角色、場景、互動方式）。
+  「風格混合 (Style Mix)」提示詞範例集。收錄 3 則——
+  「虛實混合」基礎版（同一畫面中照片寫實與 2D 動畫兩種風格的角色並置，
+  結構為左角色（風格 A）＋右角色（風格 B）＋互動姿勢＋背景＋對比句＋技術尾句）、
+  寫實背景＋2D 吉祥物、寫實場景＋2D 騎士兩則「背景 × 角色」變體；
+  可基於基礎版結構產生各種變體（替換風格、角色、場景、互動方式）。
 tags:
   - prompts/examples
   - prompts/natural-language
@@ -14,9 +14,15 @@ tags:
 
 # 風格混合提示詞範例 (Style Mix Examples)
 
-> 目前收錄 1 則：虛實混合（基礎版）。
+> 目前收錄 3 則：虛實混合（基礎版）、照片寫實背景＋2D 吉祥物、寫實辦公室＋2D 騎士。
 > 本篇範例以「**可基於此產生各種變體**」為目的撰寫——結構固定、內容槽位化，
 > 變體產生方式見說明。
+
+## 分類索引
+
+- **【虛實混合・雙角色】照片寫實 × 2D 動畫** — 基礎版，左右角色同服裝同互動、僅風格不同；含變體產生方式
+- **【虛實混合・背景 × 角色】寫實背景＋2D 吉祥物** — 照片寫實雨夜賽博城景＋手繪 2D 膠筆風太空貓
+- **【虛實混合・背景 × 角色】寫實場景＋2D 騎士** — 寫實辦公室＋平面 2D 線稿矮人騎士，編輯插畫式反差
 
 
 #### 變體產生方式（基於虛實混合基礎版）
@@ -72,8 +78,12 @@ High contrast visual dynamic between photorealism and 2D anime art.
 ---
 
 
+### 【虛實混合・背景 × 角色】寫實背景＋2D 吉祥物
+
+> 照片寫實的雨夜賽博城景（懸浮看板、積水霓虹倒影）＋手繪 2D 膠筆風的太空貓吉祥物——
+> 「背景寫實、角色 2D」的單角色反差寫法，一句式緊湊排版。
+
 ```
-CinnaPhotostration,
 Photorealistic rainy rooftop overlooking a dense cyberpunk city,
 holographic billboards glowing through mist, puddles reflecting neon,
 a chibi cat astronaut gazing over the edge, quiet futuristic melancholy,
@@ -81,6 +91,11 @@ cinematic sci'fi photography fused with hand-drawn 2D gel-pen character.
 ```
 
 ---
+
+### 【虛實混合・背景 × 角色】寫實場景＋2D 騎士
+
+> 寫實開放式辦公室（玻璃牆、筆電、 harsh 正午光）＋桌面站立的平面 2D 線稿矮人騎士——
+> 以「幻想純真 × 公司現實」的反差營造社論插畫式諷刺感。
 
 ```
 A photorealistic open-plan office filled with glass walls, laptops, coffee mugs, and harsh midday lighting.

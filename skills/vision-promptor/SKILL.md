@@ -50,15 +50,14 @@ tags:
 
 ## Resources
 
-- [references/prompts/README.md](references/prompts/README.md) — **Prompt examples index (範例索引)**: all example files, ID schemes (`L` / `P` / `T`), and next-number rules for adding new examples
-- [references/prompts/np-prompting.md](references/prompts/np-prompting.md) — Prompting guidelines, best practices, and 20 example prompts with sample outputs
-- [references/expansion.txt](references/expansion.txt) — System prompt for LLM-assisted prompt expansion
+
 - [references/np-spatial-layer-structured.md](references/np-spatial-layer-structured.md) — 圖層式提示詞 (Spatial-Layer-Structured Prompting) full specification: template, mandatory rules, pitfalls, applicability, and checklist
-- [references/prompts/np-spatial-layer-structured-example.md](references/prompts/np-spatial-layer-structured-example.md) — 15 classified example prompts for the layer-based method (depth axis / floors / functional zones / mixed / uncategorized)
 - [references/np-fluent-narrative-paragraph.md](references/np-fluent-narrative-paragraph.md) — 段落式提示詞 (Fluent Narrative Paragraph / Natural Language Paragraph): template, mandatory rules, layout rules (line breaks & blank lines), and relation to the layered method
-- [references/prompts/np-fluent-narrative-paragraph-example.md](references/prompts/np-fluent-narrative-paragraph-example.md) — 8 narrative example prompts (P0001–P0008)
 - [references/tp-booru-style-tags.md](references/tp-booru-style-tags.md) — 標籤式提示詞 (Booru-style Tags / Token-weighted Tags): ordered tag listing, template, and applicable scenarios
-- [references/prompts/tp-booru-style-tags-example.md](references/prompts/tp-booru-style-tags-example.md) — tag-style example prompts starting at T0001, distinguished by picture content/type
+- [references/mp-prompts-merge-001.md](references/mp-prompts-merge-001.md) — Merge prompt technique: base prompt + `[PROMPT]` slot for modular, swappable character/scenario insertion with zero re-tuning
+
+- [references/prompts/README.md](references/prompts/README.md) — **Prompt examples index (範例索引)**: all example files by category (layered / narrative / tags / demi-human modules / style mix / thematic collections)
+- [references/expansion.txt](references/expansion.txt) — System prompt for LLM-assisted prompt expansion
 
 ## Three Prompt Forms (三型提示詞)
 

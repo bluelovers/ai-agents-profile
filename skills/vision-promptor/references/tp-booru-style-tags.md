@@ -48,7 +48,7 @@ tags:
 [品質 Quality], [主體 Subject], [外觀 Appearance], [服裝 Clothing], [姿勢動作 Pose/Action], [場景 Background], [光線 Lighting], [風格 Style], [技術參數 Technical],
 ```
 
-- **逗號分隔，依主題群組分行**（分段與分行是三型共通原則，見主技能 [SKILL.md](../../SKILL.md)）：
+- **逗號分隔，依主題群組分行**（分段與分行是三型共通原則，見主技能 [SKILL.md](../SKILL.md)）：
 
 ```text
 1girl, solo, long hair, black hair, school uniform,
@@ -69,7 +69,7 @@ depth of field,
 
 ## 3. 三型共通原則（圖層／敘事／標籤）
 
-分段與分行、非互斥等**三型共通原則已提升至主技能**，見 [SKILL.md](../../SKILL.md) 的「Three Prompt Forms (三型提示詞)」。
+分段與分行、非互斥等**三型共通原則已提升至主技能**，見 [SKILL.md](../SKILL.md) 的「Three Prompt Forms (三型提示詞)」。
 
 - **分段與分行** — 不管哪一種形式的提示詞（圖層、敘事、標籤），實務上都需要分段與分行；標籤式依主題群組分行、依類別分段
 - **非互斥** — 三型可自由混用（標籤接敘事收尾、圖層塊內用標籤、敘事開場接標籤……）

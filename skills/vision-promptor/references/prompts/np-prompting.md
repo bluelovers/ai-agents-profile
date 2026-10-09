@@ -9,6 +9,19 @@ If you wish to use LLM assistance for generating longer prompts, check out [expa
 
 All examples are generated at 2k resolution with the turbo model.
 
+### 分類索引 (Classification Index)
+
+> 依**畫面類型與主體**分類，括號內為示意圖檔名（`assets/samples/`）。
+
+| 類型 | 範例 |
+| --- | --- |
+| **人像・攝影／寫實** | 花束人像（flowers）、時裝編輯人像（red）、微距人像（face）、金帶眼妝微距（goldface） |
+| **人像・動畫** | 動畫特寫（anime）、水手服少女（sailor）、風中回眸（wind）、90 年代賽璐璐群像（cel） |
+| **角色・奇幻／概念** | 暗奇幻小丑劍士（jester）、3D 玩具人偶（3d）、巨型石像守衛（statue） |
+| **風景・自然** | 樹下人犬（dog）、沿海公路跑車（ride）、扁平插畫涉水（beach）、雪山拼貼（blocks） |
+| **風景・科幻／超現實** | 液態金屬星球（future）、叢林裝飾插畫（fox）、黑白墨線地景（tree）、火箭尾焰特寫（takeoff） |
+| **生態・微距** | 收穫鼠微距（mouse） |
+
 ---
 
 `immense rocket launch exhaust as seen from extremely close up`
