@@ -25,7 +25,17 @@ t.assert.deepStrictEqual(readFileSync(optimized.path, 'utf8'), expected);
 t.assert.deepStrictEqual(optimized.stringify(), expected);
 ```
 
-完整的設計原則（內容產生與持久化職責分離）與例外情境，請參閱 [SKILL.md - 驗證檔案內容應優先使用非 I/O API](../SKILL.md#驗證檔案內容應優先使用非-io-api--prefer-in-memory-api-for-content-verification)。
+**即使是虛擬路徑（預期不落盤）也須限制範圍**，避免遺漏的 `save()`、第三方函式庫讀寫等意外副作用發生在臨時目錄之外：
+
+```typescript
+// ❌ 裸相對路徑：意外讀寫會落在當前工作目錄（專案根目錄）
+const __VIRTUAL_GITIGNORE = 'virtual/.gitignore';
+
+// ✅ 以臨時目錄為根：意外讀寫也只會發生在 test/temp/ 範圍內
+const __VIRTUAL_GITIGNORE = path.join(__TEST_TEMP, 'virtual/.gitignore');
+```
+
+完整的設計原則（內容產生與持久化職責分離、虛擬路徑限制）與例外情境，請參閱 [SKILL.md - 驗證檔案內容應優先使用非 I/O API](../SKILL.md#驗證檔案內容應優先使用非-io-api--prefer-in-memory-api-for-content-verification)。
 
 ---
 

@@ -864,9 +864,27 @@ t.assert.deepStrictEqual(optimized.stringify(), [
 ].join('\n'));
 ```
 
+##### 虛擬路徑也須限制範圍 / Constrain Virtual Paths Too
+
+**即使路徑僅供內容驗證、預期不會實際建檔，也必須限制在專案臨時目錄內**，避免任何非預期的副作用（遺漏的 `save()`、第三方函式庫內部讀寫、誤呼叫 `readFileSync` 等）在專案根目錄或其他位置意外造成真實讀寫。
+
+```typescript
+// ❌ 裸相對路徑：一旦意外被讀寫，會落在當前工作目錄（專案根目錄）
+const __VIRTUAL_GITIGNORE = 'virtual/.gitignore';
+
+// ✅ 以臨時目錄為根：即使意外讀寫也只會發生在 test/temp/ 範圍內
+const __VIRTUAL_GITIGNORE = path.join(__TEST_TEMP, 'virtual/.gitignore');
+```
+
+- 虛擬路徑應以共享路徑定義（如 `__TEST_TEMP`、`__TEMP_DIR`）為根，使用 `path.join()` 組出
+- **禁止裸相對路徑**（`'virtual/.gitignore'`、`'./out.json'`）與專案臨時目錄外的絕對路徑
+- 命名可保留語意（如 `__VIRTUAL_*`），但其值必須落在臨時目錄範圍內
+- 路徑範圍判定規則請參閱 [references/temp-file-management.md](./references/temp-file-management.md#路徑控管模組--path-control-modules)
+
 ##### 設計原則
 
 - **職責分離**：內容產生（`stringify()` / `render()` / `serialize()` / `toJSON()`）與檔案持久化（`save()` / `write()`）應拆為兩個方法，且 `save()` 內部應呼叫 `stringify()`，確保兩者行為一致
+- **虛擬路徑限制在臨時目錄內**：內容驗證用的路徑一律以 `path.join(__TEST_TEMP, ...)` 組出，避免意外的真實讀寫落於臨時目錄之外
 - **驗證內容時優先斷言回傳值**：以純函式 API 取得內容後直接斷言，省去 write → read → assert → cleanup 流程與臨時檔案的建立/清除
 - **無法修改被測 API 時，建立測試端 helper**：例如 mock fs 的記憶體讀取、或封裝 `_serialize()` 等 helper，同樣以不落盤的方式取得內容
 - **必要性的意圖與理由**：只有當測試目標本身就是「實際讀寫行為」時，才可真的寫入並讀回驗證，且應在測試標題或註解說明理由
@@ -1031,6 +1049,7 @@ tmp/
 
 - **禁止直接建立在臨時主目錄下** - 必須使用子目錄（如 `temp/test-output/` 而非 `temp/`）
 - **驗證檔案內容優先使用非 I/O API** - 除非有必要性的意圖與理由（驗證實際讀寫副作用），否則應以 `stringify()` 等回傳內容的 API 取得內容後斷言，避免非必要的讀寫與臨時檔案建立/清除
+- **即使是虛擬路徑也要限制範圍** - 預期不會實際建檔的路徑，仍須以 `path.join(__TEST_TEMP, ...)` 組出，禁止裸相對路徑，避免意外造成真實讀寫
 - **臨時子目錄名稱應具有唯一性 ID** - 例如使用 timestamp，避免並行測試衝突
 - **清理臨時目錄時不得直接清理 temp 目錄** - 應清理 `temp/xxxx/` 底下的檔案或目錄，而非刪除 temp 目錄本身
 - 除非必要否則不應主動廣域性清除 - 應只清理本次測試創建的臨時目錄，防止影響其他並行測試
