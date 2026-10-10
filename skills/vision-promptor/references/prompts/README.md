@@ -29,6 +29,7 @@ tags:
 | [np-fluent-narrative-paragraph-example.md](np-fluent-narrative-paragraph-example.md) | 敘事式（流暢段落） | 題材（奇幻・地下／科幻・宇宙／未來都市／生活・寫實）＋排版型態 | `P0001` 起 |
 | [tp-booru-style-tags-example.md](tp-booru-style-tags-example.md) | 標籤式（booru tags） | 畫面內容／類型（`T####.【類型】內容`） | `T0001` 起 |
 | [np-char-demi-human.md](np-char-demi-human.md) | 泛人族角色外型模組 | 種族：獸人／獸蟲混種／精靈族／半機人 | `D0001` 起 |
+| [dy-window-view-example-001.md](dy-window-view-example-001.md) | 動態提示詞（窗景透視） | 六段式骨架：距離／前景遮蔽／人物／陳設／玻璃／風格 | `dy-` 系列編號 |
 
 ## 專題檔 (Thematic Collections)
 
@@ -44,13 +45,14 @@ tags:
 | [np-text-001.md](np-text-001.md) | 畫面文字渲染 | 看板／店招（`Text:` 與引號標示） |
 | [np-pay-homage-001.md](np-pay-homage-001.md) | 致敬／再現既有作品 | 依作品：駭客任務／蝙蝠俠／回到未來 |
 | [np-book-game-001.md](np-book-game-001.md) | 版面設計（遊戲攻略書頁） | 版面／排版類中文提示詞 |
-| [np-style-miniature-001](np-style-miniature-001) | 微縮 3D 城市 | 等角微縮＋資訊圖表文字層 |
+| [np-style-miniature-001.md](np-style-miniature-001.md) | 微縮 3D 城市 | 等角微縮＋資訊圖表文字層 |
 
 ## 上層 references/ 檔 (Parent Directory)
 
 | 檔案 | 說明 | 編號方案 |
 | --- | --- | --- |
 | [mp-prompts-merge-001.md](../mp-prompts-merge-001.md) | 合併提示詞：基底＋`[PROMPT]` 插槽的模組化技法 | `mp-` 系列編號 |
+| [dy-dynamic-prompts.md](../dy-dynamic-prompts.md) | 動態提示詞概念：`{a\|b\|c}` 取代欄位的兩種基本語法 | 無編號（概念檔） |
 
 **內容概要：**
 
@@ -60,13 +62,14 @@ tags:
 - **標籤式** — 依畫面內容／類型區分（格式 `T####.【類型】內容`），依主題群組分行
 - **泛人族模組** — 只收「種族＋外觀」的可插拔角色模組，**不含**該種族的建築／場景／事物
 - **風格混合** — 虛實混合基礎版＋固定結構＋可替換槽位，可基於此產生各種變體
+- **動態提示詞** — 六段式窗景骨架，`{a|b|c}` 取代欄位批量產生構圖相近、細節各異的變體
 - **專題檔** — 各檔以【類型】標題逐則標註內容，檔首附分類索引
 
 **共通規則：**
 
-- 編號前綴：`L` = Layered（圖層式）、`P` = Paragraph（敘事式）、`T` = Tag（標籤式）、`D` = Demi-human（泛人族模組）、`mp` = Merge Prompt（合併提示詞，檔名前綴）
+- 編號前綴：`L` = Layered（圖層式）、`P` = Paragraph（敘事式）、`T` = Tag（標籤式）、`D` = Demi-human（泛人族模組）、`mp` = Merge Prompt（合併提示詞，檔名前綴）、`dy` = Dynamic Prompts（動態提示詞，檔名前綴）
 - 編號為固定識別碼，**空號不補**；新增範例請依各檔方案接續編號
-- 變體可附於原範例後以「-變體」標註，不一定要分配新編號（指標性強的才賦予編號）
+- 變體可附於原範例後以「-變體」標註，不一定要分配新編號（指標性強或需引用的才賦予編號）
 - 各範例檔的分類索引、計數與排版規則見其檔內說明
 
 **相關連結：**
@@ -74,3 +77,4 @@ tags:
 - 主技能：[SKILL.md](../../SKILL.md)
 - 指南：[np-spatial-layer-structured.md](../np-spatial-layer-structured.md)（圖層式）、[np-fluent-narrative-paragraph.md](../np-fluent-narrative-paragraph.md)（敘事式）、[tp-booru-style-tags.md](../tp-booru-style-tags.md)（標籤式）
 - 合併／插槽技法：[mp-prompts-merge-001.md](../mp-prompts-merge-001.md)
+- 動態提示詞概念：[dy-dynamic-prompts.md](../dy-dynamic-prompts.md)
