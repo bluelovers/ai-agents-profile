@@ -40,6 +40,10 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
 ## Logic Block Requirements (Required for ALL logic blocks)
 
 > **Reference**: For detailed logic block comment rules (placement, merging, layout), see [comment-format-rules-js](../comment-format-rules-js/SKILL.md#邏輯區塊註解規範-logic-block-comments).
+>
+> **Reference**: Implementation details (why a line clears/rebuilds an internal cache) belong HERE, above the statement — not in the declaration's JSDoc. See [錯誤註解案例 — 案例六](../comment-format-rules-js/references/bad-comment-examples.md).
+>
+> **參考**：實作細節（內部快取為何清空、如何重建）應寫在該陳述式上方的邏輯區塊註解，不得寫進宣告 JSDoc，錯誤案例見上述「錯誤註解案例 — 案例六」。
 
 **All logic blocks MUST be commented, including private/non-public internal logic.** Comments help future developers understand complex control flow, business rules, and edge case handling.
 
@@ -63,6 +67,7 @@ Logic blocks are code sections that implement specific functionality, including 
 - **Explain WHY, not just WHAT** - Focus on business purpose and intent
 - **Complex conditions need explanation** - Document the reasoning behind complex boolean expressions
 - **Edge cases must be documented** - Explain why certain conditions are handled
+- **Implementation details stay in the logic block** - Do not fold statement-level rationale into the declaration's JSDoc (see [錯誤註解案例 — 案例六](../comment-format-rules-js/references/bad-comment-examples.md))
 
 ### Examples of Logic Blocks Requiring Comments
 
@@ -207,6 +212,7 @@ All comment and formatting conventions for JS/TS live in the comment-format-rule
 - [註解位置規範](../comment-format-rules-js/references/comment-placement.md) — array elements, object properties, Interface/Type members, `@example` inline exception
 - [重要約束](../comment-format-rules-js/references/critical-constraints.md) — block comment enforcement, separators, special directives, technical terms, non-semantic naming
 - [註解更新規則](../comment-format-rules-js/references/comment-update-rules.md) — preserve original error info, issue verification, multilingual comments, update checklist
+- [錯誤註解案例](../comment-format-rules-js/references/bad-comment-examples.md) — 錯置與層級錯置的真實案例（宣告註解放錯位置、函式 JSDoc 夾帶描述內部陳述式的實作段落、重構操作日誌），避免把實作細節寫進宣告 JSDoc
 - [行內註解轉換工具](../comment-format-rules-js/references/convert-inline-to-block.md) — batch-convert `//` comments into block comments (`/** ... */`)
 
 ## Examples

@@ -261,3 +261,4 @@ if ((
 
 - 保持原有代碼風格一致性。
 - 若檔案過大，請分段處理。
+- 宣告 JSDoc 只寫合約／意圖；描述函式體內某一行的實作段落，放在該陳述式上方的邏輯區塊註解（錯誤案例見 [錯誤註解案例 — 案例六](../../comment-format-rules-js/references/bad-comment-examples.md)）。

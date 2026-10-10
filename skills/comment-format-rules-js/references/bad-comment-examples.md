@@ -3,6 +3,7 @@ description: >-
   錯誤／不正確／不恰當的註解案例索引：
   「錯置類」——註解未緊鄰目標代碼（把宣告註解誤寫成檔頭註解、
   與目標宣告之間隔著其他陳述式、放進宣告內部描述整個函式、重構後殘留原地），
+  「層級錯置」——函式 JSDoc 夾帶描述內部陳述式的實作段落（案例六），
   以及重構時寫進註解的操作日誌（SSOT 標籤、移動／抽離紀錄）收錄於本檔；
   其餘類型（行內註解、假雙語、無意義註解、@property 等）依主題分流至對應參考文件。
 tags:
@@ -13,7 +14,8 @@ tags:
 
 # 錯誤註解案例 (Bad Comment Examples)
 
-彙整「錯誤／不正確／不恰當的註解」案例：**錯置類**（註解與目標代碼的綁定錯誤，案例一～四）
+彙整「錯誤／不正確／不恰當的註解」案例：**錯置類**（註解與目標代碼的綁定錯誤，案例一～四）、
+**層級錯置**（描述內部陳述式的實作段落寫進宣告 JSDoc，案例六）
 與**內容類**（重構操作日誌，案例五）收錄於本檔；
 其餘類型已各有專屬參考文件，於文末索引分流，避免重複維護（SSOT）。
 
@@ -222,6 +224,88 @@ export const SKILL_EXTRA_NUMERIC_KEYS = [...];
 
 > **Reference**: [SSOT 重構的反模式 — Case D](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md)（位於 `code-refactoring-expert-typescript`）— 完整問題點、正確做法與「註解不反向膨脹成重構履歷」的關聯。
 
+### 案例六：函式 JSDoc 夾帶描述內部陳述式的實作段落
+
+**判斷方式（承上核心判斷）：** 逐段問「這段話描述的對象是誰？」——
+
+- 描述**呼叫者可觀察的行為／合約**（做了什麼、預設值與覆寫關係、`@param`）→ 屬宣告 JSDoc，留在原地；
+- 描述**函式體內某一行為什麼這樣做**（內部快取為何清空、之後如何重建）→ 屬邏輯區塊，應下沉到該陳述式上方。
+
+描述對象是內部陳述式、位置卻寫在宣告 JSDoc，就是**層級錯置**——
+與案例三互為鏡像：案例三是「描述函式的註解放進函式體」，本例是「描述函式體內陳述式的段落寫進宣告 JSDoc」。
+
+```typescript
+// ❌ 錯誤：函式 JSDoc 夾帶描述 `this._ignore = void 0;` 的實作段落
+/**
+ * 輸出前優化
+ *
+ * 依序執行：移除重複規則（只保留最後一筆）、收合超過上限的連續空行、
+ * 移除首尾空行；三項皆可個別關閉。
+ *
+ * 註解不參與去重，位置與數量都不會被更動。
+ * 以 {@link this.options.optimizations} 為預設值，`options` 參數覆寫之。
+ *
+ * 整理可能移除規則行（去重、收合、裁掉首尾空行），
+ * 而 `ignore` 套件的實例只能 `add`、不能刪除，
+ * 因此同樣把 `this._ignore` 清成 `undefined`，讓 {@link toIgnore} 依新行陣列重建。
+ *
+ * @param options - 優化選項
+ */
+finalize(options?: IFinalizeIgnoreLinesOptions)
+{
+	this._lines = finalizeIgnoreLines(this._lines, {
+		...this.options.optimizations,
+		...options,
+	});
+
+	this._ignore = void 0;
+
+	return this
+}
+```
+
+```typescript
+// ✅ 正確：JSDoc 只留合約，實作段落下沉到其描述的那一行上方
+/**
+ * 輸出前優化
+ *
+ * 依序執行：移除重複規則（只保留最後一筆）、收合超過上限的連續空行、
+ * 移除首尾空行；三項皆可個別關閉。
+ *
+ * 註解不參與去重，位置與數量都不會被更動。
+ * 以 {@link this.options.optimizations} 為預設值，`options` 參數覆寫之。
+ *
+ * @param options - 優化選項
+ */
+finalize(options?: IFinalizeIgnoreLinesOptions): this
+{
+	this._lines = finalizeIgnoreLines(this._lines, {
+		...this.options.optimizations,
+		...options,
+	});
+
+	/**
+	 * 內部快取：整理可能移除規則行（去重、收合、裁掉首尾空行），
+	 * 而 ignore 實例只能 add、不能刪除，
+	 * 故清空後由 toIgnore() 依新的行陣列重建
+	 */
+	this._ignore = void 0;
+
+	return this
+}
+```
+
+**原因：**
+
+| # | 問題 | 說明 |
+|---|------|------|
+| 1 | 綁定對象錯層 | 段落描述的是 `this._ignore = void 0;` 的重建理由，讀到那一行的人卻在函式體內找不到說明；函式 JSDoc 反而塞滿與呼叫者無關的內部細節 |
+| 2 | 違反職責分離 | JSDoc 是給呼叫者的合約，「ignore 實例不能刪除、快取重建策略」是給維護實作的人看的細節，兩者受眾不同（見 [職責分離](../SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation)） |
+| 3 | 合約隨實作漂移 | 日後改用其他快取策略時，宣告 JSDoc 被迫一起改；實作每次調整都污染一次 API 文件 |
+| 4 | 內部行失去就近說明 | 實作細節留在頂端，函式體內的 `this._ignore = void 0;` 變成無註解的「神來一筆」，讀者須對照長 JSDoc 才能猜到對應關係 |
+
+> **Reference**: [JSDoc 與邏輯區塊職責分離](../SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation)（位於 `comment-format-rules-js`）— 合約／意圖與實作細節的分界表、標準範例與檢查清單。
+
 ## 其他不恰當案例索引 (Index by Topic)
 
 其餘常見的錯誤／不恰當註解類型，依主題分流至專屬參考文件：
@@ -231,7 +315,8 @@ export const SKILL_EXTRA_NUMERIC_KEYS = [...];
 | 使用行內註解 `//`、分隔線未用區塊註解、特殊指令（`@ts-ignore`）順序錯誤、更新時刪除技術術語、為命名慣例添加不存在的意義 | [重要約束](./critical-constraints.md) |
 | 註解放在代碼後方、以 `@property` 描述 Interface 成員 | [註解位置規範](./comment-placement.md) |
 | 英文＋英文的假雙語、雙語順序顛倒 | [雙語註解格式](./bilingual-comment-format.md) |
-| 多個單行註解、只寫 WHAT 不寫 WHY、JSDoc 內塞實作細節、標題與描述語意重複 | [SKILL.md — 邏輯區塊註解規範／職責分離](../SKILL.md) |
+| 多個單行註解、只寫 WHAT 不寫 WHY、標題與描述語意重複 | [SKILL.md — 邏輯區塊註解規範／職責分離](../SKILL.md) |
+| JSDoc 內塞實作細節、宣告 JSDoc 夾帶描述內部陳述式的段落（合約與實作未分離） | 本檔案例六；規範見 [SKILL.md — JSDoc 與邏輯區塊職責分離](../SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation) |
 | 僅重複宣告關鍵字／語意、羅列代碼管理的宣告（what 而非 why） | [無意義註解](./meaningless-comments.md) |
 | 重構時的操作日誌（SSOT 標籤、移動／抽離紀錄、遷移鏈註解）| 本檔案例五；完整判定見 [SSOT 重構的反模式 — Case D](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md) |
 | 更新時遺失原始錯誤資訊、未驗證的 Issue 連結 | [註解更新規則](./comment-update-rules.md) |
@@ -243,3 +328,4 @@ export const SKILL_EXTRA_NUMERIC_KEYS = [...];
 - [ ] 描述函式／class 的註解，是否放在函式／class 宣告之上，而非函式體內部？
 - [ ] 重構搬移代碼時，其上方的註解是否一併搬移，沒有殘留孤兒註解？
 - [ ] 註解裡是否混入了操作日誌（SSOT 標籤、移動／抽離紀錄）而非意圖／不變數？
+- [ ] 函式／方法的 JSDoc 是否夾帶只描述函式體內某一行的實作段落？（應下沉到該陳述式上方的邏輯區塊註解）
