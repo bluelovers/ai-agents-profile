@@ -15,7 +15,9 @@ tags:
 | 技能名稱 | 說明 | 核心用途 |
 | :--- | :--- | :--- |
 | [skill-creator](./skill-creator) | 技能開發指南 | 協助建立、驗證與打包新的 AI 技能。 |
+| [bilingual-standardization-rule](./bilingual-standardization-rule) | 雙語標準化規範 | 繁中＋英文雙語語言順序、排版、彈性捨棄與保留原則。 |
 | [analyze-code-commenter](./analyze-code-commenter) | 雙語代碼註解分析 | 分析程式碼邏輯並添加繁中/英文雙語註解。 |
+| [comment-format-rules-js](./comment-format-rules-js) | JS/TS 註解格式規範 | 區塊註解、JSDoc、註解排版與更新規則。 |
 | [readme-updater](./readme-updater) | README 文件更新維護 | 分析專案結構並自動檢查或更新說明文件。 |
 | [factual-accuracy-guard](./factual-accuracy-guard) | 事實準確性防護 | 防止加入虛構內容，確保基於事實執行任務。 |
 

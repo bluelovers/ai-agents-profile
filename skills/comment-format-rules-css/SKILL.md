@@ -139,8 +139,7 @@ margin: 0 -20px;
 - **有額外價值才雙語**：搜尋／辨識關鍵字 → 保留（`增益 / Gain`）；純直譯無價值 → 單語（`程式碼 / Code`）
   ——「有無價值」的判定**仍須先過上方判定基準**（看英文部分是否連只懂簡單單字的人也知道）
 
-> **Reference**: 雙語格式完整規範（格式選擇、語言順序、彈性保留雙語的四條規則與雙語保留判定表、
-> JSDoc 標籤雙語）見 [bilingual-comment-format.md](../comment-format-rules-js/references/bilingual-comment-format.md)。
+> **Reference**: 雙語標準化通用規範（語言順序、彈性保留／捨棄四條規則與雙語保留判定表、術語保留）見 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)，JS/TS 註解排版見 [bilingual-comment-format.md](../comment-format-rules-js/references/bilingual-comment-format.md)。
 
 ---
 

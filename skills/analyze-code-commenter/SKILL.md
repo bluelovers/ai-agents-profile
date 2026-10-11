@@ -2,7 +2,7 @@
 name: analyze-code-commenter
 description: |-
   Analyze code and add bilingual comments (Chinese + English). Uses ONLY block comments (single-line or multi-line). Never uses inline comments.
-  Comment format rules (block comment layout, bilingual format, comment placement, JSDoc structure, update rules) are defined by the comment-format-rules-js skill; this skill focuses on analyzing code to decide what needs comments.
+  Comment format rules (block comment layout, comment placement, JSDoc structure, update rules) are defined by comment-format-rules-js, and general bilingual standards are defined by bilingual-standardization-rule; this skill focuses on analyzing code to decide what needs comments.
 
   Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, or mention keywords such as:
   - "為代碼添加註解", "分析並註解程式碼", "為代碼更新註解", "為代碼修正註解"
@@ -34,8 +34,8 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
    - Class members/methods/properties
    - Complex internal logic blocks, functions, and array/object elements
 3. **Identify logic blocks** - Find all logic blocks requiring comments (see Logic Block Requirements below)
-4. **Generate bilingual comments** (Traditional Chinese zh-TW + English) - apply the format rules from [comment-format-rules-js](../comment-format-rules-js/SKILL.md)
-5. **Apply changes** - Insert comments using `edit_file` tool
+4. **Generate bilingual comments** (Traditional Chinese zh-TW + English) - apply principles from [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) and formatting from [comment-format-rules-js](../comment-format-rules-js/SKILL.md)
+5. **Apply changes** - Insert comments using available file editing tools
 
 ## Logic Block Requirements (Required for ALL logic blocks)
 
@@ -181,12 +181,20 @@ Each item below gets **its own block comment placed above the member**. The comm
 
 ## Bilingual Comment Content
 
-When generating comment content, follow these rules (format details live in [comment-format-rules-js](../comment-format-rules-js/references/bilingual-comment-format.md)):
+> **Reference**: 通用雙語標準化規範（語言順序、彈性捨棄與保留原則、判定基準、術語保留及多語言保留）請參閱 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)。JS/TS 註解排版與 JSDoc 標籤格式請參閱 [comment-format-rules-js](../comment-format-rules-js/references/bilingual-comment-format.md)。
 
-- **Each comment pair MUST contain Traditional Chinese followed by English** - never "English + English" fake bilingual comments
-- **Technical terms keep bilingual notation on first occurrence**: `快取 (Cache)`、`佇列 (Queue)`、`遞迴 (Recursion)`
-- **When bilingual hurts readability or runs long**, keep the clearest single language (see [彈性捨棄雙語原則](../comment-format-rules-js/references/bilingual-comment-format.md#彈性捨棄雙語原則-flexible-bilingual-omission))
-- **Preserve comments in other languages** (Japanese, Korean, German, French, ...): keep the original language, then append zh-TW + English (see [保留其他語言的原始註解](../comment-format-rules-js/references/comment-update-rules.md#保留其他語言的原始註解-preserve-other-languages))
+When analyzing code and generating comments for logic blocks and members, apply the following skill-specific bilingual rules:
+
+- **Bilingual Comment Pairing**: Generated comment pairs for code elements must place Traditional Chinese (zh-TW) first, followed by English. Never generate fake bilingual comments (e.g., duplicated English sentences).
+- **Technical Term Identification during Code Analysis**: When identifying algorithmic or domain concepts during code inspection, retain bilingual notation (`中文 (Term)`) on first occurrence:
+  ```typescript
+  /**
+   * 初始化優先佇列 (Priority Queue) 並配置快取 (Cache) 空間
+   * Initialize Priority Queue and allocate Cache storage
+   */
+  ```
+- **Nested Logic Brevity**: When analyzing complex nested control flows, if mirrored bilingual commentary causes visual clutter or excessive length, apply flexible omission: prioritize the clearest Traditional Chinese explanation for internal branches while anchoring key technical terms with bilingual tags.
+- **Preserving Existing Foreign Comments**: When analyzing code with existing non-English comments (e.g., Japanese, Korean, French), do NOT overwrite them; preserve the original comment text and append the new zh-TW + English commentary.
 
 ## Critical Constraints (Behavioral)
 
@@ -207,8 +215,9 @@ When updating existing comments, preserve valuable technical information (error 
 
 All comment and formatting conventions for JS/TS live in the comment-format-rules-js skill. Consult it for:
 
+- [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) — 通用雙語標準化規範（語言順序、彈性捨棄與保留原則、判定基準、術語保留）
 - [comment-format-rules-js](../comment-format-rules-js/SKILL.md) — core principles, block comment layout, logic block comments, responsibility separation, critical constraints
-- [雙語註解格式規範](../comment-format-rules-js/references/bilingual-comment-format.md) — format choice, language order, flexible omission, JSDoc tag bilingual format
+- [雙語註解格式規範](../comment-format-rules-js/references/bilingual-comment-format.md) — JS/TS block comment & JSDoc tag bilingual formatting
 - [註解位置規範](../comment-format-rules-js/references/comment-placement.md) — array elements, object properties, Interface/Type members, `@example` inline exception
 - [重要約束](../comment-format-rules-js/references/critical-constraints.md) — block comment enforcement, separators, special directives, technical terms, non-semantic naming
 - [註解更新規則](../comment-format-rules-js/references/comment-update-rules.md) — preserve original error info, issue verification, multilingual comments, update checklist
