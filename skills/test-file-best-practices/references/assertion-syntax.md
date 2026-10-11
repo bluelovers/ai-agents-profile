@@ -177,3 +177,4 @@ expect(result.timestamp).toBeDefined();
 - [SKILL.md](../SKILL.md)
 - [測試框架 API 重構範例](./examples.md)（數值、布林、字串、陣列、型別、Promise、Mock 等重構）
 - [避免無意義的測試：判定與改寫](./meaningless-tests.md)
+- [單一測試混雜多個目的：不良實作與改善](./mixed-purpose-tests.md)

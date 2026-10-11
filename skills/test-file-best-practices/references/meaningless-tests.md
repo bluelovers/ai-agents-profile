@@ -164,5 +164,6 @@ test('workspace protocol matches the Yarn protocol contract', (t: test.TestConte
 
 - [SKILL.md](../SKILL.md)
 - [斷言語法優化：可讀性 matcher 與物件比對](./assertion-syntax.md)
+- [單一測試混雜多個目的：不良實作與改善](./mixed-purpose-tests.md)
 - [測試框架 API 重構範例](./examples.md)
 - [臨時檔案管理：Mock 安全規則與清理策略](./temp-file-management.md)

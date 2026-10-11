@@ -108,6 +108,7 @@ project/
 - [測試檔命名與 Header](./references/framework-compatibility.md) - 依框架選用檔名與正確引入類型定義
 - [Fixtures 與測試資料管理](#fixtures-與測試資料管理) - 集中管理測試資料
 - [測試資料集規範](#測試資料集規範) - 測試資料應包含輸入與預期輸出
+- [測試職責單一原則](#測試職責單一原則--one-test-one-purpose) - 一個測試只驗證一個目的
 - [共用邏輯提取原則](#6-共用邏輯提取原則) - 提取共用測試邏輯（包括函式參數設計）
 
 ---
@@ -283,6 +284,23 @@ describe('functionToTest', () => {
   });
 });
 ```
+
+#### 測試職責單一原則 / One Test, One Purpose
+
+**一個 `test()` 應只驗證一個目的。**
+
+當測試標題只描述行為 A、內容卻也斷言行為 B，或在測試內重新實作被測函式的控制流時，失敗訊息將無法指出真正出錯的環節。
+
+**常見徵兆：**
+
+- **標題與內容不符** — 標題只寫守衛行為，內容卻也斷言了後續邏輯的具體輸出
+- **測試內重複實作控制流** — 測試自己寫了一份 `if (!guard) return ...`，複製被測函式的走訪流程
+- **前置守衛 early return** — `if (!condition) return` 讓守衛失敗時測試未執行任何斷言卻仍通過
+- **冗餘斷言** — `Array.isArray(x)` 與 `deepStrictEqual` 重複、`.length` 與陣列比對重複
+
+**原則：快照記錄「走訪結果與實例結構」，具體輸出交給明確斷言。** 兩者各司其職，不要在同一筆測試中同時承擔。
+
+> **Reference**: [單一測試混雜多個目的](./references/mixed-purpose-tests.md) - 完整不良案例、問題解析、改善版本與不必要雜訊速查表。
 
 #### 測試標題與註解避免使用計數
 
@@ -1185,5 +1203,6 @@ t.assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
 - [測試框架相容性與 API 對應（Jest / Vitest / Bun / Node.js）](./references/framework-compatibility.md)
 - [斷言語法優化：可讀性 matcher 與物件比對](./references/assertion-syntax.md)
 - [避免無意義的測試：判定與改寫](./references/meaningless-tests.md)
+- [單一測試混雜多個目的：不良實作與改善](./references/mixed-purpose-tests.md)
 - [臨時檔案管理：Mock 安全規則與清理策略](./references/temp-file-management.md)
 - [skills/test-js-mock](../test-js-mock/SKILL.md)

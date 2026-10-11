@@ -1292,6 +1292,7 @@ When proposing refactoring suggestions:
 - [Status Key Enum Migration Case](./references/status-key-enum-migration.md) - Complete Enum migration: update all `??` fallback and template-literal usage sites, not just the type signature
 - [TypeScript Terminology Reference](./references/typescript-terminology.md) - Easily forgotten TypeScript terminology: Named Tuple (a.k.a. Labeled Tuple Elements) — official source, rules, and cross-language name mapping
 - [Tuple & Named Tuple Refactoring Rules (complete Guideline F)](./references/named-tuple-refactoring.md) - Enum-anchored position semantics, ❌/✅ examples, Named Tuple and rest elements never exempt from extraction, plus the shared-destructuring fallback when not indexing via an Enum
+- [Syntax Optimization Cases](./references/syntax-optimization.md) - Behavior-preserving syntax optimizations: don't run `map`/`filter` before `reduce` unless intentionally designed; fold the condition/transformation into the accumulator (plus when pre-steps are justified)
 
 ### Related Skills
 - [analyze-code-commenter](../analyze-code-commenter/SKILL.md) - Bilingual comment addition and code documentation

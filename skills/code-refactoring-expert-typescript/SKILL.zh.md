@@ -1336,6 +1336,7 @@ if (user.isActive && subscription.status === 'active' &&
 - [狀態鍵 Enum 遷移案例](./references/status-key-enum-migration.md) - 完整 Enum 遷移：連同 `??` fallback 與樣板字串使用位置一併更新，而非只改型別簽名
 - [TypeScript 術語對照](./references/typescript-terminology.md) - 官方 Handbook 未收錄、僅見於版本紀錄的容易忘記術語：Named Tuple（Labeled Tuple Elements）的官方出處、規則與跨語言名稱對照
 - [Tuple 與 Named Tuple 重構規範（規範 F 完整內容）](./references/named-tuple-refactoring.md) - Enum 錨定位置語義、❌/✅ 對照範例、Named Tuple 與 rest 元素不豁免抽離，及「不使用 Enum 索引時的共享解構邏輯」
+- [語法優化案例集](./references/syntax-optimization.md) - 不改變行為的語法優化：除非有特定意圖/用法設計，否則 `reduce` 前不應進行 `map`/`filter` 等邏輯，應將條件與轉換併入累積器（含前置步驟的正當時機）
 
 ### 相關技能
 - [analyze-code-commenter](../analyze-code-commenter/SKILL.md) - 雙語註解添加與程式碼文件化
