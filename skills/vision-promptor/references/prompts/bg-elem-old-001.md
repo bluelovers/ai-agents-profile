@@ -120,3 +120,8 @@ The window is divided into two sections by a black horizontal frame.
 ```
 a flooded underground transit station in a future city, dark blue palette, silent escalators, water covering the rails, flickering signs, abandoned luggage, pale cyan emergency lights, rainwater dripping from cracked concrete, lonely depressing science fiction mood
 ```
+
+```
+dumpster, alleyway, exterior,
+Dirty alleyway. A dumpster sits on one side.
+```

@@ -25,7 +25,9 @@ tags:
 
 #### 【場景・橫向】像素橫向射擊：火車頂 run-and-gun
 
-**分類：** `場景 / 橫向` —— 側視火車頂水平推進，背景視差橫向掠過。
+**介紹：** 像素風側視 run-and-gun——紅褐長髮男子持槍，在夕陽下兩節高速貨車廂間躍進；車尾立著橘色鑽臂機器人首領，沙漠台地、電線桿與巨大橘陽以視差橫掠，左上 HUD、右上小地圖。
+**分類：** `場景 / 橫向` —— run-and-gun 兼具**橫向卷軸**與**上下階層**概念。
+**結構：** 開場＋人物 → 首領＋背景視差 → UI（HUD／小地圖）→ 像素質感。
 
 ```text
 runandgunplatformmale,
@@ -44,16 +46,15 @@ and the upper right minimap diagrams cyan platforms and ladders with a yellow do
 Crisp square pixels texture the entire scene.
 ```
 
-**結構：** 開場＋人物 → 首領＋背景視差 → UI（HUD／小地圖）→ 像素質感。
-
 > https://civitai.red/models/2992824/run-and-gun-platform-classic-arcade-pixel-style?modelVersionId=3393908
 
 ---
 
 #### 【場景・橫向】像素格鬥勝利畫面 (NSFW)
 
+**介紹：** 像素風側視街機格鬥的「YOU WIN」勝利畫面——地下鐵籠擂台中央，一名剃頭、深膚色的壯碩格鬥家舉拳慶功（⚠含裸露）；左上金色人頭像與綠色血條，四周環繞鐵網牆、群眾剪影與從上方打下的探照燈。
 **分類：** `場景 / 橫向` —— 單屏格鬥擂台、單一地面但帶透視深度。
-**視角：** 屬**橫向格鬥（Belt-Scrolling／arcade fighting）**——**擴張透視角度**；畫面上下層（鐵籠、群眾）是**背景**、非遊玩區域。
+**視角：** 屬**橫向格鬥（Belt-Scrolling／arcade fighting）**。
 **結構：** 場景（鐵籠）→ 人物（外觀／姿勢）→ UI（YOU WIN／血條）→ 環境光線。
 
 ```text
@@ -117,6 +118,7 @@ from above, no humans, no gore, no readable text, no logo, no watermark
 
 #### 【場景・上下關卡】沉沒叢林神廟
 
+**介紹：** 側視卡通雙人合作平台——一座沉沒的叢林神廟，青苔石砌、交錯平台、垂藤與淹水石室；中央豎井裡齒輪轉動，平台上散落紅藍鑽石，右上有一扇火焰門與雪花門。
 **分類：** `場景 / 橫向 / 上下關卡型` —— 側視、`staggered ledges`（交錯平台）＋ `central shaft`（中央豎井）＋右上門，具垂直分層。
 
 ```text
@@ -131,6 +133,7 @@ Jungle leaves frame the edges, and bold outlines and soft shading keep the puzzl
 
 #### 【場景・上下關卡】火山神廟
 
+**介紹：** 側視卡通雙人合作平台——多層火山神廟，玄武岩平台、短梯與鐵格圍繞掛著鐵鏈的中央豎井，底部有橘紅熔岩池；中左注滿亮藍水的水池、右下熔岩瀑流入渠，右上紅焰門與藍雪門，暖熔岩光對比冷藍水。
 **分類：** `場景 / 橫向 / 上下關卡型` —— **最明確**：`multilevel`、`central vertical shaft`、`upper floor`／`middle`／`bottom`／`top right`，多層垂直關卡。
 
 - `a glowing orange lava pool.` → 併入前句（`… hung with chains, and a glowing orange lava pool.`），不另造位置
@@ -153,6 +156,7 @@ Warm lava light contrasts with cool blue water, and bold outlines and soft shadi
 
 #### 【場景・上下關卡】夜港倉庫
 
+**介紹：** 側視卡通雙人合作平台——夜間港邊倉庫，木鷹架、石牆與木門高懸於深藍水面之上；頂部鐵籠掛在吊車吊鉤、左上絞盤曲柄、右下鐵門，繩索自絞盤連往吊車，木船漂浮水面；暖燈籠與錨旗照亮斑駁砌體。
 **分類：** `場景 / 橫向 / 上下關卡型` —— `top center`／`upper left walkway`／`lower right dock`／`water below`，明確上中下分層。
 
 **殘句修正：**
@@ -180,6 +184,7 @@ Warm lanterns and anchor banners light the worn masonry, and thick outlines keep
 
 #### 【角色・橫向】角鬥士待機 sprite
 
+**介紹：** 單人全身像素格鬥 sprite——戴青銅頭盔、持圓盾的角鬥士，嚴格朝右側身站立待機、雙腳踩在地平線上；以動態提示詞隨機切換六種戰鬥姿勢（出拳／格檔／突刺／跳躍／蹲伏／蓄力）。
 **分類：** `角色 / 橫向` —— 側面角色，**嚴格向左／向右、不面向讀者**。
 **如何描述橫向角色：** 對照下方「橫向角色三分法」的三條軸，**同時寫上且一致**——
 ① **朝向**（Side-Facing）`strictly facing right/left`，二選一、嚴格、絕不看鏡頭
