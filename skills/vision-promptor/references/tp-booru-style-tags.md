@@ -1,9 +1,9 @@
 ---
 description: >-
   「標籤式提示詞 (Booru-style Tags)」撰寫指南，中文簡稱「標籤提示詞」
-  （檔名前綴 tp- = tag prompt），英文別名 Token-weighted Tags
-  （同義稱呼：booru tag、sd1.5 tag）。核心只有一條：標籤是有序的——
-  既非無序堆疊、也非按字母排序，而是類似敘事式的感覺依序列出標籤。
+  （檔名前綴 tp- = tag prompt），
+  英文別名 Token-weighted Tags（同義稱呼：booru tag、sd1.5 tag）。
+  核心只有一條：標籤是有序的——既非無序堆疊、也非按字母排序，而是類似敘事式的感覺依序列出標籤。
   說明標準標籤模板、依主題群組的分行方式、必要時混入自然語言輔助，
   以及適用情境。三型共通原則（分段分行、非互斥）已提升至主技能 SKILL.md。
 tags:

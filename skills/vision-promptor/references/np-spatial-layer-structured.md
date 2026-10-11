@@ -3,9 +3,9 @@ description: >-
   「空間圖層結構式提示詞 (Spatial-Layer-Structured Prompting)」撰寫規範，
   中文簡稱「圖層式提示詞」，英文別名 Structured Composition Prompting。
   說明總綱前導＋景深分層＋氣氛收尾的核心理念、標準四段式語法模板、
-  撰寫必備三要素（前導鎖定鏡頭、圖層內構圖動線與留白、區塊標籤標準化
-  且至少兩項錨點）、圖層三維要素 (Where/What/How)、
-  「只有物件清單、缺少構圖引導」的常見盲區與正誤對比，以及適用場景與撰寫檢查清單。
+  撰寫必備三要素（前導鎖定鏡頭、圖層內構圖動線與留白、區塊標籤標準化且至少兩項錨點）、
+  圖層三維要素 (Where/What/How)、「只有物件清單、缺少構圖引導」的常見盲區與正誤對比，
+  以及適用場景與撰寫檢查清單。
 tags:
   - prompts/rules
   - prompts/natural-language
@@ -206,7 +206,7 @@ Atmosphere: Dramatic, warm yet solemn, legendary fantasy mood; soft orange candl
 
 ## 8. 範例參考
 
-完整的範例提示詞共 15 則，依主要分層軸分類為五節（景深軸、垂直樓層軸、水平／功能分區軸、混合軸、未分類），
+範例主要分層軸分類為五節（景深軸、垂直樓層軸、水平／功能分區軸、混合軸、未分類...），
 涵蓋前中後景、樓層上中下、左中右功能分區與自然語言位置句等分層變體，每則附簡短中文描述：
 
 - [prompts/np-spatial-layer-structured-example.md](prompts/np-spatial-layer-structured-example.md)

@@ -1,8 +1,8 @@
 ---
 description: >-
-  動態提示詞 (Dynamic Prompts) 概念檔。說明 sd-forge／ComfyUI 的
-  Dynamic Prompts 擴充功能——在生成時展開 `{a|b|c}` 取代欄位；
-  只需理解兩種語法：`{a|b|c}` = 從 a/b/c 選一、`{a|b|c|}` = 選 a/b/c 或空白；
+  動態提示詞 (Dynamic Prompts) 概念檔。
+  說明 sd-forge／ComfyUI 的 Dynamic Prompts 擴充功能——在生成時展開 `{a|b|c}` 取代欄位；
+  兩種基本語法：`{a|b|c}` = 從 a/b/c 選一、`{a|b|c|}` = 選 a/b/c 或空白；
   複雜語法不需深入分析。附與本技能自然語言提示詞的關係。
 tags:
   - prompts/rules
