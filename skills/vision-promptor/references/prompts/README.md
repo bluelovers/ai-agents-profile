@@ -30,6 +30,7 @@ tags:
 | [tp-booru-style-tags-example.md](tp-booru-style-tags-example.md) | 標籤式（booru tags） | 畫面內容／類型（`T####.【類型】內容`） | `T0001` 起 |
 | [np-char-demi-human.md](np-char-demi-human.md) | 泛人族角色外型模組 | 種族：獸人／獸蟲混種／精靈族／半機人 | `D0001` 起 |
 | [dy-window-view-example-001.md](dy-window-view-example-001.md) | 動態提示詞（窗景透視） | 六段式骨架：距離／前景遮蔽／人物／陳設／玻璃／風格 | `dy-` 系列編號 |
+| [mp-element-extraction-example.md](mp-element-extraction-example.md) | 要素分割與抽離 | 三階段：原始 → 分段整理 → 抽離 UI／人物 | `mp-` 系列編號 |
 
 ## 專題檔 (Thematic Collections)
 
@@ -56,6 +57,7 @@ tags:
 | 檔案 | 說明 | 編號方案 |
 | --- | --- | --- |
 | [mp-prompts-merge-001.md](../mp-prompts-merge-001.md) | 合併提示詞：基底＋`[PROMPT]` 插槽的模組化技法 | `mp-` 系列編號 |
+| [mp-element-extraction.md](../mp-element-extraction.md) | 要素分割與抽離指南：三階段流程、要素分類、五條規則與反模式 | 無編號（指南檔） |
 | [dy-dynamic-prompts.md](../dy-dynamic-prompts.md) | 動態提示詞概念：`{a\|b\|c}` 取代欄位的兩種基本語法 | 無編號（概念檔） |
 
 **內容概要：**
@@ -67,6 +69,7 @@ tags:
 - **泛人族模組** — 只收「種族＋外觀」的可插拔角色模組，**不含**該種族的建築／場景／事物
 - **風格混合** — 虛實混合基礎版＋固定結構＋可替換槽位，可基於此產生各種變體
 - **動態提示詞** — 六段式窗景骨架，`{a|b|c}` 取代欄位批量產生構圖相近、細節各異的變體
+- **要素分割與抽離** — 三階段（原始 → 分段整理 → 抽離 UI／人物），最小修改、模糊要素獨立成行；抽出的模組可回送合併插槽
 - **專題檔** — 各檔以【類型】標題逐則標註內容，檔首附分類索引
 
 **共通規則：**
@@ -83,4 +86,5 @@ tags:
 - 主技能：[SKILL.md](../../SKILL.md)
 - 指南：[np-spatial-layer-structured.md](../np-spatial-layer-structured.md)（圖層式）、[np-fluent-narrative-paragraph.md](../np-fluent-narrative-paragraph.md)（敘事式）、[tp-booru-style-tags.md](../tp-booru-style-tags.md)（標籤式）
 - 合併／插槽技法：[mp-prompts-merge-001.md](../mp-prompts-merge-001.md)
+- 要素分割與抽離：[mp-element-extraction.md](../mp-element-extraction.md)（分析分割反哺合併判斷）
 - 動態提示詞概念：[dy-dynamic-prompts.md](../dy-dynamic-prompts.md)
