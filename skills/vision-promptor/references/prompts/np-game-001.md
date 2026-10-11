@@ -122,7 +122,8 @@ from above, no humans, no gore, no readable text, no logo, no watermark
 **分類：** `場景 / 橫向 / 上下關卡型` —— 側視、`staggered ledges`（交錯平台）＋ `central shaft`（中央豎井）＋右上門，具垂直分層。
 
 ```text
-A wide side-view cartoon cooperative platform game screen shows a sunken jungle temple of mossy grey-green masonry, staggered ledges, hanging vines and flooded chambers.
+A wide side-view cartoon cooperative platform game screen
+shows a sunken jungle temple of mossy grey-green masonry, staggered ledges, hanging vines and flooded chambers.
 
 A gear turns inside the central shaft, red and blue diamonds glow on the ledges, a wooden crate sits on the right, and two doors with flame and snowflake symbols wait at the upper right.
 
