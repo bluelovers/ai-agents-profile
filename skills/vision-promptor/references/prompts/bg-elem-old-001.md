@@ -107,3 +107,16 @@ depicting a shelves in a supermarket.
 - 主技能：[SKILL.md](../../SKILL.md)
 - 範例索引：[README.md](README.md)
 - 圖層式場景：[np-spatial-layer-structured-example.md](np-spatial-layer-structured-example.md)
+
+## 未整理
+
+```
+Window view.
+Photograph of
+[PROMPT]
+The window is divided into two sections by a black horizontal frame.
+```
+
+```
+a flooded underground transit station in a future city, dark blue palette, silent escalators, water covering the rails, flickering signs, abandoned luggage, pale cyan emergency lights, rainwater dripping from cracked concrete, lonely depressing science fiction mood
+```

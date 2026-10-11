@@ -39,7 +39,11 @@ tags:
 | [np-photo-001.md](np-photo-001.md) | 寫實照片風 | 寫真與浮世繪／主體與場景拆解／電影感與時裝 |
 | [np-style-001.md](np-style-001.md) | 風格提示詞 | 風格家族（動畫／寫實／漫畫／插畫線稿／水墨水彩）× 適用場景 |
 | [bg-elem-old-001.md](bg-elem-old-001.md) | 背景與環境要素 | 室內／自然・水景／自然・林道／夜景／奇幻／片段 |
-| [np-char-base.md](np-char-base.md) | 角色基底（人類外型） | 同一角色的自然語言版 ↔ 標籤版對照 |
+| [np-char-base.md](np-char-base.md) | 角色基底（人類外型） | 東亞：自然語言版 ↔ 標籤版對照／東歐：僅自然語言版 |
+| [np-char-expressions-001.md](np-char-expressions-001.md) | 角色眼神與表情模組 | 眼妝與瞳色／說話中嘴部 |
+| [np-char-action-001.md](np-char-action-001.md) | 角色姿勢與動作模組 | 背影回眸（朝向／頭部轉幅／下肢） |
+| [np-char-costume-001.md](np-char-costume-001.md) | 角色服裝模組 | 吊帶褲（款式／貼身關係） |
+| [np-style-composition-001.md](np-style-composition-001.md) | 構圖與取景模組 | 單人人像（主體數量／媒介／視角／景別） |
 | [np-asian.md](np-asian.md) | 東方寺院場景 | 多段落敘事（含觸發詞說明） |
 | [np-art-001.md](np-art-001.md) | 水墨水彩風景 | 史詩遠景・一點透視 |
 | [np-text-001.md](np-text-001.md) | 畫面文字渲染 | 看板／店招（`Text:` 與引號標示） |
@@ -67,9 +71,9 @@ tags:
 
 **共通規則：**
 
+- 不一定要分配新編號（**指標性強或需引用的才賦予編號**）
 - 編號前綴：`L` = Layered（圖層式）、`P` = Paragraph（敘事式）、`T` = Tag（標籤式）、`D` = Demi-human（泛人族模組）、`mp` = Merge Prompt（合併提示詞，檔名前綴）、`dy` = Dynamic Prompts（動態提示詞，檔名前綴）
 - 編號為固定識別碼，**空號不補**；新增範例請依各檔方案接續編號
-- 不一定要分配新編號（指標性強或需引用的才賦予編號）
 - 變體可附於原範例後以「-變體」標註
 - 各範例檔的分類索引、計數與排版規則見其檔內說明
 - 各檔案底部放置 `未整理分類` 提供給未來追加新範例時臨時放置使用

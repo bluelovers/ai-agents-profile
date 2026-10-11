@@ -1,9 +1,9 @@
 ---
 description: >-
   「角色基底 (Character Base)」提示詞範例（檔名前綴 np- = natural-language prompt）。
-  收錄同一角色的兩種表達形式——自然語言敘述版與標籤分行版，
-  內容為東亞女性的五官、髮型、穿環與刺青外型；示範「同一份角色設定如何在
-  敘事式與標籤式之間轉換」，可作為其他角色模組的對照基底。
+  收錄人類外型基底：東亞女性以「自然語言敘述版 ↔ 標籤分行版」雙形式對照
+  （五官／膚質、髮型、穿環、刺青），東歐女性則僅收自然語言版（五官、髮型、膚質、體型）；
+  示範「同一份角色設定如何在敘事式與標籤式之間轉換」，可作為其他角色模組的對照基底。
 tags:
   - prompts/examples
   - prompts/natural-language
@@ -17,6 +17,8 @@ tags:
 - **【人像・外型】東亞女性角色基底** — 五官／膚質、髮型、穿環、刺青四層外型設定
   - 形式 A：自然語言敘述版（流暢段落）
   - 形式 B：標籤分行版（依主題群組分行，同內容）
+- **【人像・外型】東歐女性角色基底** — 五官、髮型、膚質、體型三層外型設定
+  - 形式 A：自然語言敘述版（本則僅自然語言版）
 
 ---
 
@@ -51,9 +53,31 @@ star tattoo under eye, fine-line tattoo on thigh, ornamental filigree tattoo on 
 
 ---
 
+### 【人像・外型】東歐女性角色基底
+
+> 同為人類外型基底，但**只寫自然語言版**——示範「沒有對照需求時，不必硬湊標籤版」。
+> 三層結構：五官 → 髮型／膚質 → 體型；不含眼神注視、姿勢、服裝、構圖
+> （那些分屬 [np-char-expressions-001.md](np-char-expressions-001.md)、
+> [np-char-action-001.md](np-char-action-001.md)、[np-char-costume-001.md](np-char-costume-001.md)、
+> [np-style-composition-001.md](np-style-composition-001.md)）。
+
+#### 形式 A：自然語言敘述版
+
+```
+An 18-year-old Eastern European woman with sharp high cheekbones and thin narrow lips.
+Her long raven-black hair falls in loose waves over porcelain-pale skin.
+She has a petite, short-statured build with a full bust, a narrow waist, and wide hips.
+```
+
+---
+
 **相關連結：**
 
 - 主技能：[SKILL.md](../../SKILL.md)
 - 範例索引：[README.md](README.md)
 - 泛人族外型模組：[np-char-demi-human.md](np-char-demi-human.md)
+- 眼神與表情：[np-char-expressions-001.md](np-char-expressions-001.md)
+- 姿勢與動作：[np-char-action-001.md](np-char-action-001.md)
+- 服裝：[np-char-costume-001.md](np-char-costume-001.md)
+- 構圖與取景：[np-style-composition-001.md](np-style-composition-001.md)
 - 標籤式指南：[tp-booru-style-tags.md](../tp-booru-style-tags.md)
