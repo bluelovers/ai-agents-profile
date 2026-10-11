@@ -314,7 +314,7 @@ finalize(options?: IFinalizeIgnoreLinesOptions): this
 |----------|----------|
 | 使用行內註解 `//`、分隔線未用區塊註解、特殊指令（`@ts-ignore`）順序錯誤、更新時刪除技術術語、為命名慣例添加不存在的意義 | [重要約束](./critical-constraints.md) |
 | 註解放在代碼後方、以 `@property` 描述 Interface 成員 | [註解位置規範](./comment-placement.md) |
-| 英文＋英文的假雙語、雙語順序顛倒 | [雙語註解格式](./bilingual-comment-format.md) |
+| 英文＋英文的假雙語、雙語順序顛倒、違反彈性取捨或刪除技術術語錨點 | [雙語註解格式](./bilingual-comment-format.md) 與 [雙語標準化規範](../../bilingual-standardization-rule/SKILL.md) |
 | 多個單行註解、只寫 WHAT 不寫 WHY、標題與描述語意重複 | [SKILL.md — 邏輯區塊註解規範／職責分離](../SKILL.md) |
 | JSDoc 內塞實作細節、宣告 JSDoc 夾帶描述內部陳述式的段落（合約與實作未分離） | 本檔案例六；規範見 [SKILL.md — JSDoc 與邏輯區塊職責分離](../SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation) |
 | 僅重複宣告關鍵字／語意、羅列代碼管理的宣告（what 而非 why） | [無意義註解](./meaningless-comments.md) |

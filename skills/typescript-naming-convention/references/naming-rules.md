@@ -198,7 +198,7 @@ type IValidator<T> = {
 
 英文說明可視文件語境省略，但不得以英文取代所有中文說明。
 
-遵循 [註解格式規範](../../comment-format-rules-js/SKILL.md) 處理雙語順序、JSDoc 標籤、註解位置與區塊格式。
+遵循 [註解格式規範](../../comment-format-rules-js/SKILL.md) 與 [雙語標準化規範](../../bilingual-standardization-rule/SKILL.md) 處理雙語順序、JSDoc 標籤、註解位置與區塊格式；其中 **彈性取捨（捨棄與保留）** 與 **技術術語錨點** 為最高原則，仍需嚴格遵守。
 
 ---
 

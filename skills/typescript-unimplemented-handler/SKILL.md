@@ -49,7 +49,9 @@ type IConfigValidator<T> = {
 
 ### 2. 雙語說明
 
-**所有無法實現的代碼都必須包含中文和英文說明**，確保不同背景的開發者都能理解。
+> **雙語規範參照**：遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)；其中 **「彈性取捨（捨棄與保留）」** 與 **「技術術語錨點」** 為最高原則，仍需嚴格遵守。
+
+**所有無法實現的代碼都應遵守雙語規範進行說明**，確保不同背景的開發者都能理解。
 
 ```typescript
 /**
@@ -79,15 +81,15 @@ type IConfigValidator<T> = {
 ```typescript
 // TODO: [TS-001] TypeScript 類型系統限制
 // TODO: [TS-001] TypeScript type system limitation
-// 
+//
 // 無法實現：/ Cannot implement:
 // - 運行時類型反射 / Runtime type reflection
 // - 動態類型生成 / Dynamic type generation
-// 
+//
 // 替代方案：/ Alternative solutions:
 // - 使用 class-transformer 或 zod 進行運行時驗證
 // - Use class-transformer or zod for runtime validation
-// 
+//
 // 未來可能：/ Future possibility:
 // - TypeScript 5.x 引入了更多類型運算功能
 // - TypeScript 5.x introduces more type manipulation features
@@ -184,9 +186,9 @@ type IConfigValidator<T> = {
  *
  * 原始實現：
  * ```typescript
- * type DynamicType<T> = T extends string 
- *   ? StringProcessor<T> 
- *   : T extends number 
+ * type DynamicType<T> = T extends string
+ *   ? StringProcessor<T>
+ *   : T extends number
  *   ? NumberProcessor<T>
  *   : UnknownProcessor;
  * // 問題：無法根據運行時的實際值類型來選擇類型
@@ -209,7 +211,7 @@ type IConfigValidator<T> = {
  *
  * 原始實現：
  * ```typescript
- * type DeepNest<T, N extends number> = 
+ * type DeepNest<T, N extends number> =
  *   N extends 0 ? T : DeepNest<{ [K in keyof T]: DeepNest<T[K], [-1] extends [N] ? never : N] }, [-1] extends [N] ? never : N>;
  * // 問題：達到最大遞迴深度時會出現錯誤
  * ```

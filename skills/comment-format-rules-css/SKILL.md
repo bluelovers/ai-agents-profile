@@ -40,6 +40,8 @@ tags:
 
 ## 彈性捨棄雙語原則 (Flexible Bilingual Omission)
 
+> **最高原則參照**：依據 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)，**「彈性取捨（捨棄與保留）」** 與 **「技術術語錨點」** 為最高原則，在 CSS/SCSS 註解中仍需嚴格遵守。
+
 當雙語造成**閱讀障礙**或**內容過長**時，保留最清晰的一種語言即可，無需強制雙語。
 
 本節的另一面是**彈性保留雙語 (Flexible Bilingual Retention)**（見本節末尾「變體」子節）——
@@ -139,7 +141,7 @@ margin: 0 -20px;
 - **有額外價值才雙語**：搜尋／辨識關鍵字 → 保留（`增益 / Gain`）；純直譯無價值 → 單語（`程式碼 / Code`）
   ——「有無價值」的判定**仍須先過上方判定基準**（看英文部分是否連只懂簡單單字的人也知道）
 
-> **Reference**: 雙語標準化通用規範（語言順序、彈性保留／捨棄四條規則與雙語保留判定表、術語保留）見 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)，JS/TS 註解排版見 [bilingual-comment-format.md](../comment-format-rules-js/references/bilingual-comment-format.md)。
+> **Reference**: 雙語標準化通用規範見 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)；其中 **彈性取捨（捨棄與保留）** 與 **技術術語錨點** 為最高原則，仍需嚴格遵守。JS/TS 註解排版見 [bilingual-comment-format.md](../comment-format-rules-js/references/bilingual-comment-format.md)。
 
 ---
 

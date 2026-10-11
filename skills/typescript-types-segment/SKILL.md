@@ -118,9 +118,10 @@ const updatedAt: number = ...;
 
 ### 步驟 3：撰寫型別別名與文件
 
-使用**雙語區塊註解**（繁體中文 + English）說明型別用途。
+使用**雙語區塊註解**（中文 + English）說明型別用途。
 
-> **彈性捨棄雙語原則 (Flexible Bilingual Omission)**：當雙語造成閱讀障礙或內容過長時，保留最清晰的一種語言即可。**例外：技術術語（如 `Type Alias`、`Template Literal`、`Union Type`）的雙語標註仍應保留。**
+> **雙語規範參照**：遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)，其中 **「彈性取捨（捨棄與保留）」** 與 **「技術術語錨點」** 為最高原則，仍需嚴格遵守。
+> **彈性捨棄雙語原則 (Flexible Bilingual Omission)**：當雙語造成閱讀障礙或內容過長時，保留最清晰的一種語言即可。**例外：技術術語（如 `Type Alias`、`Template Literal`、`Union Type`）的雙語標註仍應保留作為錨點。**
 
 ```typescript
 /**

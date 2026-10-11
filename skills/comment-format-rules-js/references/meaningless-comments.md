@@ -264,7 +264,7 @@ export interface IJobNamedIcon {
 - **有資訊量的內容下移到使用發生處**：「未指定的欄位沿用職業預設值」從 `IJobDefCore` 檔頭移到 `gender` 欄位註解
 - **跨層實作細節刪除**：`COERCE_SPECS 於讀取時收斂為 number` 是 yaml-load 的行為——說明應寫在收斂發生處，不寫在消費端欄位（見上方「組合發生處」原則）
 - **與宣告重複的型別名刪除**：`info` 的 `（IDescInfo）` 刪除；`data_ex` 改為「詳見 `{@link IJobDataEx}`」；`coe` 刪掉重複的型別名 `IGrowthCoefficients`
-- **英譯收斂**：段落級英譯刪除、只留中文；一行式自明雙語保留（`equip`）→ 見 [彈性捨棄雙語原則](./bilingual-comment-format.md)
+- **英譯收斂**：段落級英譯刪除、只留中文；一行式自明雙語保留（`equip`）→ 遵循 [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md) 與 [bilingual-comment-format.md](./bilingual-comment-format.md)，以 **彈性取捨（捨棄與保留）** 與 **技術術語錨點** 為最高原則
 
 ## 需要說明時 (When Explanation Is Needed)
 
