@@ -172,16 +172,14 @@ margin: 0 -20px;
 ### 正確格式
 
 ```scss
-/* 使用 flex 而非 grid (Use flex instead of grid)，因為項目數量不固定且需要單行滾動 */
+/* 使用 flex 而非 grid，因為項目數量不固定 */
 display: flex;
-overflow-x: auto;
 ```
 
 ### 錯誤格式
 
 ```scss
 // 使用 flex 而非 grid，因為項目數量不固定
-// Use flex instead of grid for variable item count
 display: flex;
 ```
 
@@ -193,10 +191,6 @@ display: flex;
 ### 正確格式
 
 ```scss
-/* 使用 flex 而非 grid (Use flex instead of grid)，因為項目數量不固定且需要單行滾動 */
-display: flex;
-overflow-x: auto;
-
 /**
  * 預期排版：水平置中容器 + 內部文字左對齊
  * Expected layout: centered container with left-aligned text
@@ -207,10 +201,9 @@ margin: 4px auto 0;
 ### 錯誤格式
 
 ```scss
-/* 使用 flex 而非 grid，因為項目數量不固定且需要單行滾動 */
-/* Use flex instead of grid for variable item count with single-line scroll */
-display: flex;
-overflow-x: auto;
+/* 預期排版：水平置中容器 + 內部文字左對齊 */
+/* Expected layout: centered container with left-aligned text */
+margin: 4px auto 0;
 ```
 
 ### 區塊分隔註解使用區塊註解
@@ -280,24 +273,21 @@ width: fit-content; /* 寬度 fit-content */
 ```scss
 /**
  * 預期排版：水平置中容器 + 內部文字左對齊
- * Expected layout: centered container with left-aligned text
  *
  * 為什麼：錯誤訊息通常較長，置中區塊可突出顯示，
  *        但文字左對齊維持可讀性
- * Why: Error messages are often long; centered block draws attention,
- *      but left-aligned text maintains readability
  */
 &.unavailable-reason {
-  /* auto 實現水平置中 (auto for horizontal centering) */
+  /* auto 實現水平置中 */
   margin: 4px auto 0;
 
-  /* 依內容調整寬度，避免過寬 (auto width based on content) */
+  /* 依內容調整寬度，避免過寬 */
   width: fit-content;
 
-  /* 限制最大寬度為父容器 90%，保持適當留白 (max-width 90% of parent for proper spacing) */
+  /* 限制最大寬度為父容器 90%，保持適當留白 */
   max-width: 90%;
 
-  /* 文字左對齊，長訊息易於閱讀 (left align for readability) */
+  /* 文字左對齊，長訊息易於閱讀 */
   text-align: left;
 }
 ```
@@ -307,17 +297,14 @@ width: fit-content; /* 寬度 fit-content */
 ```scss
 /**
  * 預期排版：單行水平排列，項目過多時可橫向滾動
- * Expected: Single-line horizontal layout with scroll on overflow
  *
  * 為什麼：使用 flex 而非 grid，因為項目數量不固定
- * Why: Use flex instead of grid for variable item count
  */
 display: flex;
 overflow-x: auto;
 
 /**
  * 預期排版：兩欄布局，左側固定 200px，右側填滿剩餘空間
- * Expected: Two-column layout with 200px fixed left sidebar
  */
 grid-template-columns: 200px 1fr;
 ```
@@ -331,21 +318,20 @@ grid-template-columns: 200px 1fr;
 ### 良好範例
 
 ```scss
-/* z-index: 9999 是為了覆蓋 VS Code 內建元件的 1000 層級 (to override VS Code's internal 1000-level components) */
+/* z-index: 9999 是為了覆蓋 VS Code 內建元件的 1000 層級 */
 z-index: 9999;
 
-/* 使用 !important 覆蓋 VS Code 主題注入的預設樣式 (to override VS Code theme's injected default styles) */
+/* 使用 !important 覆蓋 VS Code 主題注入的預設樣式*/
 font-size: 14px !important;
 
 /**
  * 負 margin 用於抵消父容器的 padding，實現全寬背景色
- * Negative margin to offset parent's padding for full-width background
  */
 margin: 0 -20px;
 padding: 10px 20px;
 background-color: var(--vscode-errorBackground);
 
-/* line-height: 1.4 提升可讀性，避免緊密的錯誤訊息難以閱讀 (line-height 1.4 for readability) */
+/* line-height: 1.4 提升可讀性，避免緊密的錯誤訊息難以閱讀 */
 line-height: 1.4;
 ```
 
@@ -412,19 +398,16 @@ min-width: 200px;
 ```scss
 /**
  * ⚠️ 注意：修改此處 padding 需同步調整子元素的負 margin
- * ⚠️ Note: Changing this padding requires updating child negative margin
  */
 padding: 20px;
 
 /**
  * FIXME: 暫時使用固定高度 300px，未來應改為動態計算
- * FIXME: Temporary fixed height; should be dynamic in future
  */
 height: 300px;
 
 /**
  * HACK: 使用 pseudo-element 繞過 VS Code webview 的滾動條樣式限制
- * HACK: Using pseudo-element to bypass VS Code webview scrollbar restrictions
  */
 &::before {
   content: '';
@@ -442,19 +425,15 @@ height: 300px;
  *
  * 預期排版：水平置中於父容器，寬度依內容自適應但不大於 90%，
  *          內部文字左對齊以維持長訊息可讀性
- * Expected: Horizontally centered, width fits content but max 90%,
- *           text left-aligned for readability
  *
  * 為什麼：錯誤訊息通常較長，置中區塊可突出顯示，
  *        但文字左對齊讓長訊息易於閱讀
- * Why: Error messages are often long; centered block draws attention,
- *      but left-aligned text maintains readability
  */
 &.unavailable-reason {
-  /* $spacing-xs = 4px, auto 實現水平置中 (auto for horizontal centering) */
+  /* $spacing-xs = 4px, auto 實現水平置中 */
   margin: 4px auto 0;
 
-  /* 內部間距：垂直 4px, 水平 6px (Padding: vertical 4px, horizontal 6px) */
+  /* 內部間距：垂直 4px, 水平 6px */
   padding: 4px 6px;
 
   /**
@@ -466,16 +445,16 @@ height: 300px;
   /* $radius-sm = 3px */
   border-radius: 3px;
 
-  /* 行高 1.4 提升可讀性，避免緊密文字難以閱讀 (line-height 1.4 for readability) */
+  /* 行高 1.4 提升可讀性，避免緊密文字難以閱讀 */
   line-height: 1.4;
 
-  /* 寬度依內容調整，避免過寬撐破布局 (Width based on content to prevent overflow) */
+  /* 寬度依內容調整，避免過寬撐破布局 */
   width: fit-content;
 
-  /* 最大寬度限制為父容器 90%，保持適當留白 (Max 90% of parent for proper spacing) */
+  /* 最大寬度限制為父容器 90%，保持適當留白 */
   max-width: 90%;
 
-  /* 文字左對齊，長訊息易於閱讀 (Left align for readable long messages) */
+  /* 文字左對齊，長訊息易於閱讀 */
   text-align: left;
 }
 ```
