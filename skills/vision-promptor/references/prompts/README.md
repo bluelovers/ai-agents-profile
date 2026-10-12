@@ -25,6 +25,7 @@ tags:
 | [np-char-demi-human.md](np-char-demi-human.md) | 泛人族角色外型模組 | - |
 | [dy-window-view-example-001.md](dy-window-view-example-001.md) | 動態提示詞（窗景透視） | 六段式骨架：距離／前景遮蔽／人物／陳設／玻璃／風格 |
 | [mp-element-extraction-example.md](mp-element-extraction-example.md) | 要素分割與抽離 | 三階段：原始 → 分段整理 → 抽離 |
+| [bp-fix-001.md](bp-fix-001.md) | 提示詞修正前後對照（fix case） | 解決空間邏輯／動作不自然 |
 
 ## 專題檔 (Thematic Collections)
 
@@ -65,6 +66,7 @@ tags:
 
   - `mp-` = Merge Prompt（合併提示詞，檔名前綴）
   - `dy-` = Dynamic Prompts（動態提示詞，檔名前綴）
+  - `bp-` = Before/after Prompt fix（修正前後對照，檔名前綴）
 
 - 不一定要分配新編號（**指標性強或需引用的才賦予編號**）
 - 編號為固定識別碼，**空號不補**；新增範例請依各檔方案接續編號
