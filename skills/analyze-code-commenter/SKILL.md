@@ -190,7 +190,6 @@ When analyzing code and generating comments for logic blocks and members, apply 
   ```typescript
   /**
    * 初始化優先佇列 (Priority Queue) 並配置快取 (Cache) 空間
-   * Initialize Priority Queue and allocate Cache storage
    */
   ```
 
