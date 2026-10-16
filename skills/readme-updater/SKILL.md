@@ -493,7 +493,7 @@ Recommend adding documentation index to README.
 - **Consistency** - All READMEs use same format style
 - **Traditional Chinese** - Use Taiwan terminology for descriptions
 - **Key terms** - Add English in parentheses for clarity: `快取 (Cache)`
-- **Code examples** - Keep original language, add bilingual comments
+- **Code examples** - Keep original language, add bilingual comments; bilingual rules follow [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) (SSoT)
 - **Link validity** - Ensure internal links point to correct files
 - **Version info** - Match version numbers with package.json
 - **Avoid duplication** - Link to docs instead of repeating content

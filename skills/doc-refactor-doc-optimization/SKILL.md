@@ -177,16 +177,7 @@ tags:
 
 #### 彈性捨棄雙語原則 (Flexible Bilingual Omission)
 
-當雙語造成**閱讀障礙**或**內容過長**時，保留最清晰的一種語言即可，無需強制雙語。
-
-**例外：技術術語的雙語標註仍應保留**（如 `聯合類型 (Union Type)`、`目錄 (Table of Contents, TOC)`）。
-
-| 情境 | 建議做法 |
-|------|---------|
-| 標題說明已自明、短句 | 可省略另一語言 |
-| 雙語標題合併後過長影響閱讀 | 選擇最清晰的語言，捨棄另一語言 |
-| 技術術語首次出現 | **必須保留雙語標註**，格式：`中文 (Term)` |
-| 已有完整雙語 | 保留，不主動刪除 |
+> 彈性捨棄／保留雙語的判定（何時捨棄、何時保留、術語例外）以 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 為 SSoT。以下為**文件（Markdown）領域**的套用範例：
 
 ```markdown
 <!-- ✅ 標題已自明，只保留中文 -->
@@ -195,7 +186,7 @@ tags:
 <!-- ✅ 雙語合併後不過長，保留雙語 -->
 ## 閱讀流程優先原則 (Reading Flow Priority)
 
-<!-- ✅ 技術術語仍須保留雙語 -->
+<!-- ✅ 技術術語仍須保留雙語（依 SSoT 術語例外） -->
 文件的目錄 (Table of Contents, TOC) 應清楚列出所有章節 (Section)。
 ```
 
@@ -203,31 +194,21 @@ tags:
 
 #### 雙語術語標註原則 (Bilingual Terminology Annotation Principle)
 
-**規則：技術術語首次出現時應確保中英文資訊並存，確保對譯的完整性。**
-
-| 做法 | 說明 | 範例 |
-|------|------|------|
-| ✅ **一般術語標註** | 中文在前，英文術語在後加括號 | 聯合類型 (Union Type)、梯度下降法 (Gradient Descent) |
-| ✅ **縮寫標註格式** | 縮寫在前，完整名稱在後加括號 | `E2EE (End-to-End Encryption)` |
-| ✅ **複合資訊標註** | 中文 (英文全稱, 縮寫) | `大型語言模型 (Large Language Model, LLM)` |
-| ✅ **情境嵌入保留** | 在句子中保留術語並輔以解釋 | `TypeScript 的聯合類型 (Union Type) 允許變數擁有...` |
-| ❌ **錯誤做法：刪除** | 僅使用中文描述而省略原文 | `此函式接受多種可能的類型`（應保留 Union Type） |
+> 術語標註格式（`中文 (Term)`、`縮寫 (Full Name)`、`中文 (全稱, 縮寫)`、情境嵌入、禁止刪除原文）以 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 的「標註格式標準」為 SSoT。文件領域常見例：`目錄 (Table of Contents, TOC)`、`梯度下降法 (Gradient Descent)`、`交叉引用 (Cross-reference)`、`語意標記 (Semantic Markup)`。
 
 #### 領域專業術語保留規則 (Domain-Specific Preservation Rule)
 
-**規則：各領域的標準英文專業術語應保留術語原文，不得以中文描述替代或進行語意泛化。**
+**規則**：以 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 的「技術術語錨點」最高原則為 SSoT——術語原文不得以中文描述替代或語意泛化。以下為**文件領域**的補充論述：
 
-**核心邏輯 (Core Logic)：**
+**文件域考量 (Documentation-Domain Considerations)：**
 
-- **首次完整標註**：術語初次出現時，必須提供完整的雙語對照資訊。
-- **識別領域術語**：需判斷該詞彙是否為特定領域（如資安、AI、架構）的標準通用詞彙。
-- **保留術語原文**：術語原文必須在文中出現，格式應為 `中文術語 (Term)` 或 `縮寫術語 (Full Term)`。
-- **可選中文說明**：允許提供中文輔助說明，但該說明絕對不能取代英文術語本身。
-- **禁止翻譯替代**：嚴禁以「更好描述」為由刪除術語（例如：不得將 `SQL Injection` 改寫為「資料庫攻擊」）。
-- **可搜索性保留**：英文原文必須至少出現一次，以確保技術人員能精準檢索。
-- **領域一致性**：同一領域的文件應保持統一的標註慣例，不應隨意更動。
-- **可引用性 (Referencability)**：標準術語是技術界的共同語言，確保跨文件的連結性。
+- **識別領域術語**：判斷該詞彙是否為特定領域（如資安、AI、架構、文件工程）的標準通用詞彙。
+- **可選中文說明**：可提供中文輔助說明，但不得取代英文術語本身。
+- **領域一致性**：同一領域的文件應保持統一標註慣例，不應隨意更動。
+- **可引用性 (Referencability)**：標準術語是技術界共同語言，確保跨文件連結性。
 - **精確性 (Precision)**：防止中文描述（如「零信任」）無法完整傳達技術標準（如 `Zero Trust Architecture`）的嚴謹內涵。
+
+常見錯誤（不得泛化或翻譯替代）：`SQL Injection` 改寫為「資料庫攻擊」、`start_and_kill.bat` 替換為「啟動腳本」。
 
 #### 決策流程 (Decision Flow)
 

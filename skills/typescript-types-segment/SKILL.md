@@ -121,7 +121,7 @@ const updatedAt: number = ...;
 使用**雙語區塊註解**（中文 + English）說明型別用途。
 
 > **雙語規範參照**：遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 的雙語標準化規範（SSoT，含最高原則）。
-> **彈性捨棄雙語原則 (Flexible Bilingual Omission)**：當雙語造成閱讀障礙或內容過長時，保留最清晰的一種語言即可。**例外：技術術語（如 `Type Alias`、`Template Literal`、`Union Type`）的雙語標註仍應保留作為錨點。**
+> 本域技術術語（如 `Type Alias`、`Template Literal`、`Union Type`）的雙語標註依上述例外仍應保留作為錨點。
 
 ```typescript
 /**

@@ -128,7 +128,7 @@ const result = validate(userSchema, {
  *
  * 原始實現（無法實現）：
  * ```typescript
- * type DynamicReturn<T> = 
+ * type DynamicReturn<T> =
  *     T extends string ? string :
  *     T extends number ? number :
  *     T extends boolean ? boolean :
@@ -237,7 +237,7 @@ const result3 = processGeneric(true);    // boolean
  * } & Transform;
  *
  * // 嘗試實現真正的任意深度
- * type DeepNest<T, Depth extends number> = 
+ * type DeepNest<T, Depth extends number> =
  *     Depth extends 0 ? T : {
  *         [K in keyof T]: DeepNest<T[K], Subtract<Depth, 1>>
  *     };
@@ -296,22 +296,22 @@ function deepPartialRuntime<T>(obj: T, maxDepth: Depth): any {
         if (currentDepth >= maxDepth) {
             return value;
         }
-        
+
         if (value === null || typeof value !== 'object') {
             return value;
         }
-        
+
         if (Array.isArray(value)) {
             return value.map(item => process(item, currentDepth + 1));
         }
-        
+
         const result: Record<string, any> = {};
         for (const key in value) {
             result[key] = process(value[key], currentDepth + 1);
         }
         return result;
     };
-    
+
     return process(obj, 0);
 }
 
@@ -455,14 +455,13 @@ setStatusExact('pending');    // ✅ 正確
 setStatusExact('active');      // ❌ 類型錯誤
 
 /**
- * 枚舉風格的實現
- * Enum-style implementation
+ * 枚舉 (Enum) 風格的實現
  */
 const StatusEnum = {
     ...Status,
-    isPending: (status: StatusValue): status is PendingStatus => 
+    isPending: (status: StatusValue): status is PendingStatus =>
         status === Status.Pending,
-    isActive: (status: StatusValue): status is ActiveStatus => 
+    isActive: (status: StatusValue): status is ActiveStatus =>
         status === Status.Active,
 } as const;
 
@@ -499,7 +498,7 @@ function handleStatus(status: StatusValue): void {
  * Attempt to implement runtime type inference
  *
  * TODO: [TS-Reflection-001]
- * 
+ *
  * 原始實現（不可行 / Not feasible）：
  * ```typescript
  * type ApiResponse<T> = {
@@ -589,15 +588,15 @@ async function example() {
     try {
         // 獲取用戶
         const response = await client.get<UserResponse>('/users/123');
-        
+
         // 驗證回應
         const validated = ResponseSchema.parse(response);
-        
+
         // 類型安全的數據訪問
         console.log(validated.data.name);      // string
         console.log(validated.data.email);     // string
         console.log(validated.data.role);       // 'admin' | 'user' | 'guest'
-        
+
     } catch (error) {
         if (error instanceof z.ZodError) {
             console.log('Validation error:', error.errors);

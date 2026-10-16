@@ -18,23 +18,21 @@ tags:
 
 ```typescript
 /**
- * 處理結果狀態列舉
- * Processing result status enumeration
+ * 處理結果狀態
  */
 enum EnumProcessStatus {
-    /** 閒置 / Idle */
+    /** 閒置 */
     Idle = 'idle',
-    /** 執行中 / Running */
+    /** 執行中 */
     Running = 'running',
-    /** 已完成 / Completed */
+    /** 已完成 */
     Completed = 'completed',
-    /** 已取消 / Cancelled */
+    /** 已取消 */
     Cancelled = 'cancelled',
 }
 
 /**
  * 處理結果介面
- * Processing result interface
  */
 interface IProcessResult {
     status: EnumProcessStatus;
@@ -45,7 +43,6 @@ interface IProcessResult {
 
 /**
  * 處理錯誤介面
- * Processing error interface
  */
 interface IProcessError {
     code: string;
@@ -55,7 +52,6 @@ interface IProcessError {
 
 /**
  * 處理器函式型別
- * Processor function type
  */
 type IProcessor<TInput, TOutput> = (
     input: TInput,
@@ -64,7 +60,6 @@ type IProcessor<TInput, TOutput> = (
 
 /**
  * 處理器選項型別
- * Processor options type
  */
 type IProcessorOptions = {
     timeout?: number;
@@ -80,14 +75,13 @@ type IProcessorOptions = {
 ```typescript
 /**
  * 資料分頁參數
- * Data pagination parameters
  */
 interface IPaginationParams {
-    /** 當前頁碼（從 1 開始）/ Current page number (starting from 1) */
+    /** 當前頁碼（從 1 開始）*/
     page: number;
-    /** 每頁筆數 / Items per page */
+    /** 每頁筆數 */
     pageSize: number;
-    /** 總筆數（可選）/ Total count (optional) */
+    /** 總筆數（可選）*/
     total?: number;
 }
 ```
@@ -148,7 +142,6 @@ interface WrongComment {
 ```typescript
 /**
  * 設定值介面
- * Configuration value interface
  */
 interface IConfigValue {
     data: unknown;

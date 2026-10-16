@@ -90,53 +90,50 @@ function handleSearch() {
 // scripts/elem-get.ts
 
 /**
- * DOM 元素 ID 列舉（單一事實來源）
- * DOM element ID enum (Single Source of Truth)
+ * DOM 元素 ID
  */
 export const enum EnumWebviewElemId
 {
-  /** 搜尋結果容器 / Search results container */
+  /** 搜尋結果容器 */
   searchResults = 'searchResults',
-  /** 搜尋輸入框 / Search input field */
+  /** 搜尋輸入框 */
   searchInput = 'searchInput',
-  /** 訊息顯示容器 / Message display container */
+  /** 訊息顯示容器 */
   message = 'message',
   // ... 其他 ID
 }
 
 /**
- * CSS 類別選擇器列舉（單一事實來源）
- * CSS class selector enum (Single Source of Truth)
+ * CSS 類別選擇器
  */
 export const enum EnumCssClassSelector
 {
   /** 分頁導航容器 / Tab navigation container */
   tabs = 'tabs',
-  /** IDE 項目元素 / IDE item element */
+  /** IDE 項目元素 */
   ideItem = 'ide-item',
-  /** IDE 勾選框 / IDE checkbox */
+  /** IDE 勾選框 */
   ideCheckbox = 'ide-checkbox',
-  /** IDE 來源單選按鈕 / IDE source radio button */
+  /** IDE 來源單選按鈕 */
   ideSourceRadio = 'ide-source-radio',
 }
 
 /**
- * Tab 名稱列舉 - 業務語義符
- * Tab name enum - Business semantic identifier
+ * Tab 名稱 - 業務語義符
  */
 export const enum EnumTabName
 {
-  /** 同步設定分頁 / Sync settings tab */
+  /** Sync settings tab */
   sync = 'sync',
-  /** 檢視所有設定分頁 / View all settings tab */
+  /** 檢視所有設定分頁 */
   values = 'values',
-  /** 已選設定分頁 / Selected settings tab */
+  /** 已選設定分頁 */
   selected = 'selected',
-  /** 匯出/匯入分頁 / Export/Import tab */
+  /** 匯出/匯入分頁 */
   exportImport = 'export-import',
 }
 
-/** 所有分頁的有序陣列 / Ordered array of all tabs */
+/** 所有分頁的有序陣列 */
 export const ALL_TAB_NAMES: EnumTabName[] = [
   EnumTabName.sync,
   EnumTabName.values,
@@ -150,10 +147,9 @@ export const ALL_TAB_NAMES: EnumTabName[] = [
 ```typescript
 /**
  * 將 EnumWebviewElemId 轉換為 CSS ID 選擇器字串（帶 # 前綴）
- * Convert EnumWebviewElemId to CSS ID selector string (with # prefix)
- * @param id - 元素 ID 列舉值 / Element ID enum value
- * @param suffix - 選擇器後綴 / Selector suffix
- * @returns CSS ID 選擇器字串 / CSS ID selector string
+ * @param id - 元素 ID
+ * @param suffix - 選擇器後綴
+ * @returns CSS ID 選擇器字串
  */
 export function getElemIdSelector(id: EnumWebviewElemId, suffix?: string): string
 {
@@ -162,10 +158,9 @@ export function getElemIdSelector(id: EnumWebviewElemId, suffix?: string): strin
 
 /**
  * 將 EnumCssClassSelector 轉換為 CSS 類別選擇器字串（帶 . 前綴）
- * Convert EnumCssClassSelector to CSS class selector string (with . prefix)
- * @param className - CSS 類別列舉值 / CSS class enum value
- * @param suffix - 選擇器後綴 / Selector suffix
- * @returns CSS 類別選擇器字串 / CSS class selector string
+ * @param className - CSS 類別
+ * @param suffix - 選擇器後綴
+ * @returns CSS 類別選擇器字串
  */
 export function getClassSelector(className: EnumCssClassSelector, suffix?: string): string
 {
@@ -174,9 +169,8 @@ export function getClassSelector(className: EnumCssClassSelector, suffix?: strin
 
 /**
  * 透過 EnumWebviewElemId 或 EnumTabName 查詢單一元素
- * Query single element by EnumWebviewElemId or EnumTabName
- * @param id - 元素 ID 列舉值或 Tab 名稱（當兼任元素 ID 時）/ Element ID enum value or Tab name (when it doubles as element ID)
- * @returns 查詢到的元素或 null / Queried element or null
+ * @param id - 元素 ID 或 Tab 名稱（當兼任元素 ID 時）
+ * @returns 查詢到的元素或 null
  * @remarks 當 EnumTabName 兼任元素 ID 時可直接傳入，無需額外轉換
  */
 export function querySelectorById<T extends HTMLElement>(id: EnumWebviewElemId | EnumTabName): T | null
@@ -186,10 +180,9 @@ export function querySelectorById<T extends HTMLElement>(id: EnumWebviewElemId |
 
 /**
  * 透過 EnumCssClassSelector 查詢單一元素
- * Query single element by EnumCssClassSelector
- * @param classSelector - CSS 類別列舉值 / CSS class enum value
- * @param suffix - 選擇器後綴 / Selector suffix
- * @returns 查詢到的元素或 null / Queried element or null
+ * @param classSelector - CSS 類別
+ * @param suffix - 選擇器後綴
+ * @returns 查詢到的元素或 null
  */
 export function querySelectorByClass<T extends HTMLElement>(classSelector: EnumCssClassSelector, suffix?: string): T | null
 {
@@ -198,10 +191,9 @@ export function querySelectorByClass<T extends HTMLElement>(classSelector: EnumC
 
 /**
  * 透過 EnumCssClassSelector 查詢所有匹配元素
- * Query all elements by EnumCssClassSelector
- * @param classSelector - CSS 類別列舉值 / CSS class enum value
- * @param suffix - 選擇器後綴 / Selector suffix
- * @returns 查詢到的元素列表 / Queried elements NodeList
+ * @param classSelector - CSS 類別
+ * @param suffix - 選擇器後綴
+ * @returns 查詢到的元素列表
  */
 export function querySelectorAllByClass<T extends HTMLElement>(classSelector: EnumCssClassSelector, suffix?: string): NodeListOf<T>
 {
@@ -225,24 +217,24 @@ export function querySelectorAllByClass<T extends HTMLElement>(classSelector: En
 import { EnumWebviewElemId, EnumCssClassSelector, EnumTabName } from './scripts/elem-get';
 import { getClassSelector, querySelectorById, querySelectorByClass, querySelectorAllByClass } from './scripts/elem-get';
 
-// 基本元素查詢 / Basic element query
+// Basic element query
 const searchResults = querySelectorById<HTMLDivElement>(
   EnumWebviewElemId.searchResults
 );
 
-// 帶偽類選擇器 / With pseudo-class selector
+// With pseudo-class selector
 const checkedRadio = querySelectorByClass<HTMLInputElement>(
   EnumCssClassSelector.ideSourceRadio,
   ':checked'
 );
 
-// 帶屬性選擇器 / With attribute selector
+// With attribute selector
 const radioByValue = querySelectorByClass<HTMLInputElement>(
   EnumCssClassSelector.ideSourceRadio,
   `[value="${uuid}"]`
 );
 
-// 查詢所有匹配元素 / Query all matching elements
+// Query all matching elements
 querySelectorAllByClass<HTMLInputElement>(
   EnumCssClassSelector.ideCheckbox,
   ':checked'
@@ -263,28 +255,28 @@ ALL_TAB_NAMES.forEach(tabName => {
 
 #### 替換 getElementById
 ```typescript
-// ❌ 之前 / Before
+// ❌ Before
 const el = document.getElementById('searchResults');
 
-// ✅ 之後 / After
+// ✅ After
 const el = querySelectorById<HTMLDivElement>(EnumWebviewElemId.searchResults);
 ```
 
 #### 替換 querySelector（基本類別）
 ```typescript
-// ❌ 之前 / Before
+// ❌ Before
 const el = document.querySelector<HTMLElement>('.tabs');
 
-// ✅ 之後 / After
+// ✅ After
 const el = querySelectorByClass<HTMLElement>(EnumCssClassSelector.tabs);
 ```
 
 #### 替換 querySelector（帶偽類）
 ```typescript
-// ❌ 之前 / Before
+// ❌ Before
 const radio = document.querySelector<HTMLInputElement>('.ide-source-radio:checked');
 
-// ✅ 之後 / After
+// ✅ After
 const radio = querySelectorByClass<HTMLInputElement>(
   EnumCssClassSelector.ideSourceRadio,
   ':checked'
@@ -293,10 +285,10 @@ const radio = querySelectorByClass<HTMLInputElement>(
 
 #### 替換 querySelector（帶屬性）
 ```typescript
-// ❌ 之前 / Before
+// ❌ Before
 const radio = document.querySelector<HTMLInputElement>(`.ide-source-radio[value="${uuid}"]`);
 
-// ✅ 之後 / After
+// ✅ After
 const radio = querySelectorByClass<HTMLInputElement>(
   EnumCssClassSelector.ideSourceRadio,
   `[value="${uuid}"]`
@@ -305,10 +297,10 @@ const radio = querySelectorByClass<HTMLInputElement>(
 
 #### 替換 querySelectorAll
 ```typescript
-// ❌ 之前 / Before
+// ❌ Before
 document.querySelectorAll('.ide-checkbox:checked').forEach(cb => { ... });
 
-// ✅ 之後 / After
+// ✅ After
 querySelectorAllByClass<HTMLInputElement>(EnumCssClassSelector.ideCheckbox, ':checked').forEach(cb => { ... });
 ```
 
@@ -324,10 +316,10 @@ HTML/JSX 是前端應用程式的**視覺契約層 (Visual Contract Layer)**。�
 
 **透過 Enum 統一管理 ID 與 Class，HTML/JSX 層與邏輯層共享同一個「語義事實來源」。** 以下範例展示如何將視覺標記與業務邏輯透過 Enum 緊密但安全地連結。
 
-#### 完整頁面結構 / Complete Page Structure
+#### 完整頁面結構
 
 ```jsx
-// ❌ 之前 - 硬編碼 ID 與 Class / Before - Hardcoded IDs and Classes
+// ❌ 之前 - 硬編碼 ID 與 Class
 <div id="sync" className="tab-content active">
   <div className="section">
     <h2>Search & Sync Settings</h2>
@@ -335,12 +327,12 @@ HTML/JSX 是前端應用程式的**視覺契約層 (Visual Contract Layer)**。�
       <input type="text" className="search-input" id="searchInput" />
     </div>
     <div id="searchResults" className="results-container">
-      {/* 搜尋結果 / Search results */}
+      {/* 搜尋結果 */}
     </div>
   </div>
 </div>
 
-// ✅ 之後 - 使用 Enum / After - Using Enums
+// ✅ 之後 - 使用 Enum
 <div id={EnumTabName.sync} className="tab-content active">
   <div className="section">
     <h2>Search & Sync Settings</h2>
@@ -352,7 +344,7 @@ HTML/JSX 是前端應用程式的**視覺契約層 (Visual Contract Layer)**。�
       />
     </div>
     <div id={EnumWebviewElemId.searchResults} className="results-container">
-      <!-- 搜尋結果 / Search results -->
+      <!-- 搜尋結果 -->
     </div>
   </div>
 </div>
@@ -361,7 +353,7 @@ HTML/JSX 是前端應用程式的**視覺契約層 (Visual Contract Layer)**。�
 #### 導航組件 / Navigation Component
 
 ```typescript
-// ❌ 之前 - 硬編碼 Tab 名稱 / Before - Hardcoded tab names
+// ❌ 之前 - 硬編碼 Tab 名稱
 export function SettingsNavigation()
 {
   return (
@@ -376,7 +368,7 @@ export function SettingsNavigation()
   );
 }
 
-// ✅ 之後 - 使用 EnumTabName / After - Using EnumTabName
+// ✅ 之後 - 使用 EnumTabName
 export function SettingsNavigation()
 {
   return (
@@ -432,7 +424,7 @@ export function SettingsNavigation()
 包含運行時變數插值的選擇器：
 
 ```typescript
-// ✅ 可接受：動態 index / Acceptable: dynamic index
+// ✅ 可接受：動態 index
 document.querySelector(`[data-index="${index}"]`)
 ```
 
@@ -444,14 +436,14 @@ const dynamicSelector = `${getClassSelector(EnumCssClassSelector.ideItem)}[data-
 const element = document.querySelector(dynamicSelector);
 ```
 
-### 2. 測試檔案 / Test Files
+### 2. 測試檔案
 
 **舊有測試：** 已存在的測試代碼可保留硬編碼選擇器，避免大幅度更動代碼引入回歸風險。
 
 **新寫測試：** 一律使用 Enum，確保測試代碼與生產代碼共享同一語義來源：
 
 ```typescript
-// ✅ 新測試應該這樣寫 / New tests should use enum
+// ✅ 新測試應該這樣寫
 const testElement = querySelectorById(EnumWebviewElemId.testContainer);
 
 // ⚠️ 舊測試可暫時保留（但建議標註 TODO 以便未來重構）
@@ -464,13 +456,13 @@ const legacyElement = document.getElementById('test-container');
 外部庫要求的特定選擇器格式：
 
 ```typescript
-// 外部框架要求的特定格式 / Required by external framework
+// 外部框架要求的特定格式
 const element = document.querySelector('[data-testid="component"]');
 ```
 
 ---
 
-## 相關資源 / Related Resources
+## 相關資源
 
 - [TypeScript Enum 文件](https://www.typescriptlang.org/docs/handbook/enums.html)
 - [Single Source of Truth 設計模式](https://en.wikipedia.org/wiki/Single_source_of_truth)

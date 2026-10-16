@@ -156,7 +156,6 @@ export interface IStationBase {
 ```typescript
 /**
  * 地理座標 - 單一事實來源
- * Geographic coordinate - Single source of truth
  */
 export interface IGeoCoord {
     lng: number;
@@ -165,7 +164,6 @@ export interface IGeoCoord {
 
 /**
  * 地理邊界 - 組合 IGeoCoord
- * Geographic bounds - Composed from IGeoCoord
  */
 export interface IGeoBounds {
     northWest: IGeoCoord;
@@ -176,7 +174,6 @@ export interface IGeoBounds {
 
 /**
  * 站點基礎資訊 - 優先繼承 IGeoCoord 而非各自重複定義
- * Station base info - Extends IGeoCoord
  */
 export interface IStationBase extends IGeoCoord {
     dataType: EnumDatasetType;
@@ -261,10 +258,10 @@ export function calculateOrderPricing(
 
 ```typescript
 /**
- * 百分比基準：滿額＝100 / Percentage base = 100
+ * 百分比基準：滿額＝100
  */
 export const PERCENT_BASE = 100;
-/** 無百分比效果＝0% / No percentage effect = 0% */
+/** 無百分比效果＝0% */
 export const PERCENT_NONE = 0;
 
 /** 百分比 → 係數：(value ?? fallback ?? PERCENT_BASE) / 100 */
@@ -341,7 +338,7 @@ type IUserRole = 'admin' | 'editor' | 'viewer';
 export interface ISkill {
     name: string;
     /**
-     * 技能類型：0＝物理 (physical)、1＝魔法 (magic)
+     * 技能類型：0＝物理、1＝魔法
      */
     type: 0 | 1; // ❌ 壞味道：在介面中直接宣告數字聯合
 }
@@ -361,7 +358,6 @@ function applyDamage(skill: ISkill) {
 ```typescript
 /**
  * 使用者角色列舉 - 型別與執行期數值的單一事實來源
- * User role enumeration - Single source of truth for types and values
  */
 export enum EnumUserRole {
     ADMIN = 'admin',
@@ -377,7 +373,6 @@ export function isValidRole(value: unknown): value is EnumUserRole {
 
 /**
  * 技能傷害類型列舉 - 徹底取代 0 | 1 數字聯合
- * Skill damage type enumeration - Completely replaces 0 | 1 numeric union
  */
 export enum EnumSkillDamageType {
     /** 物理傷害 / Physical damage */
@@ -388,7 +383,7 @@ export enum EnumSkillDamageType {
 
 export interface ISkill {
     name: string;
-    /** 技能傷害類型 / Skill damage type */
+    /** 技能傷害類型 */
     type: EnumSkillDamageType; // ✅ 語義明確，直接引用 Enum 作為單一事實來源
 }
 
@@ -632,7 +627,6 @@ export interface IOrderQuery {
 ```typescript
 /**
  * 稽核後設資料 - 建立/更新追蹤欄位的單一事實來源
- * Audit metadata — single source of truth for create/update tracking fields.
  */
 export interface IAuditable {
     createdAt: string;
@@ -643,7 +637,6 @@ export interface IAuditable {
 
 /**
  * 分頁請求 - 分頁查詢欄位的單一事實來源
- * Pagination request — single source of truth for paged query fields.
  */
 export interface IPaginatedQuery {
     page: number;
@@ -707,7 +700,6 @@ export interface ITripDetailMapValue {
 ```typescript
 /**
  * 地理座標 - 單一事實來源
- * Geographic coordinate - Single source of truth
  */
 export interface IGeoCoord {
     lng: number;
@@ -716,7 +708,6 @@ export interface IGeoCoord {
 
 /**
  * 行程詳細資訊 - 完整型別定義
- * Trip detail - Complete type definition
  */
 export interface ITripDetail {
     hero?: IRawHeroV2;
@@ -733,10 +724,8 @@ export interface ITripDetail {
 
 /**
  * 行程詳細地圖值 - 僅選取 ITripDetail 中的座標相關欄位
- * Trip detail map value - Picks coordinate-related fields from ITripDetail
  *
  * 使用 Pick 保留型別可追溯性，當 ITripDetail 改變時自動同步
- * Using Pick preserves type traceability, auto-syncs when ITripDetail changes
  */
 export interface ITripDetailMapValue extends Pick<ITripDetail, 'mapUrl' | 'message' | 'pickupCoords' | 'dropoffCoords' | 'cancelCoords' | 'unknownCoords'> {
     hero?: IRawHeroV2;
@@ -753,9 +742,9 @@ export interface ITripDetailMapValue extends Pick<ITripDetail, 'mapUrl' | 'messa
 ```typescript
 // ✅ 單一欄位使用索引存取
 interface IUserRef {
-    /** 使用者識別碼 / User identifier */
+    /** 使用者識別碼 */
     id: IUser['id'];           // 來自 IUser，若 IUser.id 改型則自動同步
-    /** 使用者顯示名稱 / User display name */
+    /** 使用者顯示名稱 */
     displayName: IUser['name']; // 來自 IUser，保持型別一致性
 }
 ```
@@ -823,40 +812,15 @@ function process(type: IDatasetType, damageType: ISkillDamageType) {
 
 ```typescript
 /**
- * 資料集類型列舉
- * Dataset type enumeration
+ * 資料集類型
  */
 enum EnumDatasetType {
-    /** 無線網路 / WiFi */
+    /** 無線網路 */
     WIFI = "wifi",
-    /** 充電站 / Charging station */
+    /** 充電站 */
     CHARGING = "charging",
-    /** 停車場 / Parking */
+    /** 停車場 */
     PARKING = "parking",
-}
-
-/**
- * 技能傷害類型列舉
- * Skill damage type enumeration
- */
-enum EnumSkillDamageType {
-    /** 物理傷害 / Physical damage */
-    PHYSICAL = 0,
-    /** 魔法傷害 / Magic damage */
-    MAGIC = 1,
-}
-
-/**
- * 狀態列舉
- * Status enumeration
- */
-enum EnumStatus {
-    /** 啟用 / Active */
-    ACTIVE = 'active',
-    /** 停用 / Inactive */
-    INACTIVE = 'inactive',
-    /** 待處理 / Pending */
-    PENDING = 'pending',
 }
 ```
 
@@ -877,13 +841,13 @@ enum EnumStatus {
 ```typescript
 // ✅ 正確：目標類型的 Enum 定義
 enum EnumTargetType {
-    /** 敵人 / Enemy */
+    /** 敵人 */
     Enemy = 'enemy',
-    /** 友方 / Friend */
+    /** 友方 */
     Friend = 'friend',
-    /** 自身 / Self */
+    /** 自身 */
     Self = 'self',
-    /** 全體 / All */
+    /** 全體 */
     All = 'all',
 }
 
@@ -966,7 +930,6 @@ async function processUserData(userId: string) {
 ```typescript
 /**
  * 獲取使用者完整資訊
- * Get complete user information
  */
 async function fetchUserWithProfile(userId: string): Promise<IUserWithProfile> {
     const user = await db.getUser(userId);
@@ -976,7 +939,6 @@ async function fetchUserWithProfile(userId: string): Promise<IUserWithProfile> {
 
 /**
  * 計算使用者訂單統計
- * Calculate user order statistics
  */
 async function calculateUserOrderStats(userId: string): Promise<IOrderStats> {
     const orders = await db.getOrders(userId);
@@ -985,7 +947,6 @@ async function calculateUserOrderStats(userId: string): Promise<IOrderStats> {
 
 /**
  * 處理使用者資料流程
- * Process user data flow
  */
 async function processUserData(userId: string): Promise<ICacheResult> {
     // 每個步驟清晰可讀，可獨立測試
@@ -1028,7 +989,6 @@ class DataProcessor extends EventEmitter {
 
     /**
      * 清理資源
-     * Clean up resources
      */
     teardown(): void {
         this.listeners.forEach(remove => remove());
@@ -1066,18 +1026,17 @@ function createUser(
 // After: 型別化參數物件
 /**
  * 建立使用者請求參數
- * Create user request parameters
  */
 interface ICreateUserRequest {
-    /** 使用者名稱 / User name */
+    /** 使用者名稱 */
     name: string;
-    /** 電子郵件 / Email address */
+    /** 電子郵件 */
     email: string;
-    /** 年齡 / Age */
+    /** 年齡 */
     age: number;
-    /** 角色 / Role */
+    /** 角色 */
     role: EnumUserRole;
-    /** 部門 / Department */
+    /** 部門 */
     department: EnumDepartment;
 }
 
@@ -1102,7 +1061,6 @@ function processData(data: unknown): void {
 
 /**
  * 資料驗證型別守衛
- * Data validation type guard
  */
 function isValidData(data: unknown): data is IValidData {
     return (

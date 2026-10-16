@@ -88,16 +88,15 @@ context.globalState.update('selectedIDEs', 'string');   // ❌ 錯誤類型！�
 
 ```typescript
 /**
- * 全局狀態鍵名枚舉
- * Global state key name enum
+ * 全局狀態鍵名
  */
 export const enum EnumGlobalStateName
 {
-    /** 搜尋歷史記錄 / Search history */
+    /** 搜尋歷史記錄 */
     searchHistory = 'searchHistory',
-    /** 已選擇的 IDE / Selected IDEs */
+    /** 已選擇的 IDE */
     selectedIDEs = 'selectedIDEs',
-    /** 使用者偏好設定 / User preferences */
+    /** 使用者偏好設定 */
     userPreferences = 'userPreferences',
 }
 ```
@@ -107,7 +106,6 @@ export const enum EnumGlobalStateName
 ```typescript
 /**
  * 搜尋歷史記錄狀態接口
- * Search history state interface
  */
 export interface IGlobalStateSearchHistory
 {
@@ -117,7 +115,6 @@ export interface IGlobalStateSearchHistory
 
 /**
  * 已選 IDE 狀態接口
- * Selected IDEs state interface
  */
 export interface IGlobalStateSelectedIDEs
 {
@@ -127,7 +124,6 @@ export interface IGlobalStateSelectedIDEs
 
 /**
  * 使用者偏好設定狀態接口
- * User preferences state interface
  */
 export interface IGlobalStateUserPreferences
 {
@@ -140,7 +136,6 @@ export interface IGlobalStateUserPreferences
 
 /**
  * 所有全局狀態類型的聯合類型
- * Union type of all global state types
  */
 export type IGlobalStateAll =
     | IGlobalStateSearchHistory
@@ -153,7 +148,6 @@ export type IGlobalStateAll =
 ```typescript
 /**
  * VS Code Extension Context GlobalState 的類型安全封裝
- * Type-safe wrapper for VS Code Extension Context GlobalState
  */
 export class VscodeExtensionContextGlobalState
 {
@@ -168,7 +162,6 @@ export class VscodeExtensionContextGlobalState
 
     /**
      * 獲取指定鍵的值
-     * Get value by key with type safety
      *
      * @param key - 狀態鍵名（EnumGlobalStateName 枚舉值）
      * @param defaultValue - 默認值（可選）
@@ -184,7 +177,6 @@ export class VscodeExtensionContextGlobalState
 
     /**
      * 更新指定鍵的值
-     * Update value by key with type safety
      *
      * @param key - 狀態鍵名（EnumGlobalStateName 枚舉值）
      * @param value - 要存儲的值（類型由鍵決定）
@@ -261,7 +253,7 @@ state.get(EnumGlobalStateName.searchHistory, 123);          // ❌ 錯誤：類�
 export const enum EnumGlobalStateName
 {
     // ... 現有鍵
-    /** 最近打開的文件 / Recently opened files */
+    /** 最近打開的文件 */
     recentFiles = 'recentFiles',
 }
 

@@ -1197,7 +1197,7 @@ t.assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
 
 ---
 
-## 相關資源 / Related Resources
+## 相關資源
 
 - [測試框架 API 重構範例](./references/examples.md)
 - [測試框架相容性與 API 對應（Jest / Vitest / Bun / Node.js）](./references/framework-compatibility.md)

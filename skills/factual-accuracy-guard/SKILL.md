@@ -641,7 +641,7 @@ await question({
 
 ---
 
-## 相關資源 / Related Resources
+## 相關資源
 
 - [unimplemented-code-handling-rules.md](../../rules/unimplemented-code-handling-rules.md) - 無法實現代碼處理規則
 - [comment-format-rules-js](../comment-format-rules-js/SKILL.md) - 註解格式規範

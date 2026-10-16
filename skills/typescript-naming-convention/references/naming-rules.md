@@ -20,8 +20,7 @@ tags:
 
 ```typescript
 /**
- * 結果類型列舉
- * Result type enumeration
+ * 結果類型
  */
 enum EnumResultType {
     Success = 'success',
@@ -32,8 +31,7 @@ enum EnumResultType {
 
 ```typescript
 /**
- * HTTP 狀態碼列舉
- * HTTP status code enumeration
+ * HTTP 狀態碼
  */
 enum EnumHttpStatus {
     OK = 200,
@@ -48,17 +46,16 @@ enum EnumHttpStatus {
 
 ```typescript
 /**
- * 日誌級別列舉
- * Log level enumeration
+ * 日誌級別
  */
 enum EnumLogLevel {
-    /** 除錯資訊 / Debug information */
+    /** 除錯資訊 */
     Debug = 'debug',
-    /** 一般資訊 / General information */
+    /** 一般資訊 */
     Info = 'info',
-    /** 警告訊息 / Warning message */
+    /** 警告訊息 */
     Warn = 'warn',
-    /** 錯誤訊息 / Error message */
+    /** 錯誤訊息 */
     Error = 'error',
 }
 ```
@@ -71,8 +68,7 @@ enum EnumLogLevel {
 
 ```typescript
 /**
- * 結果型別介面
- * Result type interface
+ * 回傳結果
  */
 interface IResultType {
     code: number;
@@ -83,8 +79,7 @@ interface IResultType {
 
 ```typescript
 /**
- * 使用者資訊介面
- * User information interface
+ * 使用者資訊
  */
 interface IUserInfo {
     id: string;
@@ -99,23 +94,21 @@ interface IUserInfo {
 
 ```typescript
 /**
- * 使用者資訊介面
- * User information interface
+ * 使用者資訊
  */
 interface IUserInfo {
-    /** 使用者唯一識別碼 / User unique identifier */
+    /** 使用者唯一識別碼 */
     id: string;
-    /** 使用者名稱 / User name */
+    /** 使用者名稱 */
     name: string;
-    /** 電子郵件地址（可選）/ Email address (optional) */
+    /** 電子郵件地址（可選） */
     email?: string;
-    /** 建立時間 / Creation timestamp */
+    /** 建立時間 */
     createdAt: Date;
     /**
      * 更新使用者資料
-     * Update user information
-     * @param data - 更新的資料 / Data to update
-     * @returns 更新後的使用者資訊 / Updated user information
+     * @param data - 更新的資料
+     * @returns 更新後的使用者資訊
      */
     update(data: Partial<IUserInfo>): IUserInfo;
 }
@@ -129,8 +122,7 @@ interface IUserInfo {
 
 ```typescript
 /**
- * API 回應型別
- * API response type
+ * API 回應
  */
 type IApiResponse<T> = {
     success: boolean;
@@ -142,7 +134,6 @@ type IApiResponse<T> = {
 ```typescript
 /**
  * 狀態型別
- * Status type
  */
 type IStatus = 'pending' | 'processing' | 'completed' | 'failed';
 ```
@@ -154,16 +145,15 @@ type IStatus = 'pending' | 'processing' | 'completed' | 'failed';
 ```typescript
 /**
  * API 回應型別
- * API response type
  */
 type IApiResponse<T> = {
-    /** 請求是否成功 / Whether the request was successful */
+    /** 請求是否成功 */
     success: boolean;
-    /** 回應資料 / Response data */
+    /** 回應資料 */
     data: T;
-    /** 錯誤訊息（若失敗時存在）/ Error message (if failed) */
+    /** 錯誤訊息（若失敗時存在） */
     error?: string;
-    /** 伺服器回應時間戳 / Server response timestamp */
+    /** 伺服器回應時間戳 */
     timestamp: number;
 };
 ```
@@ -171,17 +161,15 @@ type IApiResponse<T> = {
 ```typescript
 /**
  * 資料驗證器型別
- * Data validator type
  */
 type IValidator<T> = {
     /**
      * 驗證資料是否有效
-     * Validate if data is valid
-     * @param value - 待驗證的值 / Value to validate
-     * @returns 驗證結果 / Validation result
+     * @param value - 待驗證的值
+     * @returns 驗證結果
      */
     validate: (value: unknown) => value is T;
-    /** 驗證失敗時的錯誤訊息 / Error message when validation fails */
+    /** 驗證失敗時的錯誤訊息 */
     errorMessage: string;
 };
 ```

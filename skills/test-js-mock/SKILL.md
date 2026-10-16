@@ -439,7 +439,7 @@ jest.mock('os', () => require('os'));
 
 ---
 
-## 相關資源 / Related Resources
+## 相關資源
 
 - [Jest Manual Mocks](https://jestjs.io/docs/manual-mocks)
 - [memfs-extra](https://www.npmjs.com/package/memfs-extra)

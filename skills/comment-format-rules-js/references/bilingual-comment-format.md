@@ -33,19 +33,21 @@ tags:
 - 單行格式使用 `/` 分隔（前後留空格）
 - 多行格式分行書寫，中文段落在前，英文段落在後
 
+> 以下為排版語法示範，非主張該句應雙語；實作時仍依判定基準與彈性取捨，短句自明者單語即可。
+
 ```typescript
 // ✅ 正確：單行區塊雙語格式
-/** 是否成功 / Whether successful */
-const isActive = true;
+/** 快取命中率 / Cache Hit Rate */
+const cacheHitRate = 0.95;
 
 // ✅ 正確：多行區塊雙語格式
 /**
- * 取得分組鍵的函式
- * Function to get grouping key
+ * 以雜湊對應 (Hash Map) 建立分組鍵索引 (group-key index)
+ * Build group-key index via hash map
  *
- * @param item - 要分組的元素 / Element to group
+ * @param items - 待分組的項目 / Items to group
  */
-getKey?(item: T, index: number, arr: T[]): any
+function groupBy(items: unknown[]): Map<string, unknown[]>
 
 // ❌ 錯誤：假雙語（兩行皆為英文）
 /**
@@ -91,17 +93,19 @@ JSDoc 標籤（如 `@param`、`@returns`、`@throws`、`@see` 等）中的描述
 - 中文在前，英文在後，以 `/` 分隔
 - 適用於所有 JSDoc 標籤：`@param`、`@returns`、`@throws`、`@see` 等
 
+> 以下為排版語法示範，非主張該句應雙語；實作時仍依判定基準與彈性取捨，短句自明者單語即可。
+
 ```typescript
 /**
- * 取得使用者資料
- * Get user data
+ * 以二分搜尋取得排序快取中的目標索引
+ * Get target index in sorted cache via binary search
  *
- * @param userId - 使用者識別碼 / User identifier
- * @param options - 選項配置 / Options configuration
- * @returns 使用者資料 / User data
- * @throws 當使用者不存在時拋出錯誤 / Throws error when user not found
+ * @param key - Cache Key
+ * @param indexMap - Index Map
+ * @returns Target Index, -1 if not found
+ * @throws Throws CacheMissError when uninitialized
  */
-function getUserData(userId: string, options?: GetUserOptions): UserData {
+function lookupIndex(key: string, indexMap: Map<string, number>): number {
     // ...
 }
 ```

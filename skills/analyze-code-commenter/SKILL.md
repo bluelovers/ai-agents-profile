@@ -185,9 +185,8 @@ Each item below gets **its own block comment placed above the member**. The comm
 >
 > **【最高原則】**：雙語最高原則（可讀性取捨、技術術語錨點）以 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 為準，本技能不重述其定義。
 
-When analyzing code and generating comments for logic blocks and members, apply the following skill-specific bilingual rules:
+When analyzing code and generating comments for logic blocks and members, apply [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) (SSoT: zh-TW first, no fake bilingual, flexible omission, preserve foreign comments). Domain-specific application:
 
-- **Bilingual Comment Pairing**: Generated comment pairs for code elements must place Traditional Chinese (zh-TW) first, followed by English. Never generate fake bilingual comments (e.g., duplicated English sentences).
 - **Technical Term Identification during Code Analysis**: When identifying algorithmic or domain concepts during code inspection, retain bilingual notation (`中文 (Term)`) on first occurrence:
   ```typescript
   /**
@@ -195,8 +194,6 @@ When analyzing code and generating comments for logic blocks and members, apply 
    * Initialize Priority Queue and allocate Cache storage
    */
   ```
-- **Nested Logic Brevity**: When analyzing complex nested control flows, if mirrored bilingual commentary causes visual clutter or excessive length, apply flexible omission: prioritize the clearest Traditional Chinese explanation for internal branches while anchoring key technical terms with bilingual tags.
-- **Preserving Existing Foreign Comments**: When analyzing code with existing non-English comments (e.g., Japanese, Korean, French), do NOT overwrite them; preserve the original comment text and append the new zh-TW + English commentary.
 
 ## Critical Constraints (Behavioral)
 

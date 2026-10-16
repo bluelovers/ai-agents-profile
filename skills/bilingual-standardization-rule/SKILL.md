@@ -52,16 +52,18 @@ tags:
 - **多行區塊格式**：中文段落置於上方，英文段落置於下方，兩者分行排列。
 - **術語括號格式**：中文譯名在先，英文術語置於半形括號內，例如：`快取 (Cache)`。
 
+> 以下為排版語法示範，非主張該句應雙語；實作時仍依判定基準與彈性取捨，短句自明者單語即可。
+
 ```markdown
 <!-- ✅ 正確：單行雙語格式 -->
-是否成功 / Whether successful
+快取命中率 / Cache Hit Rate
 
-<!-- ✅ 正確：多行雙語格式 -->
-取得分組鍵的函式
-Function to get grouping key
+<!-- ✅ 正確：多行區塊雙語格式 -->
+避免競態條件的執行緒安全鎖
+Thread-safe lock to prevent race condition
 
 <!-- ✅ 正確：括號雙語格式 -->
-使用陷阱 (Pitfalls)
+型別守衛 (Type Guard)
 
 <!-- ❌ 錯誤：假雙語（兩行皆為英文） -->
 Process data
