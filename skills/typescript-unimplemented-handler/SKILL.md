@@ -49,7 +49,7 @@ type IConfigValidator<T> = {
 
 ### 2. 雙語說明
 
-> **雙語規範參照**：遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)；其中 **「彈性取捨（捨棄與保留）」** 與 **「技術術語錨點」** 為最高原則，仍需嚴格遵守。
+> **雙語規範參照**：遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 的雙語標準化規範（SSoT，含最高原則）。
 
 **所有無法實現的代碼都應遵守雙語規範進行說明**，確保不同背景的開發者都能理解。
 

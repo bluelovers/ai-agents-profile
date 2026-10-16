@@ -65,7 +65,7 @@ expect({
   - **複合式**：結合以上，以快速理解為主
 - **格式**：
   - 純英文/純中文
-  - 或雙語遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)；其中 **「彈性取捨（捨棄與保留）」** 與 **「技術術語錨點」** 為最高原則，仍需嚴格遵守（當雙語造成閱讀障礙或過長時保留最清晰語言；技術術語如 `Snapshot`、`Mock` 的雙語標註仍應保留作為錨點）。
+  - 或雙語遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 的雙語標準化規範（SSoT，含最高原則；技術術語如 `Snapshot`、`Mock` 仍須保留雙語標註作為錨點）。
 - **長度**：可以是**單行**或**多行**文字，視說明需求而定
 - **擴展用途**：可以補充說明 `result` 中各欄位的來源或意義，幫助理解輸出結構
 

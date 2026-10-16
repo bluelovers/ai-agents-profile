@@ -31,7 +31,7 @@ IDE 及 AI 在處理程式碼時，會優先解析 **語義化標籤**（如 JSD
 - **解釋 WHY（為什麼），而非僅解釋 WHAT（做什麼）**：複雜條件需說明理由，邊界情況必須記錄。
 - **註解放置於代碼上方**，避免代碼後方的行內註解。詳見 [註解位置規範](./references/comment-placement.md)。
 - **註解必須緊鄰其所描述的宣告**（中間不得隔著 `import`、常數或其他陳述式）；**描述宣告的註解不得寫成檔頭註解**。詳見 [錯誤註解案例](./references/bad-comment-examples.md)。
-- **雙語註解：中文在前、英文在後**，禁止「英文＋英文」的假雙語。通用雙語標準參照 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)；其中 **彈性取捨（捨棄與保留）** 與 **技術術語錨點** 等核心原則為最高原則，仍需嚴格遵守。JS/TS 註解排版詳見 [雙語註解格式](./references/bilingual-comment-format.md)。
+- **雙語註解**：通用雙語標準（語言順序、彈性取捨、術語錨點等最高原則）遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)；JS/TS 註解排版詳見 [雙語註解格式](./references/bilingual-comment-format.md)。
 - **職責分離：JSDoc 描述合約與意圖，邏輯區塊描述實作細節。** 錯置案例見 [錯誤註解案例 — 案例六](./references/bad-comment-examples.md)。
 - **更新既有註解時保留原始技術資訊**（錯誤碼、術語、檔案路徑）。詳見 [註解更新規則](./references/comment-update-rules.md)。
 
@@ -414,7 +414,7 @@ else if (m = (w1.p & w2.p))
 
 按需載入以下參考文件：
 
-- [雙語註解格式規範](./references/bilingual-comment-format.md) — JS/TS 雙語區塊註解排版與 JSDoc 標籤格式（以 **彈性取捨** 與 **技術術語錨點** 為最高原則，通用規則參照 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)）
+- [雙語註解格式規範](./references/bilingual-comment-format.md) — JS/TS 雙語區塊註解排版與 JSDoc 標籤格式（通用規則與最高原則以 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 為 SSoT）
 - [註解位置規範](./references/comment-placement.md) — 陣列元素、物件屬性、Interface/Type 成員、`@example` 行內註解例外
 - [重要約束](./references/critical-constraints.md) — 區塊註解強制、分隔線、特殊指令放置、保留技術術語
 - [註解更新規則](./references/comment-update-rules.md) — 保留原始錯誤資訊、Issue 驗證、多語言註解保留、更新前檢查清單
@@ -426,7 +426,7 @@ else if (m = (w1.p & w2.p))
 
 ## 相關技能 (Related Skills)
 
-- [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) — 繁中＋英文雙語標準化規範（SSoT）：以 **彈性取捨** 與 **技術術語錨點** 為最高原則，規範語言順序、判定基準與多語言保留。
+- [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) — 繁中＋英文雙語標準化規範（SSoT）：最高原則、語言順序、判定基準與多語言保留。
 - [analyze-code-commenter](../analyze-code-commenter/SKILL.md) — 分析程式碼並自動加入雙語註解的實作技能，包含邏輯區塊分析規範與多種範例；格式規範由本技能定義。
 
 ---

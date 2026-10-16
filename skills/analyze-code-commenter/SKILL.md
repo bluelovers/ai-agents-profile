@@ -34,7 +34,7 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
    - Class members/methods/properties
    - Complex internal logic blocks, functions, and array/object elements
 3. **Identify logic blocks** - Find all logic blocks requiring comments (see Logic Block Requirements below)
-4. **Generate bilingual comments** (Traditional Chinese zh-TW + English) - apply principles from [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) (with **彈性取捨（捨棄與保留）** and **技術術語錨點** as the highest principles) and formatting from [comment-format-rules-js](../comment-format-rules-js/SKILL.md)
+4. **Generate bilingual comments** (Traditional Chinese zh-TW + English) - apply [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) (SSoT, incl. highest principles) and formatting from [comment-format-rules-js](../comment-format-rules-js/SKILL.md)
 5. **Apply changes** - Insert comments using available file editing tools
 
 ## Logic Block Requirements (Required for ALL logic blocks)
@@ -183,9 +183,7 @@ Each item below gets **its own block comment placed above the member**. The comm
 
 > **Reference**: 通用雙語標準化規範請參閱 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)。JS/TS 註解排版與 JSDoc 標籤格式請參閱 [comment-format-rules-js](../comment-format-rules-js/references/bilingual-comment-format.md)。
 >
-> **【最高原則】**：在分析程式碼並產出註解時，**「彈性取捨（捨棄與保留）」** 與 **「技術術語錨點」** 為最高原則，仍需嚴格遵守：
-> - **彈性取捨（捨棄與保留）**：以程式碼可讀性與清晰度為第一考量，拒絕繁贅死板的中英鏡像直譯；針對複雜內部邏輯或巢狀結構，應主動精簡，保留最清晰的單一語言描述。
-> - **技術術語錨點**：嚴禁刪除技術術語原文，核心術語（如演算法、型別名稱、資料結構）必須保留英文標註作為檢索與跨語言理解的錨點。
+> **【最高原則】**：雙語最高原則（可讀性取捨、技術術語錨點）以 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 為準，本技能不重述其定義。
 
 When analyzing code and generating comments for logic blocks and members, apply the following skill-specific bilingual rules:
 
@@ -219,7 +217,7 @@ When updating existing comments, preserve valuable technical information (error 
 
 All comment and formatting conventions for JS/TS live in the comment-format-rules-js skill. Consult it for:
 
-- [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) — 通用雙語標準化規範（以 **彈性取捨** 與 **技術術語錨點** 為最高原則，規範語言順序、判定基準、術語保留）
+- [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) — 通用雙語標準化規範（SSoT）：語言順序、判定基準、術語保留與最高原則
 - [comment-format-rules-js](../comment-format-rules-js/SKILL.md) — core principles, block comment layout, logic block comments, responsibility separation, critical constraints
 - [雙語註解格式規範](../comment-format-rules-js/references/bilingual-comment-format.md) — JS/TS block comment & JSDoc tag bilingual formatting
 - [註解位置規範](../comment-format-rules-js/references/comment-placement.md) — array elements, object properties, Interface/Type members, `@example` inline exception

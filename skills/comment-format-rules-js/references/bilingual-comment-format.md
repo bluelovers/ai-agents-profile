@@ -11,15 +11,9 @@ tags:
 
 # 雙語註解格式規範 (Bilingual Comment Format)
 
-> **核心規範參照**：
-> 通用雙語標準化規範（語言順序、彈性捨棄／保留雙語原則、判定基準、最小必要範圍、譯名不唯一術語處理、無意義與特殊意圖雙語、技術術語與多語言保留）已收納至 [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md)。
+> **通用規範 SSoT**：語言順序、彈性捨棄／保留雙語、判定基準、最小必要範圍、譯名不唯一、無意義與特殊意圖雙語、技術術語與多語言保留等**通用規則與兩大最高原則**，一律遵循 [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md)，本文件不重述。
 >
-> **【重要】最高原則遵守要求**：
-> 在所有 JS/TS 註解撰寫與格式排版中，[bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md) 所定義的 **「彈性取捨（捨棄與保留）」** 與 **「技術術語錨點」** 兩大原則為**最高原則**，仍需嚴格遵守：
-> 1. **彈性取捨（捨棄與保留）**：以可讀性與清晰度為第一優先，拒絕機械式死板中英鏡像直譯；代碼自明或邏輯過長時應果斷精簡，保留最清晰語言。
-> 2. **技術術語錨點**：嚴禁刪除技術術語原文，核心術語必須保留英文標註作為檢索與理解錨點。
->
-> 本文件僅保留適用於 **JavaScript / TypeScript 註解與 JSDoc 格式排版** 的雙語具體規範與範例。
+> 本文件僅保留適用於 **JavaScript / TypeScript 註解與 JSDoc 格式排版** 的領域專屬雙語規範與範例。
 
 ---
 
@@ -34,10 +28,10 @@ tags:
 
 ## 語言順序與區塊排版 (Language Order & Layout)
 
-- **中文在前，英文在後**
+雙語順序、假雙語禁止等通用原則見 [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md)。於 JS/TS 註解中的排版形式：
+
 - 單行格式使用 `/` 分隔（前後留空格）
 - 多行格式分行書寫，中文段落在前，英文段落在後
-- 禁止「英文 + 英文」的假雙語
 
 ```typescript
 // ✅ 正確：單行區塊雙語格式
@@ -69,11 +63,7 @@ getKey?(item: T, index: number, arr: T[]): any
 
 ## JS/TS 註解中的彈性雙語實作 (Flexible Bilingual Application in JS/TS)
 
-在 JS/TS 程式碼中套用 [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md) 的彈性取捨時，遵循以下代碼情境實作要點：
-
-- **短句、型別已自明**：可只保留一種語言（例如 TypeScript 已有型別標註或屬性名稱自明時）。
-- **邏輯區塊過長**：先縮小雙語範圍（僅術語保留雙語）；若仍過長，選擇最清晰的中文描述，避免中英鏡像直譯翻倍註解長度。
-- **技術術語標註**：在 JSDoc 或邏輯區塊註解中首次出現之技術術語，保留 `中文 (Term)` 格式（如 `快取 (Cache)`、`聯合型別 (Union Type)`）。
+彈性捨棄／保留的判定回歸 [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md) 的通用原則。以下為 JS/TS 代碼情境的套用範例：
 
 ```typescript
 // ✅ 短句已自明，可只保留一種語言

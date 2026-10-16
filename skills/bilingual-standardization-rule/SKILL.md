@@ -1,7 +1,7 @@
 ---
 name: bilingual-standardization-rule
 description: |-
-  雙語標準化規範 (Bilingual Standardization Rule)：統一規範繁體中文與英文雙語內容的語言順序、格式排版、彈性捨棄與保留原則（含英文難度判定基準、最小必要範圍、譯名不唯一術語處理、無意義與特殊意圖雙語）、技術術語保留與多語言保留規則。
+  雙語標準化規範 (Bilingual Standardization Rule)：統一規範中文與英文雙語內容的語言順序、格式排版、彈性捨棄與保留原則（含英文難度判定基準、最小必要範圍、譯名不唯一術語處理、無意義與特殊意圖雙語）、技術術語保留與多語言保留規則。
   Use when writing, updating, reviewing, or translating bilingual documentation, code comments, or titles, or when users mention:
   - "雙語規範", "雙語標準化", "中英雙語規範", "雙語排版", "bilingual standardization rule"
   - "彈性捨棄雙語", "彈性保留雙語", "flexible bilingual omission", "flexible bilingual retention"
@@ -19,7 +19,7 @@ tags:
 
 # 雙語標準化規範 (Bilingual Standardization Rule)
 
-本技能定義跨技能、跨文件與程式碼通用的**雙語（繁體中文 zh-TW ＋ 英文 English）標準化規範**，作為各領域（程式碼註解、技術文檔、命名與標題等）的單一事實來源 (Single Source of Truth, SSoT)。
+本技能定義跨技能、跨文件與程式碼通用的**雙語（中文 zh-TW ＋ 英文 English）標準化規範**，作為各領域（程式碼註解、技術文檔、命名與標題等）的單一事實來源 (Single Source of Truth, SSoT)。
 
 各專項技能（如 `comment-format-rules-js`、`analyze-code-commenter`、`comment-format-rules-css`、`doc-refactor-doc-optimization` 等）均以本規範為基礎，並在此之上延伸各自的領域專屬規則。
 
@@ -33,7 +33,7 @@ tags:
 > - **彈性取捨（捨棄與保留）**：以可讀性與資訊價值為第一考量，拒絕僵化無效的中英鏡像直譯；並且遵守彈性捨棄/保留雙語原則，當內容過長或阻礙閱讀時，應果斷彈性裁減無額外價值的語言部分。
 > - **技術術語錨點**：任何情況下**嚴禁刪除技術術語原文**，核心術語必須保留英文標註作為檢索與跨語言理解的絕對錨點。
 
-1. **中文在前，英文在後**：所有雙語對照一律以繁體中文為首、英文接續於後。
+1. **中文在前，英文在後**：所有雙語對照一律以中文為首、英文接續於後。
 2. **禁止假雙語**：嚴禁「英文＋英文」重複兩次的假雙語，亦嚴禁語言順序顛倒（英文在前、中文在後）。
 3. **最小必要範圍**：雙語應聚焦於具備對照價值的差異單位，避免整段、整句機械式鏡像直譯。共用專有名詞僅出現一次。
 4. **技術術語錨點**：不得以「在地化」或「中文意譯」為由刪除技術術語原文；首次出現時應提供標準雙語標註（最高原則，詳見上方說明）。
