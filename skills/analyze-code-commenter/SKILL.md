@@ -83,7 +83,6 @@ if (user.isActive && subscription.status === 'active' &&
 /**
  * 檢查使用者是否有有效訂閱且最近有付款記錄
  * 或啟用自動續訂功能的使用者
- * Check if user has active subscription with recent payment OR auto-renew enabled
  */
 if (user.isActive && subscription.status === 'active' &&
 	(payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew))
