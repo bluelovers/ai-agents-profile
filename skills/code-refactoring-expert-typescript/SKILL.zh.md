@@ -2,18 +2,20 @@
 name: code-refactoring-expert-typescript
 description: >-
   TypeScript/Node.js 現代重構與設計指南，專注於型別安全、精確型別、消除重覆定義、單一事實來源 (SSOT)、
-  非同步流程優化、可維護性、一致性等現代軟體設計原則。
+  檔案層級的職責分離、非同步流程優化、可維護性、一致性等現代軟體設計原則。
   包含但不限於：
   (1) 重構現有 TypeScript/Node.js 程式碼，
   (2) 實作新功能時提供架構與設計指導，
   (3) 識別並修正 TypeScript/Node.js 特有的程式碼異味，
   (4) 建立團隊編碼規範與最佳實踐，
   (5) 消除重覆定義與分散的資料來源，同時透過單一事實來源 (SSOT) 維持型別安全與精確型別，
-  (6) 改善型別設計、模組化、可測試性、可讀性與可維護性。
+  (6) 改善型別設計、模組化、可測試性、可讀性與可維護性，
+  (7) 檔案層級的職責分離（CLI/tsx 入口檔保持精瘦、環境領域分離、可辨識職責的檔名如 *-io.ts）。
   適用於：
   (1) 諸如「Refactor TypeScript」、「Refactor TS」、「改善 Node.js 程式碼」等請求，
   (2) 需要 TypeScript/Node.js 實作與設計指導的請求，
-  (3) 涉及改善程式碼架構、型別安全、精確型別、非同步流程、可維護性或程式碼品質的請求。
+  (3) 涉及改善程式碼架構、型別安全、精確型別、非同步流程、可維護性或程式碼品質的請求，
+  (4) 需要為職責分離而拆分或重整檔案/模組的請求。
 tags:
   - TypeScript
   - nodejs
@@ -22,6 +24,7 @@ tags:
   - async
   - agents/skills
   - single-source-of-truth
+  - separation-of-responsibilities
 ---
 
 # TypeScript/Node.js 重構專家 (Refactoring Expert for TS/Node)
@@ -767,6 +770,27 @@ interface IUserRef {
 
 ---
 
+### 2. 職責分離（檔案層級, File-Level Separation of Responsibilities）
+
+**核心概念：** 檔案是職責的最小單位，檔名是該職責的第一行文件。入口/編排檔（CLI 實作、`.tsx` 元件）應保持精瘦——只負責接線；可複用的定義/邏輯與環境專屬程式碼則抽離至獨立、可辨識的檔案。抽離與否的判斷依據是**職責，而非消費者數量**：「目前只有該 CLI 使用」的邏輯仍應抽離——第二個消費者總會在之後到來，而它的到來只會帶來兩種結果：複製一份（違反 SSoT）或造成職責倒置的依賴。
+
+**為什麼重要：**
+- **可測試性**——鎖在入口檔內的邏輯只能「啟動整個 CLI / 渲染整個元件」來間接測試；抽離後即是可直接單元測試的獨立單元
+- **可複用性**——抽離出的定義/邏輯可被未來的呼叫端安全引用，無需複製
+- **環境安全**——純邏輯一旦 import `fs`/`window`，即在另一環境（SSR、測試框架、打包器）無法載入
+- **可定位性**——可辨識的檔名（`*-io.ts`、`*.browser.ts`）讓維護者無需逐檔開啟即可找到正確檔案
+
+#### 規則
+
+1. **入口檔保持精瘦**——CLI 專案中，非該 CLI 專屬的定義與邏輯一律抽離至獨立檔案，包含參數設定，以及各種現在或將來需要被驗證、測試的邏輯。CLI 檔案本身只做接線：解析 → 驗證 → 委派 → 輸出
+2. **`.tsx` 禁止私有化囤積（無特定意圖時）**——可複用的定義（props 型別、共用常數、Enum）與非 JSX 邏輯（純計算、格式化、hooks）一律抽離至獨立的非 tsx 檔案。**子元件（純 JSX 輔助元件）是「檔案抽離」的例外**——為避免元件檔案過多造成雜訊與維護困難，允許與主元件同檔共存；但**同檔共存不等於私有化**：子元件與其他可複用符號仍**必須 `export` 公開**。私有化（不 export）必須有明確理由
+3. **環境領域邏輯分離**——瀏覽器專屬邏輯（`window`、`document`、`localStorage`）、檔案系統邏輯（`node:fs`）與 Node 專屬邏輯，絕不與純邏輯/共用模組混雜。環境存取收斂於邊界檔（fs 用 `*-io.ts`、瀏覽器用 `*.browser.ts`）；依賴方向嚴格為 邊界檔 → 純核心，絕不反向
+4. **檔名即職責**——優先採用專案既有命名規範；無規範時採用通用可辨識名稱（如 fs 模組命名為 `*-io.ts`）。路徑層級分離（`io/`、`browser/`、`shared/`、`cli/`）可補充或取代後綴，重點是同領域一致
+
+> 📚 **完整規則與 ❌/✅ 對照範例（CLI、`.tsx`、環境領域、命名/路徑慣例、檢查表）**：[職責分離與檔名辨識規範](./references/separation-of-responsibilities.md)
+
+---
+
 ### 3. 嚴格類型控制 (Strict Type Control)
 
 **核心概念：** 當業務邏輯定義了有限的狀態集時，**優先使用 Enum 而非字串或數字等字面值聯合型別 (Literal Union)**。字面值聯合型別在編譯後會被擦除，失去 IDE 支援與運行時檢查能力；Enum 則提供完整的開發時體驗與運行時安全，是型別空間與數值空間的唯一單一事實來源 (SSoT)。
@@ -1336,6 +1360,7 @@ if (user.isActive && subscription.status === 'active' &&
 - [狀態鍵 Enum 遷移案例](./references/status-key-enum-migration.md) - 完整 Enum 遷移：連同 `??` fallback 與樣板字串使用位置一併更新，而非只改型別簽名
 - [TypeScript 術語對照](./references/typescript-terminology.md) - 官方 Handbook 未收錄、僅見於版本紀錄的容易忘記術語：Named Tuple（Labeled Tuple Elements）的官方出處、規則與跨語言名稱對照
 - [Tuple 與 Named Tuple 重構規範（規範 F 完整內容）](./references/named-tuple-refactoring.md) - Enum 錨定位置語義、❌/✅ 對照範例、Named Tuple 與 rest 元素不豁免抽離，及「不使用 Enum 索引時的共享解構邏輯」
+- [職責分離與檔名辨識規範](./references/separation-of-responsibilities.md) - 規則 2 完整內容：CLI/tsx 入口檔保持精瘦、單一消費者也應抽離（子元件可同檔共存但仍須 export 公開）、瀏覽器/檔案系統環境領域分離、檔名即職責（`*-io.ts`、`*.browser.ts`、路徑層級分離）
 - [語法優化案例集](./references/syntax-optimization.md) - 不改變行為的語法優化：除非有特定意圖/用法設計，否則 `reduce` 前不應進行 `map`/`filter` 等邏輯，應將條件與轉換併入累積器（含前置步驟的正當時機）
 
 ### 相關技能

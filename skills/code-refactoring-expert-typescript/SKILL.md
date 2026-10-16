@@ -3,8 +3,9 @@ name: code-refactoring-expert-typescript
 description: >-
   A modern TypeScript/Node.js refactoring and design guide focused on type safety,
   precise types, eliminating duplicated definitions, Single Source of Truth (SSOT),
-  asynchronous workflow optimization, maintainability, consistency, and other modern
-  software design principles.
+  separation of responsibilities at the file level, asynchronous workflow
+  optimization, maintainability, consistency, and other modern software design
+  principles.
   Includes, but is not limited to:
   (1) refactoring existing TypeScript/Node.js code,
   (2) providing architectural and design guidance when implementing new features,
@@ -12,12 +13,15 @@ description: >-
   (4) establishing team coding standards and best practices,
   (5) eliminating duplicated definitions and fragmented data sources while maintaining
       type safety and precise types via a Single Source of Truth (SSOT),
-  (6) improving type design, modularity, testability, readability, and maintainability.
+  (6) improving type design, modularity, testability, readability, and maintainability,
+  (7) separating responsibilities at the file level (thin CLI/tsx entry files, environment-domain
+      separation, responsibility-identifiable file naming such as *-io.ts).
   Applicable to:
   (1) requests such as "Refactor TypeScript", "Refactor TS", or "Improve Node.js code",
   (2) requests for TypeScript/Node.js implementation and design guidance,
   (3) requests involving improvements to code architecture, type safety, precise types,
-      asynchronous workflows, maintainability, or code quality.
+      asynchronous workflows, maintainability, or code quality,
+  (4) requests to split or reorganize files/modules for separation of responsibilities.
 tags:
   - TypeScript
   - nodejs
@@ -26,6 +30,7 @@ tags:
   - async
   - agents/skills
   - single-source-of-truth
+  - separation-of-responsibilities
 ---
 
 # TypeScript/Node.js Refactoring Expert
@@ -759,6 +764,27 @@ interface IUserRef {
 
 ---
 
+### 2. Separation of Responsibilities (File-Level)
+
+**Core Concept:** The file is the smallest unit of responsibility, and the file name is the first line of documentation for that responsibility. Entry/orchestration files (CLI implementations, `.tsx` components) must stay thin — wiring only — while reusable definitions/logic and environment-specific code are extracted into separate, identifiable files. Extraction is judged by **responsibility, not by consumer count**: logic that is "used by only this CLI today" still gets extracted, because the second consumer always arrives later (and its arrival means copy-paste — an SSoT violation — or an inverted dependency).
+
+**Why this matters:**
+- **Testability** — logic locked inside an entry file can only be tested by booting the whole CLI / rendering the whole component; extracted logic is a directly testable unit
+- **Reusability** — extracted definitions/logic can be safely consumed by future callers without copying
+- **Environment safety** — pure logic that imports `fs`/`window` becomes unloadable in the other environment (SSR, test runners, bundlers all fail)
+- **Navigability** — an identifiable file name (`*-io.ts`, `*.browser.ts`) lets maintainers find the right file without opening dozens of files
+
+#### Rules
+
+1. **Keep entry files thin** — In a CLI project, the CLI implementation extracts all non-CLI-specific definitions and logic into separate files — including parameter/argument configuration and any logic that needs validation/testing now or later. The CLI file itself only wires: parse → validate → delegate → output
+2. **Never privatize in `.tsx` without explicit intent** — Extract reusable definitions (props types, shared constants, enums) and non-JSX logic (pure calculations, formatters, hooks) into separate non-tsx files. Child components (pure-JSX helpers) are the exception to *file extraction* — they may stay co-located to avoid file explosion and maintenance noise — but they are **not** exempt from *export*: co-located child components, props types, and any other reusable symbol must still be `export`ed. Privatizing (not exporting) requires a documented reason
+3. **Separate environment domains** — Browser-only logic (`window`, `document`, `localStorage`), filesystem logic (`node:fs`), and Node-only logic never mix into pure/shared modules. Environment access is confined to boundary files (`*-io.ts` for fs, `*.browser.ts` for browser); the dependency direction is strictly boundary → pure core, never the reverse
+4. **Name files for their responsibility** — Follow the project's existing naming convention first; otherwise use widely recognizable names (e.g., fs modules as `*-io.ts`). Path-level separation (`io/`, `browser/`, `shared/`, `cli/`) complements or replaces suffixes, as long as each domain is consistent
+
+> 📚 **Full rules with ❌/✅ examples (CLI, `.tsx`, environment domains, naming/path conventions, checklist)**: [Separation of Responsibilities & File Naming](./references/separation-of-responsibilities.md)
+
+---
+
 ### 3. Strict Type Control
 
 **Core Concept:** When business logic defines a finite set of states, **prefer Enum over literal union types (string or numeric unions)**. Literal union types are erased after compilation, losing IDE support and runtime checking capabilities; Enums provide complete development experience and runtime safety, serving as the single source of truth (SSoT) for both type space and value space.
@@ -1292,6 +1318,7 @@ When proposing refactoring suggestions:
 - [Status Key Enum Migration Case](./references/status-key-enum-migration.md) - Complete Enum migration: update all `??` fallback and template-literal usage sites, not just the type signature
 - [TypeScript Terminology Reference](./references/typescript-terminology.md) - Easily forgotten TypeScript terminology: Named Tuple (a.k.a. Labeled Tuple Elements) — official source, rules, and cross-language name mapping
 - [Tuple & Named Tuple Refactoring Rules (complete Guideline F)](./references/named-tuple-refactoring.md) - Enum-anchored position semantics, ❌/✅ examples, Named Tuple and rest elements never exempt from extraction, plus the shared-destructuring fallback when not indexing via an Enum
+- [Separation of Responsibilities & File Naming](./references/separation-of-responsibilities.md) - Full Rule 2: keep CLI/tsx entry files thin, extract even single-consumer logic (child components may stay co-located but must still be exported), separate browser/fs environment domains, and name files for their responsibility (`*-io.ts`, `*.browser.ts`, path-level separation)
 - [Syntax Optimization Cases](./references/syntax-optimization.md) - Behavior-preserving syntax optimizations: don't run `map`/`filter` before `reduce` unless intentionally designed; fold the condition/transformation into the accumulator (plus when pre-steps are justified)
 
 ### Related Skills

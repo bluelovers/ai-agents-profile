@@ -10,7 +10,7 @@ description: >-
   (4) Node.js 特定考量，
   (5) React/JSX/HTML/DOM/CSS 特定考量，
   以及 (6) 跨領域關注點。
-  當使用者詢問「雜項重構」、「邊緣案例」、「進階模式」或核心指南需要補充時使用此 Skill。
+  當使用者詢問「重構」、「邊緣案例」、「進階模式」或核心指南需要補充時使用此 Skill。
 tags:
   - refactoring
   - TypeScript
