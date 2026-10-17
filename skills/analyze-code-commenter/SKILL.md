@@ -115,26 +115,22 @@ async function processOrder(order)
 {
 	/**
 	 * 驗證訂單資料格式與必填欄位
-	 * Validate order data format and required fields
 	 */
 	const validated = validateOrder(order);
 	if (validated)
 	{
 		/**
 		 * 檢查庫存是否足夠
-		 * Check if inventory is sufficient
 		 */
 		const inventory = await checkInventory(order.items);
 		if (inventory.available)
 		{
 			/**
 			 * 預留庫存以防止超賣
-			 * Reserve inventory to prevent overselling
 			 */
 			await reserveInventory(order.items);
 			/**
 			 * 信用卡支付需要額外驗證
-			 * Card payments require additional verification
 			 */
 			if (order.payment.method === 'card')
 			{

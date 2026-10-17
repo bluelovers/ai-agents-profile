@@ -186,19 +186,18 @@ if (user.isActive && subscription.status === 'active' &&
 
 ```typescript
 // ❌ 錯誤：多個單行區塊註解
-/** 驗證訂單資料格式與必填欄位 */
-/** Validate order data format and required fields */
+/** 驗證訂單資料格式 */
+/** 檢查必填欄位 */
 const validated = validateOrder(order);
 
 // ❌ 錯誤：多個單行行內註解
-// 驗證訂單資料格式與必填欄位
-// Validate order data format and required fields
+// 驗證訂單資料格式
+// 檢查必填欄位
 const validated = validateOrder(order);
 
 // ✅ 正確：合併為單一多行區塊註解
 /**
  * 驗證訂單資料格式與必填欄位
- * Validate order data format and required fields
  */
 const validated = validateOrder(order);
 ```

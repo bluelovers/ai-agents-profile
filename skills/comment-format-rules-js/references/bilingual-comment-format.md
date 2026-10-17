@@ -23,29 +23,29 @@ tags:
 
 | 格式 | 適用場景 | 範例 |
 |------|----------|------|
-| **單行格式** | 簡短說明 | `/** 說明 / Description */` |
-| **多行格式** | 詳細說明或翻譯較長時 | `/** 說明\n * Description */` |
+| **單行格式** | 簡短術語標籤，英文即錨點 | `/** 快取命中率 / Cache Hit Rate */` |
+| **多行區塊** | 較長說明，單一語言＋術語錨點 | `/**\n * 以雜湊對應 (Hash Map) 建立分組鍵索引\n */` |
 
 ## 語言順序與區塊排版 (Language Order & Layout)
 
 雙語順序、假雙語禁止等通用原則見 [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md)。於 JS/TS 註解中的排版形式：
 
-- 單行格式使用 `/` 分隔（前後留空格）
-- 多行格式分行書寫，中文段落在前，英文段落在後
+- 單行術語標籤使用 `/` 分隔（前後留空格），英文即為錨點
+- 多行說明可採單一語言（中文）分多行並內嵌術語錨點；若中文行為純中文，亦可加「英文技術術語行」構成雙語多行（英文行須含 `binary search` 等技術術語錨點，而非常見詞直譯）
 
 > 以下為排版語法示範，非主張該句應雙語；實作時仍依判定基準與彈性取捨，短句自明者單語即可。
 
 ```typescript
-// ✅ 正確：單行區塊雙語格式
+// ✅ 正確：單行術語標籤（英文即錨點）
 /** 快取命中率 / Cache Hit Rate */
 const cacheHitRate = 0.95;
 
-// ✅ 正確：多行區塊雙語格式
+// ✅ 正確：多行區塊（單語＋內嵌術語錨點）
 /**
- * 以雜湊對應 (Hash Map) 建立分組鍵索引 (group-key index)
- * Build group-key index via hash map
+ * 以雜湊對應 (Hash Map) 建立分組鍵索引，
+ * 對不存在的鍵回傳預設值，避免重複計算。
  *
- * @param items - 待分組的項目 / Items to group
+ * @param items - 待分組的項目
  */
 function groupBy(items: unknown[]): Map<string, unknown[]>
 
