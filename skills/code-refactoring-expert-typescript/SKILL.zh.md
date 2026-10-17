@@ -47,6 +47,7 @@ tags:
 4. **進行小型、漸進式的變更** - 每個步驟應可獨立驗證
 5. **保持程式碼正常運作** - 系統應在每次變更後通過測試
 6. **程式碼是寫給人看的** - 電腦能執行模糊複雜的程式碼，但**六個月後的你自己**和**維護團隊**需要理解意圖與設計。清晰的程式碼比重構前的「聰明」程式碼更有價值
+7. **無特殊意圖不得使用魔術字串與字串聯合** - 除非有明確文件化的特殊意圖（如對齊無法由 Enum 掌控的外部 API 或第三方契約），否則不得以裸魔術字串或字串字面值聯合（`'a' | 'b'`）定義值集合；應定義為 Enum 以維持單一事實來源
 
 ---
 
@@ -791,6 +792,8 @@ interface IUserRef {
 > 兩者最終都會迫使團隊**事後再次耗費龐大時間與風險，將整個程式碼庫的聯合型別重構為 Enum**。
 > **在設計與實作初期即應優先採用 Enum**，一步到位確立單一事實來源，免除後續二次重構的沉重負擔。
 
+> 🚫 **硬性規則：除非有特殊意圖，否則不得使用魔術字串與字串聯合。** 裸魔術字串與字串字面值聯合（`'a' | 'b'`）不得作為長期值契約。唯一豁免是宣告處有文件化的特殊意圖——例如對齊外部強制契約（第三方 API 資料、框架定義的字串字面值型別、磁碟設定格式），其值無法由 Enum 掌控。凡屬業務自有的有限集合（狀態、分類、模式），一律必須使用 Enum。
+
 **適用於：** `Primitive Obsession`, 業務狀態定義
 
 #### ❌ 反模式：字串與數字聯合型別漂移
@@ -833,6 +836,17 @@ enum EnumDatasetType {
 | API 臨時回傳、第三方函式參數 | Union Type | 短暫存在的類型，不需長期維護，輕量定義減少 boilerplate |
 | 需要迭代所有可能值 | **Enum** | 運行時需要枚舉所有選項（如渲染下拉選單），Enum 提供結構化的迭代能力 |
 | 需要反向查找 (value → key) | **Enum** | 從後端數據反查顯示名稱時，Enum 的反向映射避免硬編碼對照表 |
+
+> 📌 **註：** 上表「Union Type」列屬於特殊意圖豁免，而非通用許可——僅適用於短暫、外部持有的值集合（API 資料、第三方參數），且必須在宣告處文件化該意圖。業務自有的狀態/分類集合一律必須使用 Enum（見上方硬性規則）。對外接受字串的核准做法，見下方「邊界字串與 Enum 互操作」豁免技法。
+
+#### ✅ 特殊意圖豁免：邊界字串與 Enum 互操作與未知值設計
+
+當特殊意圖確實是外部互操作——元件 prop 必須接受呼叫端傳入的裸字串、解析設定/查詢參數、或對應未公開（逆向建立）API 的資料——**不得**手寫一份平行的字串聯合。應以 Enum 作為單一事實來源，僅在**邊界**協調外部字串，並假設未知值隨時可能出現：
+
+1. **外部字串只能經由 Enum 派生型別或邊界 cast 接受**——對外 prop 型別使用 `ITSTypeAndStringLiteral<Enum>`（原生等價：`` Enum | `${Enum}` ``）；不可信輸入先經執行期型別守衛收窄；`as Enum` 只能留在邊界（parse/adapter/props 預設值），絕不進入業務邏輯中段。兩種技法只是同一個 Enum 的不同語法視圖，可共存一起使用。
+2. **設計上未知值視為 Enum，實作上為其保留相容分支**——外部持有的值集合，邊界解析函式將未知字串收進 Enum 型別；每個消費點保留未知值分支（`switch` 的 `default:`、查表 `??` fallback、最終 `else`）。絕不假設集合封閉。
+
+> 📚 **完整規則與 ❌/✅ 對照範例、約束（可信/不可信邊界、`const enum` 執行期注意事項、窮舉 `switch` + `never` 為何僅限封閉集合）**：[邊界字串與 Enum 互操作與未知值設計](./references/enum-boundary-interop.md)
 
 #### ⚠️ 完整重構：比對值必須一併更新，而非只改型別簽名
 
@@ -1316,6 +1330,7 @@ if (user.isActive && subscription.status === 'active' &&
 - [URL 重構案例](./references/url-impl.md) - 流程累積與意圖導向的實作範例
 - [座標處理案例](./references/geo-transform.md) - SSoT 原則與 Tuple 語義標註的最佳實踐
 - [狀態鍵 Enum 遷移案例](./references/status-key-enum-migration.md) - 完整 Enum 遷移：連同 `??` fallback 與樣板字串使用位置一併更新，而非只改型別簽名
+- [邊界字串與 Enum 互操作與未知值設計](./references/enum-boundary-interop.md) - 特殊意圖豁免完整內容：Enum 派生字串聯合（`ITSTypeAndStringLiteral`）、搭配執行期守衛的邊界 `as Enum` 轉型，以及未公開 API 必備的未知值 fallback 設計
 - [TypeScript 術語對照](./references/typescript-terminology.md) - 官方 Handbook 未收錄、僅見於版本紀錄的容易忘記術語：Named Tuple（Labeled Tuple Elements）的官方出處、規則與跨語言名稱對照
 - [Tuple 與 Named Tuple 重構規範（規範 F 完整內容）](./references/named-tuple-refactoring.md) - Enum 錨定位置語義、❌/✅ 對照範例、Named Tuple 與 rest 元素不豁免抽離，及「不使用 Enum 索引時的共享解構邏輯」
 - [職責分離與檔名辨識規範](./references/separation-of-responsibilities.md) - 規則 2 完整內容：CLI/tsx 入口檔保持精瘦、單一消費者也應抽離（子元件可同檔共存但仍須 export 公開）、瀏覽器/檔案系統環境領域分離、檔名即職責（`*-io.ts`、`*.browser.ts`、路徑層級分離）

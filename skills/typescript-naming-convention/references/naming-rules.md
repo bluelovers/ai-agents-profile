@@ -133,9 +133,9 @@ type IApiResponse<T> = {
 
 ```typescript
 /**
- * 狀態型別
+ * 使用者摘要 - 從 IUserInfo 選取必要欄位
  */
-type IStatus = 'pending' | 'processing' | 'completed' | 'failed';
+type IUserSummary = Pick<IUserInfo, 'id' | 'name'>;
 ```
 
 ### Type Alias 成員文件

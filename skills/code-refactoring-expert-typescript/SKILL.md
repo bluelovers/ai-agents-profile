@@ -53,6 +53,7 @@ You are an expert in modern TypeScript and Node.js development refactoring. You 
 4. **Make small, incremental changes** - Each step should be independently verifiable
 5. **Keep the code working** - System should pass tests after every change
 6. **Code is written for humans** - Computers can execute vague and complex code, but **your future self in six months** and the **maintenance team** need to understand intent and design. Clear code is more valuable than "clever" code before refactoring
+7. **No magic strings or string unions without explicit intent** - Unless there is a documented special intent (e.g., conforming to an external API or third-party contract whose values cannot be owned by an Enum), do not define value sets as raw magic strings or string literal unions (`'a' | 'b'`); define them as Enum to keep a single source of truth
 
 ---
 
@@ -796,6 +797,8 @@ interface IUserRef {
 > Both eventually force teams to **spend immense time and take risks refactoring union types into Enums across the codebase**.
 > **Prioritize Enum from day one in design and implementation** to establish a single source of truth upfront and eliminate the burden of secondary refactoring.
 
+> 🚫 **Hard Rule: Unless there is an explicit special intent, do not use magic strings or string unions.** Raw magic strings and string literal unions (`'a' | 'b'`) must not serve as long-term value contracts. The only exemption is a documented special intent at the declaration site — for example, conforming to an externally imposed contract (third-party API payloads, framework-defined string literal types, on-disk config formats) whose values cannot be owned by an Enum. Any business-owned finite set (states, categories, modes) must be an Enum.
+
 **Applies to:** `Primitive Obsession`, business state definitions
 
 #### ❌ Anti-pattern: String and Numeric Union Type Drift
@@ -854,6 +857,17 @@ enum EnumStatus {
 | API temporary responses, third-party function parameters | Union Type | Transient types, no long-term maintenance needed, lightweight definitions reduce boilerplate |
 | Need to iterate all possible values | **Enum** | Runtime needs to enumerate all options (e.g., rendering dropdown menus), Enum provides structured iteration capability |
 | Need reverse lookup (value → key) | **Enum** | When reverse mapping from backend data to display names, Enum's reverse mapping avoids hardcoded lookup tables |
+
+> 📌 **Note:** The "Union Type" row above is a special-intent exemption, not a general license — it applies only to transient, externally owned value sets (API payloads, third-party parameters), and the intent must be documented at the declaration site. Business-owned state/category sets must use Enum (see the Hard Rule above). For the sanctioned ways to accept external strings, see the boundary interoperability escape hatch below.
+
+#### ✅ Special-Intent Escape Hatch: Boundary String ↔ Enum Interoperability & Unknown-Value Design
+
+When the special intent is genuine external interoperability — a component prop that must accept raw strings from callers, parsing config/query values, or mapping undocumented (reverse-engineered) API payloads — do **not** hand-write a parallel string union. Keep the Enum as the single source of truth, reconcile external strings at the **boundary only**, and always assume unknown values may appear:
+
+1. **Accept external strings only via Enum-derived types or boundary casts** — public/prop types use `ITSTypeAndStringLiteral<Enum>` (native equivalent: `` Enum | `${Enum}` ``); untrusted input is validated by a runtime type guard before narrowing; the `as Enum` cast stays at the boundary (parse/adapter/props defaults), never mid-business-logic. The two techniques are just different syntax views of the same Enum and may be combined.
+2. **Design unknown values as the Enum; implement fallbacks for them** — for externally owned value sets, boundary parsers collapse unknown strings into the Enum type, and every consumption point keeps a compatible unknown-value branch (`switch` `default:`, lookup `??` fallback, final `else`). Never assume the set is closed.
+
+> 📚 **Full rules with ❌/✅ examples and constraints (trusted vs untrusted boundaries, `const enum` runtime caveat, why exhaustive `switch` + `never` is closed-set-only)**: [Boundary String ↔ Enum Interoperability & Unknown-Value Design](./references/enum-boundary-interop.md)
 
 #### ⚠️ Complete Refactoring: Update All Comparison Sites, Not Just the Type Signature
 
@@ -1316,6 +1330,7 @@ When proposing refactoring suggestions:
 - [URL Refactoring Case](./references/url-impl.md) - Flow accumulation and intent-oriented implementation example
 - [Coordinate Handling Case](./references/geo-transform.md) - SSoT principle and Tuple semantic annotation best practices
 - [Status Key Enum Migration Case](./references/status-key-enum-migration.md) - Complete Enum migration: update all `??` fallback and template-literal usage sites, not just the type signature
+- [Boundary String ↔ Enum Interoperability & Unknown-Value Design](./references/enum-boundary-interop.md) - Special-intent escape hatch: Enum-derived string unions (`ITSTypeAndStringLiteral`), boundary `as Enum` casts with runtime guards, and mandatory unknown-value fallbacks for undocumented APIs
 - [TypeScript Terminology Reference](./references/typescript-terminology.md) - Easily forgotten TypeScript terminology: Named Tuple (a.k.a. Labeled Tuple Elements) — official source, rules, and cross-language name mapping
 - [Tuple & Named Tuple Refactoring Rules (complete Guideline F)](./references/named-tuple-refactoring.md) - Enum-anchored position semantics, ❌/✅ examples, Named Tuple and rest elements never exempt from extraction, plus the shared-destructuring fallback when not indexing via an Enum
 - [Separation of Responsibilities & File Naming](./references/separation-of-responsibilities.md) - Full Rule 2: keep CLI/tsx entry files thin, extract even single-consumer logic (child components may stay co-located but must still be exported), separate browser/fs environment domains, and name files for their responsibility (`*-io.ts`, `*.browser.ts`, path-level separation)
