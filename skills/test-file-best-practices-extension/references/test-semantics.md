@@ -65,11 +65,10 @@ test.failing("rejects duplicate email", () => {
 Node.js 的 `test.todo`、`it.todo`、`{ todo: true }` 與 `context.todo()` 表示待處理的測試。測試會執行；待處理失敗不會被視為測試失敗，因此不會影響程序 exit code。此語意可承接到尚未實作的測試，也可承接到已實作但仍需修正的 bug。
 
 ```typescript
-import assert from "node:assert/strict";
 import test from "node:test";
 
-test("normalizes legacy user name", { todo: "known bug in legacy normalization" }, () => {
-  assert.equal(normalizeLegacyName(input), expectedName);
+test("normalizes legacy user name", { todo: "known bug in legacy normalization" }, (t: test.TestContext) => {
+  t.assert.strictEqual(normalizeLegacyName(input), expectedName);
 });
 ```
 
@@ -80,11 +79,10 @@ test("normalizes legacy user name", { todo: "known bug in legacy normalization" 
 「已知一定會拋錯」是明確契約，不是 `maybe`。使用精確的拋錯斷言，讓未拋錯、拋錯類型不符或訊息不符時測試失敗。Node.js 版本若提供 `expectFailure`，應依其文件使用，並注意它與 `todo` 的退出碼語意不同。
 
 ```typescript
-import assert from "node:assert/strict";
 import test from "node:test";
 
-test("rejects invalid configuration", () => {
-  assert.throws(() => parseConfig(invalidConfig), {
+test("rejects invalid configuration", (t: test.TestContext) => {
+  t.assert.throws(() => parseConfig(invalidConfig), {
     name: "SyntaxError",
   });
 });

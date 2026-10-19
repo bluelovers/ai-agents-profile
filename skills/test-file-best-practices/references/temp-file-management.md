@@ -18,11 +18,15 @@ tags:
 
 ```typescript
 // ❌ 非必要 I/O：寫入後讀回，只為取得內容
-optimized.save();
-t.assert.deepStrictEqual(readFileSync(optimized.path, 'utf8'), expected);
+test('檔案內容驗證（不良實作）', (t: test.TestContext) => {
+	optimized.save();
+	t.assert.deepStrictEqual(readFileSync(optimized.path, 'utf8'), expected);
+});
 
 // ✅ 直接斷言不落盤的內容產生 API
-t.assert.deepStrictEqual(optimized.stringify(), expected);
+test('檔案內容驗證（良好實作）', (t: test.TestContext) => {
+	t.assert.deepStrictEqual(optimized.stringify(), expected);
+});
 ```
 
 **即使是虛擬路徑（預期不落盤）也須限制範圍**，避免遺漏的 `save()`、第三方函式庫讀寫等意外副作用發生在臨時目錄之外：

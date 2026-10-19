@@ -49,7 +49,7 @@ tags:
 ### 不良範例
 
 ```typescript
-test(`_extractRules 只在 _isLibIgnore 為 true 時才驗證後續邏輯`, (t: TestContext) =>
+test(`_extractRules 只在 _isLibIgnore 為 true 時才驗證後續邏輯`, (t: test.TestContext) =>
 {
 	const lib = ignore().add([
 		'*.log',
@@ -123,7 +123,7 @@ test(`_extractRules 只在 _isLibIgnore 為 true 時才驗證後續邏輯`, (t: 
 拆成兩筆測試，各負責一個目的，並移除所有冗餘欄位與斷言：
 
 ```typescript
-test('_isLibIgnore 守衛：未通過守衛的案例不接觸規則邏輯', (t: TestContext) =>
+test('_isLibIgnore 守衛：未通過守衛的案例不接觸規則邏輯', (t: test.TestContext) =>
 {
 	const cases = [
 		{
@@ -148,7 +148,7 @@ test('_isLibIgnore 守衛：未通過守衛的案例不接觸規則邏輯', (t: 
 	})))
 })
 
-test('_extractRules：回傳 ignore 套件的規則陣列', (t: TestContext) =>
+test('_extractRules：回傳 ignore 套件的規則陣列', (t: test.TestContext) =>
 {
 	const rules = _extractRules(ignore().add([
 		'*.log',

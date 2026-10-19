@@ -11,7 +11,7 @@ description: >-
   (5) "測試檔案組織",
   (6) "測試資料管理",
   (7) "臨時檔案管理",
-  (8) "重構/轉換/改寫/修正/更新測試",
+  (8) "重構/改寫/修正/更新測試"（將其他測試轉換至 Node.js 原生測試請使用 test-convert-to-node-test 技能）,
   (9) "優化測試",
   (10) "整合測試",
   (11) "檔案內容驗證" / 避免非必要的檔案讀寫.
@@ -248,6 +248,10 @@ expect(result).toMatchSnapshot({
 #### 測試檔案 Header
 
 **測試檔案開頭應加入 TypeScript 三斜線參考指令（並依框架匯入測試函數），以確保正確引入類型定義。**
+
+- **Node.js 原生測試斷言原則**：在測試中，除非有**不可抗的環境因素**、**相容性問題**或**特定意圖**以外，否則**應一律使用 `t.assert` 而非 `node:assert/strict`**（避免使用獨立全域斷言，以確保斷言計入上下文並精準隔離失敗）。
+- **回呼型別約束**：範例與測試回呼參數一律標註 `t: test.TestContext`，確保編輯器能完整推導型別。
+- **框架轉換指引**：將其他測試框架（Jest / Vitest / Bun 等）遷移為 Node.js 原生測試，請參閱專屬技能 [test-convert-to-node-test](../test-convert-to-node-test/SKILL.md)。
 
 > **Reference**: [測試框架相容性與 API 對應](./references/framework-compatibility.md) - 通用／Jest／Vitest／Bun／Node.js 原生測試的 Header 範例、框架注意事項（如 Jest v30 移除 `toThrowError`）與 matcher API 對應表。
 
@@ -838,16 +842,16 @@ ts-node test/scripts/generate-fixtures.ts
 
 ```typescript
 // ❌ 只為了取得內容，付出 寫入 → 讀回 → 清理 的代價
-const optimized = new IgnoreFile(path.join(__TEMP_DIR, 'finalized.gitignore'), raw.join('\n'));
-optimized.save();
+	const optimized = new IgnoreFile(path.join(__TEMP_DIR, 'finalized.gitignore'), raw.join('\n'));
+	optimized.save();
 
-t.assert.deepStrictEqual(readFileSync(optimized.path, 'utf8'), [
-	'# note',
-	'*.log',
-	'',
-	'',
-	'',
-].join('\n'));
+	t.assert.deepStrictEqual(readFileSync(optimized.path, 'utf8'), [
+		'# note',
+		'*.log',
+		'',
+		'',
+		'',
+	].join('\n'));
 ```
 
 ##### 良好範例：分離「產生內容」與「寫入檔案」
@@ -871,15 +875,15 @@ save(opts?: IIgnoreFileOptions): this
 }
 
 // ✅ 測試：path 僅為路徑宣告，不會實際建立檔案
-const optimized = new IgnoreFile(path.join(__TEMP_DIR, 'finalized.gitignore'), raw.join('\n'));
+	const optimized = new IgnoreFile(path.join(__TEMP_DIR, 'finalized.gitignore'), raw.join('\n'));
 
-t.assert.deepStrictEqual(optimized.stringify(), [
-	'# note',
-	'*.log',
-	'',
-	'',
-	'',
-].join('\n'));
+	t.assert.deepStrictEqual(optimized.stringify(), [
+		'# note',
+		'*.log',
+		'',
+		'',
+		'',
+	].join('\n'));
 ```
 
 ##### 虛擬路徑也須限制範圍 / Constrain Virtual Paths Too
@@ -1148,11 +1152,11 @@ tmp/
 
 ```typescript
 // ❌ 無意義：重複常數定義，且預期值寫死字面值
-t.assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:');
-t.assert.strictEqual(getWorkspaceProtocol(), 'workspace:');
+	t.assert.strictEqual(DEFAULT_WORKSPACE_PROTOCOL, 'workspace:');
+	t.assert.strictEqual(getWorkspaceProtocol(), 'workspace:');
 
 // ✅ 良好：刪除常數定義斷言，預期值引用常數
-t.assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
+	t.assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
 ```
 
 > **Reference**: [避免無意義的測試](./references/meaningless-tests.md) - 無意義斷言類型速查、常數字面值與重複字面值的錯誤／正確案例，以及允許字面值斷言的例外情境。
@@ -1199,6 +1203,7 @@ t.assert.strictEqual(getWorkspaceProtocol(), DEFAULT_WORKSPACE_PROTOCOL);
 
 ## 相關資源
 
+- [測試轉換為 Node.js 原生測試規範 (`test-convert-to-node-test`)](../test-convert-to-node-test/SKILL.md)
 - [測試框架 API 重構範例](./references/examples.md)
 - [測試框架相容性與 API 對應（Jest / Vitest / Bun / Node.js）](./references/framework-compatibility.md)
 - [斷言語法優化：可讀性 matcher 與物件比對](./references/assertion-syntax.md)

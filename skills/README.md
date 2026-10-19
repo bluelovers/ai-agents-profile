@@ -20,6 +20,8 @@ tags:
 | [comment-format-rules-js](./comment-format-rules-js) | JS/TS 註解語法與格式規範 | 強制區塊註解 (/** ... */)、JSDoc 標籤排版、宣告與邏輯區塊格式分離、放置位置與更新規則。 |
 | [readme-updater](./readme-updater) | README 文件更新維護 | 分析專案結構並自動檢查或更新說明文件。 |
 | [factual-accuracy-guard](./factual-accuracy-guard) | 事實準確性防護 | 防止加入虛構內容，確保基於事實執行任務。 |
+| [test-file-best-practices](./test-file-best-practices) | 測試檔案最佳實踐規範 | 測試檔案位置、分割、快照、臨時檔案管理與內容驗證最佳實踐。 |
+| [test-convert-to-node-test](./test-convert-to-node-test) | 測試轉換為 Node.js 原生測試 | 將 Jest/Vitest/Bun/Mocha 測試遷移至 `node:test` + `t.assert`，包含回呼標註 `t: test.TestContext` 與 `t.assert` 優先規範。 |
 
 ---
 

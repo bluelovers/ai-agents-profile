@@ -2,7 +2,7 @@
 description: >-
   測試框架相容性與 API 對應：Jest / Vitest / Bun / Node.js(node:test) 四框架的
   測試檔命名規則與預設匹配模式、測試檔 Header（含 Jest v30 移除 toThrowError、
-  Vitest toThrowError 已棄用）、matcher 與 node:assert/strict 的 API 對應表
+  Vitest toThrowError 已棄用）、matcher 與 t.assert 的 API 對應表
   （含 toThrow error 參數形式對應、toThrowErrorMatchingSnapshot / toMatchSnapshot 的 Node 近似
   與封裝 helper 的共用原則、Strict/Legacy 模式）、
   命令列參數對應表（覆蓋率、Watch、快照建立／更新、依名稱／檔案篩選），
@@ -18,7 +18,8 @@ tags:
 # 測試框架相容性與 API 對應 / Framework Compatibility & API Mapping
 
 本文件收錄 `SKILL.md` 的測試檔命名規範與測試檔 Header，以及原 `examples.md` 的框架相容性速查表，
-統整為 Jest / Vitest / Bun / Node.js（`node:test`）四框架的對照，作為框架選擇與 API 遷移的單一事實來源。
+統整為 Jest / Vitest / Bun / Node.js（`node:test`）四框架的對照，作為框架選擇與 API 比較的單一事實來源。
+關於轉換既有測試至 Node.js 原生測試的完整指南，請參閱 [test-convert-to-node-test](../../test-convert-to-node-test/SKILL.md)。
 
 ---
 
@@ -29,7 +30,7 @@ tags:
 | **Jest** | `@jest/globals` 或全域 | `expect` | `jest` |
 | **Vitest** | `vitest` | `expect`（Jest 相容） | `vitest` |
 | **Bun** | `bun:test` | `expect`（Jest-like，未 100% 實作） | `bun test` |
-| **Node.js 原生測試** | `node:test` | `node:assert/strict` | `node --test <filter>` |
+| **Node.js 原生測試** | `node:test` | `t.assert`（除非例外否則不用 `node:assert/strict`） | `node --test <filter>` |
 
 ---
 
@@ -165,13 +166,18 @@ import { describe, expect, it, test, beforeEach, afterEach, mock } from "bun:tes
 ```typescript
 /// <reference types="node" />
 import { afterEach, beforeEach, describe, it, test, type TestContext } from 'node:test';
-import assert from 'node:assert/strict';
 ```
 
-- 斷言一律以測試上下文 `t.assert.*` 呼叫（如 `t.assert.strictEqual()`、`t.assert.snapshot()`）：會被執行器計入斷言數，對應 Jest 回報的斷言數
-- `t.assert` 內含 Legacy 與 Strict 兩系方法，一律呼叫 Strict 系（`t.assert.strictEqual` 等，詳見下方「Strict / Legacy 模式」）
-- 需要 Mock 時，於測試回呼中使用測試上下文 `t.mock.fn()` / `t.mock.method()`
-- 範例回呼參數一律標註 `t: test.TestContext`：部分編輯器對未標註型別的 `t.assert.*` 會報錯（tsx 執行不受影響），標註後即可正常推導
+- **強制使用 `t.assert` 規範**：在測試中，除非有**不可抗的環境因素**、**相容性問題**或**特定意圖**以外，否則**應一律使用 `t.assert` 而非 `node:assert/strict`**（亦無需在 Header 額外匯入 `node:assert/strict`）。
+  - **斷言計數追蹤（Assertion Count）**：`t.assert` 與當前測試上下文綁定，會被執行器計入斷言數，對應 Jest 回報的斷言數與 plan 檢核；直接使用獨立的 `node:assert/strict` 則無法被執行器統計。
+  - **子測試隔離與診斷**：`t.assert` 能精確將失敗歸屬至當前子測試或測試步驟，並提供完整診斷資訊。
+  - **允許使用 `node:assert/strict` 的三大例外**：
+    1. *不可抗的環境因素*：執行於非測試回呼上下文（如獨立腳本、模組頂層前置檢查），或舊版環境不支援 `t.assert`。
+    2. *相容性問題*：未重構注入 `t: test.TestContext` 的共用函式庫或外部 helper。
+    3. *特定意圖*：測試目標本身即是斷言庫拋錯行為或原生斷言實例。
+- **範例回呼參數一律標註 `t: test.TestContext`**：部分編輯器（如 VSCode / WebStorm / TypeScript LSP）對未標註型別的回呼中呼叫 `t.assert.*` 會報錯或遺失自動補完（tsx 執行不受影響），顯式標註後即可正常推導。
+- `t.assert` 內含 Legacy 與 Strict 兩系方法，一律呼叫 Strict 系（`t.assert.strictEqual` 等，詳見下方「Strict / Legacy 模式」）。
+- 需要 Mock 時，於測試回呼中使用測試上下文 `t.mock.fn()` / `t.mock.method()`。
 
 ---
 
@@ -240,6 +246,8 @@ import assert from 'node:assert/strict';
 | `.rejects.toThrow(...)` | ✅ `await t.assert.rejects(asyncFn, ...)` | `error` 參數形式同上：`Class` / `RegExp` / `Function` / `Object` / `Error` |
 
 ### Jest-like API 的 Node 近似實作 (Node Approximation)
+
+> 💡 **專屬技能指引**：將其他測試框架（Jest / Vitest / Bun / Mocha 等）轉換與遷移為 Node.js 原生測試（`node:test` + `t.assert`）的完整規範、Matcher 遷移與封裝 helper 實作，請參閱專屬技能 [test-convert-to-node-test](../../test-convert-to-node-test/SKILL.md)。
 
 #### `toMatchSnapshot`
 
@@ -399,6 +407,7 @@ expect(obj).toMatchObject({ bar: expect.any(String) }); // 第二次比對結果
 ## 相關資源 (Related Resources)
 
 - [SKILL.md](../SKILL.md)
+- [測試轉換為 Node.js 原生測試規範 (`test-convert-to-node-test`)](../../test-convert-to-node-test/SKILL.md)
 - [測試框架 API 重構範例](./examples.md)
 - [斷言語法優化：可讀性 matcher 與物件比對](./assertion-syntax.md)
 - [Node.js Test Runner](https://nodejs.org/api/test.html)
