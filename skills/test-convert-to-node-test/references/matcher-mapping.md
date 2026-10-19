@@ -21,6 +21,7 @@ tags:
 1. **回呼參數一律標註 `t: test.TestContext`**。
 2. **測試中一律強制使用 `t.assert`，嚴禁使用 `node:assert/strict`**（除非有不可抗的環境因素、相容性問題或特定意圖）。
 3. **一律使用 Strict 系方法**（如 `strictEqual`、`deepStrictEqual`）。
+4. **禁止非必要探查**：轉換時基本上無需主動理解相關代碼實作、無需讀取快照檔內容、嚴禁主動偵測環境（Node.js 版本、tsx 路徑等），既有代碼已展現足夠資訊。
 
 ---
 

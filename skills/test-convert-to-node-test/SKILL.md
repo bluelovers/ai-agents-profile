@@ -23,13 +23,13 @@ tags:
 
 本技能提供將既有測試（Jest、Vitest、Bun、Mocha 等）完整轉換與遷移至 **Node.js 原生測試執行器（`node:test` + `t.assert`）** 的標準作業程序、語法對應與約束原則。
 
-> 📌 **版本前提**：執行遷移與改寫時，除非專案已明定版本，否則一律**假設處於支援 `node:test` 與 `t.assert` 的最新版 Node.js 環境（v22+ / v24+）**；不主動進行環境探測或版本查詢，若遇不相容將自錯誤訊息被動得知。
+> 📌 **版本前提與探測限制**：執行遷移與改寫時，除非專案已明定版本，否則一律**假設處於支援 `node:test` 與 `t.assert` 的最新版 Node.js 環境（v22+ / v24+）**；不主動進行環境探測或版本查詢，若遇不相容將自錯誤訊息被動得知。
 
 ---
 
 ## 核心原則與最高約束 (Core Principles & Constraints)
 
-在將任何測試重構或遷移至 `node:test` 時，必須嚴格遵守以下三大強制規範：
+在將任何測試重構或遷移至 `node:test` 時，必須嚴格遵守以下四大強制規範：
 
 ### 1. 範例與測試回呼參數一律標註 `t: test.TestContext` (Strict Type Annotation)
 
@@ -101,6 +101,22 @@ test('驗證字串轉換', (t: test.TestContext) => {
 - `t.assert.notStrictEqual` 代替 `t.assert.notEqual`
 - `t.assert.deepStrictEqual` 代替 `t.assert.deepEqual`
 - `t.assert.notDeepStrictEqual` 代替 `t.assert.notDeepEqual`
+
+---
+
+### 4. 禁止非必要探查：既有代碼已展現足夠資訊 (Avoid Unnecessary Probing)
+
+**轉換測試時，既有代碼已經展現足夠的資訊。基本上無需主動去理解相關代碼的實作、讀取快照檔內容，或進行偵測環境（例如 Node.js 版本、tsx 路徑等）等非必要行為。**
+
+- **無需主動理解相關代碼的實作細節**：
+  - 轉換的核心在於「測試語法與斷言 API 的映射轉換」（如 `expect().toBe()` → `t.assert.strictEqual()`）。
+  - 測試案例的名稱、輸入參數、預期回傳值與 Mock 定義已完整體現受測行為的合約，**無需主動深入閱讀被測試業務代碼的底層實作**。
+- **無需讀取快照檔（Snapshot）內容**：
+  - 遷移快照測試時，只需將語法轉換為相應的原生快照 API（如 `t.assert.snapshot()` 或 `toMatchSnapshot(t, ...)` helper）。
+  - 快照檔案的內容由測試執行器在帶入 `--test-update-snapshots` 旗標時自動建立或校驗，**主動讀取 `.snap` 或 `.snapshot` 的檔案內容為多餘行為**。
+- **嚴禁主動偵測環境（Node.js 版本、tsx 路徑等）**：
+  - 一律假設處於支援最新特性的現代 Node.js 環境。
+  - **禁止主動執行指令偵測環境**（如 `node -v`、`which tsx`、查詢 `package.json` 中的各類執行路徑等）；若有環境不相容，執行測試時自然會被動地從錯誤訊息中得知，無需事前主動探查。
 
 ---
 
@@ -424,6 +440,7 @@ describe('UserService', () => {
 8. [ ] 共用 helper 已集中於 `helpers/` 或 `test-utils/` 目錄匯出，未在各檔重複貼上。
 9. [ ] Mock 與 Spy 已轉換為 `t.mock.fn()` 與 `t.mock.method()`。
 10. [ ] `npm test` 執行腳本已更新為 `node --test` 或 `tsx --test`。
+11. [ ] 未進行非必要行為（未主動閱讀原始碼實作、未讀取快照檔內容、未主動偵測環境如 Node.js 版本或 tsx 路徑）。
 
 ---
 
