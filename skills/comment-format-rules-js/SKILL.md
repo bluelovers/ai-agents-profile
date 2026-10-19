@@ -7,7 +7,6 @@ description: |-
   - "JSDoc 格式", "JSDoc 規範", "文件註解格式"
   - "雙語註解格式", "中英雙語註解", "bilingual comment format"
   - "區塊註解規範", "註解位置規範", "註解格式規範"
-  - "無意義註解", "無意義註解刪除", "meaningless comment"
   - "行內註解轉換", "inline to block comment converter"
   - "comment format rules", "JSDoc comment format", "block comment rules"
   Apply when writing, updating, or reviewing code comments in JS/TS projects.
@@ -30,9 +29,9 @@ IDE 及 AI 在處理程式碼時，會優先解析 **語義化標籤**（如 JSD
 - **一律使用區塊註解 `/** ... */`**（含分隔線註解），例外僅限 JSDoc `@example` 區塊內與特殊指令（`// @ts-ignore` 等）。詳見 [重要約束](#重要約束-critical-constraints)。
 - **解釋 WHY（為什麼），而非僅解釋 WHAT（做什麼）**：複雜條件需說明理由，邊界情況必須記錄。
 - **註解放置於代碼上方**，避免代碼後方的行內註解。詳見 [註解位置規範](./references/comment-placement.md)。
-- **註解必須緊鄰其所描述的宣告**（中間不得隔著 `import`、常數或其他陳述式）；**描述宣告的註解不得寫成檔頭註解**。詳見 [錯誤註解案例](./references/bad-comment-examples.md)。
+- **註解必須緊鄰其所描述的宣告**（中間不得隔著 `import`、常數或其他陳述式）；**描述宣告的註解不得寫成檔頭註解**。詳見 [錯誤註解案例](../analyze-code-commenter/references/bad-comment-examples.md)。
 - **雙語註解**：通用雙語標準（語言順序、彈性取捨、術語錨點等最高原則）遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)；JS/TS 註解排版詳見 [雙語註解格式](./references/bilingual-comment-format.md)。
-- **職責分離：JSDoc 描述合約與意圖，邏輯區塊描述實作細節。** 錯置案例見 [錯誤註解案例 — 案例六](./references/bad-comment-examples.md)。
+- **職責分離：JSDoc 描述合約與意圖，邏輯區塊描述實作細節。** 錯置案例見 [錯誤註解案例 — 案例六](../analyze-code-commenter/references/bad-comment-examples.md)。
 - **更新既有註解時保留原始技術資訊**（錯誤碼、術語、檔案路徑）。詳見 [註解更新規則](./references/comment-update-rules.md)。
 
 ---
@@ -333,15 +332,7 @@ function canAccess(user, resource) {
  */
 ```
 
-### 無意義註解（重複宣告、羅列結構）
-
-屬**無意義註解**的三類情形（不得新增，遇到既有者直接刪除）：
-
-1. 僅重複宣告關鍵字本身（如 `/** 介面 */` + `interface`）
-2. 僅重複宣告語意（如 `/** 型別守衛 */` + `function isX(v): v is X`）
-3. 羅列應由代碼管理的宣告、描述檔案「長什麼樣」而非「為什麼存在」的檔頭註解（what 而非 why）
-
-> **Reference**: [無意義註解](./references/meaningless-comments.md) - 錯誤案例、正確處理與改寫指引.
+> **Reference**: 無意義註解（重複宣告、羅列結構）的判定與處理由 [analyze-code-commenter](../analyze-code-commenter/SKILL.md) 負責，判斷基準、錯誤案例與改寫指引見 [無意義註解](../analyze-code-commenter/references/meaningless-comments.md)。
 
 ---
 
@@ -416,8 +407,6 @@ else if (m = (w1.p & w2.p))
 - [註解位置規範](./references/comment-placement.md) — 陣列元素、物件屬性、Interface/Type 成員、`@example` 行內註解例外
 - [重要約束](./references/critical-constraints.md) — 區塊註解強制、分隔線、特殊指令放置、保留技術術語
 - [註解更新規則](./references/comment-update-rules.md) — 保留原始錯誤資訊、Issue 驗證、多語言註解保留、更新前檢查清單
-- [無意義註解](./references/meaningless-comments.md) — 重複宣告關鍵字／語意、羅列代碼管理的宣告（what 而非 why）的註解判定，不得新增、遇到直接刪除
-- [錯誤註解案例](./references/bad-comment-examples.md) — 註解錯置（把宣告註解誤寫成檔頭註解、與目標被陳述式分隔、放進宣告內部、重構後殘留）、宣告 JSDoc 夾帶描述內部陳述式的實作段落（案例六）、重構操作日誌（SSOT 標籤、移動／抽離紀錄），與其餘錯誤類型的分流索引
 - [行內註解轉換工具](./references/convert-inline-to-block.md) — 將行內註解 (`//`) 批次轉為區塊註解 (`/** ... */`)，預設 dry-run，加 `--write` 才寫入
 
 ---
@@ -425,7 +414,7 @@ else if (m = (w1.p & w2.p))
 ## 相關技能 (Related Skills)
 
 - [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) — 繁中＋英文雙語標準化規範（SSoT）：最高原則、語言順序、判定基準與多語言保留。
-- [analyze-code-commenter](../analyze-code-commenter/SKILL.md) — 分析程式碼並自動加入雙語註解的實作技能，包含邏輯區塊分析規範與多種範例；格式規範由本技能定義。
+- [analyze-code-commenter](../analyze-code-commenter/SKILL.md) — 分析程式碼並自動加入雙語註解的實作技能，包含邏輯區塊分析規範與多種範例；格式規範由本技能定義，[錯誤註解案例](../analyze-code-commenter/references/bad-comment-examples.md) 與 [無意義註解](../analyze-code-commenter/references/meaningless-comments.md) 的內容品質判定由該技能負責。
 
 ---
 

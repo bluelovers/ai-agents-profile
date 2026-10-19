@@ -2,12 +2,13 @@
 name: analyze-code-commenter
 description: |-
   Analyze code and add bilingual comments (Chinese + English). Uses ONLY block comments (single-line or multi-line). Never uses inline comments.
-  Comment format rules (block comment layout, comment placement, JSDoc structure, update rules) are defined by comment-format-rules-js, and general bilingual standards are defined by bilingual-standardization-rule; this skill focuses on analyzing code to decide what needs comments.
+  Comment format rules (block comment layout, comment placement, JSDoc structure, update rules) are defined by comment-format-rules-js, and general bilingual standards are defined by bilingual-standardization-rule; this skill focuses on analyzing code to decide what needs comments, and owns the content-quality judgment of bad / meaningless comments (misplacement, level mismatch, refactoring logs, comments that merely restate declarations).
 
-  Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, or mention keywords such as:
+  Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) Detecting, removing or rewriting bad / meaningless comments, or mention keywords such as:
   - "為代碼添加註解", "分析並註解程式碼", "為代碼更新註解", "為代碼修正註解"
   - "重構代碼更新註解", "雙語註釋/雙語註解", "添加註釋"
   - "程式碼註解", "文件註解", "JSDoc", "區塊註解", "註解格式"
+  - "無意義註解", "無意義註解刪除", "不良註解", "錯誤註解案例", "meaningless comment", "bad comment"
   - "程式碼說明", "註釋翻譯"
   - "code comments", "bilingual comments", "block comments"
 tags:
@@ -24,7 +25,7 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
 **Uses only block comments (`/** ... */`) - never inline comments (`//`).**
 
 > **Comment format rules are owned by [comment-format-rules-js](../comment-format-rules-js/SKILL.md)**
-> this skill decides *where* comments are needed and *what* they should say.
+> this skill decides *where* comments are needed, *what* they should say, and *whether an existing comment should exist at all* — see [Bad & Meaningless Comments](#bad--meaningless-comments-analyze-remove-rewrite).
 
 ## Workflow
 
@@ -41,7 +42,7 @@ Add bilingual comments (Traditional Chinese zh-TW + English) to code without mod
 
 > **Reference**: For detailed logic block comment rules (placement, merging, layout), see [comment-format-rules-js](../comment-format-rules-js/SKILL.md#邏輯區塊註解規範-logic-block-comments).
 >
-> **Reference**: Implementation details (why a line clears/rebuilds an internal cache) belong HERE, above the statement — not in the declaration's JSDoc. See [錯誤註解案例 — 案例六](../comment-format-rules-js/references/bad-comment-examples.md).
+> **Reference**: Implementation details (why a line clears/rebuilds an internal cache) belong HERE, above the statement — not in the declaration's JSDoc. See [錯誤註解案例 — 案例六](references/bad-comment-examples.md).
 >
 > **參考**：實作細節（內部快取為何清空、如何重建）應寫在該陳述式上方的邏輯區塊註解，不得寫進宣告 JSDoc，錯誤案例見上述「錯誤註解案例 — 案例六」。
 
@@ -67,7 +68,7 @@ Logic blocks are code sections that implement specific functionality, including 
 - **Explain WHY, not just WHAT** - Focus on business purpose and intent
 - **Complex conditions need explanation** - Document the reasoning behind complex boolean expressions
 - **Edge cases must be documented** - Explain why certain conditions are handled
-- **Implementation details stay in the logic block** - Do not fold statement-level rationale into the declaration's JSDoc (see [錯誤註解案例 — 案例六](../comment-format-rules-js/references/bad-comment-examples.md))
+- **Implementation details stay in the logic block** - Do not fold statement-level rationale into the declaration's JSDoc (see [錯誤註解案例 — 案例六](references/bad-comment-examples.md))
 
 ### Examples of Logic Blocks Requiring Comments
 
@@ -196,7 +197,30 @@ These behavioral rules apply to every edit this skill makes; format constraints 
 - **NEVER** modify existing code formatting (indentation, line breaks, spaces)
 - **NEVER** delete old commented-out code (e.g., `// old code...`, `/* old code... */`, or `/** @deprecated */`)
 - **NEVER** convert existing CJK characters to Traditional Chinese - only use Traditional Chinese in NEW comments
-- **DELETE meaningless comments that merely restate the declaration keyword** (e.g., `/** 介面 / interface */` above `interface ISkillDef`, `/** 枚舉 */` above `enum`, `/** type */` above `type`) - they add no information and must be removed, not rewritten (see [無意義註解](../comment-format-rules-js/references/meaningless-comments.md))
+- **DELETE meaningless comments that merely restate the declaration keyword** (e.g., `/** 介面 / interface */` above `interface ISkillDef`, `/** 枚舉 */` above `enum`, `/** type */` above `type`) - they add no information and must be removed, not rewritten (see [無意義註解](references/meaningless-comments.md))
+
+## Bad & Meaningless Comments (Analyze, Remove, Rewrite)
+
+Beyond adding comments, this skill decides *whether an existing comment should exist at all* — a content-quality judgment; the corresponding format rules stay in [comment-format-rules-js](../comment-format-rules-js/SKILL.md).
+
+- **Reference**: [無意義註解](references/meaningless-comments.md) — 判斷基準（「只回答看 code 不知道的事」）、錯誤案例、刪／改與保留的案例解析、正確範本與實戰改寫對照。
+- **Reference**: [錯誤註解案例](references/bad-comment-examples.md) — 錯置類（案例一～四）、重構操作日誌（案例五）、層級錯置（案例六），及其餘錯誤類型的分流索引與自我檢查清單。
+
+### 無意義註解（重複宣告、羅列結構）
+
+屬**無意義註解**的三類情形（不得新增，遇到既有者直接刪除）：
+
+1. 僅重複宣告關鍵字本身（如 `/** 介面 */` + `interface`）
+2. 僅重複宣告語意（如 `/** 型別守衛 */` + `function isX(v): v is X`）
+3. 羅列應由代碼管理的宣告、描述檔案「長什麼樣」而非「為什麼存在」的檔頭註解（what 而非 why）
+
+### 不良註解 (Bad Comments)
+
+| 類型 | 問題 | 修正方向 | 參考 |
+|------|------|----------|------|
+| 錯置 | 宣告註解寫成檔頭、與目標被陳述式分隔、放進宣告內部、重構搬移後殘留 | 歸位到緊鄰目標宣告的上方 | [案例一～四](references/bad-comment-examples.md) |
+| 層級錯置 | 宣告 JSDoc 夾帶只描述函式體內某一行的實作段落 | 下沉到該陳述式上方的邏輯區塊註解 | [案例六](references/bad-comment-examples.md) |
+| 操作日誌 | 註解內容是 SSOT 標籤、移動／抽離紀錄、遷移鏈 | 只寫意圖／不變數，歷程交給 git | [案例五](references/bad-comment-examples.md) |
 
 ## Comment Update Rules
 
@@ -214,7 +238,6 @@ All comment and formatting conventions for JS/TS live in the comment-format-rule
 - [註解位置規範](../comment-format-rules-js/references/comment-placement.md) — array elements, object properties, Interface/Type members, `@example` inline exception
 - [重要約束](../comment-format-rules-js/references/critical-constraints.md) — block comment enforcement, separators, special directives, technical terms, non-semantic naming
 - [註解更新規則](../comment-format-rules-js/references/comment-update-rules.md) — preserve original error info, issue verification, multilingual comments, update checklist
-- [錯誤註解案例](../comment-format-rules-js/references/bad-comment-examples.md) — 錯置與層級錯置的真實案例（宣告註解放錯位置、函式 JSDoc 夾帶描述內部陳述式的實作段落、重構操作日誌），避免把實作細節寫進宣告 JSDoc
 - [行內註解轉換工具](../comment-format-rules-js/references/convert-inline-to-block.md) — batch-convert `//` comments into block comments (`/** ... */`)
 
 ## Examples

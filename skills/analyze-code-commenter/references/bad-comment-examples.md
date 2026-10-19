@@ -300,11 +300,11 @@ finalize(options?: IFinalizeIgnoreLinesOptions): this
 | # | 問題 | 說明 |
 |---|------|------|
 | 1 | 綁定對象錯層 | 段落描述的是 `this._ignore = void 0;` 的重建理由，讀到那一行的人卻在函式體內找不到說明；函式 JSDoc 反而塞滿與呼叫者無關的內部細節 |
-| 2 | 違反職責分離 | JSDoc 是給呼叫者的合約，「ignore 實例不能刪除、快取重建策略」是給維護實作的人看的細節，兩者受眾不同（見 [職責分離](../SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation)） |
+| 2 | 違反職責分離 | JSDoc 是給呼叫者的合約，「ignore 實例不能刪除、快取重建策略」是給維護實作的人看的細節，兩者受眾不同（見 [職責分離](../../comment-format-rules-js/SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation)） |
 | 3 | 合約隨實作漂移 | 日後改用其他快取策略時，宣告 JSDoc 被迫一起改；實作每次調整都污染一次 API 文件 |
 | 4 | 內部行失去就近說明 | 實作細節留在頂端，函式體內的 `this._ignore = void 0;` 變成無註解的「神來一筆」，讀者須對照長 JSDoc 才能猜到對應關係 |
 
-> **Reference**: [JSDoc 與邏輯區塊職責分離](../SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation)（位於 `comment-format-rules-js`）— 合約／意圖與實作細節的分界表、標準範例與檢查清單。
+> **Reference**: [JSDoc 與邏輯區塊職責分離](../../comment-format-rules-js/SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation)（位於 `comment-format-rules-js`）— 合約／意圖與實作細節的分界表、標準範例與檢查清單。
 
 ## 其他不恰當案例索引 (Index by Topic)
 
@@ -312,14 +312,14 @@ finalize(options?: IFinalizeIgnoreLinesOptions): this
 
 | 案例類型 | 參考文件 |
 |----------|----------|
-| 使用行內註解 `//`、分隔線未用區塊註解、特殊指令（`@ts-ignore`）順序錯誤、更新時刪除技術術語、為命名慣例添加不存在的意義 | [重要約束](./critical-constraints.md) |
-| 註解放在代碼後方、以 `@property` 描述 Interface 成員 | [註解位置規範](./comment-placement.md) |
-| 英文＋英文的假雙語、雙語順序顛倒、違反彈性取捨或刪除技術術語錨點 | [雙語註解格式](./bilingual-comment-format.md) 與 [雙語標準化規範](../../bilingual-standardization-rule/SKILL.md) |
-| 多個單行註解、只寫 WHAT 不寫 WHY、標題與描述語意重複 | [SKILL.md — 邏輯區塊註解規範／職責分離](../SKILL.md) |
-| JSDoc 內塞實作細節、宣告 JSDoc 夾帶描述內部陳述式的段落（合約與實作未分離） | 本檔案例六；規範見 [SKILL.md — JSDoc 與邏輯區塊職責分離](../SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation) |
+| 使用行內註解 `//`、分隔線未用區塊註解、特殊指令（`@ts-ignore`）順序錯誤、更新時刪除技術術語、為命名慣例添加不存在的意義 | [重要約束](../../comment-format-rules-js/references/critical-constraints.md) |
+| 註解放在代碼後方、以 `@property` 描述 Interface 成員 | [註解位置規範](../../comment-format-rules-js/references/comment-placement.md) |
+| 英文＋英文的假雙語、雙語順序顛倒、違反彈性取捨或刪除技術術語錨點 | [雙語註解格式](../../comment-format-rules-js/references/bilingual-comment-format.md) 與 [雙語標準化規範](../../bilingual-standardization-rule/SKILL.md) |
+| 多個單行註解、只寫 WHAT 不寫 WHY、標題與描述語意重複 | [SKILL.md — 邏輯區塊註解規範／職責分離](../../comment-format-rules-js/SKILL.md) |
+| JSDoc 內塞實作細節、宣告 JSDoc 夾帶描述內部陳述式的段落（合約與實作未分離） | 本檔案例六；規範見 [SKILL.md — JSDoc 與邏輯區塊職責分離](../../comment-format-rules-js/SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation) |
 | 僅重複宣告關鍵字／語意、羅列代碼管理的宣告（what 而非 why） | [無意義註解](./meaningless-comments.md) |
 | 重構時的操作日誌（SSOT 標籤、移動／抽離紀錄、遷移鏈註解）| 本檔案例五；完整判定見 [SSOT 重構的反模式 — Case D](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md) |
-| 更新時遺失原始錯誤資訊、未驗證的 Issue 連結 | [註解更新規則](./comment-update-rules.md) |
+| 更新時遺失原始錯誤資訊、未驗證的 Issue 連結 | [註解更新規則](../../comment-format-rules-js/references/comment-update-rules.md) |
 
 ## 自我檢查清單 (Checklist)
 
