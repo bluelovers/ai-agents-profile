@@ -2,10 +2,17 @@
 name: test-convert-to-node-test
 description: >-
   將其他測試框架（Jest、Vitest、Bun、Mocha 等）轉換或遷移至 Node.js 原生測試（node:test + t.assert）的規範與實作指南。
-  當用戶請求 (1) 將測試轉換為 nodejs 原生測試、(2) 測試遷移至 node:test、(3) "轉換為 node:test" / "轉為原生測試"、
-  (4) "Jest 轉 node:test" / "Vitest 轉 node:test" / "Bun 轉 node:test" / "Mocha 轉 node:test"、
-  (5) "測試框架遷移"、(6) "node:test 斷言轉換" / "t.assert 規範"、(7) "測試快照遷移至 node:test"、
-  (8) "Mock 遷移至 t.mock" 時使用此技能。
+  當用戶請求：
+  - 將測試轉換為 nodejs 原生測試
+  - 測試遷移至 node:test
+  - 建立 node:test 測試
+  - "轉換為 node:test" / "轉為原生測試"
+  - "Jest 轉 node:test" / "Vitest 轉 node:test" / "Bun 轉 node:test" / "Mocha 轉 node:test"
+  - "測試框架遷移"
+  - "node:test 斷言轉換" / "t.assert 規範"
+  - "測試快照遷移至 node:test"
+  - "Mock 遷移至 t.mock"
+  時使用此技能。
 tags:
   - agents/skills
   - testing
