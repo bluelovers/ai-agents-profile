@@ -24,8 +24,8 @@ tags:
 > 註解應該回答「**如果我只看這段 code，我會不知道什麼？**」；
 > 而不是把「這段 code 已經明確告訴我的事情」重新念一遍，也不是替整個 type system 寫使用說明書。
 
-> 📚 重構時把「SSOT 標籤、移動/抽離紀錄」等操作日誌寫進註解，同屬無意義註解，
-> 判定與正確做法見 [Case D — 重構時於註解內標示非必要內容](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md)（位於 `code-refactoring-expert-typescript`），
+> 📚 重構時把「SSOT 標籤、移動/抽離紀錄、已移至／原本位於、基於 SSoT 集中於此」等任務操作日誌寫進註解，同屬無意義註解：
+> 判定與正確做法見 [Case D — 重構時於註解內標示非必要內容](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md)；
 > 錯例與改寫彙整見 [錯誤註解案例 — 案例五](./bad-comment-examples.md)。
 
 ## 錯誤案例 (Bad Examples)
@@ -155,7 +155,7 @@ export interface IJobNamedIcon
 | # | 註解內容 | 問題 |
 |---|---------|------|
 | 1 | `介面 / interface` | 僅重複宣告關鍵字（見案例一） |
-| 2 | 「單一事實來源，兩處共用、欄位只在此宣告一次」 | 與末尾「欄位 / Fields」區塊**重複描述同一件事** |
+| 2 | 「單一事實來源，兩處共用、欄位只在此宣告一次」 | 屬重構宣告／架構口號與任務紀錄，且與欄位宣告重複，無業務實質資訊 |
 | 3 | `IJobDefCore` 如何繼承本型別（consumer 的角色） | `IJobDefCore` 的**使用方式**寫在被組合的 `IJobNamedIcon` 上 |
 | 4 | `ITSRequiredWith<…, 'job_name'>` 收窄必填 | `ITSRequiredWith` 的 **implementation 細節**寫在基礎型別上 |
 | 5 | `img` / `job_name` 欄位說明 | **重複描述非常直觀的欄位**，宣告本身已表達 |

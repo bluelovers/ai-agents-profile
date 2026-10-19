@@ -128,26 +128,12 @@ async function processBatch(items: Item[]): Promise<ProcessedItem[]> {
  */
 async function processBatch(items: Item[]): Promise<ProcessedItem[]>
 {
-	/** 存放處理結果的陣列 / Array to store processing results */
 	const results: ProcessedItem[] = [];
-
-	/**
-	 * 每批處理的項目數量 / Number of items to process per batch
-	 */
 	const batchSize = 10;
 
 	/**
-	 * 以批次方式迭代處理所有項目
-	 * Iterate through all items in batches
-	 *
-	 * 取得當前批次的項目子集
-	 * Get the subset of items for the current batch
-	 *
-	 * 並行處理當前批次，等待所有項目完成
-	 * Process current batch in parallel, waiting for all items to complete
-	 *
-	 * 將有效結果加入結果陣列，過濾掉失敗項目
-	 * Add valid results to the result array, filtering out failed items
+	 * 分批並行轉換以控制併發量，避免一次性處理造成記憶體溢出或觸發 API 限流
+	 * Process items in parallel batches to control concurrency and prevent memory overflow or rate limiting
 	 */
 	for (let i = 0; i < items.length; i += batchSize)
 	{
@@ -155,6 +141,7 @@ async function processBatch(items: Item[]): Promise<ProcessedItem[]>
 		const processed = await Promise.all(
 			batch.map(item => transformItem(item))
 		);
+		/** 過濾轉換失敗的無效項目 / Filter out failed or invalid items */
 		results.push(...processed.filter(Boolean));
 	}
 

@@ -1,7 +1,8 @@
 ---
 name: comment-format-rules-js
 description: |-
-  JS/TS 註解格式規範：區塊註解、JSDoc、雙語註解（中文＋英文）、註解位置與更新規則。
+  JS/TS 註解語法與排版格式規範：強制區塊註解 (/** ... */)、JSDoc 排版標籤、雙語排版、註解位置結構與更新維護規則。
+  註解意圖決定、何時需要註解與無意義註解審查由 analyze-code-commenter 負責；通用雙語標準由 bilingual-standardization-rule 定義。
   Use when users mention:
   - "JS/TS 註解規範", "JavaScript 註解格式", "TypeScript 註解格式"
   - "JSDoc 格式", "JSDoc 規範", "文件註解格式"
@@ -20,28 +21,34 @@ tags:
 
 # JS/TS 註解格式規範 (Comment Format Rules)
 
-規範 JavaScript/TypeScript 程式碼註解的撰寫、更新與審查。CSS/SCSS 請改用 [comment-format-rules-css](../comment-format-rules-css/SKILL.md)。
+規範 JavaScript/TypeScript 程式碼註解的語法格式、排版結構、放置位置與更新維護。CSS/SCSS 請改用 [comment-format-rules-css](../comment-format-rules-css/SKILL.md)。
 
-## 核心原則
+## 職責邊界與核心原則
 
-IDE 及 AI 在處理程式碼時，會優先解析 **語義化標籤**（如 JSDoc）與 **上下文關聯**。為確保代碼的可維護性與提示的精準度，撰寫或更新註解時遵循：
+為確保代碼排版的一致性與 IDE / AI 的提示精準度，遵循以下分工與格式原則：
 
-- **一律使用區塊註解 `/** ... */`**（含分隔線註解），例外僅限 JSDoc `@example` 區塊內與特殊指令（`// @ts-ignore` 等）。詳見 [重要約束](#重要約束-critical-constraints)。
-- **解釋 WHY（為什麼），而非僅解釋 WHAT（做什麼）**：複雜條件需說明理由，邊界情況必須記錄。
-- **註解放置於代碼上方**，避免代碼後方的行內註解。詳見 [註解位置規範](./references/comment-placement.md)。
-- **註解必須緊鄰其所描述的宣告**（中間不得隔著 `import`、常數或其他陳述式）；**描述宣告的註解不得寫成檔頭註解**。詳見 [錯誤註解案例](../analyze-code-commenter/references/bad-comment-examples.md)。
-- **雙語註解**：通用雙語標準（語言順序、彈性取捨、術語錨點等最高原則）遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)；JS/TS 註解排版詳見 [雙語註解格式](./references/bilingual-comment-format.md)。
-- **職責分離：JSDoc 描述合約與意圖，邏輯區塊描述實作細節。** 錯置案例見 [錯誤註解案例 — 案例六](../analyze-code-commenter/references/bad-comment-examples.md)。
-- **更新既有註解時保留原始技術資訊**（錯誤碼、術語、檔案路徑）。詳見 [註解更新規則](./references/comment-update-rules.md)。
+> **職責邊界**：
+> - **本技能負責【註解語法與格式結構】**：一律使用區塊註解、JSDoc 結構排版、單多行格式、緊鄰目標代碼上方、特殊指令順序與批次轉換工具。
+> - **註解意圖與內容品質由 [analyze-code-commenter](../analyze-code-commenter/SKILL.md) 負責**：決定何處需要註解、分析 WHY 而非僅 WHAT、約束與邊界條件、審查並清除無意義註解與重構／遷移紀錄。
+> - **雙語通用標準由 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 規範**：語言順序、判定基準、術語保留與彈性取捨等最高原則。
+
+### 格式核心原則
+
+- **一律使用區塊註解 `/** ... */`**（含分隔線註解），全面禁用行內註解 `//`；例外僅限 JSDoc `@example` 區塊內代碼與特殊編譯器指令（`// @ts-ignore` 等）。詳見 [重要約束](#重要約束-critical-constraints)。
+- **註解放置於代碼上方**，緊鄰目標代碼，避免代碼後方的行內註解。詳見 [註解位置規範](./references/comment-placement.md)。
+- **註解必須緊鄰其所描述的宣告**（中間不得隔著 `import`、常數或其他陳述式）；描述宣告的註解不得寫成檔頭註解。詳見 [錯誤註解案例](../analyze-code-commenter/references/bad-comment-examples.md)。
+- **格式結構分工：宣告層級 JSDoc 描述合約，陳述式層級邏輯區塊描述實作緣由。** 詳見 [JSDoc 與邏輯區塊職責分離](#jsdoc-與邏輯區塊職責分離-responsibility-separation)。
+- **雙語排版格式**：單行術語以 `/` 分隔，JSDoc 標籤採 `- 中文 / English` 格式。詳見 [雙語註解格式](./references/bilingual-comment-format.md)。
+- **更新既有註解時保留原始技術資訊**（錯誤碼、術語、檔案路徑、多語言註解）。詳見 [註解更新規則](./references/comment-update-rules.md)。
 
 ---
 
 ## 結構化文檔註解 (Documentation Blocks)
 
-凡是涉及 **函式定義、類別、介面、重要的常數或設定值、複雜邏輯區塊、關鍵邏輯或算法**，必須使用編輯器可識別的標準區塊註解。這有助於 IDE 及 AI 在提供自動補全（IntelliSense）時顯示正確的提示訊息。
+凡是涉及 **函式定義、類別、介面、重要常數或設定值、關鍵演算法**，必須使用編輯器可識別的標準區塊註解。這有助於 IDE 及 AI 在提供自動補全（IntelliSense）時顯示正確的提示訊息。對於公開 API 或複雜演算法，務必補上完整範例或使用情境。
 
 - **格式：** 使用 `/** ... */`
-- **適用場景：** 模組、API 接口、函式定義、類別、介面、重要的常數或設定值、複雜邏輯區塊、關鍵邏輯或算法。
+- **適用場景：** 模組、API 接口、函式定義、類別、介面、重要常數與設定值。
 
 範例：
 
@@ -70,12 +77,12 @@ const MAX_CHARS = 2000;
 ## 單行區塊註解 (Single-line Block)
 
 對於能夠被編輯器標記，但內容較短的說明，使用單行的區塊註解格式。
-僅限於單行的簡單邏輯說明或暫時性標記。否則請使用多行區塊註解格式。
+僅限於單行的簡短邏輯說明或暫時性標記。否則請使用多行區塊註解格式。
 
 對於使用 TypeScript 的變數或屬性，若程式碼中已明確標註型別（例如 `protected ideList: IIDEInfo[]`），則無需在 JSDoc 中再次使用 `@type` 標註。當新增簡短說明時，可直接使用單行區塊註解（`/** 註解內容 */`）以保持簡潔與一致性。
 
 - **格式：** `/** 註解內容 */`
-- **適用場景：** 變數聲明、配置項、常數說明。
+- **適用場景：** 變數聲明、配置項、常數說明、簡短邏輯分段、TODO 標記。
 
 範例：
 
@@ -92,16 +99,13 @@ let userCache = new Map();
 protected ideList: IIDEInfo[] = [];
 ```
 
-- **適用場景：** 簡單的邏輯分段、TODO 標記。
-
-範例：
-
-```js
-/** 如果快取存在則直接回傳 */
+```typescript
+/** 若命中快取則直接回傳，避免重複解析運算 */
 if (cache.has(key)) return cache.get(key);
 
 /** TODO: 優化大數據量下的迴圈效能 */
 processData(data);
+```
 ```
 
 ---
@@ -142,76 +146,69 @@ processData(data);
 
 ---
 
-## 邏輯區塊註解規範 (Logic Block Comments)
+## 邏輯區塊註解格式規範 (Logic Block Comment Formatting)
 
-**所有邏輯區塊都需要註解**，包括私有/內部邏輯：
+> **意圖與範圍參照**：邏輯區塊的業務意圖判定（解釋 WHY 而非僅 WHAT）、邊界分析與需要註解的代碼範圍，請參閱 [analyze-code-commenter — 邏輯區塊意圖規範](../analyze-code-commenter/SKILL.md#logic-block-requirements-required-for-all-logic-blocks)。
 
-| 邏輯類型 | 範例 |
-|----------|------|
-| 控制流程 | `if/else`, `switch/case`, `try/catch`, 迴圈 |
-| 業務邏輯 | 資料轉換、驗證、計算算法 |
-| 錯誤處理 | 異常捕獲、降級邏輯、重試機制 |
-| 巢狀邏輯 | 巢狀迴圈、巢狀條件、回呼函式 |
+在編寫邏輯區塊註解時，必須嚴格遵守以下格式規範：
 
-### 註解內容原則
+### 強制區塊註解格式
 
-- **解釋 WHY（為什麼），而非僅解釋 WHAT（做什麼）**
-- 複雜條件需要說明理由
-- 邊界情況必須記錄
+**所有邏輯區塊上方一律使用區塊註解格式 `/** ... */`**，不可使用行內註解 `//`：
 
 ```typescript
-// ❌ 避免：複雜邏輯無註解
+// ❌ 錯誤：邏輯區塊使用行內註解
 if (user.isActive && subscription.status === 'active' &&
     (payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew))
 {
-    // grant access
+    // 檢查訂閱有效性
 }
 
-// ✅ 推薦：複雜條件加上說明
+// ✅ 正確：使用區塊註解排版
 /**
- * 檢查使用者是否有有效訂閱且最近有付款記錄
- * 或啟用自動續訂功能的使用者
+ * 檢查使用者是否有有效訂閱且最近有付款記錄，
+ * 或具備自動續訂資格以確保服務不中斷
  */
 if (user.isActive && subscription.status === 'active' &&
     (payment.lastPaymentDate > thirtyDaysAgo || payment.isAutoRenew))
 {
-    // grant access
+    // ...
 }
 ```
 
-### 禁止多個單行註解
+### 禁止堆疊多個單行註解
 
-**禁止對同一個代碼元素使用多個單行註解**（無論是單行區塊註解 `/** ... */` 或單行行內註解 `//`），應合併為一個多行區塊註解：
+**禁止對同一個代碼元素或陳述式堆疊多個單行註解**（無論是單行區塊註解 `/** ... */` 或行內註解 `//`），應合併為單一多行區塊註解：
 
 ```typescript
-// ❌ 錯誤：多個單行區塊註解
+// ❌ 錯誤：多個單行區塊註解堆疊
 /** 驗證訂單資料格式 */
 /** 檢查必填欄位 */
 const validated = validateOrder(order);
 
-// ❌ 錯誤：多個單行行內註解
+// ❌ 錯誤：多個單行行內註解堆疊
 // 驗證訂單資料格式
 // 檢查必填欄位
 const validated = validateOrder(order);
 
 // ✅ 正確：合併為單一多行區塊註解
 /**
- * 驗證訂單資料格式與必填欄位
+ * 驗證訂單資料格式與必填欄位完整性
  */
 const validated = validateOrder(order);
 ```
 
-### 連續邏輯區塊的合併
+### 連續邏輯區塊的合併排版
 
-對 **3 個以上連續的邏輯區塊**加上註解時，使用單一多行區塊註解統整，避免零碎的連續註解：
+對 **3 個以上連續相關的陳述式**統整註解時，使用單一多行區塊註解分段排版，避免零碎的逐行註解：
 
 ```typescript
 /**
- * 邏輯說明一 / Logic description one
+ * 依序執行前置檢查與初始化：
  *
- * 邏輯說明二 / Logic description two
- *
- * 邏輯說明三 / Logic description three
+ * 1. 驗證連線設定與授權憑證
+ * 2. 初始化重試機制與備用佇列
+ * 3. 註冊生命週期監聽器
  */
 ```
 
@@ -219,47 +216,49 @@ const validated = validateOrder(order);
 
 ## JSDoc 與邏輯區塊職責分離 (Responsibility Separation)
 
-**核心原則：** JSDoc 描述「合約/意圖」，邏輯區塊描述「實作細節」。
+> **錯置案例參照**：關於層級錯置（JSDoc 夾帶內部陳述式細節）的詳細對照與修正，請參閱 [錯誤註解案例 — 案例六](../analyze-code-commenter/references/bad-comment-examples.md)。
 
-| 位置 | 應包含 | 不應包含 |
-|------|--------|----------|
-| **JSDoc** | 函式用途、設計邏輯、為什麼這樣設計 | 具體如何實現、語法細節 |
-| **邏輯區塊** | 具體實作邏輯、技術細節（as any、運算子等） | 為什麼要這樣設計 |
+**核心原則：** 宣告層級的 JSDoc 描述「合約與對外意圖」；陳述式層級的邏輯區塊描述「局部實作緣由」。
+
+| 註解層級 | 格式結構與受眾 | 應包含 | 嚴禁包含 |
+|----------|----------------|--------|----------|
+| **宣告層級 (JSDoc)** | 位於 class/function/interface 上方，面向外部呼叫端與 IntelliSense | 模組或函式用途、API 合約、前置條件、參數約束 (`@param`)、回傳值 (`@returns`)、異常拋出 (`@throws`) | 函式體內具體陳述式的實作步驟、內部暫存快取重設等私有細節 |
+| **陳述式層級 (邏輯區塊)** | 位於函式體內部的具體陳述式上方，面向內部維護實作者 | 該陳述式或分支的局部意圖與實作原因（相容性防禦理由、特殊邊界處理、快取失效或重算時機） | 外部 API 合約描述、全域架構口號；**嚴禁單純翻譯語法字面**（例如「使用 as any 繞過推導」、「使用短路運算實現」等無業務語義的語法雜訊） |
 
 ```typescript
-// ❌ 錯誤：將實作細節放在 JSDoc
+// ❌ 錯誤：將內部陳述式層級的實作細節堆在 JSDoc
 /**
- * 處理資料（錯誤：將實作細節放在 JSDoc）
- * Process data (wrong: implementation details in JSDoc)
+ * 取得舊版插件名稱清單
+ * Get legacy plugin names
  *
- * 使用短路運算實現：(condition && value) || default
+ * 內部檢查舊版名稱與當前名稱是否衝突，並在有資料時提取；
+ * 否則回傳空陣列
  */
-function process(result) {
-  return condition && value || [];
+function getLegacyPluginNames(result: Record<string, unknown[]>) {
+    return (LEGACY_PLUGIN_NAME !== PLUGIN_NAME) && result[LEGACY_PLUGIN_NAME] || [];
 }
 
-// ✅ 正確：JSDoc 描述意圖，邏輯區塊描述實作
+// ✅ 正確：JSDoc 宣告合約，邏輯區塊說明局部相容性與防禦理由
 /**
- * 從結果中取得舊版插件名稱
- * Get legacy plugin names from result
+ * 取得已註冊的相容舊版插件名稱清單
+ * Get registered legacy plugin names for backward compatibility
+ *
+ * @param result - 插件掃描結果物件
+ * @returns 舊版插件名稱陣列，若無相容項目則回傳空陣列
  */
-function getLegacyPluginNamesFromResult(result) {
+function getLegacyPluginNames(result: Record<string, unknown[]>): string[] {
     /**
-     * 條件判斷：確保新舊插件名稱確實不同
-     *
-     * 使用 `as any` 繞過 TypeScript 推導
-     *
-     * 短路運算實現：(condition && value) || default
-     * Short-circuit evaluation implementation
+     * 相容性防禦：當前插件與舊版名稱相同時不需重疊提取；
+     * 若未載入舊版設定則回傳空陣列以維持回傳型別一致性
      */
-    return (LEGACY_PLUGIN_NAME !== PLUGIN_NAME as any) && result[LEGACY_PLUGIN_NAME] || [];
+    return (LEGACY_PLUGIN_NAME !== PLUGIN_NAME) && result[LEGACY_PLUGIN_NAME] || [];
 }
 ```
 
 ### 影響 API 合約的邏輯
 
-當邏輯**影響 API 合約**（如權限判斷條件、驗證規則）時，應**同時**在 JSDoc 中說明，讓呼叫者了解行為；
-若邏輯僅是內部實現細節（如效能優化、內部演算法），則只需在程式碼區塊內說明：
+當邏輯**影響 API 合約**（如權限判斷條件、驗證規則）時，應在 JSDoc 中說明，讓呼叫端了解行為約束；
+函式內部的邏輯區塊僅在有特殊邊界防禦或非直觀處理時添加說明，避免重複抄寫 JSDoc 已有的規則清單：
 
 ```typescript
 /**
@@ -275,15 +274,7 @@ function getLegacyPluginNamesFromResult(result) {
  * @param resource - 資源物件
  * @returns 是否允許存取
  */
-function canAccess(user, resource) {
-    /**
-     * 執行權限檢查 / Perform permission check
-     *
-     * 判斷邏輯:
-     * - 使用者狀態是否啟用 / Check if user is active
-     * - 訂閱類型是否為 Pro / Check if subscription is Pro
-     * - 資源是否為本人建立或是公開資源
-     */
+function canAccess(user: IUser, resource: IResource): boolean {
     return user.isActive && user.subscription === 'pro' &&
         (resource.createdBy === user.id || resource.isPublic);
 }
@@ -291,8 +282,8 @@ function canAccess(user, resource) {
 
 ### 檢查清單 (Checklist)
 
-- [ ] JSDoc 中是否包含「如何實現」的語法細節？（如短路運算、`as any`）
-- [ ] 邏輯區塊內的註解是否僅描述「實作」，而非包含「設計意圖」？
+- [ ] JSDoc 中是否夾帶內部陳述式的實作細節？（內部暫存重設等細節應下沉至陳述式上方）
+- [ ] 邏輯區塊內的註解是否僅僅翻譯語法字面（如運算子、型別斷言等無語義雜訊）？應改為說明局部業務緣由或邊界防禦意圖
 
 ### JSDoc 避免冗餘描述
 
@@ -385,7 +376,7 @@ else if (m = (w1.p & w2.p))
  */
 else if (m = (w1.p & w2.p))
 {
-    // 若包含名詞標籤，則標記為真
+    /** 若包含名詞標籤，則標記為真 */
     if (m & POSTAG.D_N)
     {
         bool = true;
@@ -395,6 +386,7 @@ else if (m = (w1.p & w2.p))
 
 **改善重點：**
 - 文檔註解提供清晰的邏輯意圖
+- 內部邏輯說明同樣採用區塊註解 `/** ... */`，不可使用行內 `//`
 - 如果有必要則使用 TODO / FIXME 等追蹤標籤
 
 ---
@@ -414,10 +406,4 @@ else if (m = (w1.p & w2.p))
 ## 相關技能 (Related Skills)
 
 - [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) — 繁中＋英文雙語標準化規範（SSoT）：最高原則、語言順序、判定基準與多語言保留。
-- [analyze-code-commenter](../analyze-code-commenter/SKILL.md) — 分析程式碼並自動加入雙語註解的實作技能，包含邏輯區塊分析規範與多種範例；格式規範由本技能定義，[錯誤註解案例](../analyze-code-commenter/references/bad-comment-examples.md) 與 [無意義註解](../analyze-code-commenter/references/meaningless-comments.md) 的內容品質判定由該技能負責。
-
----
-
-## 額外建議
-
-- 對公開/內部 API、library 函式與複雜演算法務必補上完整範例或使用情境。
+- [analyze-code-commenter](../analyze-code-commenter/SKILL.md) — 分析程式碼並決定註解意圖的實作技能；代碼結構分析、[錯誤註解案例](../analyze-code-commenter/references/bad-comment-examples.md) 與 [無意義註解](../analyze-code-commenter/references/meaningless-comments.md) 的內容品質判定由該技能負責。

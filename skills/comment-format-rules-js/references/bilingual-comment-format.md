@@ -100,10 +100,10 @@ JSDoc 標籤（如 `@param`、`@returns`、`@throws`、`@see` 等）中的描述
  * 以二分搜尋取得排序快取中的目標索引
  * Get target index in sorted cache via binary search
  *
- * @param key - Cache Key
- * @param indexMap - Index Map
- * @returns Target Index, -1 if not found
- * @throws Throws CacheMissError when uninitialized
+ * @param key - 快取鍵 / Cache key
+ * @param indexMap - 索引對應表 / Index map
+ * @returns 目標索引，未找到時回傳 -1 / Target index, -1 if not found
+ * @throws 快取未初始化時拋出 CacheMissError / Throws CacheMissError when uninitialized
  */
 function lookupIndex(key: string, indexMap: Map<string, number>): number {
     // ...

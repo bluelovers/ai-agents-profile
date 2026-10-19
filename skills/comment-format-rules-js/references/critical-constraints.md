@@ -57,14 +57,12 @@ tags:
 // @ts-ignore
 /**
  * 將 Console2 類別指派給原型屬性
- * Assign Console2 class to prototype property
  */
 Console2.prototype.Console = Console2
 
 // ✅ 正確：區塊註解放在特殊指令之前
 /**
  * 將 Console2 類別指派給原型屬性
- * Assign Console2 class to prototype property
  */
 // @ts-ignore
 Console2.prototype.Console = Console2
@@ -94,17 +92,15 @@ Console2.prototype.Console = Console2
 | 資料結構 | Linked List、Hash Map、Binary Tree |
 
 ```typescript
-// ✅ 正確：保留原始術語並添加翻譯
+// ✅ 正確：保留原始技術術語，並說明前置前提與意圖
 /**
- * 使用 Non-Null Assertion Operator (!) 確保值不為 null
- * Uses Non-Null Assertion Operator (!) to ensure value is not null
+ * 經前置檢查已確認初始化，使用 Non-Null Assertion Operator (!) 斷言不為 null
  */
 const value = nullableValue!;
 
-// ❌ 錯誤：刪除原始術語
+// ❌ 錯誤：刪除原始技術術語（退化為口語化描述）
 /**
  * 使用驚嘆號確保值不為空
- * Uses exclamation mark to ensure value is not empty
  */
 const value = nullableValue!;
 ```
@@ -133,19 +129,15 @@ const value = nullableValue!;
 ```typescript
 /**
  * 配置獲取值型別
- * Config getter value type
  *
  * @note Lazy 為命名慣例，無「延遲/惰性」意涵
- * @note Lazy is a naming convention, no "lazy/惰性" meaning
  */
 export type ILazyConfigGetterValue = ...
 
 /**
  * 工具函式集合
- * Utility functions collection
  *
  * @note Helper 為命名慣例，僅表示此模組為工具函式集
- * @note Helper is a naming convention, only indicates this module is a utility collection
  */
 export class StringHelper { ... }
 ```
@@ -156,10 +148,8 @@ export class StringHelper { ... }
 // ❌ 錯誤：為命名慣例添加原本不存在的意義
 /**
  * 懶惰載入配置
- * Lazy load configuration
  *
  * 此類採用延遲初始化模式...
- * This class uses lazy initialization pattern...
  */
 // 實際程式碼並無延遲執行邏輯
 
@@ -168,10 +158,8 @@ export type ILazyConfigGetterValue = ...
 // ✅ 正確：若無法判斷，可標註為「可能相關，未驗證」
 /**
  * 配置獲取值型別
- * Config getter value type
  *
  * @note 命名可能與 Lazy Loading 相關，未驗證
- * @note Naming may be related to Lazy Loading, unverified
  */
 export type ILazyConfigGetterValue = ...
 ```

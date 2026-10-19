@@ -16,8 +16,8 @@ tags:
 | :--- | :--- | :--- |
 | [skill-creator](./skill-creator) | 技能開發指南 | 協助建立、驗證與打包新的 AI 技能。 |
 | [bilingual-standardization-rule](./bilingual-standardization-rule) | 雙語標準化規範 | 繁中＋英文雙語排版的 SSoT，含最高原則、語言順序、判定基準與術語保留。 |
-| [analyze-code-commenter](./analyze-code-commenter) | 雙語代碼註解分析 | 分析程式碼邏輯並添加繁中/英文雙語註解。 |
-| [comment-format-rules-js](./comment-format-rules-js) | JS/TS 註解格式規範 | 區塊註解、JSDoc、註解排版與更新規則。 |
+| [analyze-code-commenter](./analyze-code-commenter) | 註解意圖與內容品質分析 | 分析程式碼結構並決定註解意圖（解釋 WHY 而非 WHAT、約束與邊界條件）；審查並消除無意義註解與任務紀錄。 |
+| [comment-format-rules-js](./comment-format-rules-js) | JS/TS 註解語法與格式規範 | 強制區塊註解 (/** ... */)、JSDoc 標籤排版、宣告與邏輯區塊格式分離、放置位置與更新規則。 |
 | [readme-updater](./readme-updater) | README 文件更新維護 | 分析專案結構並自動檢查或更新說明文件。 |
 | [factual-accuracy-guard](./factual-accuracy-guard) | 事實準確性防護 | 防止加入虛構內容，確保基於事實執行任務。 |
 
@@ -31,8 +31,12 @@ tags:
 - **來源**：參考自 [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills/skill-creator)。
 
 ### 📝 [Analyze Code Commenter](./analyze-code-commenter)
-專門用於提升程式碼可讀性的工具。它會深入分析程式碼的核心邏輯、內部方法以及封閉成員，並在不破壞原始排版的前提下添加註解。
-- **特點**：雙語輸出（繁體中文與英文）、支援 JSDoc 格式、解釋「為什麼」而非僅是「做了什麼」。
+專門用於分析程式碼註解意圖與內容品質的技能。深入分析程式碼結構，並決定何處需要註解與註解意圖。
+- **特點**：雙語輸出（繁體中文與英文）、解釋「為什麼 (WHY)」而非僅是字面動作 (WHAT)、合約與邊界防禦意圖分析，並嚴格判定不良／無意義註解（錯置、層級錯置、重複宣告、任務／重構操作日誌）。
+
+### 📐 [Comment Format Rules (JS/TS)](./comment-format-rules-js)
+規範 JavaScript/TypeScript 程式碼註解的語法標記與排版格式。
+- **特點**：強制區塊註解（`/** ... */`，禁用行內 `//`）、單行與多行排版對齊、JSDoc 標籤雙語格式、緊鄰代碼上方放置原則，以及行內轉區塊批次轉換工具。
 
 ### 📚 [README Updater](./readme-updater)
 專案文件管理的利器，特別適合 Monorepo 大型專案。它能自動識別專案類型（Node.js, Python 等），並確保 README 文件包含所有必要章節。

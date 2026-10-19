@@ -17,7 +17,7 @@ tags:
 彙整「錯誤／不正確／不恰當的註解」案例：**錯置類**（註解與目標代碼的綁定錯誤，案例一～四）、
 **層級錯置**（描述內部陳述式的實作段落寫進宣告 JSDoc，案例六）
 與**內容類**（重構操作日誌，案例五）收錄於本檔；
-其餘類型已各有專屬參考文件，於文末索引分流，避免重複維護（SSOT）。
+其餘類型已各有專屬參考文件，於文末索引分流。
 
 ## 核心判斷：這段註解綁定了誰？
 
@@ -182,17 +182,18 @@ export class IgnoreFile { /* ... */ }
 **原因：** 重構時只搬代碼、不搬註解，會留下「孤兒註解」——描述對象已不存在，
 既無效又誤導後續維護者與 AI。
 
-### 案例五：重構時把操作日誌／SSOT 標籤寫進註解
+### 案例五：重構時把操作日誌／任務紀錄／SSOT 標籤寫進註解
 
-使用者強調「重構／單一事實／消除重複」時，把要求本身寫進每一個註解：
+使用者強調「重構／單一事實／消除重複」時，把操作要求或重構履歷寫進註解中：
 
 ```typescript
-// ❌ 錯誤：註解內標示 SSOT 標籤與移動／抽離紀錄
+// ❌ 錯誤：註解內標示 SSOT 標籤、移動／抽離或集中紀錄
 /**
  * SSOT：單一事實來源 / single source of truth
  *
  * 移動紀錄：F1 → F2
  * 抽離紀錄：從 X 抽離至 Y
+ * 集中於此，避免各處漂移
  */
 export const SKILL_EXTRA_NUMERIC_KEYS = [...];
 ```
@@ -206,23 +207,25 @@ export const SKILL_EXTRA_NUMERIC_KEYS = [...];
 
 | # | 問題 | 說明 |
 |---|------|------|
-| 1 | 操作日誌非必要 | 移動、抽離是 git 已記錄的事實，讀者要看的是意圖與不變數，不是遷移履歷 |
-| 2 | SSOT 標籤無新資訊 | `// ssot` 只是重複宣示「我做了 SSOT」，對維護毫無幫助 |
-| 3 | 遷移鏈註解迅速過期 | 「F1 → F2」在 F2 又寫「→ F3」，全部脫節，比沒有註解更糟 |
-| 4 | 累積成噪音 | 每個重構動作留一句，真正有用的業務註解被淹沒 |
+| 1 | 操作日誌非必要 | 移動、抽離、重構集中是 git 已記錄的事實，讀者要看的是當前意圖與約束，不是歷史履歷 |
+| 2 | 禁止遷移紀錄 | 嚴禁在註解寫入「已移至／原本位於／從 X 搬到 Y」等紀錄；所在位置即是當前位置，無須標註歷史途徑 |
+| 3 | 任務宣稱無新資訊 | `// ssot` 或「集中於此，避免漂移」只是重複宣稱任務動作，未提供該變數在業務上的實質定義 |
+| 4 | 遷移鏈註解迅速過期 | 「F1 → F2」在後續維護中迅速失效，導致註解內容與真實狀態脫節，比沒有註解更糟 |
+| 5 | 累積成維護噪音 | 每個重構或整理動作留一句話，真正有價值的業務邏輯與邊界意圖反而被淹沒 |
 
 ```typescript
-// ✅ 正確：只寫意圖／不變數，遷移歷程交給 git
+// ✅ 正確：只寫領域意圖、職責與約束，不留任何任務過程、遷移或重構紀錄
 /**
- * 技能附加的數值欄位鍵名 / Extra numeric keys for skills
+ * 技能附加的數值欄位鍵名清單
+ * Extra numeric key names for skill definitions
  *
- * 集中於此，避免各模組各存一份而漂移
- * Centralized here to prevent per-module drift
+ * 用於定義哪些自訂欄位需進行數值解析與邊界驗證
+ * Defines which custom fields require numeric parsing and bounds validation
  */
 export const SKILL_EXTRA_NUMERIC_KEYS = [...];
 ```
 
-> **Reference**: [SSOT 重構的反模式 — Case D](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md)（位於 `code-refactoring-expert-typescript`）— 完整問題點、正確做法與「註解不反向膨脹成重構履歷」的關聯。
+> **Reference**: [SSOT 重構的反模式 — Case D](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md) — 完整分析註解不應反向膨脹成重構履歷。
 
 ### 案例六：函式 JSDoc 夾帶描述內部陳述式的實作段落
 
@@ -318,14 +321,14 @@ finalize(options?: IFinalizeIgnoreLinesOptions): this
 | 多個單行註解、只寫 WHAT 不寫 WHY、標題與描述語意重複 | [SKILL.md — 邏輯區塊註解規範／職責分離](../../comment-format-rules-js/SKILL.md) |
 | JSDoc 內塞實作細節、宣告 JSDoc 夾帶描述內部陳述式的段落（合約與實作未分離） | 本檔案例六；規範見 [SKILL.md — JSDoc 與邏輯區塊職責分離](../../comment-format-rules-js/SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation) |
 | 僅重複宣告關鍵字／語意、羅列代碼管理的宣告（what 而非 why） | [無意義註解](./meaningless-comments.md) |
-| 重構時的操作日誌（SSOT 標籤、移動／抽離紀錄、遷移鏈註解）| 本檔案例五；完整判定見 [SSOT 重構的反模式 — Case D](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md) |
+| 重構時的操作日誌（SSOT 標籤、移動／抽離／集中紀錄、遷移鏈註解）| 本檔案例五；完整判定見 [SSOT 重構的反模式 — Case D](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md) |
 | 更新時遺失原始錯誤資訊、未驗證的 Issue 連結 | [註解更新規則](../../comment-format-rules-js/references/comment-update-rules.md) |
 
 ## 自我檢查清單 (Checklist)
 
-- [ ] 這段註解描述的是「整個檔案」還是「某個宣告」？描述宣告的註解不得放在檔頭位置（`import` 之上）
-- [ ] 註解的下一個陳述式，就是它所描述的宣告嗎？（中間沒有 `import`、常數或其他宣告）
+- [ ] 這段註解描述的是「整個檔案」還是「某個宣告」？描述宣告的註解不得放在檔頭位置
+- [ ] 註解的下一個陳述式，就是它所描述的宣告嗎？（中間沒有引用、常數或其他宣告）
 - [ ] 描述函式／class 的註解，是否放在函式／class 宣告之上，而非函式體內部？
 - [ ] 重構搬移代碼時，其上方的註解是否一併搬移，沒有殘留孤兒註解？
-- [ ] 註解裡是否混入了操作日誌（SSOT 標籤、移動／抽離紀錄）而非意圖／不變數？
+- [ ] 註解裡是否混入了操作日誌或任務紀錄（例如「已移至／原本位於」、SSOT 標籤、「集中於此」等重構履歷）？註解應只保留領域意圖與約束
 - [ ] 函式／方法的 JSDoc 是否夾帶只描述函式體內某一行的實作段落？（應下沉到該陳述式上方的邏輯區塊註解）
