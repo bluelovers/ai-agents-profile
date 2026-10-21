@@ -1,6 +1,11 @@
 ---
 title: 邊界字串與 Enum 互操作與未知值設計（§3 特殊意圖豁免完整內容）
-description: 外部值集合的特殊意圖豁免完整內容：Enum 派生字串聯合（ITSTypeAndStringLiteral）、邊界 as Enum 轉型與執行期守衛、未公開（逆向建立）API 的未知值設計，以及 ❌/✅ 對照範例與約束
+description: >-
+  外部值集合的特殊意圖豁免完整內容：
+  Enum 派生字串聯合（ITSTypeAndStringLiteral）、
+  邊界 as Enum 轉型與執行期守衛、
+  Exclude 成員分群與 (string & {}) 開放字串提案、
+  未公開（逆向建立）API 的未知值設計，以及 ❌/✅ 對照範例與約束
 tags:
   - documentation/references
   - refactoring
@@ -11,7 +16,7 @@ tags:
 
 # 邊界字串與 Enum 互操作與未知值設計（§3 特殊意圖豁免完整內容）
 
-> 本文自 SKILL **§3 嚴格類型控制**抽離，收納「特殊意圖豁免」的**完整內容**：兩種邊界互操作技法（Enum 派生字串聯合、邊界 `as Enum` 轉型）、外部持有／未公開值集合的未知值設計，以及 ❌/✅ 對照範例與約束。
+> 本文自 SKILL **§3 嚴格類型控制**抽離，收納「特殊意圖豁免」的**完整內容**：三種邊界互操作技法（Enum 派生字串聯合、邊界 `as Enum` 轉型、`Exclude` 成員分群＋開放字串）、外部持有／未公開值集合的未知值設計，以及 ❌/✅ 對照範例與約束。
 
 ---
 
@@ -83,6 +88,57 @@ const resolved = isPromptOptionComponent(rawInput)
     ? rawInput
     : EnumPromptOptionComponent.phystonPrompt;
 ```
+
+---
+
+## 技法 3：Enum 成員分群（`Exclude` 派生子集）＋開放字串（`| (string & {})`）
+
+當一個 Enum 同時承載「**結構性標籤類型**」（lora／lyco／wrap／text 等）與「**一般值**」兩種語意的成員時，不另建平行 Enum，而是**在同一個 Enum 之上以 `Exclude` 派生分群子集**，再對子集套用技法 1 的字串派生：
+
+```typescript
+import type { ITSTypeAndStringLiteral } from 'ts-type'
+
+/**
+ * Prompt 標籤總集合 - 值集合的單一事實來源
+ */
+export enum EnumPromptTagType {
+    lora = 'lora',
+    lyco = 'lyco',
+    wrap = 'wrap',
+    text = 'text',
+    // …其餘「一般值」成員
+}
+
+/**
+ * 結構性標籤類型 - 手列的成員子集
+ * 列的是 Enum 成員引用（EnumPromptTagType.lora），不是 'lora' 魔術字串——成員更名時自動同步
+ */
+export type IPromptTagType =
+    | EnumPromptTagType.lora | EnumPromptTagType.lyco
+    | EnumPromptTagType.wrap | EnumPromptTagType.text;
+
+/**
+ * 一般值成員 - 總集合 Exclude 結構性子集
+ * 排除清單只列結構性成員，其餘（含日後新增）一律視為一般值
+ */
+export type IPromptTagValueEnum = Exclude<EnumPromptTagType, IPromptTagType>;
+
+/**
+ * 對外型別 - Enum 派生字串聯合 ＋ 開放字串
+ * （string & {} 讓字面聯合不被 string 吞掉，兩者共存並保留 IDE 提案）
+ */
+export type IPromptTagValue = ITSTypeAndStringLiteral<IPromptTagValueEnum> | (string & {});
+// 無依賴的原生寫法：
+// `${Exclude<EnumPromptTagType, IPromptTagType>}` | (string & {})
+```
+
+**設計要點：**
+
+- **分群而非複製**：兩組成員都由同一個 Enum 派生，Enum 仍是唯一單一事實來源；`IPromptTagType` 引用**成員**而非字串字面值，成員更名時自動傳播（見主技能「完整重構：更新所有比較位置」）。
+- **`Exclude` 讓「預設歸類」有明確語意**：排除清單只列結構性成員，其餘一律視為一般值——**新增 Enum 成員不會靜默落錯群**；但歸類結果仍需 review：新成員若屬結構性，必須補進 `IPromptTagType`。
+- **`| (string & {})` 的首要職責：避免左側被 `string` 吞掉——Enum 成員與字面字串皆受此保護**。若直接寫 `… | string`（如 `ITSTypeAndStringLiteral<IPromptTagValueEnum> | string`），型別正規化時**純 `string` 會把左側整個聯合併吞**——最終只剩 `string`。被吞的不只是字面字串（`'lora' | 'text'`）——**Enum 成員本身也是 `string` 的子型別，同樣會被吞併**（`EnumPromptTagType | string` → `string`）。`string & {}` 是**交叉型別**而非純 `string`，不會觸發這個吸收——Enum 成員、字面字串、開放字串三者得以共存：值域上仍是「接受任意字串」，但左側的 Enum 與字面聯合被保留下來。
+- **次要職責：保留 IDE 自動完成提案**：`string & {}` 在型別上仍等於 `string`（接受任意字串），但編譯器在自動完成清單中保留左側字面聯合的提案——呼叫端看得到既知值，同時可輸入任何字串。這是純原生技巧，無需 `ts-type`。
+- **開放字串必須搭配未知值設計**：接受任意字串的型別，代表集合在**值域上是開放的**——每個消費點仍必須遵守下一節的未知值規則（`default:`／`??` fallback／最終 `else`）。`| (string & {})` 只是提案輔助，**不提供任何封閉性保證**。
 
 ---
 
@@ -174,7 +230,9 @@ const label = FIELD_FORMAT_LABELS[format] ?? String(format);
 | **絕不手寫字面值聯合清單** | 值集合只存在於 Enum；聯合一律經派生（`` `${Enum}` `` / `ITSTypeAndStringLiteral`）或 cast 取得，不得逐一拼寫 |
 | **`as Enum` 只能留在邊界** | parse/adapter/props 預設值等邊界處；絕不進入業務邏輯中段——彼時值早已應是 Enum |
 | **不可信輸入先經執行期守衛** | 使用者輸入、API 資料必須先以 type guard 驗證再收窄，不得盲目 cast |
-| **技法不限定宣告形式** | 不論技法 1 或技法 2，皆不限定 `const enum` 或 `enum`，兩種宣告形式的結果相同 |
+| **技法不限定宣告形式** | 不論技法 1、技法 2 或技法 3，皆不限定 `const enum` 或 `enum`，兩種宣告形式的結果相同 |
+| **`Exclude` 分群後需 review 歸類** | 排除清單只列結構性成員；新增 Enum 成員若屬結構性，必須補進排除清單（如 `IPromptTagType`），否則會被靜默歸入一般值 |
+| **`\| (string & {})` 不得改寫為 `\| string`** | `'a' \| 'b' \| string` 會被正規化為單一 `string`——**Enum 成員（同為 `string` 子型別）與字面字串聯合皆被併吞消失**；`string & {}` 是交叉型別，讓 Enum、字面字串與開放字串共存。它仍不改變「開放集合」本質，也不豁免未知值分支設計（`default:`／`??` fallback／最終 `else`） |
 | **`Object.values` 只關宣告形式** | 一般 `enum` 皆可枚舉；`const enum` 僅「專案內部自行宣告 ＋ 自身啟用 `preserveConstEnums`」可行，從依賴引用的不論有無 `preserveConstEnums` 皆不可用（見〈`Object.values` 的可用性只取決於宣告形式〉） |
 | **外部值集合必須保留未知值分支** | `switch` 的 `default:`、查表 `??` fallback、最終 `else`；窮舉 `switch` + `never` 斷言僅限封閉集合 |
 

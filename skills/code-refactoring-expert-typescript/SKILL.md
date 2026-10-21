@@ -763,6 +763,8 @@ interface IUserRef {
 | Do you need multiple fields from the same type? | Use `Pick<OriginalType, 'field1' \| 'field2' \| ...>` instead of multiple index accesses |
 | Do changes require updates in multiple places? | Confirm SSoT violation, refactor to index access or Pick |
 
+> 📚 **Advanced technique**: [Advanced Type-Level Guards & Extraction: `as const satisfies` Definition Tables](./references/type-guards-and-extraction.md) — deriving a whole type chain from a single definition table: `as const satisfies` write-side guards, `typeof arr[number]` element derivation, `I_Extract*` conditional-type extractors (`Pick` guard + `never` absorption), `Extract<keyof T, whitelist>` key intersection, and the internal/external dual-interface narrowing.
+
 ---
 
 ### 2. Separation of Responsibilities (File-Level)
@@ -1335,6 +1337,7 @@ When proposing refactoring suggestions:
 - [Tuple & Named Tuple Refactoring Rules (complete Guideline F)](./references/named-tuple-refactoring.md) - Enum-anchored position semantics, ❌/✅ examples, Named Tuple and rest elements never exempt from extraction, plus the shared-destructuring fallback when not indexing via an Enum
 - [Separation of Responsibilities & File Naming](./references/separation-of-responsibilities.md) - Full Rule 2: keep CLI/tsx entry files thin, extract even single-consumer logic (child components may stay co-located but must still be exported), separate browser/fs environment domains, and name files for their responsibility (`*-io.ts`, `*.browser.ts`, path-level separation)
 - [Syntax Optimization Cases](./references/syntax-optimization.md) - Behavior-preserving syntax optimizations: don't run `map`/`filter` before `reduce` unless intentionally designed; fold the condition/transformation into the accumulator (plus when pre-steps are justified)
+- [Advanced Type-Level Guards & Extraction](./references/type-guards-and-extraction.md) - Definition-table-driven type chain: `as const satisfies` write-side guards, `typeof arr[number]` element derivation, `I_Extract*` conditional-type extractors (`Pick` guard + `never` absorption), `Extract<keyof T, whitelist>` key intersection, and internal/external dual-interface narrowing
 
 ### Related Skills
 - [analyze-code-commenter](../analyze-code-commenter/SKILL.md) - Bilingual comment addition and code documentation

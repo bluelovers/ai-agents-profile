@@ -758,6 +758,8 @@ interface IUserRef {
 | 是否需要多個欄位來自同一型別？ | 使用 `Pick<OriginalType, 'field1' \| 'field2' \| ...>` 取代多個索引存取 |
 | 修改後是否需要遍歷多處同步？ | 確認違反 SSoT，需重構為索引存取或 Pick |
 
+> 📚 **進階技法**：[進階型別守衛與萃取：as const satisfies 定義表實作](./references/type-guards-and-extraction.md) —— 由單一定義表推導整條型別鏈：`as const satisfies` 寫入端守衛、`typeof arr[number]` 元素推導、`I_Extract*` 條件型別抽取器（`Pick` 守衛 + `never` 吸收）、`Extract<keyof T, 白名單>` 鍵名交集，以及內／外雙層介面收斂。
+
 ---
 
 ### 2. 職責分離（檔案層級, File-Level Separation of Responsibilities）
@@ -1335,6 +1337,7 @@ if (user.isActive && subscription.status === 'active' &&
 - [Tuple 與 Named Tuple 重構規範（規範 F 完整內容）](./references/named-tuple-refactoring.md) - Enum 錨定位置語義、❌/✅ 對照範例、Named Tuple 與 rest 元素不豁免抽離，及「不使用 Enum 索引時的共享解構邏輯」
 - [職責分離與檔名辨識規範](./references/separation-of-responsibilities.md) - 規則 2 完整內容：CLI/tsx 入口檔保持精瘦、單一消費者也應抽離（子元件可同檔共存但仍須 export 公開）、瀏覽器/檔案系統環境領域分離、檔名即職責（`*-io.ts`、`*.browser.ts`、路徑層級分離）
 - [語法優化案例集](./references/syntax-optimization.md) - 不改變行為的語法優化：除非有特定意圖/用法設計，否則 `reduce` 前不應進行 `map`/`filter` 等邏輯，應將條件與轉換併入累積器（含前置步驟的正當時機）
+- [進階型別守衛與萃取：as const satisfies 定義表實作](./references/type-guards-and-extraction.md) - 定義表驅動的型別鏈：`as const satisfies` 寫入端守衛、`typeof arr[number]` 元素推導、`I_Extract*` 條件型別抽取器（`Pick` 守衛 + `never` 吸收）、`Extract<keyof T, 白名單>` 鍵名交集、內／外雙層介面收斂
 
 ### 相關技能
 - [analyze-code-commenter](../analyze-code-commenter/SKILL.md) - 雙語註解添加與程式碼文件化
