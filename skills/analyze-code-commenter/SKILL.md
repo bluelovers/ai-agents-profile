@@ -1,7 +1,9 @@
 ---
 name: analyze-code-commenter
 description: |-
-  分析程式碼並決定註解意圖與內容品質（繁中 zh-TW ＋ 英文雙語）。專注於「註解意圖」（解釋 WHY 而非 WHAT、業務目的、約束與邊界條件、看 code 不知道的事；註解以行為事實與意圖為準）與「內容品質審查」（消除無意義註解、禁止設計原則口號與重構／遷移紀錄、修正錯置與層級錯置）。
+  分析程式碼並決定註解意圖與內容品質（中英雙語）。
+  專注於「註解意圖」（解釋 WHY 而非 WHAT、業務目的、約束與邊界條件、看 code 不知道的事；註解以行為事實與意圖為準）
+  與「內容品質審查」（消除無意義註解、禁止設計原則口號與重構／遷移紀錄、修正錯置與層級錯置、控制註解粒度與檔頭越界）。
   註解語法與排版格式（區塊註解結構、JSDoc 格式、放置位置、更新規則）由 comment-format-rules-js 定義；通用雙語標準由 bilingual-standardization-rule 定義。
 
   Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) Detecting, removing or rewriting bad / meaningless comments, or mention keywords such as:
@@ -38,7 +40,7 @@ tags:
 3. **Determine comment intent** - 決定註解意圖（解釋 WHY 而非僅僅 WHAT，詳見 [Logic Block Requirements](#logic-block-requirements-required-for-all-logic-blocks) 與 [What Needs Comments](#what-needs-comments-scope)）：
    - 宣告層級：說明外部合約、設計用途、不變量與約束
    - 邏輯區塊：說明局部邏輯的業務原因、非直觀運算目的、相容性處理或邊界防禦緣由
-   - 審查現有註解：依 [Bad & Meaningless Comments](#bad--meaningless-comments-analyze-remove-rewrite) 刪除無意義註解、設計原則口號與重構/遷移日誌
+   - 審查現有註解：依 [Bad & Meaningless Comments](#bad--meaningless-comments-analyze-remove-rewrite) 刪除無意義註解、設計原則口號、過度瑣碎明細與重構/遷移日誌
 4. **Generate bilingual comments** - 依 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 產生雙語內容，並依 [comment-format-rules-js](../comment-format-rules-js/SKILL.md) 套用區塊註解排版
 5. **Apply changes** - 依當下環境實際提供的檔案編輯工具執行修改
 
@@ -222,6 +224,54 @@ Beyond adding comments, this skill decides *whether an existing comment should e
 | 層級錯置 | 宣告 JSDoc 夾帶只描述函式體內某一行的實作段落 | 下沉到該陳述式上方的邏輯區塊註解 | [案例六](references/bad-comment-examples.md) |
 | 操作日誌 | 註解內容是 SSOT 標籤、移動／抽離紀錄、遷移鏈、集中說明（如「集中於此」） | 只寫領域意圖／不變數，歷程交給 git，不留任務痕跡 | [案例五](references/bad-comment-examples.md) |
 | 設計原則口號 | 註解寫「避免漂移」、「SSOT」等原則口號，或寫成本次任務報告（做了什麼重構） | 改寫為行為事實與意圖：這段代碼做什麼、為什麼這樣做 | [案例五](references/bad-comment-examples.md) |
+| 過度瑣碎 | 逐項羅列易變的實作明細，任何修改都必須同步更新註解 | 粒度收到行為事實與意圖層級，易變明細交給代碼 | [粒度與檔頭邊界](#註解粒度不應過度瑣碎-comment-granularity) |
+| 檔頭越界 | 用檔頭註解取代宣告 JSDoc／邏輯區塊，甚至因此縮減它們；檔頭本身羅列瑣碎明細 | 三層各司其職：檔頭寫整個檔案，宣告與邏輯層級的註解保持完整 | [檔頭不得取代其他層級](#檔頭註解不得取代宣告與邏輯註解-file-header-boundary) |
+
+## 註解粒度與檔頭邊界 (Granularity & File Header)
+
+### 註解粒度：不應過度瑣碎 (Comment Granularity)
+
+註解粒度停在**行為事實與意圖**層級：這段代碼做什麼、為什麼這樣做。
+**不逐項羅列易變的實作明細**（被呼叫的函式簽名、欄位／參數清單、中間步驟的內部狀態）。
+
+**判斷方式：若任何修改都必須同步更新該註解，它就寫得太細**——這類註解會變成維護負擔，並在下次修改後過期：
+
+```typescript
+// ❌ 錯誤：羅列欄位清單與實作明細——增刪任一欄位都必須回來改註解
+/**
+ * checkbox 面板結構：靜態結構與執行期狀態分段生成。
+ *
+ * 1. getPromptOptionChecks          — 靜態結構：key / labelLangKey / parentKey / emitEvent
+ * 2. withPromptOptionCheckValues    — 掛上目前值 value（傳入 this，computed 內讀取 props 以收集響應式依賴）
+ * 3. filterPromptOptionCheckVisible — 子選項僅在父選項目前啟用時保留（等同原本的 v-if）
+ */
+
+// ✅ 正確：保留分段意圖與行為事實，欄位清單交給代碼
+/**
+ * checkbox 面板結構：靜態結構與執行期狀態分段生成。
+ *
+ * 1. getPromptOptionChecks          — 靜態結構
+ * 2. withPromptOptionCheckValues    — 掛上目前 value（傳入 this，computed 內讀取 props 以收集響應式依賴）
+ * 3. filterPromptOptionCheckVisible — 子選項僅在父選項目前啟用時保留（等同原本的 v-if）
+ */
+```
+
+刪掉的是**易變明細**（`key / labelLangKey / parentKey / emitEvent` 欄位清單）；
+保留的是**穩定意圖**（三段各自的職責、響應式依賴收集的原因）。
+
+### 檔頭註解不得取代宣告與邏輯註解 (File Header Boundary)
+
+三層各司其職，**任何一層都不能由另一層取代**：
+
+| 層級 | 描述對象 | 不得做的事 |
+|------|----------|------------|
+| 檔頭註解 | 整個檔案（為什麼有這個檔案） | 取代其內宣告的 JSDoc 或邏輯區塊註解 |
+| 宣告 JSDoc | 單一 class／function 的合約 | 被縮減為僅剩檔頭的一行摘要 |
+| 邏輯區塊 | 局部陳述式的實作緣由 | 因「檔頭已說明」而省略 |
+
+- **不得因檔案已有檔頭註解，就縮減、刪除或不再撰寫宣告與邏輯層級的註解**——檔頭讀者看不到、IntelliSense 也不提示成員。
+- **檔頭本身也不應過度瑣碎**：不羅列宣告清單、不寫易變明細，只寫檔案動機與職責（見 [無意義註解 — 案例三](references/meaningless-comments.md)）。
+- 宣告註解誤放檔頭位置的錯置修正，見 [錯誤註解案例 — 案例一](references/bad-comment-examples.md)。
 
 ## Comment Update Rules
 

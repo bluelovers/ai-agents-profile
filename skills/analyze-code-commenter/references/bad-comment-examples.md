@@ -344,6 +344,7 @@ finalize(options?: IFinalizeIgnoreLinesOptions): this
 | JSDoc 內塞實作細節、宣告 JSDoc 夾帶描述內部陳述式的段落（合約與實作未分離） | 本檔案例六；規範見 [SKILL.md — JSDoc 與邏輯區塊職責分離](../../comment-format-rules-js/SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation) |
 | 僅重複宣告關鍵字／語意、羅列代碼管理的宣告（what 而非 why） | [無意義註解](./meaningless-comments.md) |
 | 重構時的操作日誌（SSOT 標籤、移動／抽離／集中紀錄、遷移鏈註解）、設計原則口號（漂移、SSOT、移動紀錄、任務報告）| 本檔案例五；完整判定見 [SSOT 重構的反模式 — Case D](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md) |
+| 註解過度瑣碎（羅列易變明細，任何修改都要同步更新註解）、檔頭取代宣告／邏輯註解或因此縮減它們 | [SKILL.md — 註解粒度與檔頭邊界](../SKILL.md#註解粒度與檔頭邊界-granularity--file-header) |
 | 更新時遺失原始錯誤資訊、未驗證的 Issue 連結 | [註解更新規則](../../comment-format-rules-js/references/comment-update-rules.md) |
 
 ## 自我檢查清單 (Checklist)
@@ -354,4 +355,6 @@ finalize(options?: IFinalizeIgnoreLinesOptions): this
 - [ ] 重構搬移代碼時，其上方的註解是否一併搬移，沒有殘留孤兒註解？
 - [ ] 註解裡是否混入了操作日誌或任務紀錄（例如「已移至／原本位於」、SSOT 標籤、「集中於此」等重構履歷）？註解應只保留領域意圖與約束
 - [ ] 註解是否寫成設計原則口號（「避免漂移」、「SSOT」）或任務報告，而非描述代碼的行為事實與意圖？應改寫為「做什麼、為什麼這樣做」
+- [ ] 註解是否羅列易變的實作明細（欄位／參數清單、函式簽名），以致任何修改都必須同步更新它？粒度收到行為事實與意圖層級（見 [粒度與檔頭邊界](../SKILL.md#註解粒度不應過度瑣碎-comment-granularity)）
+- [ ] 檔頭註解是否被拿來取代宣告 JSDoc／邏輯區塊，或因此縮減它們？三層各司其職，檔頭本身也不寫瑣碎明細（見 [檔頭邊界](../SKILL.md#檔頭註解不得取代宣告與邏輯註解-file-header-boundary)）
 - [ ] 函式／方法的 JSDoc 是否夾帶只描述函式體內某一行的實作段落？（應下沉到該陳述式上方的邏輯區塊註解）
