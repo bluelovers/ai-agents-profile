@@ -1,7 +1,7 @@
 ---
 name: analyze-code-commenter
 description: |-
-  分析程式碼並決定註解意圖與內容品質（繁中 zh-TW ＋ 英文雙語）。專注於「註解意圖」（解釋 WHY 而非 WHAT、業務目的、約束與邊界條件、看 code 不知道的事）與「內容品質審查」（消除無意義註解、禁止重構／遷移紀錄、修正錯置與層級錯置）。
+  分析程式碼並決定註解意圖與內容品質（繁中 zh-TW ＋ 英文雙語）。專注於「註解意圖」（解釋 WHY 而非 WHAT、業務目的、約束與邊界條件、看 code 不知道的事；註解以行為事實與意圖為準）與「內容品質審查」（消除無意義註解、禁止設計原則口號與重構／遷移紀錄、修正錯置與層級錯置）。
   註解語法與排版格式（區塊註解結構、JSDoc 格式、放置位置、更新規則）由 comment-format-rules-js 定義；通用雙語標準由 bilingual-standardization-rule 定義。
 
   Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) Detecting, removing or rewriting bad / meaningless comments, or mention keywords such as:
@@ -38,7 +38,7 @@ tags:
 3. **Determine comment intent** - 決定註解意圖（解釋 WHY 而非僅僅 WHAT，詳見 [Logic Block Requirements](#logic-block-requirements-required-for-all-logic-blocks) 與 [What Needs Comments](#what-needs-comments-scope)）：
    - 宣告層級：說明外部合約、設計用途、不變量與約束
    - 邏輯區塊：說明局部邏輯的業務原因、非直觀運算目的、相容性處理或邊界防禦緣由
-   - 審查現有註解：依 [Bad & Meaningless Comments](#bad--meaningless-comments-analyze-remove-rewrite) 刪除無意義註解與重構/遷移日誌
+   - 審查現有註解：依 [Bad & Meaningless Comments](#bad--meaningless-comments-analyze-remove-rewrite) 刪除無意義註解、設計原則口號與重構/遷移日誌
 4. **Generate bilingual comments** - 依 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 產生雙語內容，並依 [comment-format-rules-js](../comment-format-rules-js/SKILL.md) 套用區塊註解排版
 5. **Apply changes** - 依當下環境實際提供的檔案編輯工具執行修改
 
@@ -195,6 +195,7 @@ These behavioral rules apply to every edit this skill makes; format constraints 
 - **NEVER** modify existing code formatting (indentation, line breaks, spaces)
 - **NEVER** delete old commented-out code (e.g., `// old code...`, `/* old code... */`, or `/** @deprecated */`)
 - **NEVER** convert existing CJK characters to Traditional Chinese - only use Traditional Chinese in NEW comments
+- **Comments MUST describe behavioral facts and intent - NEVER design-principle slogans**: state what the code does and why it exists; do NOT write slogans such as "避免漂移 / prevent drift", "SSOT / single source of truth", movement records ("已移至...", "原位於..."), or task reports ("任務報告", "本次重構已完成"). History belongs to git, not comments (see [錯誤註解案例 — 案例五](references/bad-comment-examples.md)).
 - **NEVER write task logs, refactoring records, or migration notes** into comments (e.g., "原本位於...", "已移至...", "基於 SSoT 集中於此", "抽離自..."). Comments must describe the current domain purpose, invariants, and responsibilities only (see [錯誤註解案例 — 案例五](references/bad-comment-examples.md)).
 - **DELETE meaningless comments that merely restate the declaration keyword** (e.g., `/** 介面 / interface */` above `interface ISkillDef`, `/** 枚舉 */` above `enum`, `/** type */` above `type`) - they add no information and must be removed, not rewritten (see [無意義註解](references/meaningless-comments.md))
 
@@ -203,7 +204,7 @@ These behavioral rules apply to every edit this skill makes; format constraints 
 Beyond adding comments, this skill decides *whether an existing comment should exist at all* — a content-quality judgment; the corresponding format rules stay in [comment-format-rules-js](../comment-format-rules-js/SKILL.md).
 
 - **無意義註解判斷**：[無意義註解](references/meaningless-comments.md) — 判斷基準（「只回答看 code 不知道的事」）、錯誤案例、刪／改與保留的案例解析、正確範本與實戰改寫對照。
-- **錯誤案例對照**：[錯誤註解案例](references/bad-comment-examples.md) — 錯置類（案例一～四）、重構與任務操作日誌（案例五）、層級錯置（案例六），及其餘錯誤類型的分流索引與自我檢查清單。
+- **錯誤案例對照**：[錯誤註解案例](references/bad-comment-examples.md) — 錯置類（案例一～四）、重構與任務操作日誌／設計原則口號（案例五）、層級錯置（案例六），及其餘錯誤類型的分流索引與自我檢查清單。
 
 ### 無意義註解（重複宣告、羅列結構）
 
@@ -220,6 +221,7 @@ Beyond adding comments, this skill decides *whether an existing comment should e
 | 錯置 | 宣告註解寫成檔頭、與目標被陳述式分隔、放進宣告內部、重構搬移後殘留 | 歸位到緊鄰目標宣告的上方 | [案例一～四](references/bad-comment-examples.md) |
 | 層級錯置 | 宣告 JSDoc 夾帶只描述函式體內某一行的實作段落 | 下沉到該陳述式上方的邏輯區塊註解 | [案例六](references/bad-comment-examples.md) |
 | 操作日誌 | 註解內容是 SSOT 標籤、移動／抽離紀錄、遷移鏈、集中說明（如「集中於此」） | 只寫領域意圖／不變數，歷程交給 git，不留任務痕跡 | [案例五](references/bad-comment-examples.md) |
+| 設計原則口號 | 註解寫「避免漂移」、「SSOT」等原則口號，或寫成本次任務報告（做了什麼重構） | 改寫為行為事實與意圖：這段代碼做什麼、為什麼這樣做 | [案例五](references/bad-comment-examples.md) |
 
 ## Comment Update Rules
 

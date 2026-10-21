@@ -1,7 +1,7 @@
 ---
 name: comment-format-rules-js
 description: |-
-  JS/TS 註解語法與排版格式規範：強制區塊註解 (/** ... */)、JSDoc 排版標籤、雙語排版、註解位置結構與更新維護規則。
+  JS/TS 註解語法與排版格式規範：強制區塊註解 (/** ... */)、JSDoc 排版標籤、雙語排版、註解位置結構與更新維護規則；內容只寫行為事實與意圖，不寫設計原則口號（漂移、SSOT、移動紀錄、任務報告）。
   註解意圖決定、何時需要註解與無意義註解審查由 analyze-code-commenter 負責；通用雙語標準由 bilingual-standardization-rule 定義。
   Use when users mention:
   - "JS/TS 註解規範", "JavaScript 註解格式", "TypeScript 註解格式"
@@ -336,6 +336,7 @@ function canAccess(user: IUser, resource: IResource): boolean {
 - **特殊指令放置**：`// @ts-ignore` 必須緊鄰目標代碼，區塊註解放在特殊指令**之前**。
 - **保留技術術語**：更新註解時不得刪除原始技術術語（如 Non-Null Assertion Operator、Dijkstra、Singleton），只能新增翻譯或說明。
 - **識別無語義命名慣例**：`Lazy`、`Helper`、`Util` 可能僅是命名慣例，必要時以 `@note` 說明其無特定技術意涵。
+- **只寫行為事實與意圖，不寫設計原則口號**：註解須描述代碼「做什麼、為什麼這樣做」；禁止寫入「避免漂移」、「SSOT／單一事實來源」等原則口號，以及移動紀錄（「已移至／原位於」）與任務報告（「已完成重構」）。完整錯例與改寫見 [錯誤註解案例 — 案例五](../analyze-code-commenter/references/bad-comment-examples.md)。
 
 ---
 
