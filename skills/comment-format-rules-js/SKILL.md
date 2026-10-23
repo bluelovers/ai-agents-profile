@@ -4,7 +4,7 @@ description: |-
   JS/TS 註解語法與排版格式規範：強制區塊註解 (/** ... */)、JSDoc 排版標籤、雙語排版、註解位置結構與更新維護規則；內容只寫行為事實與意圖，不寫設計原則口號（漂移、SSOT、移動紀錄、任務報告）。
   註解意圖決定、何時需要註解與無意義註解審查由 analyze-code-commenter 負責；雙語排版前必須實際閱讀 bilingual-standardization-rule，不得把「雙語」逕解為「中文＋英文」並列。
 
-  Mandatory whenever JS/TS comments are involved — not only when users ask: every write, edit, move, refactor, or review of code comments / JSDoc / doc comments must follow this skill's format rules, even if the user never mentions 註解格式 or rules. Use also when users mention:
+  Mandatory whenever JS/TS comments are involved — not only when users ask: every write, edit, move, refactor, or review of code comments / JSDoc / doc comments must follow this skill's format rules, even if the user never mentions 註解格式 or rules. If existing comments in the file violate these rules and the violation was not introduced by this task, ask the user first (keep existing style vs. progressive rewrite by scope or by file) instead of rewriting unilaterally. Use also when users mention:
   - "JS/TS 註解規範", "JavaScript 註解格式", "TypeScript 註解格式"
   - "JSDoc 格式", "JSDoc 規範", "文件註解格式"
   - "雙語註解格式", "中英雙語註解", "bilingual comment format"
@@ -42,6 +42,7 @@ tags:
 - **格式結構分工：宣告層級 JSDoc 描述合約，陳述式層級邏輯區塊描述實作緣由。** 詳見 [JSDoc 與邏輯區塊職責分離](#jsdoc-與邏輯區塊職責分離-responsibility-separation)。
 - **雙語排版格式**：產出前先閱讀 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 取得通用規則；本檔僅定義 JS/TS 形式——單行術語以 `/` 分隔，JSDoc 標籤採 `- 中文 / English` 格式。詳見 [雙語註解格式](./references/bilingual-comment-format.md)。
 - **更新既有註解時保留原始技術資訊**（錯誤碼、術語、檔案路徑、多語言註解）。詳見 [註解更新規則](./references/comment-update-rules.md)。
+- **既有風格衝突先詢問**：發現既有註解風格不同或違反規則、且非本次任務造成時，不得逕自改寫或默默沿用，先問使用者：維持既有風格，或漸進式改寫（分「修改範圍」與「修改的檔案」兩種）。詳見 [既有風格衝突與處理](#既有風格衝突與處理-legacy-style-conflict)。
 
 ---
 
@@ -350,6 +351,8 @@ function canAccess(user: IUser, resource: IResource): boolean {
 - **一致性**：同一文件或模組內保持同一風格
 - **可維護性**：未來的開發者能快速理解
 
+**但若既有風格已違反本規則**（非「不同」而是「違規」），處理方式由使用者決定，見下方 [既有風格衝突與處理](#既有風格衝突與處理-legacy-style-conflict)。
+
 ### 改善既有代碼的註解
 
 當遇到需要優化的既有註解時，應同時改善邏輯清晰度和註解品質。以下是改善範例：
@@ -391,6 +394,32 @@ else if (m = (w1.p & w2.p))
 - 文檔註解提供清晰的邏輯意圖
 - 內部邏輯說明同樣採用區塊註解 `/** ... */`，不可使用行內 `//`
 - 如果有必要則使用 TODO / FIXME 等追蹤標籤
+
+---
+
+## 既有風格衝突與處理 (Legacy Style Conflict)
+
+**觸發條件（三者皆須成立）：**
+
+1. 任務中發現**既有檔案**的註解風格與本規範不同或違反規則（如大量使用行內 `//`、註解放在代碼後方、非標準排版）。
+2. 該風格**不是本次任務造成的**（非自己剛寫入或改壞的內容）。
+3. 即將介入這些註解（新增、修改、補充或重構）。
+
+此時**不得逕自全面改寫、也不得默默沿用舊風格**，應先向使用者確認處理方式：
+
+| 選項 | 行為 | 適用情境 |
+|------|------|----------|
+| **維持既有風格** | 既有註解不動；新增／修改的註解沿用該檔案慣例，保持檔內一致 | 衝突輕微、避免大範圍 diff 噪音、團隊已有共識 |
+| **漸進式改寫（按修改範圍）** | 只把**本次任務觸及的註解**改為合規，未觸及的保持原樣 | 想逐步合規、不擴大本次任務範圍 |
+| **漸進式改寫（按修改檔案）** | 以**檔案為單位**整檔改為合規風格，其餘檔案不動；可指定檔數或分批推進 | 檔案數有限、希望分批完成整檔一致性 |
+
+**不詢問的例外：**
+
+- 違規是**本次任務中自己造成的**——直接依規則修正，無須詢問。
+- 使用者**已明確指示**處理方式（如「全部改成區塊註解」）——照辦。
+- **新增內容**——一律依本規範產出；「維持既有風格」只適用於對既有註解的處理與同檔慣例延續。
+
+**詢問方式：** 以對話提出上述三選一（當環境提供提問機制時使用之），並可附上具體例子（哪個檔案、哪段註解違規）；同一衝突**只詢問一次**，依使用者選擇後續一致執行。
 
 ---
 
