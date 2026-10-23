@@ -4,6 +4,7 @@ description: >-
   「錯置類」——註解未緊鄰目標代碼（把宣告註解誤寫成檔頭註解、
   與目標宣告之間隔著其他陳述式、放進宣告內部描述整個函式、重構後殘留原地），
   「層級錯置」——函式 JSDoc 夾帶描述內部陳述式的實作段落（案例六），
+  「排版類」——長註解按固定字數斷行、句子被切斷（案例七），
   以及重構時寫進註解的操作日誌（SSOT 標籤、移動／抽離紀錄）
   與設計原則口號（漂移、SSOT、移動紀錄、任務報告）收錄於本檔；
   其餘類型（行內註解、假雙語、無意義註解、@property 等）依主題分流至對應參考文件。
@@ -16,7 +17,8 @@ tags:
 # 錯誤註解案例 (Bad Comment Examples)
 
 彙整「錯誤／不正確／不恰當的註解」案例：**錯置類**（註解與目標代碼的綁定錯誤，案例一～四）、
-**層級錯置**（描述內部陳述式的實作段落寫進宣告 JSDoc，案例六）
+**層級錯置**（描述內部陳述式的實作段落寫進宣告 JSDoc，案例六）、
+**排版類**（長註解按字數斷行，案例七）
 與**內容類**（重構操作日誌與設計原則口號，案例五）收錄於本檔；
 其餘類型已各有專屬參考文件，於文末索引分流。
 
@@ -331,6 +333,48 @@ finalize(options?: IFinalizeIgnoreLinesOptions): this
 
 > **Reference**: [JSDoc 與邏輯區塊職責分離](../../comment-format-rules-js/SKILL.md#jsdoc-與邏輯區塊職責分離-responsibility-separation)（位於 `comment-format-rules-js`）— 合約／意圖與實作細節的分界表、標準範例與檢查清單。
 
+### 案例七：長註解按字數斷行，句子被切斷
+
+**判斷方式：** 看斷行處是不是句子或語意斷點（句號、逗號、冒號、括號收合處）——
+若斷在句子中間（如切開動詞與受詞、讓「經」掛在行尾），就是**按字數硬切**。
+**分行應按句子或斷點，不應按字數。**
+
+```python
+# ❌ 錯誤：斷行落在句子中間——切開「直接寫入／原值」、讓「經」懸在行尾
+def resolve_checkpoint_title(checkpoint: str) -> Optional[str]:
+    """
+    把任意 checkpoint 表示解析為 checkpoint_aliases 的 canonical title；找不到回 None
+
+    為什麼需要：存值可能來自前端手改或 API 用戶輸入（未經 enqueue 解析），直接寫入
+    原值會在下游 process_images:807 的精確查表被靜默拒絕。經
+    get_closet_checkpoint_match 解析後與 enqueue 時（serialize_api_task_args）
+    採同一判定：先查精確別名（title / name / hash 等），再做子字串模糊匹配。
+    """
+```
+
+```python
+# ✅ 正確：每行結束在語意斷點（逗號、句號、括號收合處），句子不跨行被切開
+def resolve_checkpoint_title(checkpoint: str) -> Optional[str]:
+    """
+    把任意 checkpoint 表示解析為 checkpoint_aliases 的 canonical title；找不到回 None
+
+    為什麼需要：存值可能來自前端手改或 API 用戶輸入（未經 enqueue 解析），
+    直接寫入原值會在下游 process_images:807 的精確查表被靜默拒絕。
+    經 get_closet_checkpoint_match 解析後，與 enqueue 時（serialize_api_task_args）
+    採同一判定：先查精確別名（title / name / hash 等），再做子字串模糊匹配。
+    """
+```
+
+**原因：**
+
+| # | 問題 | 說明 |
+|---|------|------|
+| 1 | 語意被切斷 | 「直接寫入」與「原值」分屬兩行、「經」懸在行尾而其賓語在下一行，讀者須自行拼回句子 |
+| 2 | 閱讀節奏錯位 | 行尾本應是掃讀的停頓點；斷在句中讓每行讀起來都像未完句，被迫逐字讀 |
+| 3 | 行長改動即全面重排 | 以字數為斷行依據時，任何編輯器寬度設定或內容增刪都會改變所有斷點，註解 diff 大且易再切壞 |
+
+> 本例以 Python docstring 示意；JS/TS 區塊註解（` * ` 前綴行）同理——斷在句號、逗號等斷點，不斷在句中。
+
 ## 其他不恰當案例索引 (Index by Topic)
 
 其餘常見的錯誤／不恰當註解類型，依主題分流至專屬參考文件：
@@ -345,6 +389,7 @@ finalize(options?: IFinalizeIgnoreLinesOptions): this
 | 僅重複宣告關鍵字／語意、羅列代碼管理的宣告（what 而非 why） | [無意義註解](./meaningless-comments.md) |
 | 重構時的操作日誌（SSOT 標籤、移動／抽離／集中紀錄、遷移鏈註解）、設計原則口號（漂移、SSOT、移動紀錄、任務報告）| 本檔案例五；完整判定見 [SSOT 重構的反模式 — Case D](../../code-refactoring-expert-typescript/references/ssot-refactoring-anti-patterns.md) |
 | 註解過度瑣碎（羅列易變明細，任何修改都要同步更新註解）、檔頭取代宣告／邏輯註解或因此縮減它們 | [SKILL.md — 註解粒度與檔頭邊界](../SKILL.md#註解粒度與檔頭邊界-granularity--file-header) |
+| 長註解按字數斷行、句子被切開（斷在句中而非句子或語意斷點） | 本檔案例七 |
 | 更新時遺失原始錯誤資訊、未驗證的 Issue 連結 | [註解更新規則](../../comment-format-rules-js/references/comment-update-rules.md) |
 
 ## 自我檢查清單 (Checklist)
@@ -357,4 +402,5 @@ finalize(options?: IFinalizeIgnoreLinesOptions): this
 - [ ] 註解是否寫成設計原則口號（「避免漂移」、「SSOT」）或任務報告，而非描述代碼的行為事實與意圖？應改寫為「做什麼、為什麼這樣做」
 - [ ] 註解是否羅列易變的實作明細（欄位／參數清單、函式簽名），以致任何修改都必須同步更新它？粒度收到行為事實與意圖層級（見 [粒度與檔頭邊界](../SKILL.md#註解粒度不應過度瑣碎-comment-granularity)）
 - [ ] 檔頭註解是否被拿來取代宣告 JSDoc／邏輯區塊，或因此縮減它們？三層各司其職，檔頭本身也不寫瑣碎明細（見 [檔頭邊界](../SKILL.md#檔頭註解不得取代宣告與邏輯註解-file-header-boundary)）
+- [ ] 長註解的斷行是否落在句子或語意斷點（句號、逗號、括號收合處）？按字數硬切、句子跨行被切開的應重新分行（見 [案例七](#案例七長註解按字數斷行句子被切斷)）
 - [ ] 函式／方法的 JSDoc 是否夾帶只描述函式體內某一行的實作段落？（應下沉到該陳述式上方的邏輯區塊註解）
