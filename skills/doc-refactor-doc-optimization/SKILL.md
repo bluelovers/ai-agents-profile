@@ -124,7 +124,7 @@ tags:
 ## 核心原則: 雙語標題格式與術語保留原則 (Bilingual Title Format & Preservation)
 
 > **核心規範參照**：
-> 雙語標準化規範（含最高原則）以 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 為 SSoT；文件編寫、重構與優化皆須遵循，本技能不重述其內容。
+> 雙語標準化規範（含最高原則）以 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 為 SSoT；文件編寫、重構與優化前須**先實際閱讀**該規範再遵循，本技能不重述其內容——「中文＋英文」僅標示語言組合，不是規則。
 
 ### 雙語標題格式原則 (Bilingual Title Format)
 

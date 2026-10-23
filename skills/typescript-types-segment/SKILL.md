@@ -118,9 +118,9 @@ const updatedAt: number = ...;
 
 ### 步驟 3：撰寫型別別名與文件
 
-使用**雙語區塊註解**（中文 + English）說明型別用途。
+使用**雙語區塊註解**說明型別用途——「雙語」不等於「中文 + English」並列，落筆前先閱讀下方雙語規範再套用。
 
-> **雙語規範參照**：遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 的雙語標準化規範（SSoT，含最高原則）。
+> **雙語規範參照**：**實際閱讀** [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 後遵循其雙語標準化規範（SSoT，含最高原則）——僅知道輸出是「中文＋英文」不等於已理解語言順序、彈性取捨與術語錨點規則。
 > 本域技術術語（如 `Type Alias`、`Template Literal`、`Union Type`）的雙語標註依上述例外仍應保留作為錨點。
 
 ```typescript

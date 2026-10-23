@@ -40,7 +40,7 @@ tags:
 
 ## 雙語註解 (Bilingual Comments)
 
-> **通用規範 SSoT**：語言順序、彈性捨棄／保留雙語、判定基準、譯名不唯一、無意義與特殊意圖雙語、術語保留等**通用雙語規則與最高原則**，一律遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)，本技能不重述；JS/TS 註解排版見 [bilingual-comment-format.md](../comment-format-rules-js/references/bilingual-comment-format.md)。
+> **通用規範 SSoT**：語言順序、彈性捨棄／保留雙語、判定基準、譯名不唯一、無意義與特殊意圖雙語、術語保留等**通用雙語規則與最高原則**，一律**先實際閱讀** [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 再遵循，本技能不重述（「中文＋英文」只是語言組合，不是規則）；JS/TS 註解排版見 [bilingual-comment-format.md](../comment-format-rules-js/references/bilingual-comment-format.md)。
 >
 > 本節僅保留**套用於 CSS/SCSS 註解**的領域專屬要點與範例。CSS 專屬術語首次出現保留 `中文 (Term)` 格式（如 `偽元素 (pseudo-element)`、`彈性布局 (flex layout)`）；何時捨棄、何時保留、譯名不唯一、無意義雙語、特殊意圖雙語等判定，一律回歸上述 SSoT 的判定基準。
 

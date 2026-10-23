@@ -49,7 +49,7 @@ type IConfigValidator<T> = {
 
 ### 2. 雙語說明
 
-> **雙語規範參照**：遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 的雙語標準化規範（SSoT，含最高原則）。
+> **雙語規範參照**：**實際閱讀** [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 後再遵循其雙語標準化規範（SSoT，含最高原則）——「中文＋英文」標示語言組合，不代表已理解規則。
 
 **所有無法實現的代碼都應遵守雙語規範進行說明**，確保不同背景的開發者都能理解。
 

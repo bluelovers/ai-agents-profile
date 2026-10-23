@@ -1,8 +1,8 @@
 ---
 description: >-
-  JavaScript / TypeScript 雙語（繁體中文＋英文）註解格式規範：單行與多行區塊註解排版、
+  JavaScript / TypeScript 雙語註解格式規範：單行與多行區塊註解排版、
   JSDoc 標籤雙語格式，以及 JS/TS 程式碼情境下的雙語註解實作範例。
-  通用雙語標準請參閱 bilingual-standardization-rule。
+  通用雙語標準（語言順序、彈性取捨、術語錨點）必須實際閱讀 bilingual-standardization-rule 後遵循，「中文＋英文」並列不等於已理解規則。
 tags:
   - comments/format
   - documentation/jsdoc
@@ -11,7 +11,7 @@ tags:
 
 # 雙語註解格式規範 (Bilingual Comment Format)
 
-> **通用規範 SSoT**：語言順序、彈性捨棄／保留雙語、判定基準、最小必要範圍、譯名不唯一、無意義與特殊意圖雙語、技術術語與多語言保留等**通用規則與兩大最高原則**，一律遵循 [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md)，本文件不重述。
+> **通用規範 SSoT**：語言順序、彈性捨棄／保留雙語、判定基準、最小必要範圍、譯名不唯一、無意義與特殊意圖雙語、技術術語與多語言保留等**通用規則與兩大最高原則**，一律**先實際閱讀** [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md) 再遵循，本文件不重述——「中文＋英文」只是語言組合，不是規則。
 >
 > 本文件僅保留適用於 **JavaScript / TypeScript 註解與 JSDoc 格式排版** 的領域專屬雙語規範與範例。
 

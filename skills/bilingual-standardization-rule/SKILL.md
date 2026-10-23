@@ -21,6 +21,9 @@ tags:
 
 本技能定義跨技能、跨文件與程式碼通用的**雙語（中文 zh-TW ＋ 英文 English）標準化規範**，作為各領域（程式碼註解、技術文檔、命名與標題等）的單一事實來源 (Single Source of Truth, SSoT)。
 
+> [!WARNING]
+> 各技能文案中的「中文＋英文」「中英雙語」「繁中＋英文」只標示**語言組合**，**不是規則本身**。未實際閱讀本檔即落筆，極易只輸出中英並列而違反語言順序、彈性取捨與術語錨點原則——**任何雙語產出前，必須先閱讀本規範**。
+
 各專項技能（如 `comment-format-rules-js`、`analyze-code-commenter`、`comment-format-rules-css`、`doc-refactor-doc-optimization` 等）均以本規範為基礎，並在此之上延伸各自的領域專屬規則。
 
 ---

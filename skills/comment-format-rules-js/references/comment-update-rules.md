@@ -56,7 +56,7 @@ Have read the Issue content; confirm direct relevance to code/problem/logic/inte
 
 **核心原則：若原始註解包含中文與英文以外的語言，請保留該語言的註解。**
 
-> **雙語規範參照**：遵循 [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md) 的雙語標準化規範（SSoT，含最高原則）。
+> **雙語規範參照**：**實際閱讀** [bilingual-standardization-rule](../../bilingual-standardization-rule/SKILL.md) 後再遵循其雙語標準化規範（SSoT，含最高原則）——看到「繁體中文＋英文」不代表已理解規則。
 
 當遇到包含其他語言（包含但不限於日語、韓語、德語、法語等）的原始註解時，應保留該語言內容，並在其後添加繁體中文與英文的雙語註解。
 

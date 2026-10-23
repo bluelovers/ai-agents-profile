@@ -15,7 +15,7 @@ tags:
 | 技能名稱 | 說明 | 核心用途 |
 | :--- | :--- | :--- |
 | [skill-creator](./skill-creator) | 技能開發指南 | 協助建立、驗證與打包新的 AI 技能。 |
-| [bilingual-standardization-rule](./bilingual-standardization-rule) | 雙語標準化規範 | 繁中＋英文雙語排版的 SSoT，含最高原則、語言順序、判定基準與術語保留。 |
+| [bilingual-standardization-rule](./bilingual-standardization-rule) | 雙語標準化規範 | 雙語排版的 SSoT，含最高原則、語言順序、判定基準與術語保留；任何雙語產出前須實際閱讀本規範（「中文＋英文」只是語言組合）。 |
 | [analyze-code-commenter](./analyze-code-commenter) | 註解意圖與內容品質分析 | 分析程式碼結構並決定註解意圖（解釋 WHY 而非 WHAT、約束與邊界條件）；審查並消除無意義註解與任務紀錄。 |
 | [comment-format-rules-js](./comment-format-rules-js) | JS/TS 註解語法與格式規範 | 強制區塊註解 (/** ... */)、JSDoc 標籤排版、宣告與邏輯區塊格式分離、放置位置與更新規則。 |
 | [readme-updater](./readme-updater) | README 文件更新維護 | 分析專案結構並自動檢查或更新說明文件。 |
@@ -34,7 +34,7 @@ tags:
 
 ### 📝 [Analyze Code Commenter](./analyze-code-commenter)
 專門用於分析程式碼註解意圖與內容品質的技能。深入分析程式碼結構，並決定何處需要註解與註解意圖。
-- **特點**：雙語輸出（繁體中文與英文）、解釋「為什麼 (WHY)」而非僅是字面動作 (WHAT)、合約與邊界防禦意圖分析，並嚴格判定不良／無意義註解（錯置、層級錯置、重複宣告、任務／重構操作日誌）。
+- **特點**：雙語輸出（產出前須實際閱讀 [bilingual-standardization-rule](./bilingual-standardization-rule)，非逕以「中文＋英文」理解）、解釋「為什麼 (WHY)」而非僅是字面動作 (WHAT)、合約與邊界防禦意圖分析，並嚴格判定不良／無意義註解（錯置、層級錯置、重複宣告、任務／重構操作日誌）。
 
 ### 📐 [Comment Format Rules (JS/TS)](./comment-format-rules-js)
 規範 JavaScript/TypeScript 程式碼註解的語法標記與排版格式。

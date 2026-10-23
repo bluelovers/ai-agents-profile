@@ -2,15 +2,15 @@
 name: comment-format-rules-js
 description: |-
   JS/TS 註解語法與排版格式規範：強制區塊註解 (/** ... */)、JSDoc 排版標籤、雙語排版、註解位置結構與更新維護規則；內容只寫行為事實與意圖，不寫設計原則口號（漂移、SSOT、移動紀錄、任務報告）。
-  註解意圖決定、何時需要註解與無意義註解審查由 analyze-code-commenter 負責；通用雙語標準由 bilingual-standardization-rule 定義。
-  Use when users mention:
+  註解意圖決定、何時需要註解與無意義註解審查由 analyze-code-commenter 負責；雙語排版前必須實際閱讀 bilingual-standardization-rule，不得把「雙語」逕解為「中文＋英文」並列。
+
+  Mandatory whenever JS/TS comments are involved — not only when users ask: every write, edit, move, refactor, or review of code comments / JSDoc / doc comments must follow this skill's format rules, even if the user never mentions 註解格式 or rules. Use also when users mention:
   - "JS/TS 註解規範", "JavaScript 註解格式", "TypeScript 註解格式"
   - "JSDoc 格式", "JSDoc 規範", "文件註解格式"
   - "雙語註解格式", "中英雙語註解", "bilingual comment format"
   - "區塊註解規範", "註解位置規範", "註解格式規範"
   - "行內註解轉換", "inline to block comment converter"
   - "comment format rules", "JSDoc comment format", "block comment rules"
-  Apply when writing, updating, or reviewing code comments in JS/TS projects.
 tags:
   - comments/format
   - documentation/jsdoc
@@ -23,6 +23,8 @@ tags:
 
 規範 JavaScript/TypeScript 程式碼註解的語法格式、排版結構、放置位置與更新維護。CSS/SCSS 請改用 [comment-format-rules-css](../comment-format-rules-css/SKILL.md)。
 
+> **適用時機**：本規範**不是「使用者點名時才遵守」**——凡任務涉及撰寫、新增、修改、重構、搬移或審查任何 JS/TS 註解，落筆前一律套用本規範，即使使用者完全沒提到「註解」或格式要求。註解意圖與內容品質另見 [analyze-code-commenter](../analyze-code-commenter/SKILL.md)。
+
 ## 職責邊界與核心原則
 
 為確保代碼排版的一致性與 IDE / AI 的提示精準度，遵循以下分工與格式原則：
@@ -30,7 +32,7 @@ tags:
 > **職責邊界**：
 > - **本技能負責【註解語法與格式結構】**：一律使用區塊註解、JSDoc 結構排版、單多行格式、緊鄰目標代碼上方、特殊指令順序與批次轉換工具。
 > - **註解意圖與內容品質由 [analyze-code-commenter](../analyze-code-commenter/SKILL.md) 負責**：決定何處需要註解、分析 WHY 而非僅 WHAT、約束與邊界條件、審查並清除無意義註解與重構／遷移紀錄。
-> - **雙語通用標準由 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 規範**：語言順序、判定基準、術語保留與彈性取捨等最高原則。
+> - **雙語通用標準由 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 規範**：語言順序、判定基準、術語保留與彈性取捨等最高原則——排版前須**實際閱讀該檔**；「中文＋英文」只是語言組合，不是規則。
 
 ### 格式核心原則
 
@@ -38,7 +40,7 @@ tags:
 - **註解放置於代碼上方**，緊鄰目標代碼，避免代碼後方的行內註解。詳見 [註解位置規範](./references/comment-placement.md)。
 - **註解必須緊鄰其所描述的宣告**（中間不得隔著 `import`、常數或其他陳述式）；描述宣告的註解不得寫成檔頭註解。詳見 [錯誤註解案例](../analyze-code-commenter/references/bad-comment-examples.md)。
 - **格式結構分工：宣告層級 JSDoc 描述合約，陳述式層級邏輯區塊描述實作緣由。** 詳見 [JSDoc 與邏輯區塊職責分離](#jsdoc-與邏輯區塊職責分離-responsibility-separation)。
-- **雙語排版格式**：單行術語以 `/` 分隔，JSDoc 標籤採 `- 中文 / English` 格式。詳見 [雙語註解格式](./references/bilingual-comment-format.md)。
+- **雙語排版格式**：產出前先閱讀 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 取得通用規則；本檔僅定義 JS/TS 形式——單行術語以 `/` 分隔，JSDoc 標籤採 `- 中文 / English` 格式。詳見 [雙語註解格式](./references/bilingual-comment-format.md)。
 - **更新既有註解時保留原始技術資訊**（錯誤碼、術語、檔案路徑、多語言註解）。詳見 [註解更新規則](./references/comment-update-rules.md)。
 
 ---
@@ -396,7 +398,7 @@ else if (m = (w1.p & w2.p))
 
 按需載入以下參考文件：
 
-- [雙語註解格式規範](./references/bilingual-comment-format.md) — JS/TS 雙語區塊註解排版與 JSDoc 標籤格式（通用規則與最高原則以 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 為 SSoT）
+- [雙語註解格式規範](./references/bilingual-comment-format.md) — JS/TS 雙語區塊註解排版與 JSDoc 標籤格式（通用規則與最高原則須**先實際閱讀** [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 再遵循，不可僅憑「中文＋英文」的印象套用）
 - [註解位置規範](./references/comment-placement.md) — 陣列元素、物件屬性、Interface/Type 成員、`@example` 行內註解例外
 - [重要約束](./references/critical-constraints.md) — 區塊註解強制、分隔線、特殊指令放置、保留技術術語
 - [註解更新規則](./references/comment-update-rules.md) — 保留原始錯誤資訊、Issue 驗證、多語言註解保留、更新前檢查清單
@@ -406,5 +408,5 @@ else if (m = (w1.p & w2.p))
 
 ## 相關技能 (Related Skills)
 
-- [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) — 繁中＋英文雙語標準化規範（SSoT）：最高原則、語言順序、判定基準與多語言保留。
+- [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) — 雙語標準化規範（SSoT）：最高原則、語言順序、判定基準與多語言保留。**雙語排版前必須實際閱讀此檔**，不可僅憑「中文＋英文」並列的印象套用。
 - [analyze-code-commenter](../analyze-code-commenter/SKILL.md) — 分析程式碼並決定註解意圖的實作技能；代碼結構分析、[錯誤註解案例](../analyze-code-commenter/references/bad-comment-examples.md) 與 [無意義註解](../analyze-code-commenter/references/meaningless-comments.md) 的內容品質判定由該技能負責。

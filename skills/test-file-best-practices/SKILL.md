@@ -782,7 +782,7 @@ export const testGroups: ITestGroup[] = [
 2. **資料集獨立** - 測試資料集文件應可獨立維護
 3. **自動產生** - 測試腳本應自動遍歷資料集，無需手動定義
 4. **類型安全** - 使用 `ITestCase` 和 `ITestGroup` 接口確保類型安全
-5. **雙語註解** - 測試資料集的註解應包含中英文，遵循 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 的雙語標準化規範（SSoT，含最高原則）。
+5. **雙語註解** - 測試資料集的註解產出前先**實際閱讀** [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 並遵循其雙語標準化規範（SSoT，含最高原則）；「應包含中英文」只是語言組合，不是規則。
 6. **完整資料** - 每個測試用例應同時包含輸入（測試目標）與預期輸出（expected）
 
 #### 測試輔助腳本

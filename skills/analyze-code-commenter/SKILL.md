@@ -1,12 +1,12 @@
 ---
 name: analyze-code-commenter
 description: |-
-  分析程式碼並決定註解意圖與內容品質（中英雙語）。
+  分析程式碼並決定註解意圖與內容品質（雙語）。
   專注於「註解意圖」（解釋 WHY 而非 WHAT、業務目的、約束與邊界條件、看 code 不知道的事；註解以行為事實與意圖為準）
   與「內容品質審查」（消除無意義註解、禁止設計原則口號與重構／遷移紀錄、修正錯置與層級錯置、控制註解粒度與檔頭越界）。
-  註解語法與排版格式（區塊註解結構、JSDoc 格式、放置位置、更新規則）由 comment-format-rules-js 定義；通用雙語標準由 bilingual-standardization-rule 定義。
+  註解語法與排版格式（區塊註解結構、JSDoc 格式、放置位置、更新規則）由 comment-format-rules-js 定義；雙語內容產出前必須實際閱讀 bilingual-standardization-rule 並遵循其規則，不得把「雙語」逕解為「中文＋英文」並列。
 
-  Use when users request (1) Adding comments to code, (2) Code documentation, (3) Explaining code logic with comments, (4) Detecting, removing or rewriting bad / meaningless comments, or mention keywords such as:
+  Mandatory whenever comments are involved — not only when users ask: any task that writes, adds, updates, refactors, moves, or reviews code comments / JSDoc / doc comments must apply this skill (intent & content quality) and comment-format-rules-js (format), even if the user never mentions 註解 or rules. Use also when users request or mention:
   - "為代碼添加註解", "分析並註解程式碼", "為代碼更新註解", "為代碼修正註解"
   - "重構代碼更新註解", "雙語註釋/雙語註解", "添加註釋"
   - "程式碼註解", "文件註解", "JSDoc", "區塊註解", "註解意圖", "註解格式"
@@ -23,12 +23,14 @@ tags:
 
 # Analyze Code Commenter
 
-分析程式碼結構並決定**註解意圖 (Comment Intent)** 與**內容品質 (Content Quality)**，為代碼添加高品質的雙語註解（繁體中文 zh-TW ＋ 英文）。
+分析程式碼結構並決定**註解意圖 (Comment Intent)** 與**內容品質 (Content Quality)**，為代碼添加高品質的雙語註解——「雙語」不等於「中文＋英文」並列，語言順序、彈性取捨與術語錨點須先閱讀 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 再落筆。
+
+> **適用時機**：本規範**不是「使用者點名時才遵守」**——凡任務涉及撰寫、新增、修改、重構、搬移或審查任何程式碼註解／JSDoc／文件註解，落筆前一律套用本技能（意圖與內容品質）與 [comment-format-rules-js](../comment-format-rules-js/SKILL.md)（格式排版），即使使用者完全沒提到「註解」。
 
 > **職責邊界與核心分工**：
 > - **本技能負責【註解意圖與內容品質】**：決定 *何處需要註解*、*註解應表達什麼業務意圖與 WHY*、*註解是否應當存在*（審查並刪除無意義註解與任務紀錄）。
 > - **格式排版由 [comment-format-rules-js](../comment-format-rules-js/SKILL.md) 規範**：強制區塊註解格式（`/** ... */`，禁用行內 `//`）、單多行排版、JSDoc 標籤語法、縮排對齊與轉換工具。
-> - **雙語原則由 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 規範**：語言順序、判定基準、術語保留與彈性取捨等最高原則。
+> - **雙語原則由 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 規範**：語言順序、判定基準、術語保留與彈性取捨等最高原則——產出前須**實際閱讀該檔**；「中文＋英文」只是語言組合，不是規則。
 
 ## Workflow
 
@@ -41,7 +43,7 @@ tags:
    - 宣告層級：說明外部合約、設計用途、不變量與約束
    - 邏輯區塊：說明局部邏輯的業務原因、非直觀運算目的、相容性處理或邊界防禦緣由
    - 審查現有註解：依 [Bad & Meaningless Comments](#bad--meaningless-comments-analyze-remove-rewrite) 刪除無意義註解、設計原則口號、過度瑣碎明細與重構/遷移日誌
-4. **Generate bilingual comments** - 依 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 產生雙語內容，並依 [comment-format-rules-js](../comment-format-rules-js/SKILL.md) 套用區塊註解排版
+4. **Generate bilingual comments** - 先閱讀 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)（語言順序、彈性取捨、術語錨點、多語言保留），依其規則產生雙語內容，再依 [comment-format-rules-js](../comment-format-rules-js/SKILL.md) 套用區塊註解排版
 5. **Apply changes** - 依當下環境實際提供的檔案編輯工具執行修改
 
 ## Logic Block Requirements (Required for ALL logic blocks)
@@ -179,9 +181,9 @@ Each item below gets **its own block comment placed above the member**. The comm
 
 ## Bilingual Comment Content
 
-> **雙語規範參照**：通用雙語標準（語言順序、可讀性取捨、技術術語錨點等最高原則）請參閱 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md)；JS/TS 註解排版與 JSDoc 標籤雙語格式請參閱 [bilingual-comment-format](../comment-format-rules-js/references/bilingual-comment-format.md)。
+> **雙語規範參照**：通用雙語標準（語言順序、可讀性取捨、技術術語錨點等最高原則）請**實際閱讀** [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 後再產出——不可僅憑「中文＋英文」的字面理解套用；JS/TS 註解排版與 JSDoc 標籤雙語格式請參閱 [bilingual-comment-format](../comment-format-rules-js/references/bilingual-comment-format.md)。
 
-When analyzing code and generating comments for logic blocks and members, apply [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) (zh-TW first, no fake bilingual, flexible omission, preserve foreign comments). Domain-specific application:
+When analyzing code and generating comments for logic blocks and members, **read** [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) first and apply its rules (zh-TW first, no fake bilingual, flexible omission, preserve foreign comments) — knowing the output is "Chinese + English" is not knowing the rules. Domain-specific application:
 
 - **Technical Term Identification during Code Analysis**: When identifying algorithmic or domain concepts during code inspection, retain bilingual notation (`中文 (Term)`) on first occurrence:
   ```typescript

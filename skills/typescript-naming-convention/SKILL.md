@@ -50,7 +50,7 @@ tags:
 
 - 為所有 Enum、Interface 與 Type Alias 使用區塊文件。
 - 在文件中使用繁體中文說明型別用途與語意。
-- 視需要加入英文說明，保持中英文順序一致。
+- 視需要加入英文說明，語言順序與取捨先**實際閱讀** [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 再遵循（勿逕以「中英文」理解）。
 - 建議為 Enum 成員加入用途說明。
 - Interface 屬性建議使用單行區塊註解。
 - Interface 方法建議使用包含參數與回傳值的 JSDoc。
