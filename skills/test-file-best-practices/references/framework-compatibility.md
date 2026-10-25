@@ -19,7 +19,7 @@ tags:
 
 本文件收錄 `SKILL.md` 的測試檔命名規範與測試檔 Header，以及原 `examples.md` 的框架相容性速查表，
 統整為 Jest / Vitest / Bun / Node.js（`node:test`）四框架的對照，作為框架選擇與 API 比較的單一事實來源。
-關於轉換既有測試至 Node.js 原生測試的完整指南，請參閱 [test-convert-to-node-test](../../test-convert-to-node-test/SKILL.md)（轉換時基本上無需主動去理解相關代碼實作、讀取快照檔內容或偵測環境如 Node.js 版本/tsx 路徑，既有代碼已展現足夠資訊）。
+關於轉換既有測試至 Node.js 原生測試的完整指南，請參閱 [test-convert-to-node-test](../../test-convert-to-node-test/SKILL.md)（轉換時以既有代碼為使用指南，禁止預先探索無關檔案、依賴、實作細節、API、快照或環境；僅實際遇錯或必要資訊不足時，才做最小範圍查詢）。
 
 ---
 

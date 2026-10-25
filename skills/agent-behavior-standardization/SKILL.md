@@ -11,9 +11,12 @@ description: |-
   (5) Batch grep/glob searches in a single call for efficiency,
   (6) Diagnose failed tool calls and validate workspace-relative vs absolute paths,
   (7) Keep refactoring/annotation/analysis tasks from scope drift (skip unnecessary git/test exploration).
-  Triggers when user mentions: "行為標準化", "agent behavior standardization",
-  "避免非必要操作", "覆蓋檔案/檔案被更動", "亂碼/編碼問題", "單一事實來源/SSoT",
-  "重複邏輯", "批次搜尋", "工具呼叫失敗", "路徑錯誤", "scope drift", "避免多餘探索".
+  當執行相關行為或 when user mentions 時觸發（包含但不限於以下關鍵字或情境）：
+  "行為標準化", "agent behavior standardization", "檔案讀寫/編輯", "避免非必要操作",
+  "覆蓋檔案/檔案被更動", "亂碼/編碼問題", "單一事實來源/SSoT",
+  "重複邏輯", "批次搜尋", "工具呼叫/工具呼叫失敗", "路徑查詢/解析/錯誤", "Permission denied",
+  "查詢依賴", "查詢執行檔路徑", "查詢任何路徑或環境偵測", "查詢實作細節", "查詢API",
+  "環境設定", "執行指令", "git查詢", "scope drift", "避免多餘探索".
 tags:
   - agents/behavior
   - agents/guidelines
@@ -317,6 +320,8 @@ Agent 的最終報告必須建立在**成功驗證的工具結果**上。
 
 ### 8.1 以當前檔案內容為事實基準
 
+- **指定範圍就是探索邊界** — 當使用者指定修改特定檔案或區塊時，嚴禁預先讀取、搜尋或檢查其他無關檔案、目錄或依賴項；預設指定的函式、變數、模組與路徑存在且正確，直接修改或輸出 Patch。
+- **既有代碼就是使用指南** — 直接依指定範圍內的 import、呼叫方式、型別與測試案例理解 API 和行為合約；不得為了「確認用法」「了解實作」「確保可行」而查詢無關實作細節、API、路徑或環境。僅實際遇錯、明確調查需求或必要資訊不足時，才做最小範圍查詢。
 - 重構、註解、結構分析類任務，其 **Source of Truth 就是 Agent 被給定的檔案內容**，而非 Git 狀態。
 - `git diff` 只能說明 working tree 與 HEAD 的差異；`git log` 回答「這段 code 如何演變而來」。
 - 兩者都**無法幫助判斷「哪些邏輯重複」「哪些是共同 domain fact」**，故不應作為前置調查。
@@ -326,7 +331,8 @@ Agent 的最終報告必須建立在**成功驗證的工具結果**上。
 
 | 動作 | 判定 | 說明 |
 |------|------|------|
-| 閱讀 source code | 必要 | 直接分析被指定檔案 |
+| 閱讀指定 source code | 必要 | 只讀完成指定修改所需的內容 |
+| 預先探索無關檔案、目錄、依賴或 API | 不應該 | 既有代碼就是使用指南；實際遇錯或必要資訊不足時才做最小查詢 |
 | 比較兩個 implementation | 必要 | 找出重複事實 |
 | 設計 shared abstraction | 必要 | 抽離共同 domain fact |
 | 保留 intentional divergence | 必要 | 在 caller / 配置層保留刻意差異 |
