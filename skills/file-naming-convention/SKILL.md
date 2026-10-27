@@ -77,7 +77,7 @@ docs/01-autoRemoveSpace/README.md
 | 公有區域私有化 | `docs/` 是倉庫公有區域，卻被當成 `autoRemoveSpace` 功能的專屬資料夾。 |
 | 路徑過度限定 | `01-autoRemoveSpace/` 只能容納單一主題，無法被其他功能複用，分類形同虛設。 |
 
-建議改為具通用分類層的結構，例如 `docs/features/auto-remove-space.md` / `docs/features/auto-remove-space/README.md`（依倉庫實際分類慣例調整）。
+建議改為具通用分類層的結構，例如 `docs/mechanisms/prompt-tags/auto-remove-space.md`、`docs/features/auto-remove-space.md` 或 `docs/features/auto-remove-space/README.md`（依倉庫實際分類慣例調整）。
 
 ---
 
