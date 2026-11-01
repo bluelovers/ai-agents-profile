@@ -11,7 +11,8 @@ description: |-
   (5) Batch grep/glob searches in a single call for efficiency,
   (6) Diagnose failed tool calls and validate workspace-relative vs absolute paths,
   (7) Keep refactoring/annotation/analysis tasks from scope drift (skip unnecessary git/test exploration),
-  (8) Detect overthinking and break reasoning loops: stop exploring and report the blocker to the user instead of looping indefinitely.
+  (8) Detect overthinking and break reasoning loops: stop exploring and report the blocker to the user instead of looping indefinitely,
+  (9) Prevent unnecessary noise: never pre-explore the directory of a user-provided path; exploration must be driven by explicit need.
   當執行相關行為或 when user mentions 時觸發（包含但不限於以下關鍵字或情境）：
   "行為標準化", "agent behavior standardization", "檔案讀寫/編輯", "避免非必要操作",
   "覆蓋檔案/檔案被更動", "亂碼/編碼問題", "單一事實來源/SSoT",
@@ -19,7 +20,8 @@ description: |-
   "查詢依賴", "查詢執行檔路徑", "查詢任何路徑或環境偵測", "查詢實作細節", "查詢API",
   "環境設定", "執行指令", "git查詢", "scope drift", "避免多餘探索",
   "過度思考", "overthinking", "思考過多輪", "探索迴圈", "陷入迴圈", "反覆嘗試",
-  "無法決定", "卡住", "卡關", "無決定性結果".
+  "無法決定", "卡住", "卡關", "無決定性結果",
+  "非必要雜訊", "雜訊預防", "路徑探索", "目錄探索", "預先探索", "探索根據".
 tags:
   - agents/behavior
   - agents/guidelines
@@ -432,6 +434,41 @@ Agent 的最終報告必須建立在**成功驗證的工具結果**上。
 與第 8 節相同，本節定義**思考與停止紀律（WHY / HOW）**；`agent-operation-restrictions`「避免非必要行為」條目下的對應規則（WHAT）為其執行面。兩者互補：本節解釋「為什麼必須停」，操作限制列出「不該繼續做什麼」。
 
 > 參照：[agent-operation-restrictions](../agent-operation-restrictions/SKILL.md)
+
+---
+
+## 10. 非必要雜訊預防：探索必須基於明確性需求
+
+目的：約束「預先探索」行為的觸發條件。無根據的預先探索會取得不必要雜訊，甚至被既有錯誤所汙染，進而污染後續推理。
+
+### 10.1 不預先探索指定路徑所屬目錄
+
+**當使用者要求或提供某個路徑 / 檔案時，該路徑本身就是探索邊界；不得預先探索其所屬目錄下還有什麼檔案。**
+
+- 使用者給了 `src/utils/format.ts`，任務就始於 `format.ts` 的內容；不先列舉 `src/utils/` 的其他檔案、不 glob 上層目錄。
+- 即使目的看似無害（「先了解上下文」「看看有沒有相關檔案」），只要沒有明確需求支撑，即屬無根據的預先探索。
+- 需要同目錄其他檔案作為依據時，應由**任務中實際顯現的需求**觸發（例如該檔案 import 了同目錄模組），而非前置掃描。
+
+### 10.2 探索的觸發條件：明確性需求
+
+探索行為必須基於**明確性的需求**——即「缺少這項資訊就無法完成目前任務」——而不是在沒有任何根據的情況下預先探索。
+
+| 觸發來源 | 是否構成明確性需求 |
+|---|---|
+| 實際操作中出現錯誤，需定位原因 | ✅ 是 |
+| 指定內容缺少完成任務的必要資訊 | ✅ 是 |
+| 使用者明確要求調查某範圍 | ✅ 是 |
+| 「先了解專案結構」「看看還有什麼」 | ❌ 否（無根據） |
+| 「習慣上動手前先掃一遍目錄」 | ❌ 否（無根據） |
+
+### 10.3 無根據探索的兩種污染
+
+1. **雜訊污染** — 探索取得的資訊與任務目標無關，卻進入上下文並被用來延伸推理，稀釋真正的決策依據。
+2. **既有錯誤污染** — 目錄 / 檔案中既存的錯誤寫法、過時慣例或缺陷，可能被 Agent 誤讀為「正確範例」或「既有事實」並加以遵循，使錯誤擴散。
+
+**核心原則：探索是手段，不是前置儀式。** 只有明確需求才能觸發探索；無根據的預先探索，成本（雜訊、錯誤污染、輪次浪費）必然高於其收益。
+
+> 參照：[agent-operation-restrictions](../agent-operation-restrictions/SKILL.md) — 具體禁止行為見其「避免非必要行為」章節及 [avoid-unnecessary-queries.md](../agent-operation-restrictions/references/avoid-unnecessary-queries.md)
 
 ---
 
