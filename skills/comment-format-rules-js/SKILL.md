@@ -1,7 +1,7 @@
 ---
 name: comment-format-rules-js
 description: |-
-  JS/TS 註解語法與排版格式規範：強制區塊註解 (/** ... */)、JSDoc 排版標籤、雙語排版、註解位置結構與更新維護規則；內容只寫行為事實與意圖，不寫設計原則口號（漂移、SSOT、移動紀錄、任務報告）。
+  JS/TS 註解語法與排版格式規範：強制區塊註解 (/** ... */)、JSDoc 排版標籤、雙語排版、註解位置結構與更新維護規則；內容只寫行為事實與意圖，不寫設計原則口號與代碼編輯過程紀錄（關鍵字僅為例示，判定依「描述代碼本身 vs 描述代碼如何被編輯」）。
   註解意圖決定、何時需要註解與無意義註解審查由 analyze-code-commenter 負責；雙語排版前必須實際閱讀 bilingual-standardization-rule，不得把「雙語」逕解為「中文＋英文」並列。
 
   Mandatory whenever JS/TS comments are involved — not only when users ask: every write, edit, move, refactor, or review of code comments / JSDoc / doc comments must follow this skill's format rules, even if the user never mentions 註解格式 or rules. If existing comments in the file violate these rules and the violation was not introduced by this task, ask the user first (keep existing style vs. progressive rewrite by scope or by file) instead of rewriting unilaterally. Use also when users mention:
@@ -339,7 +339,7 @@ function canAccess(user: IUser, resource: IResource): boolean {
 - **特殊指令放置**：`// @ts-ignore` 必須緊鄰目標代碼，區塊註解放在特殊指令**之前**。
 - **保留技術術語**：更新註解時不得刪除原始技術術語（如 Non-Null Assertion Operator、Dijkstra、Singleton），只能新增翻譯或說明。
 - **識別無語義命名慣例**：`Lazy`、`Helper`、`Util` 可能僅是命名慣例，必要時以 `@note` 說明其無特定技術意涵。
-- **只寫行為事實與意圖，不寫設計原則口號**：註解須描述代碼「做什麼、為什麼這樣做」；禁止寫入「避免漂移」、「SSOT／單一事實來源」等原則口號，以及移動紀錄（「已移至／原位於」）與任務報告（「已完成重構」）。完整錯例與改寫見 [錯誤註解案例 — 案例五](../analyze-code-commenter/references/bad-comment-examples.md)。
+- **只寫行為事實與意圖，不寫設計原則口號**：註解須描述代碼「做什麼、為什麼這樣做」，不得描述代碼被編輯的過程（搬移、重構、集中、對齊他處、任務進度）；判準為「主詞是代碼還是本次修改」「日後再搬移是否會過期」，關鍵字（「避免漂移」「SSOT」「已移至／原位於」「為何集中」「已完成重構」）僅為例示、非窮舉。完整錯例與改寫見 [錯誤註解案例 — 案例五](../analyze-code-commenter/references/bad-comment-examples.md)。
 
 ---
 

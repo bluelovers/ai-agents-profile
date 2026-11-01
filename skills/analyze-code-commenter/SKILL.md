@@ -199,8 +199,8 @@ These behavioral rules apply to every edit this skill makes; format constraints 
 - **NEVER** modify existing code formatting (indentation, line breaks, spaces)
 - **NEVER** delete old commented-out code (e.g., `// old code...`, `/* old code... */`, or `/** @deprecated */`)
 - **NEVER** convert existing CJK characters to Traditional Chinese - only use Traditional Chinese in NEW comments
-- **Comments MUST describe behavioral facts and intent - NEVER design-principle slogans**: state what the code does and why it exists; do NOT write slogans such as "避免漂移 / prevent drift", "SSOT / single source of truth", movement records ("已移至...", "原位於..."), or task reports ("任務報告", "本次重構已完成"). History belongs to git, not comments (see [錯誤註解案例 — 案例五](references/bad-comment-examples.md)).
-- **NEVER write task logs, refactoring records, or migration notes** into comments (e.g., "原本位於...", "已移至...", "基於 SSoT 集中於此", "抽離自..."). Comments must describe the current domain purpose, invariants, and responsibilities only (see [錯誤註解案例 — 案例五](references/bad-comment-examples.md)).
+- **Comments MUST describe behavioral facts and intent - NEVER the editing history of the code**: state what the code does and why it exists. Anything answering "how was this code produced/moved/refactored/aligned" is forbidden regardless of wording — design-principle slogans ("避免漂移 / prevent drift", "SSOT / single source of truth"), movement records ("已移至...", "原位於..."), consolidation rationale ("為何集中：原本散落在..."), and task reports ("任務報告", "本次重構已完成") are only examples, not an exhaustive list. Test: does the sentence still hold after the next refactor? History belongs to git, not comments (see [錯誤註解案例 — 案例五](references/bad-comment-examples.md)).
+- **NEVER write task logs, refactoring records, or migration notes** into comments (e.g., "原本位於...", "已移至...", "基於 SSoT 集中於此", "抽離自...", "為何集中：..."). Comments must describe the current domain purpose, invariants, and responsibilities only (see [錯誤註解案例 — 案例五](references/bad-comment-examples.md)).
 - **DELETE meaningless comments that merely restate the declaration keyword** (e.g., `/** 介面 / interface */` above `interface ISkillDef`, `/** 枚舉 */` above `enum`, `/** type */` above `type`) - they add no information and must be removed, not rewritten (see [無意義註解](references/meaningless-comments.md))
 
 ## Bad & Meaningless Comments (Analyze, Remove, Rewrite)
@@ -224,7 +224,7 @@ Beyond adding comments, this skill decides *whether an existing comment should e
 |------|------|----------|------|
 | 錯置 | 宣告註解寫成檔頭、與目標被陳述式分隔、放進宣告內部、重構搬移後殘留 | 歸位到緊鄰目標宣告的上方 | [案例一～四](references/bad-comment-examples.md) |
 | 層級錯置 | 宣告 JSDoc 夾帶只描述函式體內某一行的實作段落 | 下沉到該陳述式上方的邏輯區塊註解 | [案例六](references/bad-comment-examples.md) |
-| 操作日誌 | 註解內容是 SSOT 標籤、移動／抽離紀錄、遷移鏈、集中說明（如「集中於此」） | 只寫領域意圖／不變數，歷程交給 git，不留任務痕跡 | [案例五](references/bad-comment-examples.md) |
+| 操作日誌 | 註解內容是 SSOT 標籤、移動／抽離紀錄、遷移鏈、集中說明（如「集中於此」「為何集中：原本散落在…」） | 只寫領域意圖／不變數，歷程交給 git，不留任務痕跡 | [案例五](references/bad-comment-examples.md) |
 | 設計原則口號 | 註解寫「避免漂移」、「SSOT」等原則口號，或寫成本次任務報告（做了什麼重構） | 改寫為行為事實與意圖：這段代碼做什麼、為什麼這樣做 | [案例五](references/bad-comment-examples.md) |
 | 過度瑣碎 | 逐項羅列易變的實作明細，任何修改都必須同步更新註解 | 粒度收到行為事實與意圖層級，易變明細交給代碼 | [粒度與檔頭邊界](#註解粒度不應過度瑣碎-comment-granularity) |
 | 檔頭越界 | 用檔頭註解取代宣告 JSDoc／邏輯區塊，甚至因此縮減它們；檔頭本身羅列瑣碎明細 | 三層各司其職：檔頭寫整個檔案，宣告與邏輯層級的註解保持完整 | [檔頭不得取代其他層級](#檔頭註解不得取代宣告與邏輯註解-file-header-boundary) |
