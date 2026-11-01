@@ -20,6 +20,7 @@ This directory contains reference materials that supplement the main [code-refac
 - [dom-selector-enum-pattern.md](./dom-selector-enum-pattern.md) - Refactoring scattered hardcoded DOM IDs and CSS class selectors into unified Enum management
 - [react-state-ref-memo-decision-guide.md](./react/react-state-ref-memo-decision-guide.md) - Decision guide for choosing State / RefObject / `IRefObjectMaybe<T>` / useMemo during React refactoring, with decision matrix and refactoring workflow
 - [react-state-ref-memo-refactoring.md](./react/react-state-ref-memo-refactoring.md) - Complete case study of refactoring a React Hook from excessive useState to optimized State + RefObject + useMemo pattern
+- [import-alias-reexport-confusion.md](./import-alias-reexport-confusion.md) - Import alias & re-export confusion: avoid `import { x as _x }`, distinguish identical forwarding / unequal variants (rename at source) / dead re-exports / pure forwarders, prefer direct source imports
 
 ## How to Use These References
 

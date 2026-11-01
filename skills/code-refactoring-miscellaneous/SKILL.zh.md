@@ -944,6 +944,20 @@ import { UserService, IUserRepository } from './services/UserService';
 
 ---
 
+## 引用別名與重新匯出混淆 (Import Alias & Re-export Confusion)
+
+📚 **完整參考**：[引用別名與重新匯出混淆 - 區分完全相等轉發 / 不相等變體 / 無引用殭屍欄位 / 純轉發層，優先直接引用來源](./references/import-alias-reexport-confusion.md)
+
+- **引用時一律避免別名**：不論是直接引用或重構抽離之後，都應盡量避免 `import { x as _x }`——名稱衝突必須在**定義處**解決一次，而不是在每個引用處以別名彌補
+- **以下四種情況必須區分，不可混淆**：
+  1. **100% 相等**（`bracketsEN`、`countLayers`）— 不應以別名引用；轉發包裝有多種形式（`(...args)` 展開只是其中一種——「明確參數轉發」會在包裝處重新宣告型別與預設值，**額外違反 SSoT：預設值須唯一定義**）；保留前先檢查情況 3，確需保留時以屬性簡寫 `const api = { bracketsEN }` 掛載，不做任何包裝
+  2. **不相等的變體**（`getTagIncWeight` 與 `_getTagIncWeight`，簽名不同）— 應在來源檔案 `tag-weight.ts` 內**根本上改名**，讓各變體在定義處就有各自成立的名字
+  3. **無外部引用且非公開 API**（如 `bracketsEN` 無任何消費者）— 根本就不需要在原處保留
+  4. **純轉發 re-export**（如 `setLayers` 等）— 若消費端能簡單改用直接引用來源，就不需要保留轉發層
+- **優先直接引用來源**，而不是留下轉發式重新匯出（與下方 Barrel Index 規則同源）
+
+---
+
 ## TypeScript 6 升級與型別解析邊界情況 (Migration & Edge Cases)
 
 ### 概述
@@ -1049,6 +1063,7 @@ return new Blob(body as any).arrayBuffer();
 ### 延伸閱讀
 
 - [外部 API 類型安全封裝模式](./references/external-api-type-safe-wrapper.md) - 將鬆散類型的外部 API（如 VS Code Memento）封裝為嚴格類型的內部接口
+- [引用別名與重新匯出混淆](./references/import-alias-reexport-confusion.md) - 避免 import alias；區分完全相等轉發 / 不相等變體（來源處根本改名）/ 無引用殭屍欄位 / 純轉發層，優先直接引用來源
 - [DOM Selector Enum Pattern - 完整參考](./references/dom-selector-enum-pattern.md) - 詳細的 HTML/JSX 整合範例與進階應用
 - [CSS 重構指南](./references/css/css-refactoring-guide.md) - 將共用樣式值抽離為 CSS 自訂屬性，讓跨選擇器樣式保持同步 (SSoT)
 - [Storybook 重構指南](./references/react/storybook/storybook-decorator-fixture-refactoring.md) - 公用 Decorator、同源根 Decorator 與共用樣式載入、fixture 展示資料分類抽離、多級 meta.title 分類整理

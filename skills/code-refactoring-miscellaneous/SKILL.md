@@ -903,6 +903,20 @@ If the project is new or small enough, you can migrate all at once:
 
 ---
 
+## Import Alias & Re-export Confusion
+
+📚 **Full reference**: [Import Alias & Re-export Confusion - distinguish identical forwarding / unequal variants / dead re-exports / pure forwarders, prefer direct source imports](./references/import-alias-reexport-confusion.md)
+
+- **Never alias on import**: whether referencing directly or after extraction refactoring, avoid `import { x as _x }` — a name conflict must be solved once at the definition site, not patched with aliases at every reference site
+- **Distinguish four situations, do not conflate them**:
+  1. **100% identical** (`bracketsEN`, `countLayers`) — never alias; forwarding wrappers come in several forms (`(...args)` spread is only one — explicit parameter forwarding re-declares types/defaults at the wrapper, violating SSoT: defaults must stay single-sourced); check situation 3 first, if it must be kept, mount it via property shorthand `const api = { bracketsEN }` with no wrapper
+  2. **Unequal variants** (`getTagIncWeight` vs `_getTagIncWeight`, different signatures) — rename the underlying function at its source (`tag-weight.ts`) so each variant has its own established name
+  3. **No consumers / not a public API** (`bracketsEN` with no external references) — do not keep it at the original place at all
+  4. **Pure forwarding re-export** (`setLayers` etc.) — if consumers can simply import the source directly, remove the forwarder instead of keeping it
+- Prefer **direct source imports** over forwarding re-exports (same spirit as the Barrel Index rule below)
+
+---
+
 ## TypeScript 6 Migration & Type Resolution Edge Cases
 
 ### Overview
@@ -1008,6 +1022,7 @@ Do not manually type `req`/`res`. Instead, add `"node"` to `compilerOptions.type
 ## Further Reading
 
 - [External API Type-Safe Wrapper Pattern](./references/external-api-type-safe-wrapper.md) - Wrapping loosely-typed external APIs (like VS Code Memento) into strictly-typed internal interfaces
+- [Import Alias & Re-export Confusion](./references/import-alias-reexport-confusion.md) - Avoid import aliases; distinguish identical forwarding / unequal variants (rename at source) / dead re-exports / pure forwarders, prefer direct source imports
 - [DOM Selector Enum Pattern - Full Reference](./references/dom-selector-enum-pattern.md) - Detailed HTML/JSX integration examples and advanced applications
 - [React Component Refactoring Patterns](./references/react/react-component-refactoring-patterns.md) - React component extraction, conditional rendering, parameter passing optimization and other practical tips
 - [CSS Refactoring Guide](./references/css/css-refactoring-guide.md) - Extract shared style values into CSS custom properties to keep cross-selector styles in sync (SSoT)
