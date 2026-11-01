@@ -10,13 +10,16 @@ description: |-
   (4) Apply Single Source of Truth (SSoT) to deduplicate shared logic, types, or docs,
   (5) Batch grep/glob searches in a single call for efficiency,
   (6) Diagnose failed tool calls and validate workspace-relative vs absolute paths,
-  (7) Keep refactoring/annotation/analysis tasks from scope drift (skip unnecessary git/test exploration).
+  (7) Keep refactoring/annotation/analysis tasks from scope drift (skip unnecessary git/test exploration),
+  (8) Detect overthinking and break reasoning loops: stop exploring and report the blocker to the user instead of looping indefinitely.
   當執行相關行為或 when user mentions 時觸發（包含但不限於以下關鍵字或情境）：
   "行為標準化", "agent behavior standardization", "檔案讀寫/編輯", "避免非必要操作",
   "覆蓋檔案/檔案被更動", "亂碼/編碼問題", "單一事實來源/SSoT",
   "重複邏輯", "批次搜尋", "工具呼叫/工具呼叫失敗", "路徑查詢/解析/錯誤", "Permission denied",
   "查詢依賴", "查詢執行檔路徑", "查詢任何路徑或環境偵測", "查詢實作細節", "查詢API",
-  "環境設定", "執行指令", "git查詢", "scope drift", "避免多餘探索".
+  "環境設定", "執行指令", "git查詢", "scope drift", "避免多餘探索",
+  "過度思考", "overthinking", "思考過多輪", "探索迴圈", "陷入迴圈", "反覆嘗試",
+  "無法決定", "卡住", "卡關", "無決定性結果".
 tags:
   - agents/behavior
   - agents/guidelines
@@ -377,6 +380,58 @@ Agent 的最終報告必須建立在**成功驗證的工具結果**上。
 - **`skills/code-refactoring-expert-typescript`**：TypeScript / Node.js 專屬重構與設計指引（型別安全、精確型別、Single Source of Truth、非同步流程優化）。
 
 > 備註：上述兩個重構技能提供「如何正確重構」的具體方法；本節（第 8 節）則負責約束「重構時不該做的多餘探索」，兩者相輔相成。
+
+---
+
+## 9. 過度思考偵測與迴圈中斷
+
+目的：為第 8 節的探索紀律補上**終止條件（stopping criterion）**。第 8 節回答「不該探索什麼」，本節回答「**探索到什麼程度必須停止**」，避免 Agent 在無決定性結果時持續消耗輪次與 Token。
+
+### 9.1 過度思考的判定基準
+
+當思考或探索滿足下列任一條件時，即應判定為**過度思考（overthinking）**：
+
+- **輪次門檻** — 對同一問題思考、探索或嘗試達 **5～10 輪**後，依然沒有決定性結果或明確方向。
+- **無進展特徵** — 每輪得到的資訊不改變任何決策，或只是重複驗證已知事實、反覆確認相同假設。
+- **雜訊擴散** — 取得的資訊與任務目標無直接關聯，卻被拿來延伸推理（例如為猜測使用者意圖而查詢不相關的歷史、設定或實作細節）。
+
+**核心原則：輪次數是訊號，不是目標。** 遠早於門檻得到決定性結論時應立即行動；接近門檻仍無結論時，必須停止而非提高嘗試頻率。
+
+### 9.2 過度思考發生時的正確行為
+
+1. **立即收斂** — 回到任務目標本身，以現有已驗證的事實做出最佳判斷並行動；不得為了「更確定」而繼續探索。
+2. **隔離雜訊** — 將與目標無直接關聯的資訊排除出推理鏈；不因「順帶看到」的內容開啟新的調查分支。
+3. **接受不完全確定** — 在可行的多個選項中選擇合理的一個並明確說明理由，遠優於為追求完美答案而停滯。
+
+### 9.3 迴圈中斷與升級（報告使用者）
+
+**當Agent 陷入無法下決定的迴圈時，應停止探索並向使用者報告目前遭遇的問題，而不是無限地繼續進行探索。**
+
+- **觸發條件** — 已達輪次門檻仍無方向；或各選項反覆被自己推翻、形成「嘗試 → 失敗 → 換假設 → 再嘗試」的同質循環。
+- **報告內容** — 應包含：目前已知的事實、已排除的選項與原因、卡住的具體點（缺少什麼資訊或決策依據）、以及建議的處理方向（若有）。
+- **禁止行為** — 不得在無新證據的情況下重試相同方法；不得以「再查一下就好」為由延續已判定為過度思考的探索；不得因無法決策而自行收窄或擴張任務範圍。
+
+### 9.4 理想流程
+
+```text
+探索 / 思考一輪
+    ↓
+得到新事實？
+    ├─ 是 → 是否足以改變決策或達成結論？
+    │        ├─ 是 → 行動，結束該問題
+    │        └─ 否 → 記錄並繼續（輪次 +1）
+    └─ 否 → 屬於雜訊，丟棄，不延伸推理（輪次 +1）
+    ↓
+已達 5～10 輪門檻仍無決定性結果？
+    ├─ 否 → 回到流程開頭
+    └─ 是 → 停止探索 → 報告使用者（附 9.3 所列內容）
+```
+
+### 9.5 與操作限制技能的關係
+
+與第 8 節相同，本節定義**思考與停止紀律（WHY / HOW）**；`agent-operation-restrictions`「避免非必要行為」條目下的對應規則（WHAT）為其執行面。兩者互補：本節解釋「為什麼必須停」，操作限制列出「不該繼續做什麼」。
+
+> 參照：[agent-operation-restrictions](../agent-operation-restrictions/SKILL.md)
 
 ---
 

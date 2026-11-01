@@ -5,6 +5,7 @@ description: |-
   涵蓋指令執行規範包含但不限於（禁止 npx、cd 前置、>nul）、禁止自行管理依賴、禁止啟停伺服器、
   禁止 git 寫入操作、檔案搬移的正確方式，以及嚴禁 rm -rf 等破壞性刪除。
   另涵蓋：禁止編輯自動生成的產物、測試快照檔由框架管理不主動刪改、危險 BUG 不得擅自復現。
+  以及：過度思考（探索多輪無決定性結果）時禁止無限探索，必須停止並向使用者報告卡住的問題。
   本技能亦提供判斷準則：在執行任何行為前，先判斷該行為屬於「禁止事項」（需明確授權）或「非必要行為」（與任務無關即省略），再決定是否執行。
 
   當執行相關行為或 when user mentions 時觸發（包含但不限於以下關鍵字或情境）：
@@ -19,6 +20,7 @@ description: |-
   - 編輯自動生成產物、管理測試快照或復現危險 BUG
   - 型別檢查、測試或 pretest / pre hook，以及判斷是否需要執行
   - 判斷操作是否需要授權、被禁止、非必要或具副作用
+  - 過度思考、overthinking、探索迴圈、陷入迴圈、反覆嘗試無進展、無法決定、卡住、卡關、無決定性結果
 tags:
   - agents/rules
   - agents/restrictions
@@ -46,6 +48,7 @@ tags:
 9. **測試快照檔由框架管理** — 不主動刪除或編輯 snapshot；「更新快照」= 執行框架更新機制（`-u`）或修改測試程式碼，絕非手動編輯/刪除快照檔
 10. **危險 BUG 不得擅自復現** — 可能造成破壞性行為（汙染、刪檔）的 BUG，除非確保唯讀且經使用者許可，否則不復現
 11. **請避免執行非必要行為。** — 即使某項操作本身未被禁止，若與當前任務無關，仍不應執行，以免產生多餘的副作用、雜訊或資源浪費。
+12. **陷入探索迴圈時必須停止。** — 反覆嘗試仍無決定性結果（過度思考）時，禁止繼續無限探索；應停止並向使用者報告卡住的問題（詳見下方）。
 
 > 詳細禁止操作與授權判斷準則 → [forbidden-operations.md](./references/forbidden-operations.md)
 
@@ -108,6 +111,18 @@ tags:
 
 ---
 
+## 🚫 禁止無限探索（過度思考時必須停止）
+
+**當思考或探索達 5～10 輪仍無決定性結果，或陷入「嘗試 → 失敗 → 換假設 → 再嘗試」的同質迴圈時，必須停止探索並向使用者報告目前遭遇的問題，禁止無限地繼續探索。**
+
+- 停止後應以現有已驗證事實做出最佳判斷並行動，而非追求更確定。
+- 報告內容應包含：目前已知事實、已排除選項與原因、卡住的具體點、建議處理方向。
+- 禁止在無新證據的情況下重試相同方法，或以「再查一下」延續已判定為過度思考的探索。
+
+> 停止條件的判定基準、雜訊隔離與理想流程（WHY / HOW）→ [agent-behavior-standardization](../agent-behavior-standardization/SKILL.md) 第 9 節
+
+---
+
 ## 🚫 禁止濫用或頻繁執行測試
 
 **禁止濫用或頻繁執行測試。** 測試可用於驗證行為，但不應在一系列任務與動作中頻繁地一直執行測試。
@@ -167,4 +182,4 @@ tags:
 - ⚙️ **指令執行規則與正確/錯誤範例**：[command-execution-rules.md](./references/command-execution-rules.md)
 - 🚫 **禁止操作清單與授權判斷準則**：[forbidden-operations.md](./references/forbidden-operations.md)
 - 🔍 **避免非必要查詢行為（負面案例）**：[avoid-unnecessary-queries.md](./references/avoid-unnecessary-queries.md)
-- 🧭 **行為與範圍紀律（WHY/HOW）**：[agent-behavior-standardization](../agent-behavior-standardization/SKILL.md) — 本技能中的「避免非必要行為」「禁止濫用或頻繁執行測試」等規則，其背後的思考原則與 scope drift 案例，請參閱該技能第 8 節「任務範圍紀律」。
+- 🧭 **行為與範圍紀律（WHY/HOW）**：[agent-behavior-standardization](../agent-behavior-standardization/SKILL.md) — 本技能中的「避免非必要行為」「禁止無限探索」「禁止濫用或頻繁執行測試」等規則，其背後的思考原則與 scope drift 案例，請參閱該技能第 8 節「任務範圍紀律」與第 9 節「過度思考偵測與迴圈中斷」。
