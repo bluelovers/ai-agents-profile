@@ -212,12 +212,13 @@ Beyond adding comments, this skill decides *whether an existing comment should e
 
 ### 無意義註解（重複宣告、羅列結構）
 
-屬**無意義註解**的四類情形（不得新增，遇到既有者直接刪除）：
+屬**無意義註解**的五類情形（不得新增，遇到既有者直接刪除）：
 
 1. 僅重複宣告關鍵字本身（如 `/** 介面 */` + `interface`）
 2. 僅重複宣告語意（如 `/** 型別守衛 */` + `function isX(v): v is X`）
-3. 檔頭複述自身（把檔名、其直譯或路徑寫成檔頭第一行——與第 1 類同判定，只是重複對象從關鍵字換成檔名）
-4. 羅列應由代碼管理的宣告、描述檔案「長什麼樣」而非「為什麼存在」的檔頭註解（what 而非 why）
+3. 檔頭複述自身（把檔名、其直譯、路徑或 `@module <path>` 寫成檔頭——與第 1 類同判定，只是重複對象從關鍵字換成檔名／路徑；專案有明確工具規範者除外）
+4. 檔頭當目錄索引與成員介紹（列呼叫端使用清單、列 `export` 出口清單——前者 find-references 即時可得且迅速過期，後者由 `export` 與 IntelliSense 表達）
+5. 羅列應由代碼管理的宣告、描述檔案「長什麼樣」而非「為什麼存在」的檔頭註解（what 而非 why）
 
 ### 不良註解 (Bad Comments)
 
@@ -275,6 +276,7 @@ Beyond adding comments, this skill decides *whether an existing comment should e
 
 - **不得因檔案已有檔頭註解，就縮減、刪除或不再撰寫宣告與邏輯層級的註解**——檔頭讀者看不到、IntelliSense 也不提示成員。
 - **檔頭本身也不應過度瑣碎**：不羅列宣告清單、不寫易變明細，只寫檔案動機與職責（見 [無意義註解 — 案例三](references/meaningless-comments.md)）。
+- **檔頭是可選的，且不得為寫而寫**：沒有值得寫的檔案級脈絡（動機、不變量、邊界情況）就整個省略；為「補上檔頭」而複述檔名／路徑、列出口清單、湊用途句，屬無意義註解（見 [無意義註解 — 檔頭註解是可選的](references/meaningless-comments.md#檔頭註解是可選的-header-is-optional)）。
 - 宣告註解誤放檔頭位置的錯置修正，見 [錯誤註解案例 — 案例一](references/bad-comment-examples.md)。
 
 ## Comment Update Rules
