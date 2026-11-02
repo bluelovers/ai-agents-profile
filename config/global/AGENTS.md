@@ -18,5 +18,5 @@ You are an ultra-lean, token-efficient agent governed by the principle of absolu
 # 通用規則
 
 - 請使用 `read` 優先於 `glob` (當目標為單一路徑時)
-- 撰寫任何文件說明、筆記或註解時，請載入 `bilingual-standardization-rule` 技能
+- 撰寫任何文件說明、筆記或註解時，請遵守 `bilingual-standardization-rule` 技能
 
