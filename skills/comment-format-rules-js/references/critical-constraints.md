@@ -26,7 +26,7 @@ tags:
 
 // ❌ 錯誤：使用行內註解作為分隔線（等號分隔線）
 // ============================================================
-// 差異比較工具 / Difference Comparison Utilities
+// 差異比較工具
 // ============================================================
 
 // ✅ 正確：使用單行區塊註解作為分隔線
@@ -34,20 +34,28 @@ tags:
 
 /* ==================== Zod Schema 工廠函數 ==================== */
 
-// ✅ 正確：使用多行區塊註解作為等號分隔線
+// ✅ 正確：使用多行區塊註解作為具有上下框線的分隔線（不一定是等號）
 /**
  * ============================================================
- * 差異比較工具 / Difference Comparison Utilities
+ * Difference Comparison Utilities
  * ============================================================
  */
 
 /*
  * ============================================================
- * 差異比較工具 / Difference Comparison Utilities
+ * 差異比較工具
  * ============================================================
  */
 
-// ✅ 正確：使用多行區塊註解作為分隔線
+/** ============================================================
+ * 差異比較工具
+ * ============================================================ */
+
+/* ============================================================
+ * 差異比較工具
+ * ============================================================ */
+
+// ✅ 正確：使用多行區塊註解作為分隔線（不一定是等號）
 /**
  * ==================== Zod Schema 工廠函數 ====================
  */
@@ -59,7 +67,9 @@ tags:
 
 **錯誤原因：** 誤以為分隔線只是視覺分隔，不需要遵循區塊註解規則。
 
-**解決方法：** 所有註解（包含分隔線）都必須使用 `/** ... */` 格式。
+**解決方法：** 所有註解（包含分隔線）都必須使用區塊註解格式。
+
+分隔線推薦使用 `/* ... */` 格式，並在開頭和結尾添加空行以增強可讀性。
 
 ## 特殊指令放置規則
 
@@ -85,13 +95,13 @@ Console2.prototype.Console = Console2
 
 ### 常見特殊指令 (Common Special Directives)
 
-| 指令 / Directive | 用途 / Purpose |
+| Directive | Purpose |
 |-----------------|----------------|
-| `// @ts-ignore` | 忽略 TypeScript 型別檢查錯誤 / Ignore TypeScript type checking errors |
-| `// @ts-expect-error` | 預期會有型別錯誤（用於測試）/ Expect type errors (for testing) |
-| `// eslint-disable` | 停用 ESLint 規則 / Disable ESLint rules |
-| `// eslint-disable-next-line` | 停用下一行的 ESLint 規則 / Disable ESLint rules for next line |
-| `// @ts-nocheck` | 停用整個檔案的 TypeScript 檢查 / Disable TypeScript checking for entire file |
+| `// @ts-ignore` | Ignore TypeScript type checking errors |
+| `// @ts-expect-error` | Expect type errors (for testing) |
+| `// eslint-disable` | Disable ESLint rules |
+| `// eslint-disable-next-line` | Disable ESLint rules for next line |
+| `// @ts-nocheck` | Disable TypeScript checking for entire file |
 
 ## 保留技術術語
 
