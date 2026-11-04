@@ -90,29 +90,12 @@ Agent 在讀寫檔案或目錄時，**應優先使用具備的技能或內建環
 - 若某邏輯的內部實作需要在測試中被直接使用，或已被多個位置使用，不可複製該邏輯；應將其重構並抽離為可測試、可複用的共用單元。
 - 建立資料夾分類目錄時，同樣應避免建立過度侷限、未來無法複用的目錄名稱，也不得過度寬鬆而導致內容混雜；應依穩定且可擴展的職責或領域進行分類。
 
-### 實作範例
+### 架構與重構職責指向
 
-```typescript
-// ❌ 錯誤：各自維護相同邏輯
-// File A: user-service.ts
-function formatUserName(user: IUser): string {
-    return `${user.lastName} ${user.firstName}`;
-}
-// File B: profile-service.ts
-function formatUserName(user: IUser): string {
-    return `${user.lastName} ${user.firstName}`; // 重複邏輯
-}
+涉及具體的代碼重構、設計模式、單元職責劃分與 TypeScript 專屬型別抽象時，請參閱對應的專屬重構技能：
 
-// ✅ 正確：提取至共用工具函式
-// utils/format.ts
-/**
- * 格式化使用者全名
- * Format user full name
- */
-export function formatUserName(user: IUser): string {
-    return `${user.lastName} ${user.firstName}`;
-}
-```
+- **通用重構指引**：[code-refactoring-expert](../code-refactoring-expert/SKILL.md)（設計模式、回溯相容、增量變更）
+- **TypeScript / Node.js 專屬指引**：[code-refactoring-expert-typescript](../code-refactoring-expert-typescript/SKILL.zh.md)（型別安全、精確型別、Single Source of Truth 抽離實務）
 
 ---
 
@@ -327,6 +310,7 @@ Agent 的最終報告必須建立在**成功驗證的工具結果**上。
 
 - **指定範圍就是探索邊界** — 當使用者指定修改特定檔案或區塊時，嚴禁預先讀取、搜尋或檢查其他無關檔案、目錄或依賴項；預設指定的函式、變數、模組與路徑存在且正確，直接修改或輸出 Patch。
 - **既有代碼就是使用指南** — 直接依指定範圍內的 import、呼叫方式、型別與測試案例理解 API 和行為合約；不得為了「確認用法」「了解實作」「確保可行」而查詢無關實作細節、API、路徑或環境。僅實際遇錯、明確調查需求或必要資訊不足時，才做最小範圍查詢。
+- **黑盒思維與合約優先（Black-Box Abstraction）** — 外部模組與輔助函式視為黑盒，其型別簽章（Types / Signatures）與既有呼叫即為合約保證；思維與探索深度限制在當前檔案（Call-depth = 0），嚴禁為探究內部演算法或計算過程而循調用鏈跳轉追蹤。
 - 重構、註解、結構分析類任務，其 **Source of Truth 就是 Agent 被給定的檔案內容**，而非 Git 狀態。
 - `git diff` 只能說明 working tree 與 HEAD 的差異；`git log` 回答「這段 code 如何演變而來」。
 - 兩者都**無法幫助判斷「哪些邏輯重複」「哪些是共同 domain fact」**，故不應作為前置調查。
@@ -338,6 +322,7 @@ Agent 的最終報告必須建立在**成功驗證的工具結果**上。
 |------|------|------|
 | 閱讀指定 source code | 必要 | 只讀完成指定修改所需的內容 |
 | 預先探索無關檔案、目錄、依賴或 API | 不應該 | 既有代碼就是使用指南；實際遇錯或必要資訊不足時才做最小查詢 |
+| 跳轉追查外部函式或依賴內部實作 | 嚴禁 | 依賴黑盒原則（Call-depth = 0）；型別簽章即為最高合約 |
 | 比較兩個 implementation | 必要 | 找出重複事實 |
 | 設計 shared abstraction | 必要 | 抽離共同 domain fact |
 | 保留 intentional divergence | 必要 | 在 caller / 配置層保留刻意差異 |
