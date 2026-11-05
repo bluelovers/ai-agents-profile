@@ -1,13 +1,14 @@
 ---
 name: code-refactoring-expert-css
 description: |-
-  泛 CSS（Pure CSS / Less / SCSS / TailwindCSS / PostCSS ...）設計概念與重構/優化指南，
+  泛 CSS（Pure CSS / Less / SASS/SCSS / TailwindCSS / PostCSS ...）設計概念與重構/優化指南，
   聚焦單一事實來源 (Single Source of Truth, SSoT)、樣式可追溯性 (Traceability)
   與設計權杖 (Design Token) 階層化架構，並規範 var() Fallback 的允許範圍
-  （僅允許變數對變數備援；不可控外部來源變數例外允許常數備援）。
+  （僅允許變數對變數備援；禁的是硬編碼備援而非編譯期語法；已存在 CSS 自訂屬性時以 var() 引用為優先；
+  不可控外部來源變數例外允許常數備援）。
 
   當執行相關行為或使用者提及時觸發（包含但不限於以下關鍵字或情境）：
-  - "重構 CSS / SCSS / Less / TailwindCSS / PostCSS"
+  - "重構 CSS / SASS/SCSS / Less / TailwindCSS / PostCSS"
   - "CSS 設計概念 / 樣式優化 / 樣式重構"
   - "Design Token / 設計權杖 / Token 階層化"
   - "var() fallback / 備援值 / 硬編碼顏色與數值"
@@ -27,7 +28,7 @@ tags:
 
 # CSS 設計與重構專家 (Design & Refactoring Expert for CSS)
 
-適用於 泛 CSS、Pure CSS、Less、SCSS、TailwindCSS 與 PostCSS 的設計概念、重構與優化。
+適用於 泛 CSS、Pure CSS、Less、SASS/SCSS、TailwindCSS 與 PostCSS 的設計概念、重構與優化。
 
 > **雙重用途**：**重構現有樣式**（識別硬編碼值、重複定義、中斷的引用鏈）；**新功能設計參考**（建立 Token 階層、維持可追溯性）。
 
@@ -36,6 +37,7 @@ tags:
 1. **單一事實來源 (Single Source of Truth, SSoT)** — 色彩、字體、間距、層級 (z-index) 等視覺常數必須有唯一定義處；同一值散落多處各自維護即屬違規。
 2. **可追溯性 (Traceability)** — 從使用點出發，沿引用鏈（使用點 → 語意 Token → 基礎 Token → 定義檔）可回溯至唯一來源；使用點直接寫死值即中斷追溯。
 3. **Token 為強制依賴** — 全域設計權杖 (Design Token) 必須存在且正確，缺失屬配置錯誤，不得以 Fallback 掩蓋（外部不可控來源之例外見第 4 節）。
+4. **CSS 變數優先 (CSS Custom Property First)** — 已存在對應的 CSS 自訂屬性時，使用點必須以 `var()` 引用，不得以 Sass/Less 變數取代（除非有明確必要性理由）。
 
 > 📚 SSoT 與可追溯性的落地手法、違規樣態與重構檢查表：[CSS SSoT 與可追溯性落地指引](./references/css-ssot-traceability.md)
 
@@ -49,15 +51,29 @@ tags:
 
 ### 1. 核心原則 (Core Principle)
 
-* **嚴格禁止硬編碼備援**：絕對禁止使用任何靜態數值、字串、顏色碼或編譯期常數（如 `#{$font-primary}`）作為 `var()` 的備援值。缺少全域變數應視為配置錯誤，不得用硬編碼掩蓋。（本節約束**本專案可控**的全域／局部 Token；不可控外部來源見第 4 節例外。）
+* **嚴格禁止硬編碼備援**：絕對禁止使用任何靜態數值、字串、顏色碼或編譯期常數作為 `var()` 的**備援值**。缺少全域變數應視為配置錯誤，不得用硬編碼掩蓋。（本節約束**本專案可控**的全域／局部 Token；不可控外部來源見第 4 節例外。）
+  * ⚠️ **禁的是「硬編碼備援」，不是「編譯期語法」**：禁止對象是 fallback 位置的常數值（如 `var(--font-primary, #{$font-primary})` 中的 `#{$font-primary}`），**非禁止 Sass/Less 變數本身**。Sass 變數（`$*`）作為屬性值使用屬正常編譯期語法，兩者不可混淆。
 * **允許變數串聯備援**：**唯一允許的 fallback 形式，是另一個 CSS 變數 (Variable-to-Variable Fallback)**。這用於建立 Token 的階層、語意化覆寫或降級繼承。
+* **CSS 變數優先 (CSS Custom Property First)**：當語意值**已存在對應的 CSS 自訂屬性**時，使用點必須以 `var()` 引用，**不得以 Sass/Less 變數取代**（除非有明確必要性理由）。
+
+```scss
+// ✅ ok：存在對應 CSS 自訂屬性時，以 var() 引用
+color: var(--color-text-primary);
+
+// ✅ ok：該值無對應 CSS 自訂屬性，直接使用編譯期變數（正常語法，非硬編碼備援）
+background-color: $bg-color-primary;
+
+// ❌ not ok when --color-text-primary exists：
+// 已定義對應的 CSS 自訂屬性，卻以 Sass 變數取代，繞過 Token 語意
+color: $text-color-primary;
+```
 
 ### 2. 違規寫法（嚴格禁止）
 
 任何使用靜態常數作為備援的寫法，均屬違規：
 
 ```scss
-/* ❌ 違規：使用硬編碼字串或 Sass 變數作為備援 */
+/* ❌ 違規：Sass 變數出現在 fallback 位置（違規在於「硬編碼備援」，非 Sass 語法本身） */
 font-family: var(--font-primary, 'メイリオ', Meiryo, sans-serif);
 font-family: var(--font-primary, #{$font-primary});
 color: var(--main-color, #ff0000);
