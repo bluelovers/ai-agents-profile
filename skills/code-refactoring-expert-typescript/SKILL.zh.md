@@ -850,6 +850,48 @@ enum EnumDatasetType {
 
 > 📚 **完整規則與 ❌/✅ 對照範例、約束（可信/不可信邊界、`const enum` 執行期注意事項、窮舉 `switch` + `never` 為何僅限封閉集合）**：[邊界字串與 Enum 互操作與未知值設計](./references/enum-boundary-interop.md)
 
+#### 🚫 硬性規則：不得濫加 `| null` —— `?:` / `| undefined` 才是預設的選用性模型
+
+除非有確實會同時消費兩個缺席標記的**特定意圖**——例如刻意同時使用 `undefined` 與 `null` 來區別語意與邏輯（`undefined` = 從未提供、`null` = 被明確清除 / 確認為空）——否則凡 `?:` 或 `| undefined` 就能表達的定義，**不得**再刻意多加一個 `| null`。
+
+**為什麼：** 在沒有意圖區分兩者的情況下，`| null` 只是把「缺席」的面向加倍。每個讀取端都要記得 `x === undefined` 攔不到 `null`（反之亦然——型別比對錯誤時編譯期就會報錯），迫使所有呼叫點改用 `== null`，而任何遺漏該判斷的位置就會把呼叫端視為缺席的值漏出去。多一個標記是成本而非資訊，必須以文件化的意圖來支付。
+
+**適用於：** 可選屬性、參數、回傳值與邊界資料
+
+```typescript
+// ❌ 濫加 `| null`：沒有任何意圖區分 `null` 與「未提供」
+interface ISearchForm {
+    keyword?: string;
+    page?: number;
+    sort: string | null; // 與 `sort?: string` 意義相同，但所有消費端都要為兩個標記买单
+}
+
+function buildQuery(form: ISearchForm): string {
+    if (form.sort === undefined) return DEFAULT_SORT; // ❌ `null` 從這個防線漏過
+    return form.sort;
+}
+
+// ✅ 正確（預設）：單一缺席標記 —— `?:` / `| undefined` 就足夠
+interface ISearchForm {
+    keyword?: string;
+    page?: number;
+    sort?: string;
+}
+
+function buildQuery(form: ISearchForm): string {
+    if (form.sort === undefined) return DEFAULT_SORT;
+    return form.sort;
+}
+
+// ✅ 正確（特定意圖）：兩個標記都存在，因為程式碼確實分別消費它們
+interface IProfileSetting {
+    /** `undefined` = 從未儲存；`null` = 使用者主動清除 */
+    displayName?: string | null;
+}
+```
+
+> 📌 **豁免：** 外部持有的契約確實產出 `null`（第三方 API 資料、他處產生的 JSON）時，只有在程式碼真的消費該區別才算特定意圖；否則應在邊界正規化為 `undefined`，內部定義維持 `?:` / `| undefined`。
+
 #### ⚠️ 完整重構：比對值必須一併更新，而非只改型別簽名
 
 將字串型別遷移為 Enum 時，**必須同步更新所有比對值**（`switch`/`case`、`===`、`==`、物件鍵等）以引用 Enum 成員。若只修改參數/回傳值的型別簽名，而分支中仍保留字串字面值，則屬於「半吊子重構」——程式碼雖仍可編譯（因 Enum 的字串值相符），但卻失去了當初遷移所追求的 IDE 輔助、重新命名自動傳播與拼寫錯誤攔截能力。
@@ -1321,6 +1363,7 @@ if (user.isActive && subscription.status === 'active' &&
 - [ ] Interface 遵循 SSoT 原則與類型可追溯性
 - [ ] 非同步流程可獨立測試
 - [ ] 資源釋放邏輯正確
+- [ ] 每個 `| null` 都有文件化的特殊意圖以區別 `undefined`；否則定義維持 `?:` / `| undefined`
 ```
 
 ---

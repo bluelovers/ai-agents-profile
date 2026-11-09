@@ -871,6 +871,48 @@ When the special intent is genuine external interoperability — a component pro
 
 > 📚 **Full rules with ❌/✅ examples and constraints (trusted vs untrusted boundaries, `const enum` runtime caveat, why exhaustive `switch` + `never` is closed-set-only)**: [Boundary String ↔ Enum Interoperability & Unknown-Value Design](./references/enum-boundary-interop.md)
 
+#### 🚫 Hard Rule: No Gratuitous `| null` — `?:` / `| undefined` Is the Default Optionality Model
+
+Unless there is a specific intent that genuinely consumes both absent-markers — for example, deliberately using `undefined` **and** `null` to distinguish semantics/logic (`undefined` = never provided, `null` = explicitly cleared / confirmed empty) — a definition that `?:` or `| undefined` can already express **must not** be widened with an extra `| null`.
+
+**Why:** without an intent that distinguishes them, `| null` only doubles the "absent" surface. Every read site must remember that `x === undefined` does not catch `null` (and vice versa — TS rejects the mismatched comparison at compile time), so callers are pushed into `== null` everywhere, and any site that forgets leaks a value the callers treat as absent. An extra marker is cost, not information; it must be paid for with a documented intent.
+
+**Applies to:** optional properties, parameters, return values, and boundary payloads
+
+```typescript
+// ❌ Gratuitous `| null`: nothing distinguishes `null` from "not provided"
+interface ISearchForm {
+    keyword?: string;
+    page?: number;
+    sort: string | null; // same meaning as `sort?: string`, but every consumer now pays for two markers
+}
+
+function buildQuery(form: ISearchForm): string {
+    if (form.sort === undefined) return DEFAULT_SORT; // ❌ `null` slips past this guard
+    return form.sort;
+}
+
+// ✅ Correct (default): a single absent-marker — `?:` / `| undefined` is enough
+interface ISearchForm {
+    keyword?: string;
+    page?: number;
+    sort?: string;
+}
+
+function buildQuery(form: ISearchForm): string {
+    if (form.sort === undefined) return DEFAULT_SORT;
+    return form.sort;
+}
+
+// ✅ Correct (special intent): both markers exist because the code consumes them distinctly
+interface IProfileSetting {
+    /** `undefined` = never saved; `null` = the user explicitly cleared it */
+    displayName?: string | null;
+}
+```
+
+> 📌 **Exemption:** an externally owned contract that genuinely emits `null` (third-party API payload, JSON produced elsewhere) counts as a special intent only when that distinction is actually consumed in code. Otherwise normalize it to `undefined` at the boundary and keep the internal definition `?:` / `| undefined`.
+
 #### ⚠️ Complete Refactoring: Update All Comparison Sites, Not Just the Type Signature
 
 When migrating a string-based type to an Enum, **you must update every comparison value** (`switch`/`case`, `===`, `==`, object keys, etc.) to reference the Enum member. Changing only the parameter/return type signature while leaving literal strings in the branches is a "half-refactored" state — the code still compiles (because the Enum's string value matches), but you lose the very IDE safety, rename propagation, and typo-catching that motivated the migration.
@@ -1321,6 +1363,7 @@ When proposing refactoring suggestions:
 - [ ] Interfaces follow SSoT principle and type traceability
 - [ ] Async flows can be independently tested
 - [ ] Resource release logic is correct
+- [ ] Every `| null` documents a special intent that distinguishes it from `undefined`; otherwise the definition stays `?:` / `| undefined`
 ```
 
 ---
