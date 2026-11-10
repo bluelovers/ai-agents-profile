@@ -16,10 +16,9 @@ description: >-
   (10) "整合測試",
   (11) "檔案內容驗證" / 避免非必要的檔案讀寫.
 
-  Defines guidelines for writing and organizing test files, including test
-  location patterns, naming conventions, snapshot testing, fixtures management,
-  temporary file handling, and in-memory content verification (avoiding
-  unnecessary file I/O).
+  Defines guidelines for writing and organizing test files,
+  including test location patterns, naming conventions, snapshot testing, fixtures management,
+  temporary file handling, and in-memory content verification (avoiding unnecessary file I/O).
 tags:
   - agents/skills
   - agents/guidelines
