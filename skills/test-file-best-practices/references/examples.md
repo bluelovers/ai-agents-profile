@@ -17,26 +17,56 @@ tags:
 
 ---
 
-## Snapshot 測試優先原則
+## Snapshot 測試原則：快照與斷言互補
 
-### 基本 Snapshot 使用
+**不得將快照視為斷言而捨棄斷言，亦不得因具有斷言而捨棄快照。** 除特定意圖（如利用快照了解實際產出結果）外，快照應搭配進行必要性的斷言（優先使用部分斷言對關注點進行斷言，而非全量逐欄斷言）。
+
+### 快照與斷言搭配
 
 ```typescript
-// ❌ 不良範例：手動驗證多個欄位
+// ❌ 不良範例 1：將快照視為斷言而捨棄斷言（缺乏核心關注點驗證，盲目更新快照即會靜默失效）
+test('should parse configuration correctly', () => {
+    const result = parseConfig(rawConfig);
+    expect(result).toMatchSnapshot(); // 無任何核心契約斷言
+});
+
+// ❌ 不良範例 2：因有斷言而捨棄快照，且進行全量逐欄斷言（重複繁瑣且遺漏整體結構性保護）
 test('should parse configuration correctly', () => {
     const result = parseConfig(rawConfig);
     expect(result.name).toBe('config');
     expect(result.version).toBe('1.0.0');
     expect(result.enabled).toBe(true);
+    expect(result.options).toEqual({ timeout: 5000 });
 });
 
-// ✅ 良好範例：使用 toMatchSnapshot 驗證複雜輸出
+// ✅ 良好範例：使用 Property Matchers 針對關注點進行部分斷言 + 快照保護全量結構
 test('should parse configuration correctly', () => {
     const result = parseConfig(rawConfig);
+    expect(result).toMatchSnapshot({
+        name: 'config',
+        version: '1.0.0',
+    });
+});
+
+// ✅ 普通範例：獨立部分斷言核心欄位 + 快照保護完整輸出
+test('should process user data', () => {
+    const result = processUserData(rawUser);
+
+    // 部分斷言：明確鎖定業務核心關注點
+    expect(result.status).toBe('active');
+
+    // 快照比對：守護完整輸出結構
     expect(result).toMatchSnapshot();
 });
 
-// ✅ 使用 toThrowErrorMatchingSnapshot 驗證錯誤
+// ✅ 良好範例（特定意圖例外）：純粹利用快照了解實際產出結果
+test('探索第三方套件回傳的實例結構（特定意圖）', () => {
+    const instance = createThirdPartyClient();
+    // 意圖：非驗證業務邏輯，而是記錄並了解第三方實例的結構全貌
+    expect(instance).toMatchSnapshot();
+});
+
+// ✅ 使用 toThrowErrorMatchingSnapshot 驗證錯誤訊息快照
 test('should throw error for invalid input', () => {
     expect(() => validateInput(invalidInput)).toThrowErrorMatchingSnapshot();
 });

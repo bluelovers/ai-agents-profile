@@ -3,7 +3,7 @@ name: test-file-best-practices-extension
 description: |-
   擴充 `skills/test-file-best-practices/SKILL.md` 的測試規則技能，處理測試語意、已知缺陷、非阻塞失敗與框架差異。
 
-  當使用者提及以下關鍵字或情境時觸發：
+  當執行相關任務或用戶請求時使用此技能：
   - test-file-best-practices
   - 測試語意
   - test.todo

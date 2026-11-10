@@ -2,11 +2,8 @@
 description: >-
   測試框架相容性與 API 對應：Jest / Vitest / Bun / Node.js(node:test) 四框架的
   測試檔命名規則與預設匹配模式、測試檔 Header（含 Jest v30 移除 toThrowError、
-  Vitest toThrowError 已棄用）、matcher 與 t.assert 的 API 對應表
-  （含 toThrow error 參數形式對應、toThrowErrorMatchingSnapshot / toMatchSnapshot 的 Node 近似
-  與封裝 helper 的共用原則、Strict/Legacy 模式）、
-  命令列參數對應表（覆蓋率、Watch、快照建立／更新、依名稱／檔案篩選），
-  以及各框架的 Mock、Snapshot 差異與危險注意事項
+  Vitest toThrowError 已棄用）、常用命令列參數對照、matcher 與 API 對應表，
+  以及各框架注意事項與危險注意事項
   （Bun matcher：property matcher / toMatchObject 比對後可能改寫原物件）。
 tags:
   - documentation/references
@@ -168,16 +165,8 @@ import { describe, expect, it, test, beforeEach, afterEach, mock } from "bun:tes
 import { afterEach, beforeEach, describe, it, test, type TestContext } from 'node:test';
 ```
 
-- **強制使用 `t.assert` 規範**：在測試中，除非有**不可抗的環境因素**、**相容性問題**或**特定意圖**以外，否則**應一律使用 `t.assert` 而非 `node:assert/strict`**（亦無需在 Header 額外匯入 `node:assert/strict`）。
-  - **斷言計數追蹤（Assertion Count）**：`t.assert` 與當前測試上下文綁定，會被執行器計入斷言數，對應 Jest 回報的斷言數與 plan 檢核；直接使用獨立的 `node:assert/strict` 則無法被執行器統計。
-  - **子測試隔離與診斷**：`t.assert` 能精確將失敗歸屬至當前子測試或測試步驟，並提供完整診斷資訊。
-  - **允許使用 `node:assert/strict` 的三大例外**：
-    1. *不可抗的環境因素*：執行於非測試回呼上下文（如獨立腳本、模組頂層前置檢查），或舊版環境不支援 `t.assert`。
-    2. *相容性問題*：未重構注入 `t: test.TestContext` 的共用函式庫或外部 helper。
-    3. *特定意圖*：測試目標本身即是斷言庫拋錯行為或原生斷言實例。
-- **範例回呼參數一律標註 `t: test.TestContext`**：部分編輯器（如 VSCode / WebStorm / TypeScript LSP）對未標註型別的回呼中呼叫 `t.assert.*` 會報錯或遺失自動補完（tsx 執行不受影響），顯式標註後即可正常推導。
-- `t.assert` 內含 Legacy 與 Strict 兩系方法，一律呼叫 Strict 系（`t.assert.strictEqual` 等，詳見下方「Strict / Legacy 模式」）。
-- 需要 Mock 時，於測試回呼中使用測試上下文 `t.mock.fn()` / `t.mock.method()`。
+- **強制使用 `t.assert` 與回呼型別約束**：在測試中除非特殊例外，一律使用 `t.assert`，回呼參數標註 `t: test.TestContext`。詳細規範與三大例外情境請參閱 [test-convert-to-node-test](../../test-convert-to-node-test/SKILL.md)。
+- **Mock 支援**：需要 Mock 時使用測試上下文 `t.mock.fn()` / `t.mock.method()`，跨框架詳細規範請參閱 [test-file-best-practices-mock](../../test-file-best-practices-mock/SKILL.md)。
 
 ---
 
@@ -224,149 +213,9 @@ import { afterEach, beforeEach, describe, it, test, type TestContext } from 'nod
 - **Bun 目標相容 Jest 但未實作全部**：`toContain` / `toContainEqual` 建議改用 `expect.arrayContaining()`
 - **Vitest 幾乎為 Jest 的 drop-in**：matcher 與 snapshot 用法相同，僅 Mock 命名空間由 `jest.*` 改為 `vi.*`
 
-#### node:assert 的 Strict / Legacy 模式 (Strict vs Legacy Mode)
-
-**`t.assert` 內含 Legacy 與 Strict 兩系方法，除非有特殊需求，否則一律呼叫 Strict 系方法（`t.assert.strictEqual` 等），避免 Legacy 的鬆散比對。**
-
-- Jest `toEqual` 的寬鬆度較接近 Legacy 模式，但兩者規則不同（如 `undefined` 屬性、類別），**不可直接等同**，近似時一律以 `t.assert.deepStrictEqual` 為準
-- 需要「回傳布林值」而非丟例外的深度比對時，改用 `node:util` 的 `isDeepStrictEqual(val1, val2[, options])`
-  - 參數 `{ skipPrototype: true }`（v24.9.0+）可略過 prototype / constructor 比較，在比對「不同類別但結構相同」的物件時較接近 Jest `toEqual`；但仍會比對 `undefined` 屬性，**不完全等價**
-
-#### `toThrow` / `rejects` 的 error 參數對應 (Error Parameter Mapping)
-
-**兩者接受的形式不完全相同，字串與 RegExp 的語意尤其容易踩坑。**
-
-| Jest / Vitest / Bun `toThrow(...)` 傳入 | Node `t.assert.throws(fn, error)` 對應 | 說明 |
-|------------------------------------------|-------------------------------------|------|
-| `toThrow(TypeError)`（error class） | ✅ `t.assert.throws(fn, TypeError)` | 同為建構子比對 |
-| `toThrow(/regex/)` | ⚠️ `t.assert.throws(fn, /^Error: Wrong value$/)` | **Node 比對 `error.toString()`，需含 error name**；Jest 只比對 `error.message` |
-| `toThrow('substring')`（字串） | ⚠️ `t.assert.throws(fn, { message: /substring/ })` | Node 不接受字串；改用驗證物件內的 RegExp 做子串比對 |
-| `toThrow(expect.objectContaining({...}))` | ✅ `t.assert.throws(fn, { ... })` | 驗證物件只列出要比對的屬性；**巢狀物件屬性須齊全**，且巢狀屬性不可用 RegExp |
-| `toThrow((e) => boolean)`（驗證函式） | ✅ `t.assert.throws(fn, (e) => true)` | 回傳 truthy 即通過；下方 `toThrowErrorMatchingSnapshot` 近似即以此為基礎 |
-| `.rejects.toThrow(...)` | ✅ `await t.assert.rejects(asyncFn, ...)` | `error` 參數形式同上：`Class` / `RegExp` / `Function` / `Object` / `Error` |
-
-### Jest-like API 的 Node 近似實作 (Node Approximation)
-
-> 💡 **專屬技能指引**：將其他測試框架（Jest / Vitest / Bun / Mocha 等）轉換與遷移為 Node.js 原生測試（`node:test` + `t.assert`）的完整規範、Matcher 遷移與封裝 helper 實作，請參閱專屬技能 [test-convert-to-node-test](../../test-convert-to-node-test/SKILL.md)。
-
-#### `toMatchSnapshot`
-
-**Node 沒有 property matcher 參數，Jest 的 `toMatchSnapshot({ 指定欄位 })` 需以「全值快照」＋「部分比對」兩者並用近似。**
-
-> ⚠️ `t.assert.snapshot()` 不支援 circular structure，會拋出 `TypeError: Converting circular structure to JSON`。
-
-```typescript
-// ✅ Jest / Vitest：全值快照，同時鎖定指定欄位的值
-test('version output', () =>
-{
-	expect(actual).toMatchSnapshot({
-		versionOld: '1.2.3',
-		versionNew: '2.0.0',
-	});
-});
-```
-
-```typescript
-// ✅ Node.js 直接寫法：t.assert.snapshot()（全值快照，v22.3.0+）
-//          + t.assert.partialDeepStrictEqual()（指定欄位，v22.13.0+ / v23.4.0+，v24.0.0 起 Stable）
-test('version output', (t: test.TestContext) =>
-{
-	t.assert.snapshot(actual);
-	t.assert.partialDeepStrictEqual(actual, {
-		versionOld: '1.2.3',
-		versionNew: '2.0.0',
-	});
-});
-```
-
-**同理，可封裝成 helper，讓測試寫法貼近 Jest：**
-
-```typescript
-export function toMatchSnapshot<T>(t: test.TestContext, actual: T, expectedPartial?: Partial<T>)
-{
-	t.assert.snapshot(actual);
-
-	// 指定欄位驗證，近似 Jest 的 property matcher
-	if (expectedPartial !== undefined)
-	{
-		t.assert.partialDeepStrictEqual(actual, expectedPartial);
-	}
-}
-```
-
-```typescript
-// ✅ 封裝後（推薦）：用法與 Jest 的 toMatchSnapshot 對齊
-test('version output', (t: test.TestContext) =>
-{
-	toMatchSnapshot(t, actual);
-	toMatchSnapshot(t, actual, { versionOld: '1.2.3', versionNew: '2.0.0' });
-});
-```
-
-> 📌 此類封裝請以**公開共用模組**分享，勿在個別測試檔各自複製一份，見下方「封裝近似實作的共享原則」。
-
-| 職責 | Jest / Vitest / Bun | Node.js（`node:test`） |
-|------|---------------------|------------------------|
-| 全值結構快照 | `toMatchSnapshot()` | `t.assert.snapshot()` |
-| 指定欄位的值 | property matcher 參數 | `t.assert.partialDeepStrictEqual()` |
-
-> ⚠️ 快照建立／更新的命令列參數見上方「命令列參數對應表」。
-
-#### `toThrowErrorMatchingSnapshot`
-
-**Jest 的 `toThrowErrorMatchingSnapshot()` 一次完成兩件事：驗證「會拋錯」＋寫入「錯誤訊息快照」。Node 需以 `t.assert.throws()` 的「驗證函式」在其中呼叫 `t.assert.snapshot()`，回傳 `true` 讓 `throws` 斷言通過。**
-
-```typescript
-export function _errorSnapshotSerializerToObject(err: any)
-{
-	return {
-		[err.name ?? 'Unnamed Error']: err.message,
-	};
-}
-
-export function _errorSnapshotSerializerToMessageOnly(err: any)
-{
-	return err.message;
-}
-
-export function toThrowErrorMatchingSnapshot(t: test.TestContext, block: () => unknown, message?: string)
-{
-	t.assert.throws(block, (err: any) =>
-	{
-		/**
-		 * 可以根據需求調整 snapshot 的格式
-		 *
-		 * TODO: add message/error check
-		 */
-		t.assert.snapshot(_errorSnapshotSerializerToObject(err));
-		return true;
-	});
-}
-```
-
-**要點：**
-
-- **快照時機在驗證函式內**：`t.assert.throws(fn, error)` 的 `error` 若為函式，會以該函式驗證錯誤；在其中呼叫 `t.assert.snapshot()` 即可序列化並寫入快照檔
-- **回傳 `true` = 驗證通過**：回傳 falsy 則 `t.assert.throws` 斷言失敗
-- **serializer 可客製**：`{ [err.name]: err.message }` 保留錯誤類型（快照鍵為錯誤名稱）；`_errorSnapshotSerializerToMessageOnly()` 只比對訊息，較接近 Jest 快照的預設內容
-- **`message` 參數與 `TODO` 是預留擴充點**：需一併驗證錯誤型別／訊息時，於函式內補 `t.assert.strictEqual(err.name, 'TypeError')`，或改用驗證物件形式 `t.assert.throws(block, { name: 'TypeError', message: /pattern/ })`
-
-### 封裝近似實作的共享原則 (Share Wrapped Helpers)
-
-**包含但不限於上述 `toMatchSnapshot`、`toThrowErrorMatchingSnapshot` 這類 helper，必須以「公開共用模組」統一實作並對外匯出；禁止在個別測試檔案各自複製一份——否則同一段邏輯存在多份，違反單一事實來源（SSoT）。**
-
-```typescript
-// ✅ 單一來源：統一寫在共用模組（如 test-utils/snapshot.ts）並 export，所有測試檔從此入口匯入
-export { toMatchSnapshot, toThrowErrorMatchingSnapshot } from './snapshot';
-```
-
-- **放哪**：`<test-root>/test-utils/`、`<test-root>/helpers/`、`<test-root>/lib/` 等共用目錄，以 `export` 公開，測試檔一律從該入口匯入
-- **違反的後果**：各檔的 serializer 格式、欄位檢查有無不一致，**同一段斷言在不同檔案得到不同結果**；日後修正 helper 無法同步，測試可信度崩塌
-- **抽離時機**：相似的邏輯**重複出現第 2 次**就抽離到共用模組（以邏輯重複次數為準，而非出現的檔案數）
-
-### 相關實作框架
-
-- [node-test-expect](https://github.com/fracabu/node-test-expect) - Jest-like expect assertions for Node.js native test runner `import { expect } from 'node-test-expect';`
+> 💡 **專屬技能指引**：
+> - **Node.js 原生測試深入對應**：關於 `t.assert` 的 Strict vs Legacy 模式、`toThrow` / `rejects` 錯誤參數比對規則，以及 Jest-like API（`toMatchSnapshot` / `toThrowErrorMatchingSnapshot`）的 Node 近似實作與封裝 Helper，請參閱專屬技能 [test-convert-to-node-test](../../test-convert-to-node-test/SKILL.md)。
+> - **跨框架 Mock 與系統資源隔離**：關於 Jest / Vitest / Bun / Node.js 的 Mock API 詳細對照、Fake Timers、環境變數與網路請求隔離，請參閱專屬技能 [test-file-best-practices-mock](../../test-file-best-practices-mock/SKILL.md)。
 
 ---
 

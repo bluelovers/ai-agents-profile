@@ -3,7 +3,7 @@ name: test-file-best-practices
 description: >-
   測試檔案最佳實踐規範。
 
-  Use when users request
+  當執行相關任務或用戶請求時使用此技能：
   (1) Testing best practices,
   (2) Test file organization,
   (3) "測試檔案規範",
@@ -171,9 +171,32 @@ describe('UserService.update', () => { /* 相關測試 */ });
 
 ---
 
-### 4. Snapshot 測試優先原則 / Snapshot Testing Priority
+### 4. Snapshot 測試原則 / Snapshot Testing Principles
 
-**在結果可控的情況下，優先使用 snapshot 測試。**
+**在結果可控的情況下，優先使用 snapshot 測試，並與關鍵斷言相輔相成。**
+
+#### 快照與斷言互補原則：不得偏廢 / Complementary Snapshots & Assertions
+
+**不得將快照視為斷言而捨棄斷言，亦不得因具有斷言而捨棄快照。**
+
+快照與明確斷言各司其職，兩者相輔相成，不可偏廢：
+
+1. **不得將快照視為斷言而捨棄斷言**
+   - 快照記錄的是回傳值全貌或走訪結構。若無明確斷言鎖定核心契約，快照一旦隨實作變更而重新產生（如執行 `--updateSnapshot`），開發者極易盲目接受更新，導致核心業務邏輯的實質錯誤被靜默放行。
+   - 測試必須對受測目標的核心行為與關鍵關注點提供明確斷言。
+
+2. **不得因具有斷言而捨棄快照**
+   - 明確斷言通常僅驗證少數預期的欄位，容易遺漏非預期的結構變更、新增/遺失的副作用欄位或底層型別破壞。
+   - 快照負責守護資料結構的整體輪廓與防止未預期的回歸（Regression Detection）。
+
+3. **特定意圖的例外情境**
+   - 僅在具有**明確特定意圖**時，才允許單獨使用快照而不搭配核心斷言，例如：
+     - **利用快照了解實際產出結果**（探索性測試、初次研究未知第三方套件的實例結構、記錄複雜黑盒輸出的演變過程）。
+
+4. **進行必要性斷言：優先使用部分斷言**
+   - 當快照與斷言並行時，**應優先使用部分斷言（針對關注點進行斷言），而非全量斷言**：
+     - **聚焦關注點**：針對本次測試真正關心的屬性或邊界條件進行精確驗證（如 `expect(res.status).toBe(200)` 或使用 Property Matchers）。
+     - **避免全量重複**：禁止手動對物件的所有屬性逐一進行全量深層斷言；全量結構的比對應交由快照保護，避免產生冗長雜訊與過度脆弱的維護成本。
 
 #### 適用場景
 
@@ -190,10 +213,49 @@ describe('UserService.update', () => { /* 相關測試 */ });
 #### 使用範例
 
 ```typescript
-// ✅ 使用 toMatchSnapshot 驗證複雜輸出
+// ❌ 不良範例 1：將快照視為斷言而捨棄斷言（缺乏核心關注點驗證，盲目更新快照即會靜默失效）
 test('should parse configuration correctly', () => {
 	const result = parseConfig(rawConfig);
+	expect(result).toMatchSnapshot(); // 無任何業務關注點斷言
+});
+
+// ❌ 不良範例 2：因有斷言而捨棄快照，且進行全量逐欄斷言產生大量雜訊
+test('should parse configuration correctly', () => {
+	const result = parseConfig(rawConfig);
+	expect(result.name).toBe('config');
+	expect(result.version).toBe('1.0.0');
+	expect(result.enabled).toBe(true);
+	expect(result.rules).toEqual(['rule1', 'rule2']);
+	expect(result.createdAt).toBeDefined();
+	// 遺漏結構快照，且欄位繁多時維護成本極高
+});
+
+// ✅ 良好範例：使用 Property Matchers 針對關注點進行部分斷言 + 快照保護全量結構
+test('should parse configuration correctly', () => {
+	const result = parseConfig(rawConfig);
+	expect(result).toMatchSnapshot({
+		name: 'config',
+		version: '1.0.0',
+	});
+});
+
+// ✅ 良好範例：獨立部分斷言關注點 + 快照守護完整輸出
+test('should create order successfully', async () => {
+	const result = await orderService.createOrder(input);
+
+	// 部分斷言：明確鎖定核心契約
+	expect(result.status).toBe('CREATED');
+	expect(result.total).toBe(100);
+
+	// 快照比對：守護完整輸出結構
 	expect(result).toMatchSnapshot();
+});
+
+// ✅ 良好範例（特定意圖例外）：純粹利用快照了解實際產出結果
+test('探索第三方套件回傳的實例結構（特定意圖）', () => {
+	const instance = createThirdPartyClient();
+	// 意圖：非驗證業務邏輯，而是記錄並了解第三方實例的結構全貌
+	expect(instance).toMatchSnapshot();
 });
 
 // ✅ 使用 toThrowErrorMatchingSnapshot 驗證錯誤
@@ -232,10 +294,12 @@ expect(result).toMatchSnapshot({
 
 #### 注意事項
 
+- **不得將快照視為斷言而捨棄斷言**：核心關注點必須有明確斷言或 property matchers 保護，防止 `--updateSnapshot` 盲目更新
+- **不得因具有斷言而捨棄快照**：除特定意圖外，應讓快照承擔全量結構檢測，斷言則專注於關注點（優先使用部分斷言而非全量斷言）
 - Snapshot 應定期審查，避免過時或錯誤的 snapshot 被接受
-- 對於動態資料（如時間戳、隨機 ID），應先處理再比對
-- 避免過度使用 snapshot，簡單的值比對仍使用傳統 matcher
-- 重要欄位應使用 property matchers 明確驗證，而非完全依賴 snapshot
+- 對於動態資料（如時間戳、隨機 ID），應先處理或使用 Asymmetric matcher 再比對
+- 避免過度使用 snapshot，簡單的單純純量值比對仍使用傳統 matcher
+- 重要欄位應使用 property matchers 或部分斷言明確驗證，而非完全依賴 snapshot
 - 發生錯誤時應能輕鬆比對錯誤的值與鍵值，了解是哪一個鍵值不正確
 - 更多 API 重構範例（數值、布林、字串、陣列、型別、Promise、Mock 等）請參閱 [references/examples.md](./references/examples.md)
 
