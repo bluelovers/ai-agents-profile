@@ -1,5 +1,5 @@
 ---
-name: test-js-mock
+name: test-file-best-practices-mock
 description: 使用 Jest 模擬 Node.js 內建模組（如 fs、path 等）的技能。當測試需要隔離檔案系統操作或進行安全的測試時使用此技能。啟動條件：(1) Mock fs 模組 / Mock fs module (2) Jest Mock 檔案系統 / Jest Mock file system (3) 模擬 Node.js 內建模組 / Mock Node.js built-in modules (4) jest.mock 使用教學 / jest.mock usage guide (5) 使用 memfs-extra 模擬 fs / Use memfs-extra to mock fs (6) 記憶體檔案系統測試 / In-memory file system testing (7) Mock fs 測試 / Mock fs test (8) 隔離檔案系統測試 / Isolated file system testing (9) 安全的檔案系統操作 / Safe file system operations (10) Jest 虛擬檔案 / Jest virtual file system
 compatibility: opencode
 metadata:
