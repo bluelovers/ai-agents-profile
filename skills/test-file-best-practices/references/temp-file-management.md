@@ -58,7 +58,7 @@ const __VIRTUAL_GITIGNORE = path.join(__TEST_TEMP, 'virtual/.gitignore');
 
 3. **主動接管 fs 方法** - Mock 應採用能主動接管 fs 方法的方式（如 `jest.mock('fs')`），而非直接操作 mock fs 物件。因為 fs 操作可能存在於原始邏輯或第三方模組中，需要讓這些操作自動被 mock 攔截
 
-4. **Mock 隔離** - 使用 memfs-extra 在記憶體中模擬檔案系統操作，避免影響真實檔案系統。詳細使用方式請參考 [skills/test-js-mock](../../test-js-mock/SKILL.md)
+4. **Mock 隔離** - 使用 memfs-extra 在記憶體中模擬檔案系統操作，避免影響真實檔案系統。詳細使用方式請參考 [test-file-best-practices-mock](../../test-file-best-practices-mock/SKILL.md)
 
 ### 安全檢查流程
 
@@ -443,4 +443,4 @@ test/temp/review/
 
 - [SKILL.md](../SKILL.md)
 - [測試框架 API 重構範例 - 系統依賴謹慎處理原則](./examples.md#系統依賴謹慎處理原則)
-- [skills/test-js-mock](../../test-js-mock/SKILL.md)
+- [測試模擬與系統依賴隔離規範 (`test-file-best-practices-mock`)](../../test-file-best-practices-mock/SKILL.md)

@@ -26,7 +26,7 @@ tags:
 
 # 測試轉換為 Node.js 原生測試規範 / Convert Tests to Node.js Native Test Runner
 
-## 概述 (Overview)
+## 概述
 
 本技能提供將既有測試（Jest、Vitest、Bun、Mocha 等）完整轉換與遷移至 **Node.js 原生測試執行器（`node:test` + `t.assert`）** 的標準作業程序、語法對應與約束原則。
 
@@ -100,7 +100,7 @@ test('驗證字串轉換', (t: test.TestContext) => {
 
 ---
 
-### 3. 一律使用 Strict 系方法 (Prefer Strict Methods)
+### 3. 一律使用 Strict 系方法
 
 **`t.assert` 內含 Legacy 與 Strict 兩系方法，一律呼叫 Strict 系（如 `t.assert.strictEqual` 等），禁止使用 Legacy 鬆散比對（如 `equal`）。**
 
@@ -127,7 +127,7 @@ test('驗證字串轉換', (t: test.TestContext) => {
 
 ---
 
-## 測試檔案 Header 與 檔名規範 (Test File Header & Naming)
+## 測試檔案 Header 與 檔名規範
 
 ### 檔名規範
 
@@ -144,7 +144,7 @@ import { after, afterEach, before, beforeEach, describe, it, test, type TestCont
 
 ---
 
-## Matcher / API 遷移對照表 (Matcher & API Mapping)
+## Matcher / API 遷移對照表
 
 將 Jest / Vitest / Bun 的斷言語法遷移至 Node.js `t.assert`：
 
@@ -156,7 +156,7 @@ import { after, afterEach, before, beforeEach, describe, it, test, type TestCont
 | `expect(a).not.toBe(b)` | ✅ `t.assert.notStrictEqual(a, b)` | 嚴格不相等（`!==`） |
 | `expect(a).toEqual(b)` | ⚠️ `t.assert.deepStrictEqual(a, b)` | 比 Jest 嚴格：比對型別標記與原型 |
 | `expect(a).toStrictEqual(b)` | ✅ `t.assert.deepStrictEqual(a, b)` | 語意最接近 |
-| `expect(a).toMatchObject(b)` | ⚠️ `t.assert.partialDeepStrictEqual(a, b)` | v22.13.0+ / v23.4.0+，部分深度比對 |
+| `expect(a).toMatchObject(b)` | ⚠️ `t.assert.partialDeepStrictEqual(a, b)` | v22.13.0+ / v23.4.0+，部分深度比對；物件、陣列、`Set`、`Map` 皆適用，優先使用（詳見「部分比對優先原則」） |
 | `expect(a).toHaveProperty(k, v)` | ⚠️ `t.assert.strictEqual(a[k], v)` | 需自行讀取屬性比對；存在性可用 `'k' in a` |
 | `expect(a).toHaveLength(n)` | ❌ `t.assert.strictEqual(a.length, n)` | 需直接斷言 `.length` 屬性 |
 | `expect(a).toBeGreaterThan(b)` | ⚠️ `t.assert.ok(a > b)` | 無專用 matcher，以布林斷言表達 |
@@ -184,6 +184,40 @@ import { after, afterEach, before, beforeEach, describe, it, test, type TestCont
 | `expect(a).toMatchSnapshot()` | ✅ `t.assert.snapshot(a)` | 快照測試（詳見快照章節） |
 | `expect(a).toMatchSnapshot(partial)` | ⚠️ `t.assert.snapshot(a)` + `t.assert.partialDeepStrictEqual(...)` | 近似寫法或使用封裝 helper |
 | `expect(fn).toThrowErrorMatchingSnapshot()` | ⚠️ `t.assert.throws` 驗證函式內呼叫 `t.assert.snapshot()` | 詳見近似寫法或使用封裝 helper |
+
+---
+
+## 部分比對優先原則 (Prefer Partial Matching)
+
+**優先使用 `t.assert.partialDeepStrictEqual` 進行部分比對**。它不只能用於物件，也能部分比對**陣列、`Set`、`Map`**，使每個測試只關注自身的結果，而不需要對「非關注點」也進行完整斷言比對。尤其對於有各種條件、複雜場景或持續迭代更新的邏輯，可避免因其他邏輯的變動導致斷言失敗、再次調整測試。
+
+```typescript
+// 物件：只斷言關注的欄位，其餘欄位不關心
+t.assert.partialDeepStrictEqual(result, { id: 1, status: 'ok' });
+
+// 陣列：expected 元素依序為 actual 的部分子序列
+t.assert.partialDeepStrictEqual(
+	[1, 2, 3, 4, 5, 6, 7, 8, 9],
+	[4, 5, 8],
+);
+// OK
+
+// Set：只要求包含 expected 的成員
+t.assert.partialDeepStrictEqual(
+	new Set([{ a: 1 }, { b: 1 }]),
+	new Set([{ a: 1 }]),
+);
+// OK
+
+// Map：只要求包含 expected 的鍵值對
+t.assert.partialDeepStrictEqual(
+	new Map([['key1', 'value1'], ['key2', 'value2']]),
+	new Map([['key2', 'value2']]),
+);
+// OK
+```
+
+- **選用準則**：當完整比對（`deepStrictEqual`）會因非關注的欄位／元素變動而失敗時，一律改用部分比對；僅在「完整性本身即是被測行為」（如長度、全量內容、集合全等）時才使用完整斷言。
 
 ---
 
@@ -442,12 +476,13 @@ describe('UserService', () => {
 3. [ ] 除非具備三大例外情境，測試本體未引用 `node:assert/strict`。
 4. [ ] 範例代碼與測試回呼參數一律標註 `t: test.TestContext`。
 5. [ ] 斷言一律以 `t.assert.*` 呼叫，且一律使用 Strict 系方法（`strictEqual`、`deepStrictEqual` 等）。
-6. [ ] `toThrow` / `rejects` 的字串與 RegExp 已正確修正（字串改為 `{ message: /pattern/ }`，RegExp 考慮 `error.toString()` 格式）。
-7. [ ] 快照測試已改用 `t.assert.snapshot()` 或共用 helper，且首次執行帶有 `--test-update-snapshots`。
-8. [ ] 共用 helper 已集中於 `helpers/` 或 `test-utils/` 目錄匯出，未在各檔重複貼上。
-9. [ ] Mock 與 Spy 已轉換為 `t.mock.fn()` 與 `t.mock.method()`。
-10. [ ] `npm test` 執行腳本已更新為 `node --test` 或 `tsx --test`。
-11. [ ] 以既有代碼為使用指南，未預先探索指定範圍外的無關檔案、依賴、原始碼實作、API 或快照，未主動偵測環境（如 Node.js 版本或 tsx 路徑）；僅在實際遇錯或必要資訊不足時進行最小範圍查詢。
+6. [ ] 已優先採用 `t.assert.partialDeepStrictEqual` 部分比對（物件、陣列、`Set`、`Map` 皆適用），測試僅斷言自身關注點；僅在完整性本身即是被測行為時才用完整斷言。
+7. [ ] `toThrow` / `rejects` 的字串與 RegExp 已正確修正（字串改為 `{ message: /pattern/ }`，RegExp 考慮 `error.toString()` 格式）。
+8. [ ] 快照測試已改用 `t.assert.snapshot()` 或共用 helper，且首次執行帶有 `--test-update-snapshots`。
+9. [ ] 共用 helper 已集中於 `helpers/` 或 `test-utils/` 目錄匯出，未在各檔重複貼上。
+10. [ ] Mock 與 Spy 已轉換為 `t.mock.fn()` 與 `t.mock.method()`。
+11. [ ] `npm test` 執行腳本已更新為 `node --test` 或 `tsx --test`。
+12. [ ] 以既有代碼為使用指南，未預先探索指定範圍外的無關檔案、依賴、原始碼實作、API 或快照，未主動偵測環境（如 Node.js 版本或 tsx 路徑）；僅在實際遇錯或必要資訊不足時進行最小範圍查詢。
 
 ---
 
@@ -458,5 +493,5 @@ describe('UserService', () => {
 - [Node.js Assert 官方文件](https://nodejs.org/api/assert.html)
 - [測試檔案最佳實踐規範 (`test-file-best-practices`)](../test-file-best-practices/SKILL.md)
 - [測試語意與已知缺陷規範 (`test-file-best-practices-extension`)](../test-file-best-practices-extension/SKILL.md)
-- [測試檔案系統 Mock 指南 (`test-js-mock`)](../test-js-mock/SKILL.md)
+- [測試模擬與系統依賴隔離規範 (`test-file-best-practices-mock`)](../test-file-best-practices-mock/SKILL.md)
 - [測試快照文件化技能 (`test-snapshot-documentation`)](../test-snapshot-documentation/SKILL.md)

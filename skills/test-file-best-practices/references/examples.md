@@ -11,7 +11,7 @@ tags:
 
 本文件提供 Jest 與 Bun 測試相容的 API 重構範例，補充 `SKILL.md` 中未涵蓋的模式，同時收錄主文件中已提及的重構概念以便完整參照。
 
-> 📚 與 Snapshot 無關的斷言寫法優化（API 可讀性原則、`toHaveProperty`、`toHaveLength`、物件比對 `toMatchObject` / `objectContaining`）已移至 [斷言語法優化](./assertion-syntax.md)，避免與主文件重複。
+> 📚 與 Snapshot 無關的斷言寫法優化（API 可讀性原則、`toHaveProperty`、`toHaveLength`、物件比對 `toMatchObject` / `objectContaining`）請參閱 [斷言語法優化](./assertion-syntax.md)。
 
 > 📚 Jest / Bun 相容性速查表已擴充為四框架對照（Jest / Vitest / Bun / Node.js），並整合檔名命名與測試檔 Header，見 [測試框架相容性與 API 對應](./framework-compatibility.md)。
 
@@ -271,6 +271,8 @@ await expect(riskyOperation()).rejects.toMatchObject({
 ---
 
 ## Mock / Spy 重構
+
+> **Mock 規範與跨框架對照**：完整模擬指南、依賴攔截與跨框架 API 請參閱 [test-file-best-practices-mock](../../test-file-best-practices-mock/SKILL.md)。
 
 ### 函式調用次數
 
@@ -580,7 +582,7 @@ test('should process data file', () => {
 });
 
 // ✅ 良好範例：使用 memfs-extra Mock fs（推薦）
-// 參考: skills/test-js-mock
+// 參考: test-file-best-practices-mock
 import { getVolumeFromFs } from 'memfs-extra';
 
 jest.mock('fs', () => require('memfs-extra/fs-extra'));
@@ -604,7 +606,7 @@ test('should write config file', () => {
 });
 
 // ⚠️ 重要：即使有 mock 檔案系統，仍須遵守路徑安全原則
-// 詳細說明請參考: skills/test-js-mock#安全性考量
+// 詳細說明請參考: [test-file-best-practices-mock](../../test-file-best-practices-mock/SKILL.md#mock-安全防護與路徑白名單--security--path-constraints)
 
 // ✅ 良好範例：使用臨時目錄（若必須使用真實檔案系統）
 import { tmpdir } from 'os';
@@ -808,9 +810,9 @@ test('should fetch user data', async () => {
 ```
 
 **重要提醒**：
-- ⚠️ **即使有 mock 檔案系統，仍須遵守路徑安全原則**：即使使用 memfs-extra 模擬了 fs 模組，仍應確保所有檔案操作都限制在測試臨時目錄內。詳細說明請參考 [skills/test-js-mock - 安全性考量](../../test-js-mock/SKILL.md#安全性考量)
+- ⚠️ **即使有 mock 檔案系統，仍須遵守路徑安全原則**：即使使用 memfs-extra 模擬了 fs 模組，仍應確保所有檔案操作都限制在測試臨時目錄內。詳細說明請參考 [test-file-best-practices-mock - 安全性考量](../../test-file-best-practices-mock/SKILL.md#mock-安全防護與路徑白名單--security--path-constraints)
 - **非臨時目錄禁止寫入**：絕對不要讓測試寫入 `/etc/`、`/usr/`、`C:\Windows\` 等系統目錄，或專案根目錄下的固定路徑
-  - ⚠️ 即使有 mock 檔案系統，仍須確保路徑不超過臨時目錄範圍，詳細說明請參考 [skills/test-js-mock - 禁止使用的路徑模式](../../test-js-mock/SKILL.md#路徑安全原則)
+  - ⚠️ 即使有 mock 檔案系統，仍須確保路徑不超過臨時目錄範圍，詳細說明請參考 [test-file-best-practices-mock - 路徑安全原則](../../test-file-best-practices-mock/SKILL.md#mock-安全防護與路徑白名單--security--path-constraints)
 - **僅限專案內臨時目錄**：測試產生的臨時檔案**只能**寫入專案下的臨時目錄（如專案根目錄下的 `tmp/` 或 `.tmp/`），禁止寫入系統級臨時目錄（如 `/tmp`、`os.tmpdir()`）
 - **優先使用框架 Mock**：當 Jest/Bun 提供的 `jest.mock()`、`spyOn()`、`useFakeTimers()` 能滿足需求時，**不要**自行實作複雜的 mock 機制
 - **自訂 Mock 作為最後手段**：僅當框架提供的 API 無法滿足特殊需求時，才考慮自行設計 mock 實作，且應妥善封裝並充分測試

@@ -1126,7 +1126,7 @@ tmp/
 
 - **非臨時目錄禁止寫入**：絕對不要讓測試寫入 `/etc/`、`/usr/`、`C:\Windows\` 等系統目錄，或專案根目錄下的固定路徑
 - **僅限專案內臨時目錄**：測試產生的臨時檔案**只能**寫入專案下的臨時目錄（如專案根目錄下的 `tmp/` 或 `.tmp/`），禁止寫入系統級臨時目錄（如 `/tmp`、`os.tmpdir()`）
-- ⚠️ 即使有 mock 檔案系統，仍須確保路徑不超過臨時目錄範圍，詳細說明請參考 [skills/test-js-mock - 禁止使用的路徑模式](../test-js-mock/SKILL.md#路徑安全原則)
+- ⚠️ 即使有 mock 檔案系統，仍須確保路徑不超過臨時目錄範圍，詳細說明請參考 [test-file-best-practices-mock - 路徑安全原則](../test-file-best-practices-mock/SKILL.md#mock-安全防護與路徑白名單--security--path-constraints)
 - **優先使用框架 Mock**：當 Jest/Bun 提供的 `jest.mock()`、`spyOn()`、`useFakeTimers()`, `memfs-extra` 能滿足需求時，**不要**自行實作複雜的 mock 機制
 - **自訂 Mock 作為最後手段**：僅當框架提供的 API 無法滿足特殊需求時，才考慮自行設計 mock 實作，且應妥善封裝並充分測試
 
@@ -1134,8 +1134,9 @@ tmp/
 
 **完整的系統依賴處理範例（檔案系統 Mock、依賴模組內部 fs 的 Mock 策略、日期時間 fake timers、環境變數備份與恢復、網路請求 Mock）請參閱：**
 
+- [測試模擬與系統依賴隔離規範 (`test-file-best-practices-mock`)](../test-file-best-practices-mock/SKILL.md)
 - [測試框架 API 重構範例 - 系統依賴謹慎處理原則](./references/examples.md#系統依賴謹慎處理原則)
-- [references/temp-file-management.md](./references/temp-file-management.md)（Mock 安全規則與路徑控管）
+- [references/temp-file-management.md](./references/temp-file-management.md)（臨時檔案管理與清理策略）
 
 ---
 
@@ -1210,4 +1211,4 @@ tmp/
 - [避免無意義的測試：判定與改寫](./references/meaningless-tests.md)
 - [單一測試混雜多個目的：不良實作與改善](./references/mixed-purpose-tests.md)
 - [臨時檔案管理：Mock 安全規則與清理策略](./references/temp-file-management.md)
-- [skills/test-js-mock](../test-js-mock/SKILL.md)
+- [測試模擬與系統依賴隔離規範 (`test-file-best-practices-mock`)](../test-file-best-practices-mock/SKILL.md)

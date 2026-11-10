@@ -46,13 +46,37 @@ tags:
 
 ---
 
-### 2. 物件部分比對 (Partial Object Matching)
+### 2. 部分比對 (Partial Matching)
 
-#### `toMatchObject`
+#### `toMatchObject` / 優先部分比對
 - Node.js 原生自 v22.13.0+ / v23.4.0+（v24.0.0+ 標記為 Stable）引入 `t.assert.partialDeepStrictEqual(actual, expected)`。
 - 行為：
   - 只比對 `expected` 中存在的鍵與巢狀結構。
   - 若 `expected` 具備的所有屬性在 `actual` 中皆深度嚴格相等，則通過斷言。
+- **適用範圍不限於物件**，亦可部分比對陣列、`Set`、`Map`；**優先使用部分比對**，使每個測試只斷言自身關注點，不因非關注邏輯的變動而失敗：
+  ```typescript
+  // 物件：只斷言關注欄位
+  t.assert.partialDeepStrictEqual(result, { status: 'ok' });
+
+  // 陣列：expected 為 actual 的部分子序列
+  t.assert.partialDeepStrictEqual(
+  	[1, 2, 3, 4, 5, 6, 7, 8, 9],
+  	[4, 5, 8],
+  );
+
+  // Set：只要求包含 expected 成員
+  t.assert.partialDeepStrictEqual(
+  	new Set([{ a: 1 }, { b: 1 }]),
+  	new Set([{ a: 1 }]),
+  );
+
+  // Map：只要求包含 expected 鍵值對
+  t.assert.partialDeepStrictEqual(
+  	new Map([['key1', 'value1'], ['key2', 'value2']]),
+  	new Map([['key2', 'value2']]),
+  );
+  ```
+- 僅在「完整性本身即是被測行為」（長度、全量內容、集合全等）時才使用 `deepStrictEqual` 完整斷言。
 
 #### `toHaveProperty`
 - Jest: `expect(obj).toHaveProperty('a.b.c', value)`
