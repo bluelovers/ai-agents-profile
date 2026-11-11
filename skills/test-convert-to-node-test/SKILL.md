@@ -216,6 +216,29 @@ t.assert.partialDeepStrictEqual(
 // OK
 ```
 
+### 常見用法：物件陣列只斷言關注欄位 (Partial Array of Objects)
+
+以 `order.map(item => item.path)` 之類的「僅抽取單一欄位」比對為例，可改寫為物件陣列的部分比對，直接斷言結構而免去 map 抽取，其他欄位（`size`、`mime` 等）不受非關注邏輯變動影響：
+
+```typescript
+// ❌ 舊寫法：只比對抽出的欄位，且陣列全等
+t.assert.deepEqual(order.map(item => item.path), [
+	join(__TEST_FIXTURES, 'txt2img-images', '02027.png'),
+	join(__TEST_FIXTURES, 'txt2img-images', '03050.png'),
+]);
+
+// ✅ 新寫法：物件陣列部分比對（只斷言 path）＋ 長度完整性斷言
+t.assert.partialDeepStrictEqual(order, [
+	{ path: join(__TEST_FIXTURES, 'txt2img-images', '02027.png') },
+	{ path: join(__TEST_FIXTURES, 'txt2img-images', '03050.png') },
+]);
+// 根據語意是要求包含還是相等來判斷是否需要斷言長度
+t.assert.strictEqual(order.length, 2);
+```
+
+- `partialDeepStrictEqual` 保證 expected 元素依序出現（子序列），但不阻止 actual 夾帶額外元素；搭配 `strictEqual(order.length, 2)` 即等價於「恰好 2 個、順序正確、`path` 正確」。
+- **長度／數量完整性本身即是被測行為**，根據語意決定是否需要斷言長度。
+
 - **選用準則**：當完整比對（`deepStrictEqual`）會因非關注的欄位／元素變動而失敗時，一律改用部分比對；僅在「完整性本身即是被測行為」（如長度、全量內容、集合全等）時才使用完整斷言。
 
 ---

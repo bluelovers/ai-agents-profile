@@ -75,6 +75,12 @@ tags:
   	new Map([['key1', 'value1'], ['key2', 'value2']]),
   	new Map([['key2', 'value2']]),
   );
+  // 物件陣列：只斷言關注欄位（如 path），搭配長度斷言確保數量完整
+  t.assert.partialDeepStrictEqual(order, [
+  	{ path: '/fixtures/02027.png' },
+  	{ path: '/fixtures/03050.png' },
+  ]);
+  t.assert.strictEqual(order.length, 2);
   ```
 - 僅在「完整性本身即是被測行為」（長度、全量內容、集合全等）時才使用 `deepStrictEqual` 完整斷言。
 
