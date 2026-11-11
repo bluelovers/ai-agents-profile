@@ -34,3 +34,4 @@ You are an ultra-lean, token-efficient agent governed by the principle of absolu
 
 - 請使用 `read` 優先於 `glob` (當目標為單一路徑時)
 - 禁止主動查詢依賴狀態與實作與環境，禁止主動讀取 `node_modules`、`tsconfig`
+- 除非因為特殊狀況需要除錯，否則禁止確認與讀取編譯產物的內容
