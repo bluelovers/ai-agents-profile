@@ -266,6 +266,55 @@ Jest 與 Node.js 對錯誤比對的規則存在重要差異，遷移時特別容
   - 首次建立快照時，Node.js 不會自動寫入，**必須帶 `--test-update-snapshots`**，否則測試會直接失敗。
   - 更新快照指令：`node --test --test-update-snapshots`。
 
+### 解決 `TypeError: Converting circular structure to JSON`
+
+`JSON.stringify` 序列化遇循環引用會拋出此錯誤。解法有兩種，皆透過 `snapshot.setDefaultSnapshotSerializers` 設定自訂序列化器（建議集中於共用 helper 模組）：
+
+**解法 1：`safeStringify`（`JSON.stringify` + `WeakSet` 標記循環）**
+
+```typescript
+import { snapshot } from 'node:test';
+
+function safeStringify(obj: unknown): string
+{
+	const seen = new WeakSet();
+	return JSON.stringify(obj, (key, value) =>
+	{
+		if (typeof value === 'object' && value !== null)
+		{
+			if (seen.has(value))
+			{
+				// 遇到循環引用時以字串代替，或回傳 undefined 略過
+				return '[Circular]';
+			}
+			seen.add(value);
+		}
+		return value;
+	}, 2);
+}
+
+snapshot.setDefaultSnapshotSerializers([safeStringify]);
+```
+
+**解法 2：`node:util` 的 `inspect`（原生支援循環引用，可排序、無限深度）**
+
+```typescript
+import { inspect } from 'node:util';
+import { snapshot } from 'node:test';
+
+snapshot.setDefaultSnapshotSerializers([
+	(val) => inspect(val, {
+		depth: Infinity,
+		compact: false,
+		sorted: true,
+	}),
+]);
+```
+
+- 解法 1 保留 JSON 格式（快照易讀、易 diff），循環處以 `'[Circular]'` 字面值呈現。
+- 解法 2 由 `inspect` 自動以 `[Circular *1]` 處理循環，且 `sorted: true` 可消除屬性順序造成的快照抖動。
+- 兩者皆為模組層級設定，對該進程內所有 `t.assert.snapshot()` 生效。
+
 ### Jest Property Matcher 的 Node 近似實作
 
 在 Jest 中，`toMatchSnapshot({ id: expect.any(String) })` 支援部分動態欄位遮蔽與快照。Node 原生無此參數，需以「全值快照」＋「部分比對」近似，或封裝成共用 helper：

@@ -173,7 +173,10 @@ test('非同步驗證拋錯', async (t: test.TestContext) => {
 ### 5. 快照限制與注意事項 (Snapshot Caveats)
 
 1. **循環引用（Circular References）**：
-   `t.assert.snapshot()` 使用 JSON 序列化，當物件存在循環引用時會拋出 `TypeError: Converting circular structure to JSON`。若遇循環結構，應先挑選目標屬性或透過自訂序列化函式轉換後再傳入 `snapshot()`。
+   `t.assert.snapshot()` 使用 JSON 序列化，當物件存在循環引用時會拋出 `TypeError: Converting circular structure to JSON`。解法有兩種（詳見 `SKILL.md`「解決 `TypeError: Converting circular structure to JSON`」）：
+   - `snapshot.setDefaultSnapshotSerializers([safeStringify])`：`JSON.stringify` + `WeakSet` 將循環處以 `'[Circular]'` 代替，保留 JSON 格式。
+   - `snapshot.setDefaultSnapshotSerializers([(val) => inspect(val, { depth: Infinity, compact: false, sorted: true })])`：以 `node:util` 的 `inspect` 序列化，原生處理循環且排序消除抖動。
+   亦可先挑選目標屬性傳入 `snapshot()` 而不註冊全域序列化器。
 2. **快照檔案位置**：
    預設產生的快照檔案名為 `<test-file-name>.snapshot`，存於該測試檔相同資料夾內。
 3. **CI 環境**：
