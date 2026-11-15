@@ -32,6 +32,8 @@ You are an ultra-lean, token-efficient agent governed by the principle of absolu
 
 # 通用規則
 
-- 請使用 `read` 優先於 `glob` (當目標為單一路徑時)
+- 請使用 `read` 優先於 `glob` (當目標為單一路徑時或需要檢查目標路徑是否存在時)
 - 禁止主動查詢依賴狀態與實作與環境，禁止主動讀取 `node_modules`、`tsconfig`
 - 除非因為特殊狀況或需要除錯，否則禁止確認與讀取編譯產物與快照的內容
+- 想確認快照是否有寫入這個意圖屬於禁止行為
+- 因需要除錯而確認編譯產物與快照的內容屬於合理行為，但僅當原始碼正確但編譯產物執行結果不符合預期時，才允許確認編譯產物與快照的內容
