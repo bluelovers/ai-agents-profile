@@ -12,6 +12,7 @@ description: >-
   - "node:test 斷言轉換" / "t.assert 規範"
   - "測試快照遷移至 node:test"
   - "Mock 遷移至 t.mock"
+  - partialDeepStrictEqual
 tags:
   - agents/skills
   - testing
