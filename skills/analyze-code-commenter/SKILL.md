@@ -208,7 +208,7 @@ These behavioral rules apply to every edit this skill makes; format constraints 
 Beyond adding comments, this skill decides *whether an existing comment should exist at all* — a content-quality judgment; the corresponding format rules stay in [comment-format-rules-js](../comment-format-rules-js/SKILL.md).
 
 - **無意義註解判斷**：[無意義註解](references/meaningless-comments.md) — 判斷基準（「只回答看 code 不知道的事」）、錯誤案例、刪／改與保留的案例解析、正確範本與實戰改寫對照。
-- **錯誤案例對照**：[錯誤註解案例](references/bad-comment-examples.md) — 錯置類（案例一～四）、重構與任務操作日誌／設計原則口號（案例五）、層級錯置（案例六）、按字數斷行（案例七），及其餘錯誤類型的分流索引與自我檢查清單。
+- **錯誤案例對照**：[錯誤註解案例](references/bad-comment-examples.md) — 錯置類（案例一～四）、重構與任務操作日誌／設計原則口號（案例五）、層級錯置（案例六）、【反模式】機械式字數硬切（案例七），及其餘錯誤類型的分流索引與自我檢查清單。
 
 ### 無意義註解（重複宣告、羅列結構）
 
@@ -231,7 +231,7 @@ Beyond adding comments, this skill decides *whether an existing comment should e
 | 設計原則口號 | 註解寫「避免漂移」、「SSOT」等原則口號，或寫成本次任務報告（做了什麼重構） | 改寫為行為事實與意圖：這段代碼做什麼、為什麼這樣做 | [案例五](references/bad-comment-examples.md) |
 | 過度瑣碎 | 逐項羅列易變的實作明細，任何修改都必須同步更新註解 | 粒度收到行為事實與意圖層級，易變明細交給代碼 | [粒度與檔頭邊界](#註解粒度不應過度瑣碎-comment-granularity) |
 | 檔頭越界 | 用檔頭註解取代宣告 JSDoc／邏輯區塊，甚至因此縮減它們；檔頭本身羅列瑣碎明細 | 三層各司其職：檔頭寫整個檔案，宣告與邏輯層級的註解保持完整 | [檔頭不得取代其他層級](#檔頭註解不得取代宣告與邏輯註解-file-header-boundary) |
-| 按字數斷行 | 長註解以固定行寬硬切，斷在句子中間（切開動詞與受詞、連接詞懸在行尾） | 分行按句子或語意斷點（句號、逗號、括號收合處），句子不跨行被切開 | [案例七](references/bad-comment-examples.md#案例七長註解按字數斷行句子被切斷) |
+| 機械式字數硬切（反模式，嚴禁） | 誤把固定行寬當規則硬切，斷在句子中間（切開主謂、動賓、修飾語與名詞，或連接詞懸在行尾） | 【合法規則】唯一依據是語意斷點（句號、逗號、分號、破折號）；嚴禁按字數硬切，整句或完整子句不跨行碎裂 | [案例七](references/bad-comment-examples.md#案例七長註解按字數硬切機械式斷行句子被切斷) |
 
 ## 註解粒度與檔頭邊界 (Granularity & File Header)
 
@@ -279,6 +279,26 @@ Beyond adding comments, this skill decides *whether an existing comment should e
 - **檔頭本身也不應過度瑣碎**：不羅列宣告清單、不寫易變明細，只寫檔案動機與職責（見 [無意義註解 — 案例三](references/meaningless-comments.md)）。
 - **檔頭是可選的，且不得為寫而寫**：沒有值得寫的檔案級脈絡（動機、不變量、邊界情況）就整個省略；為「補上檔頭」而複述檔名／路徑、列出口清單、湊用途句，屬無意義註解（見 [無意義註解 — 檔頭註解是可選的](references/meaningless-comments.md#檔頭註解是可選的-header-is-optional)）。
 - 宣告註解誤放檔頭位置的錯置修正，見 [錯誤註解案例 — 案例一](references/bad-comment-examples.md)。
+
+### 斷行規則：語意斷點分行，嚴禁按字數硬切 (Semantic Line Breaking vs. Hard Wrap)
+
+註解分行的唯一合法依據是**語意完整性**，絕非**字數或行寬限制**。
+
+> [!CAUTION]
+> **常見誤解防範（「按字數斷行」是排版缺陷，非合法規則）**：
+> 「按字數斷行／硬切」是**嚴格禁止的排版缺陷（反模式）**，絕非合法的格式規則！
+> 任何 Agent **不得**誤以為「程式碼註解有行寬上限所以必須機械式折行」；更不得將未完成的句子、主謂結構或片語在無標點處硬生生切斷。
+
+- **✅ 合法規則：按語意斷點分行 (Semantic Breakpoints)**
+  - 每行末尾必須是自然語意停頓點（句號 `。`、逗號 `，`、分號 `；`、破折號 `——`、冒號 `：`）。
+  - 完整的子句、片語或獨立陳述應盡量保持在同一行；若整句較長，只能在**子句層級的標點符號**處折行。
+- **❌ 禁止行為：機械式字數硬切（反模式 / Hard Wrap Defect）**
+  1. **切開修飾語與名詞**：如行尾「以點分隔的」，次行「`.(spec|test).` 形式」。
+  2. **切開主語與同位／指示片語**：如行尾「`foo.playwright-spec.ts`」，次行「這類非預設命名不會被納入」。
+  3. **切開主語（條件指令）與謂語動詞**：如行尾「`playwright test <filter>`（如 ...）」（無標點），次行「才能找到並執行對應測試檔」。
+  4. **連接詞或介詞懸在行尾**：如「經」、「而」、「故」、「但」、「與」停在行尾。
+
+詳見 [錯誤註解案例 — 案例七](references/bad-comment-examples.md#案例七長註解按字數硬切機械式斷行句子被切斷)。
 
 ## Comment Update Rules
 

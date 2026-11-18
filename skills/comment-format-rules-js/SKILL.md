@@ -40,6 +40,7 @@ tags:
 - **註解放置於代碼上方**，緊鄰目標代碼，避免代碼後方的行內註解。詳見 [註解位置規範](./references/comment-placement.md)。
 - **註解必須緊鄰其所描述的宣告**（中間不得隔著 `import`、常數或其他陳述式）；描述宣告的註解不得寫成檔頭註解。詳見 [錯誤註解案例](../analyze-code-commenter/references/bad-comment-examples.md)。
 - **格式結構分工：宣告層級 JSDoc 描述合約，陳述式層級邏輯區塊描述實作緣由。** 詳見 [JSDoc 與邏輯區塊職責分離](#jsdoc-與邏輯區塊職責分離-responsibility-separation)。
+- **分行依據語意斷點，嚴禁按字數硬切**：分行唯一合法依據為自然語意斷點（句號、逗號、分號、破折號）；嚴禁誤把「按字數斷行」當作格式規範而在無標點處硬切（切斷主謂、動賓、修飾語皆屬反模式）。詳見 [案例七](../analyze-code-commenter/references/bad-comment-examples.md#案例七長註解按字數硬切機械式斷行句子被切斷)。
 - **雙語排版格式**：產出前先閱讀 [bilingual-standardization-rule](../bilingual-standardization-rule/SKILL.md) 取得通用規則；本檔僅定義 JS/TS 形式——單行術語以 `/` 分隔，JSDoc 標籤採 `- 中文 / English` 格式。詳見 [雙語註解格式](./references/bilingual-comment-format.md)。
 - **更新既有註解時保留原始技術資訊**（錯誤碼、術語、檔案路徑、多語言註解）。詳見 [註解更新規則](./references/comment-update-rules.md)。
 - **既有風格衝突先詢問**：發現既有註解風格不同或違反規則、且非本次任務造成時，不得逕自改寫或默默沿用，先問使用者：維持既有風格，或漸進式改寫（分「修改範圍」與「修改的檔案」兩種）。詳見 [既有風格衝突與處理](#既有風格衝突與處理-legacy-style-conflict)。
